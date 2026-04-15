@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
+import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
 import type { Database } from '@/types/database'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
@@ -25,6 +27,25 @@ const priceTypeLabels: Record<string, string> = {
   auction: 'Auction',
 }
 
+function formatRelativeDate(dateStr: string): string {
+  const now = new Date()
+  const date = new Date(dateStr)
+  const diffMs = now.getTime() - date.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffH = Math.floor(diffMs / 3600000)
+  const diffD = Math.floor(diffMs / 86400000)
+
+  if (diffMin < 1) return 'acum'
+  if (diffMin < 60) return `acum ${diffMin}m`
+  if (diffH < 24) return `acum ${diffH}h`
+  if (diffD === 1) return 'ieri'
+  if (diffD < 7) return `acum ${diffD}z`
+
+  const day = date.getDate()
+  const months = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'nov', 'dec']
+  return `${day} ${months[date.getMonth()]}`
+}
+
 export default function ListingCard({ listing }: ListingCardProps) {
   const formatPrice = (price: number, currency: string) => {
     const symbol = currency === 'EUR' ? '€' : currency
@@ -43,25 +64,41 @@ export default function ListingCard({ listing }: ListingCardProps) {
       {/* Image Container */}
       <div className="relative h-48 bg-gradient-to-br from-green-100 to-green-50 dark:from-dark-700 dark:to-dark-600 flex items-center justify-center overflow-hidden">
         {hasImages ? (
-          <img
+          <Image
             src={images[0]}
             alt={listing.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 33vw"
           />
         ) : (
           <span className="text-6xl opacity-50">{categoryIcon}</span>
         )}
 
+        {/* Favorite Heart Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 transition-colors shadow-sm"
+          aria-label="Adaugă la favorite"
+        >
+          <Heart className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors" />
+        </button>
+
         {/* Featured Badge */}
         {listing.is_featured && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-amber-500 shadow-sm animate-pulse-subtle">
-            ⭐ Featured
+          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-amber-500 shadow-sm animate-pulse-subtle flex items-center gap-1">
+            <Award className="w-3.5 h-3.5" />
+            Featured
           </span>
         )}
 
         {/* Condition Badge */}
         {listing.condition && (
-          <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 dark:bg-dark-900/90 text-gray-700 dark:text-gray-200 shadow-sm">
+          <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 dark:bg-dark-900/90 text-gray-700 dark:text-gray-200 shadow-sm">
             {conditionLabels[listing.condition] || listing.condition}
           </span>
         )}
@@ -108,28 +145,39 @@ export default function ListingCard({ listing }: ListingCardProps) {
         {/* Footer */}
         <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 pt-3 border-t border-gray-100 dark:border-dark-700">
           <span className="flex items-center gap-1">
-            📍 {listing.location_country || 'UE'}
+            <MapPin className="w-3.5 h-3.5" />
+            {listing.location_country || 'UE'}
           </span>
           <span className="flex items-center gap-1">
             {listing.categories?.name || 'Agricultural'}
             {listing.profiles?.is_verified && (
-              <span className="text-green-600 dark:text-green-400 ml-1" title="Verified Seller">
-                ✓
+              <span title="Verified Seller">
+                <BadgeCheck className="w-3.5 h-3.5 text-green-600 dark:text-green-400 ml-1" />
               </span>
             )}
           </span>
         </div>
 
-        {/* Seller Rating */}
-        {listing.profiles?.rating_avg && listing.profiles.rating_avg > 0 && (
-          <div className="flex items-center gap-1 mt-2 text-xs text-amber-500">
-            <span>★</span>
-            <span className="font-semibold">{listing.profiles.rating_avg.toFixed(1)}</span>
-            <span className="text-gray-400 dark:text-gray-500">
-              ({listing.profiles.rating_count} reviews)
+        {/* Seller Rating + Relative Date */}
+        <div className="flex items-center justify-between mt-2">
+          {listing.profiles?.rating_avg && listing.profiles.rating_avg > 0 ? (
+            <div className="flex items-center gap-1 text-xs text-amber-500">
+              <Star className="w-3.5 h-3.5 fill-amber-500" />
+              <span className="font-semibold">{listing.profiles.rating_avg.toFixed(1)}</span>
+              <span className="text-gray-400 dark:text-gray-500">
+                ({listing.profiles.rating_count} reviews)
+              </span>
+            </div>
+          ) : (
+            <span />
+          )}
+          {listing.created_at && (
+            <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+              <Clock className="w-3 h-3" />
+              {formatRelativeDate(listing.created_at)}
             </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Link>
   )

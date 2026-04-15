@@ -10,6 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Brand
         green: {
           DEFAULT: '#0f4c35',
           mid: '#166534',
@@ -27,10 +28,42 @@ const config: Config = {
           900: '#111827',
           950: '#0a0f1a',
         },
+        // Semantic (from CSS vars)
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        surface: 'var(--surface)',
+        border: 'var(--border)',
+        muted: {
+          DEFAULT: 'var(--muted-bg)',
+          foreground: 'var(--muted-foreground)',
+        },
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        input: 'var(--input)',
+        ring: 'var(--ring)',
       },
       borderRadius: {
-        DEFAULT: '12px',
-        lg: '20px',
+        DEFAULT: '0.75rem',
+        lg: '1rem',
+        xl: '1.25rem',
       },
       boxShadow: {
         DEFAULT: '0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06)',
@@ -40,9 +73,6 @@ const config: Config = {
         'fade-in': 'fadeIn 0.5s ease-out forwards',
         'slide-up': 'slideUp 0.5s ease-out forwards',
         'slide-down': 'slideDown 0.3s ease-out forwards',
-        'scale-in': 'scaleIn 0.3s ease-out forwards',
-        'pulse-subtle': 'pulseSubtle 2s ease-in-out infinite',
-        'spin-slow': 'spin 3s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -56,14 +86,6 @@ const config: Config = {
         slideDown: {
           '0%': { opacity: '0', transform: 'translateY(-10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.95)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
-        },
-        pulseSubtle: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.8' },
         },
       },
     },

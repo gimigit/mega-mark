@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Globe, Mail, Phone, ShoppingCart, User, Scale, MapPin, ShieldCheck } from 'lucide-react'
 
 const footerLinks = {
   marketplace: [
@@ -35,27 +36,30 @@ export default function Footer() {
           {/* Brand Column */}
           <div>
             <Link href="/" className="text-2xl font-black text-white mb-3 flex items-center gap-1">
-              Mega<em className="text-amber-400 not-italic">EU</em>
+              Mega<em className="text-amber-400 not-italic">Mark</em>
             </Link>
             <p className="text-sm leading-relaxed mb-4">
               Europe&apos;s trusted marketplace for agricultural machinery. Buy and sell with confidence across 16 EU countries.
             </p>
             <div className="flex gap-2">
-              <span className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors cursor-pointer text-sm font-bold">
-                f
-              </span>
-              <span className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors cursor-pointer text-sm font-bold">
-                in
-              </span>
-              <span className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors cursor-pointer text-sm font-bold">
-                tw
-              </span>
+              <a href="https://mega-mark.eu" className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors cursor-pointer">
+                <Globe className="w-4 h-4" />
+              </a>
+              <a href="mailto:contact@mega-mark.eu" className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors cursor-pointer">
+                <Mail className="w-4 h-4" />
+              </a>
+              <a href="tel:+40700000000" className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors cursor-pointer">
+                <Phone className="w-4 h-4" />
+              </a>
             </div>
           </div>
 
           {/* Marketplace Links */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Marketplace</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <ShoppingCart className="w-3.5 h-3.5 text-amber-400/70" />
+              Marketplace
+            </h4>
             <ul className="space-y-2">
               {footerLinks.marketplace.map(link => (
                 <li key={link.href}>
@@ -69,7 +73,10 @@ export default function Footer() {
 
           {/* Account Links */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Cont</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-amber-400/70" />
+              Cont
+            </h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/dashboard" className="text-sm hover:text-amber-400 transition-colors">
@@ -88,7 +95,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/profile/edit" className="text-sm hover:text-amber-400 transition-colors">
-                  Setări
+                  Setari
                 </Link>
               </li>
             </ul>
@@ -96,7 +103,10 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Legal</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <Scale className="w-3.5 h-3.5 text-amber-400/70" />
+              Legal
+            </h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/terms" className="text-sm hover:text-amber-400 transition-colors">
@@ -118,12 +128,21 @@ export default function Footer() {
                   FAQ
                 </Link>
               </li>
+              <li>
+                <Link href="/safety" className="text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
+                  Siguranta pe Mega-Mark
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Countries Grid */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">Countries</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-amber-400/70" />
+              Countries
+            </h4>
             <div className="grid grid-cols-2 gap-1">
               {footerLinks.countries.map(country => (
                 <span key={country} className="text-xs text-white/50">
@@ -136,7 +155,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-          <p>© {currentYear} Mega-Mark. All rights reserved.</p>
+          <p>&copy; {currentYear} Mega-Mark. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy
