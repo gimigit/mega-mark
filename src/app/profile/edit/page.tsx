@@ -56,7 +56,7 @@ export default function ProfileEditPage() {
     phone: '',
     location_country: 'RO',
     location_region: '',
-    account_type: 'seller' as Profile['account_type'],
+    role: 'seller',
   })
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function ProfileEditPage() {
           phone: data.phone || '',
           location_country: data.location_country || 'RO',
           location_region: data.location_region || '',
-          account_type: data.account_type || 'seller',
+          role: data.role || 'seller',
         })
       }
       setLoading(false)
@@ -129,7 +129,7 @@ export default function ProfileEditPage() {
         phone: form.phone || null,
         location_country: form.location_country,
         location_region: form.location_region || null,
-        account_type: form.account_type,
+        role: form.role,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)
@@ -158,7 +158,7 @@ export default function ProfileEditPage() {
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className="text-2xl font-black text-green-800 flex items-center gap-1">
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             <Link href="/dashboard" className="text-green-700 font-semibold hover:text-green-800">← Dashboard</Link>
@@ -249,8 +249,8 @@ export default function ProfileEditPage() {
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1.5">Tip cont</label>
                   <select
-                    value={form.account_type || 'seller'}
-                    onChange={(e) => setForm({ ...form, account_type: e.target.value as Profile['account_type'] })}
+                    value={form.role || 'seller'}
+                    onChange={(e) => setForm({ ...form, role: e.target.value as 'seller' | 'dealer' | 'buyer' | 'admin' })}
                     className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500/10 outline-none transition-all"
                   >
                     {ACCOUNT_TYPES.map(t => (

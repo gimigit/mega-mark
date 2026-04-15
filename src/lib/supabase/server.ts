@@ -1,12 +1,32 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { config, validateConfig } from './config'
 
+/**
+ * Create a Supabase server client
+ * 
+ * Uses pooler-compatible configuration for Vercel IPv4 compatibility.
+ * This client is for HTTP API calls from Next.js server components.
+ * 
+ * For direct database connection with Prisma/pg, use getDatabaseUrl() from ./config
+ * @see https://supabase.com/docs/guides/database/connecting-to-postgres/connection-pooler
+ */
 export async function createClient() {
   const cookieStore = await cookies()
 
+  // Validate required configuration
+  try {
+    validateConfig()
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('[Supabase Server] Configuration error:', error.message)
+      throw error
+    }
+  }
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    config.url,
+    config.anonKey,
     {
       cookies: {
         getAll() {

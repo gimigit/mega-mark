@@ -280,7 +280,7 @@ export default function DashboardPage() {
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-8">
           <Link href="/" className="text-2xl font-black text-green-800 flex items-center gap-1">
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="hidden md:flex items-center gap-6 ml-auto">
             <Link href="/browse" className="text-gray-600 hover:text-green-700 font-medium transition-colors">
@@ -465,14 +465,14 @@ export default function DashboardPage() {
                               <h3 className="font-bold text-gray-900 truncate">{listing.title}</h3>
                               <span
                                 className={`px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
-                                  statusLabels[listing.status]?.className || 'bg-gray-100 text-gray-600'
+                                  listing.status ? statusLabels[listing.status]?.className : 'bg-gray-100 text-gray-600'
                                 }`}
                               >
-                                {statusLabels[listing.status]?.label || listing.status}
+                                {listing.status ? statusLabels[listing.status]?.label : listing.status}
                               </span>
                             </div>
                             <div className="text-lg font-black text-green-700 mb-1">
-                              {formatPrice(listing.price, listing.currency)}
+                              {listing.price != null ? formatPrice(listing.price, listing.currency || 'EUR') : 'Preț la cerere'}
                             </div>
                             <div className="flex items-center gap-2 text-xs text-gray-500">
                               {listing.year && <span>{listing.year}</span>}
@@ -565,7 +565,7 @@ export default function DashboardPage() {
                             {fav.listings.title}
                           </h3>
                           <div className="text-lg font-black text-green-700 mb-2">
-                            {formatPrice(fav.listings.price, fav.listings.currency)}
+                            {fav.listings.price != null ? formatPrice(fav.listings.price, fav.listings.currency || 'EUR') : 'Preț la cerere'}
                           </div>
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             {fav.listings.year && <span>{fav.listings.year}</span>}

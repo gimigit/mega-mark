@@ -11,14 +11,13 @@ interface SupabaseContextValue {
   isLoading: boolean
 }
 
-const SupabaseContext = createContext<SupabaseContextValue>({
-  supabase: createClient(),
-  session: null,
-  user: null,
-  isLoading: true,
-})
+const SupabaseContext = createContext<SupabaseContextValue | null>(null)
 
-export const useSupabase = () => useContext(SupabaseContext)
+export const useSupabase = () => {
+  const ctx = useContext(SupabaseContext)
+  if (!ctx) throw new Error('useSupabase must be used within SupabaseProvider')
+  return ctx
+}
 
 export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)

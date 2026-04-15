@@ -63,9 +63,11 @@ export default async function BillingPage() {
           currency: inv.currency?.toUpperCase(),
           status: inv.status,
           date: inv.created ? new Date(inv.created * 1000) : null,
-          host_invoice_url: inv.host_invoice_url,
+          host_invoice_url: inv.hosted_invoice_url,
         })).filter(inv => inv.date)
-    } catch (error) {
+      }
+      }
+      catch (error) {
       console.error('Failed to fetch invoices:', error)
     }
   }
@@ -129,15 +131,15 @@ export default async function BillingPage() {
                       Gestionează metoda de plată
                     </Button>
                   </form>
-                  <Button variant="outline" asChild>
-                    <a href="/pricing">Schimbă planul</a>
+                  <Button variant="outline">
+                    <a href="/pricing" className="hover:underline">Schimbă planul</a>
                   </Button>
                 </div>
               </div>
             ) : (
               <div className="text-center py-8">
                 <p className="mb-4">Nu ai un abonament activ. Selectează un plan pentru a începe.</p>
-                <Button asChild>
+                <Button>
                   <a href="/pricing">Vezi planuri</a>
                 </Button>
               </div>

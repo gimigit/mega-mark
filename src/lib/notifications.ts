@@ -1,10 +1,18 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import * as email from '@/lib/email'
 
-const supabase = createAdminClient()
+// Lazy initialize admin client only when needed
+let supabase: ReturnType<typeof createAdminClient> | null = null
+
+function getSupabase() {
+  if (!supabase) {
+    supabase = createAdminClient()
+  }
+  return supabase
+}
 
 async function getUserEmail(userId: string): Promise<string | null> {
-  const { data } = await supabase
+  const { data } = await getSupabase()
     .from('profiles')
     .select('email')
     .eq('id', userId)
@@ -14,7 +22,7 @@ async function getUserEmail(userId: string): Promise<string | null> {
 }
 
 export async function createNotification(userId: string, type: string, title: string, body: string | null = null, data: Record<string, unknown> = {}) {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('notifications')
     .insert({
       user_id: userId,
@@ -84,7 +92,7 @@ export async function notifyListingPublished(userId: string, listingTitle: strin
     userId,
     'listing_approved',
     'Anunțul tău a fost publicat!',
-    `Anunțul "${listingTitle}" este acum vizibil pe AgroMark EU.`,
+    `Anunțul "${listingTitle}" este acum vizibil pe Mega-Mark.`,
     { listing_title: listingTitle }
   )
 

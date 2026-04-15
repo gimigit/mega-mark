@@ -212,7 +212,7 @@ export default function CreateListingPage() {
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className="text-2xl font-black text-green-800 flex items-center gap-1">
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             {user ? (

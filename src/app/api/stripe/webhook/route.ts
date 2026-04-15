@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient()
 
   try {
-    switch (event.type) {
+    switch (event.type as string) {
       case 'checkout.session.completed':
         await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session, supabase)
         break
@@ -53,7 +53,10 @@ export async function POST(request: NextRequest) {
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, supabase: any) {
   if (session.mode === 'subscription' && session.subscription) {
     // Fetch full subscription object
-    const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
+    const subscriptionResponse = await stripe.subscriptions.retrieve(session.subscription as string, {
+      expand: ['items']
+    }) as any
+    const subscription = subscriptionResponse
 
     // Determine plan_type from metadata
     const planType = session.metadata?.plan_type
@@ -62,14 +65,19 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
       return
     }
 
+    // Get billing period from subscription item (v22 API change)
+    const subscriptionItem = subscription.items?.data?.[0]
+    const currentPeriodStart = subscriptionItem?.current_period_start ?? subscriptionResponse.current_period_start ?? null
+    const currentPeriodEnd = subscriptionItem?.current_period_end ?? subscriptionResponse.current_period_end ?? null
+
     // Insert or update subscription
     const { error } = await supabase.from('subscriptions').upsert({
       stripe_subscription_id: subscription.id,
       profile_id: session.metadata?.profile_id,
       plan_type: planType,
       status: subscription.status,
-      current_period_start: subscription.current_period_start ? new Date(subscription.current_period_start).toISOString() : null,
-      current_period_end: subscription.current_period_end ? new Date(subscription.current_period_end).toISOString() : null,
+      current_period_start: currentPeriodStart ? new Date(currentPeriodStart * 1000).toISOString() : null,
+      current_period_end: currentPeriodEnd ? new Date(currentPeriodEnd * 1000).toISOString() : null,
       cancel_at: subscription.cancel_at ? new Date(subscription.cancel_at).toISOString() : null,
       cancel_at_period_end: subscription.cancel_at_period_end,
       canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at).toISOString() : null,
@@ -88,7 +96,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
     const listingId = session.metadata?.listing_id
     const boostType = session.metadata?.boost_type
     const profileId = session.metadata?.profile_id
-    const quantity = parseInt(session.quantity?.toString() || '1', 10)
+    const quantity = parseInt((session as any).quantity?.toString() || '1', 10)
 
     if (!listingId || !boostType || !profileId) {
       console.error('Boost checkout missing metadata (listing_id, boost_type, profile_id)')
@@ -132,17 +140,18 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription, supabase: any) {
+  const sub = subscription as any
   const { error } = await supabase
     .from('subscriptions')
     .update({
-      status: subscription.status,
-      current_period_start: subscription.current_period_start ? new Date(subscription.current_period_start).toISOString() : null,
-      current_period_end: subscription.current_period_end ? new Date(subscription.current_period_end).toISOString() : null,
-      cancel_at: subscription.cancel_at ? new Date(subscription.cancel_at).toISOString() : null,
-      cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at).toISOString() : null,
+      status: sub.status,
+      current_period_start: sub.current_period_start ? new Date(sub.current_period_start).toISOString() : null,
+      current_period_end: sub.current_period_end ? new Date(sub.current_period_end).toISOString() : null,
+      cancel_at: sub.cancel_at ? new Date(sub.cancel_at).toISOString() : null,
+      cancel_at_period_end: sub.cancel_at_period_end,
+      canceled_at: sub.canceled_at ? new Date(sub.canceled_at).toISOString() : null,
     })
-    .eq('stripe_subscription_id', subscription.id)
+    .eq('stripe_subscription_id', sub.id)
 
   if (error) {
     console.error('Failed to update subscription:', error.message)
@@ -171,6 +180,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription, supa
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice, supabase: any) {
   // If the invoice is for a subscription, the subscription status will be updated via separate event
   // But we can log or send notification
-  console.log(`Invoice ${invoice.id} payment failed for subscription ${invoice.subscription}`)
+  const inv = invoice as any
+  console.log(`Invoice ${inv.id} payment failed for subscription ${inv.subscription}`)
   // Could send email notification to user about failed payment
 }

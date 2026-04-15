@@ -93,7 +93,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-black text-green-800 flex items-center justify-center gap-1 mb-2">
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <p className="text-gray-500 text-sm">
             {magicLink ? 'Trimite-ți un link de conectare' : 'Conectează-te la contul tău'}
@@ -220,6 +220,7 @@ export default function LoginPage() {
               Creează un cont gratuit
             </Link>
           </p>
+          </div>
         </div>
       </div>
     </div>

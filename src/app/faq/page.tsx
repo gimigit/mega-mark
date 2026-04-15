@@ -26,7 +26,7 @@ export default function FAQPage() {
       questions: [
         {
           q: 'Cum public un anunț?',
-          a: 'Pentru a publica un anunț, trebuie să aveți un cont pe AgroMark EU. După autentificare, accesați Dashboard și faceți clic pe "Crează Anunț". Completați formularul cu informațiile despre utilaj, încărcați fotografii și publicați.'
+          a: 'Pentru a publica un anunț, trebuie să aveți un cont pe Mega-Mark. După autentificare, accesați Dashboard și faceți clic pe "Crează Anunț". Completați formularul cu informațiile despre utilaj, încărcați fotografii și publicați.'
         },
         {
           q: 'Câte anunțuri pot publica?',
@@ -71,8 +71,8 @@ export default function FAQPage() {
           a: 'Rating-ul vânzătorului este afișat pe pagina anunțului și pe profilul public. Faceți clic pe numele vânzătorului pentru a vedea recenziile primite.'
         },
         {
-          q: 'AgroMark EU procesează plățile?',
-          a: 'Nu, AgroMark EU este o platformă de conectare între vânzători și cumpărători. Plățile se efectuează direct între părți, prin metodele convenite de comun acord.'
+          q: 'Mega-Mark procesează plățile?',
+          a: 'Nu, Mega-Mark este o platformă de conectare între vânzători și cumpărători. Plățile se efectuează direct între părți, prin metodele convenite de comun acord.'
         }
       ]
     },
@@ -86,7 +86,7 @@ export default function FAQPage() {
         },
         {
           q: 'Am uitat parola, ce fac?',
-          a: 'AgroMark EU folosește autentificare prin magic link — nu aveți o parolă tradițională. Dacă nu primiți emailul de conectare, verificați dosarul de spam.'
+          a: 'Mega-Mark folosește autentificare prin magic link — nu aveți o parolă tradițională. Dacă nu primiți emailul de conectare, verificați dosarul de spam.'
         },
         {
           q: 'Cum îmi modific profilul?',
@@ -98,7 +98,7 @@ export default function FAQPage() {
         },
         {
           q: 'Ce este badge-ul "Dealer Verificat"?',
-          a: 'Badge-ul "Dealer Verificat" este acordat vânzătorilor profesioniști care au fost verificați de echipa AgroMark EU. Indică încredere și profesionalism.'
+          a: 'Badge-ul "Dealer Verificat" este acordat vânzătorilor profesioniști care au fost verificați de echipa Mega-Mark. Indică încredere și profesionalism.'
         }
       ]
     },
@@ -108,7 +108,7 @@ export default function FAQPage() {
       questions: [
         {
           q: 'Site-ul funcționează pe mobil?',
-          a: 'Da! AgroMark EU este complet responsive și funcționează excelent pe smartphone, tabletă și desktop.'
+          a: 'Da! Mega-Mark este complet responsive și funcționează excelent pe smartphone, tabletă și desktop.'
         },
         {
           q: 'Ce browsere sunt suportate?',
@@ -119,7 +119,7 @@ export default function FAQPage() {
           a: 'Dacă un anunț pare suspect sau încalcă regulile platformei, folosiți butonul "Raportează Anunțul" din partea de jos a paginii anunțului.'
         },
         {
-          q: 'AgroMark EU este gratuit?',
+          q: 'Mega-Mark este gratuit?',
           a: 'Planul de bază este gratuit și include: 3 anunțuri active, căutare nelimitată, mesagerie. Planurile cu funcționalități extinse sunt disponibile contra cost.'
         },
         {
@@ -134,11 +134,11 @@ export default function FAQPage() {
       questions: [
         {
           q: 'Care este politica de returnare?',
-          a: 'AgroMark EU nu are o politică de returnare proprie, deoarece nu procesăm tranzacțiile. Returnările sunt stabilite între vânzător și cumpărător.'
+          a: 'Mega-Mark nu are o politică de returnare proprie, deoarece nu procesăm tranzacțiile. Returnările sunt stabilite între vânzător și cumpărător.'
         },
         {
           q: 'Sunteți responsabil pentru tranzacțiile mele?',
-          a: 'Nu. AgroMark EU facilitează conexiunea dintre vânzători și cumpărători, dar nu este parte din tranzacții și nu este responsabil pentru acestea.'
+          a: 'Nu. Mega-Mark facilitează conexiunea dintre vânzători și cumpărători, dar nu este parte din tranzacții și nu este responsabil pentru acestea.'
         },
         {
           q: 'Cum îmi protejez datele personale?',
@@ -157,7 +157,7 @@ export default function FAQPage() {
       <nav className={`sticky top-0 z-50 ${isDark ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md border-b ${isDark ? 'border-gray-800' : 'border-gray-200'} shadow-sm`}>
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-800'} flex items-center gap-1`}>
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             <Link href="/" className={`font-semibold hover:text-green-700 ${isDark ? 'text-gray-400 hover:text-green-400' : ''}`}>
@@ -171,7 +171,7 @@ export default function FAQPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-black text-gray-900 mb-4">Întrebări Frecvente</h1>
           <p className="text-xl text-gray-600">
-            Găsiți răspunsuri la cele mai comune întrebări despre AgroMark EU
+            Găsiți răspunsuri la cele mai comune întrebări despre Mega-Mark
           </p>
         </div>
 

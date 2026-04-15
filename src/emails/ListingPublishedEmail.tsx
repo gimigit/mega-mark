@@ -8,7 +8,7 @@ export function ListingPublishedEmail({ listingTitle, appUrl }: ListingPublished
     <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{ backgroundColor: '#166534', padding: '24px', textAlign: 'center' }}>
         <h1 style={{ color: 'white', margin: 0, fontSize: '24px' }}>
-          AgroMark <span style={{ fontStyle: 'italic', color: '#fbbf24' }}>EU</span>
+          Mega<span style={{ fontStyle: 'italic', color: '#fbbf24' }}>Mark</span>
         </h1>
       </div>
       
@@ -16,7 +16,7 @@ export function ListingPublishedEmail({ listingTitle, appUrl }: ListingPublished
         <h2 style={{ color: '#111827', marginTop: 0 }}>Anunțul tău a fost publicat! 🎉</h2>
         
         <p style={{ color: '#374151', lineHeight: '1.6' }}>
-          Anunțul tău <strong>"{listingTitle}"</strong> este acum live și vizibil pentru toți utilizatorii AgroMark EU.
+          Anunțul tău <strong>"{listingTitle}"</strong> este acum live și vizibil pentru toți utilizatorii Mega-Mark.
         </p>
         
         <div style={{ backgroundColor: '#dcfce7', borderRadius: '8px', padding: '16px', marginTop: '24px', border: '1px solid #86efac' }}>
@@ -50,7 +50,7 @@ export function ListingPublishedEmail({ listingTitle, appUrl }: ListingPublished
       
       <div style={{ backgroundColor: '#f3f4f6', padding: '16px 24px', textAlign: 'center' }}>
         <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>
-          © 2026 AgroMark EU. Toate drepturile rezervate.
+          © 2026 Mega-Mark. Toate drepturile rezervate.
         </p>
       </div>
     </div>

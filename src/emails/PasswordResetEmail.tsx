@@ -7,7 +7,7 @@ export function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps) {
     <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{ backgroundColor: '#166534', padding: '24px', textAlign: 'center' }}>
         <h1 style={{ color: 'white', margin: 0, fontSize: '24px' }}>
-          AgroMark <span style={{ fontStyle: 'italic', color: '#fbbf24' }}>EU</span>
+          Mega<span style={{ fontStyle: 'italic', color: '#fbbf24' }}>Mark</span>
         </h1>
       </div>
       
@@ -15,7 +15,7 @@ export function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps) {
         <h2 style={{ color: '#111827', marginTop: 0 }}>Resetare parolă</h2>
         
         <p style={{ color: '#374151', lineHeight: '1.6' }}>
-          Ai primit acest email pentru că ai solicitat resetarea parolei pentru contul tău AgroMark EU.
+          Ai primit acest email pentru că ai solicitat resetarea parolei pentru contul tău Mega-Mark.
         </p>
         
         <div style={{ backgroundColor: '#fee2e2', borderRadius: '8px', padding: '16px', marginTop: '24px', border: '1px solid #fca5a5' }}>
@@ -50,7 +50,7 @@ export function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps) {
       
       <div style={{ backgroundColor: '#f3f4f6', padding: '16px 24px', textAlign: 'center' }}>
         <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>
-          © 2026 AgroMark EU. Toate drepturile rezervate.
+          © 2026 Mega-Mark. Toate drepturile rezervate.
         </p>
       </div>
     </div>

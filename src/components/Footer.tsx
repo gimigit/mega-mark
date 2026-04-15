@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div>
             <Link href="/" className="text-2xl font-black text-white mb-3 flex items-center gap-1">
-              AgroMark <em className="text-amber-400 not-italic">EU</em>
+              Mega<em className="text-amber-400 not-italic">EU</em>
             </Link>
             <p className="text-sm leading-relaxed mb-4">
               Europe&apos;s trusted marketplace for agricultural machinery. Buy and sell with confidence across 16 EU countries.
@@ -136,7 +136,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-          <p>© {currentYear} AgroMark EU. All rights reserved.</p>
+          <p>© {currentYear} Mega-Mark. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy

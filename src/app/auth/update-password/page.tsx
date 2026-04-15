@@ -107,7 +107,7 @@ export default function UpdatePasswordPage() {
       <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full">
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-black text-green-800 flex items-center justify-center gap-1 mb-2">
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <p className="text-gray-500 text-sm">Alege o parolă nouă</p>
         </div>

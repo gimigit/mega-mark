@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { notifyListingExpiring } from '@/lib/notifications'
 
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const threeDaysFromNow = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
   const startOfDay = new Date(threeDaysFromNow.setHours(0, 0, 0, 0))

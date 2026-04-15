@@ -162,7 +162,7 @@ export default function BrowseClient({
 
       dataQuery = applyFilters(dataQuery)
 
-      const sortFilter = currentFilters.find(f => f.key === 'sort')?.value || 'featured'
+      const sortFilter = getCurrentFilters().find(f => f.key === 'sort')?.value || 'featured'
       if (sortFilter === 'featured') {
         dataQuery = dataQuery.order('is_featured', { ascending: false }).order('created_at', { ascending: false })
       } else if (sortFilter === 'newest') {

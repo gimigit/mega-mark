@@ -1,335 +1,504 @@
 # PLAN.md — Mega-Mark Agricultural Marketplace
 
-> **Status:** Planificare · Început: Aprilie 2026
-> **Fuziune:** AgroMark-EU (Next.js 16, arhitectură curată) + 4sale (features complete, testate în producție)
-> **Stack:** Next.js 16 App Router · TypeScript · Supabase (direct, fără Prisma) · shadcn/ui + base-ui · Tailwind · Vercel
-> **Repo:** https://github.com/gimigit/mega-mark
-> **Live:** https://megamark.vercel.app (target)
+> **For Hermes:** Use `structured-project-execution` skill. Execute task-by-task, verify each step, update status here.
+
+**Goal:** Marketplace agricol premium pentru Romania si UE — tractoare, combine, utilaje agricole.
+
+**Stack:** Next.js 16 App Router · TypeScript · Supabase (direct, fara Prisma) · shadcn/ui · Tailwind · Stripe · Resend · Vercel
+
+**Repo:** https://github.com/gimigit/mega-mark
+**Live:** https://megamark.vercel.app (target)
 
 ---
 
-## Viziune
+## Status curent (15 Aprilie 2026)
 
-**Mega-Mark** — Marketplace agricol premium pentru România și UE.
-Cel mai bun din AgroMark-EU (Next.js 16, arhitectură curată) + cel mai bun din 4sale (features complete, testate în producție).
+**Build:** ✅ Trece local (`npm run build`)
+**Deploy:** Nu e configurat inca pe Vercel (lipsesc env vars)
+**DB:** Schema completa (461 linii) — NU e rulata inca pe Supabase
 
-**Piața țintă:** România-first → UE (PL, BG, HU, SK, CZ) în Faza 6.
-**Diferențiator:** UX modern, performanță, trust (recenzii, dealer verificați), monetizare clară.
+### Ce exista deja (portat din AgroMark-EU + 4sale)
 
-**De ce fuziune?**
-- AgroMark-EU: Next.js 16, Supabase direct (fără Prisma overhead), shadcn/ui modern, arhitectură curată
-- 4sale: Stripe complet, email Resend, cron jobs, admin dashboard, toast notifications, phone reveal, share button, promovare anunțuri — toate testate în producție
-- Mega-Mark = baza AgroMark-EU + features complete din 4sale + features unice (recenzii, saved searches, notifications in-app)
+**Pagini (20):**
+- Homepage, Browse, Login, Signup, Forgot Password, Update Password
+- Listings: create, [id] detail, [id]/edit
+- Dashboard, Dashboard/billing, Profile/edit
+- Sellers/[id], Admin, Pricing, About, FAQ, Terms, Privacy
+- 404 not-found
+
+**API Routes (18):**
+- `/api/listings` (CRUD), `/api/listings/[id]`
+- `/api/favorites` (toggle + list)
+- `/api/reviews` (create + list)
+- `/api/notifications/email`, `/api/notifications/events`, `/api/notifications/expiry-check`
+- `/api/stripe/checkout`, `/api/stripe/portal`, `/api/stripe/webhook`
+- `/api/subscriptions/cancel`
+- `/api/cron/expire-ads`, `/api/cron/check-expiring-ads`
+- `/api/admin/stats`, `/api/admin/listings`, `/api/admin/users`, `/api/admin/me`
+- `/api/seed` (categorii + manufacturers)
+
+**Componente UI:**
+- ListingCard, ListingCardSkeleton, Navbar, Footer, SellerCard
+- ReviewForm, ReviewCard, ReviewsList
+- NotificationBell, NotificationDropdown
+- ChatWindow, MessageBubble
+- PhoneReveal, ShareButton, ThemeToggle, MapView
+
+**Lib:**
+- `supabase/` (client, server, admin, config, middleware) — lazy init la build time ✅
+- `stripe.ts` — lazy Proxy pattern ✅
+- `email.ts`, `notifications.ts`, `upload.ts`, `admin-utils.ts`
+
+**DB Schema:** `supabase/schema.sql` (profiles, categories, manufacturers, listings, favorites, conversations, messages, reviews, notifications, search_history, api_keys) + 7 migratii + indexes + triggers + seed data
+
+### Ce NU exista (API routes lipsa)
+
+- ❌ `/api/conversations` — CRUD conversatii (mesagerie)
+- ❌ `/api/messages/[id]/read` — mark message as read
+- ❌ `/api/saved-searches` — CRUD saved searches
+- ❌ `/api/auth/me` — sync user profile
+
+### Ce NU e functional (UI fara backend)
+
+- ChatWindow + MessageBubble — componente prezente, dar fara API
+- NotificationBell + NotificationDropdown — componente prezente, dar fara Supabase Realtime
+- SavedSearches — component prezent, dar fara API
+- Search pe Homepage — UI doar, nu face fetch real
+- Forms pe Homepage (Post Listing) — UI doar, nu trimite date
 
 ---
 
-## Stack & Decizii Tehnice (Locked)
+## Decizii tehnice (locked)
 
-| Decizie | Alegere | Motivație |
+| Decizie | Alegere | Nota |
 |---|---|---|
-| Frontend | Next.js 16 App Router | Cel mai nou, React Server Components, performanță optimizată |
-| Styling | Tailwind CSS + shadcn/ui + base-ui | Design system consistent, rapid, accesibil |
-| Backend | Next.js API Routes | Full-stack în același repo |
-| Database | PostgreSQL via Supabase | Full-text search, RLS, realtime, pooler |
-| Auth | Supabase Auth (email + magic link + OAuth) | Hosted, secure, tested |
-| Storage | Supabase Storage (CDN inclus) | Zero infra overhead |
-| ORM | Supabase JS SDK (direct) | Fără Prisma overhead, mai simplu, mai rapid |
-| Payments | Stripe | Industry standard, suport RON, testat în 4sale |
-| Email | Resend | Developer-friendly, templates React, testat în 4sale |
-| Deploy | Vercel | Preview per PR, Edge network, auto-deploy |
-| Notifications | In-app (Supabase Realtime) + Email | Combinație din ambele proiecte |
-| Analytics | Vercel Analytics | Zero-config, GDPR-friendly |
-| Error Monitoring | Sentry | Error tracking production |
-| i18n | next-intl | Pentru expansiune UE |
-
-### Decizii tehnice cheie (din experiența 4sale)
-
-1. **`generateStaticParams` rulează la BUILD TIME** — nu apela DB acolo
-2. **`revalidate` + `cookies()` incompatibile** — folosește `force-dynamic`
-3. **Toate paginile cu DB calls → `force-dynamic`** — altfel build crapa pe Vercel
-4. **Navbar e în root layout** — eroare acolo = "Application error" pe toate paginile
-5. **Stripe lazy init** — Proxy leneș, altfel aruncă la import time
-6. **Supabase IPv6 + Vercel IPv4** — folosește pooler: `aws-0-eu-west-2.pooler.supabase.com:6543`
+| DB calls la build time | NU — toate paginile cu DB sunt `force-dynamic` |
+| Supabase client | Lazy init cu placeholders la build time |
+| Stripe | Lazy Proxy pattern (nu arunca la import) |
+| `generateStaticParams` | NU apela DB acolo |
+| Vercel IPv4 + Supabase IPv6 | Foloseste pooler: `aws-0-eu-west-2.pooler.supabase.com:6543` |
+| Navbar | In root layout — erori acolo afecteaza tot site-ul |
 
 ---
 
-## Schema DB (Supabase direct, fără Prisma)
+## Faza 1 — Database & Deploy
 
-Bazat pe AgroMark-EU + îmbunătățiri din 4sale.
+> **Obiectiv:** Supabase configurat, schema rulata, seed data, deploy pe Vercel functional.
 
-```sql
--- Bazat pe supabase/schema.sql din AgroMark-EU
--- + Adaugă: slug, viewCount, featured, featuredUntil, searchVector (din 4sale)
--- + Adaugă: AdReport, Review, SavedSearch (features noi)
--- + Adaugă: avatarUrl, bio, verified, website pe profiles (din 4sale)
--- + Adaugă: Notification model (din AgroMark-EU)
+### Task 1.1: Setup Supabase project
 
--- Model principal: listings (din AgroMark-EU)
--- + stripeSubscriptionId, stripePriceId, subscriptionStatus (din 4sale Stripe)
--- + reviewsCount, avgRating pe sellers profiles (features noi)
+**Obiectiv:** Proiect Supabase creat cu schema completa.
 
--- Vedere completă: supabase/schema.sql
-```
+**Steps:**
+1. Creeaza proiect nou pe supabase.com (region: eu-west)
+2. Ruleaza `supabase/schema.sql` in SQL Editor
+3. Ruleaza migratiile in ordine: `003_messages.sql` → `004_saved_searches.sql` → ... → `008_subscriptions_and_listing_boosts.sql` → `20240101000001_add_rls_policies.sql`
+4. Verifica in Table Editor ca tabelele exista si seed data (categories, manufacturers) e populata
+5. Creeaza Storage bucket `listings` (public: true, 5MB limit, image/jpeg + image/png + image/webp)
+6. Activeaza Realtime pe tabelele `messages` si `notifications` (Database → Replication)
 
-### Features noi față de ambele proiecte
+**Verificare:** Deschide Table Editor → `categories` → 11 randuri; `manufacturers` → 20 randuri
 
-| Feature | Sursă | Descriere |
-|---|---|---|
-| Recenzii vânzători | AgroMark-EU | ReviewForm, ReviewCard, ReviewsList |
-| Saved searches | AgroMark-EU | Migrare `004_saved_searches.sql` |
-| Notifications in-app | AgroMark-EU | NotificationBell, NotificationDropdown |
-| AI categorizare anunțuri | Mega-Mark nou | Clasificare automată bazată pe descriere |
-| Comparator utilaje | Mega-Mark nou | Comparație side-by-side 2-3 anunțuri |
-| Dealer tools | AgroMark-EU plan | Bulk upload, API dealer |
+### Task 1.2: Environment variables local
 
----
+**Obiectiv:** `.env.local` configurat cu credentiale reale.
 
-## Faze de dezvoltare
+**Files:** Create `.env.local` (NU se comite — e in .gitignore)
 
-```
-Faza 0 — Setup & Migrare        ← ÎNCEPEM AICI
-Faza 1 — Core MVP                (Auth, CRUD, Browse, Search)
-Faza 2 — Engagement             (Mesagerie, Favorite, Profil)
-Faza 3 — Monetizare            (Stripe, Promovare, Admin)
-Faza 4 — SEO & Launch          (Sitemap, Meta, GDPR, Performance)
-Faza 5 — Polish & UX           (Toast, Share, Phone reveal, Animations)
-Faza 6 — Scale & i18n          (Multi-limbă, UE expansion)
-Faza 7 — Advanced              (AI, Comparator, Dealer tools, App)
-```
+**Steps:**
+1. Copiaza din Supabase Dashboard → Settings → API:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+2. Copiaza Connection String (pooler) → `DATABASE_URL`
+3. Seteaza `NEXT_PUBLIC_APP_URL=http://localhost:3000`
+4. Stripe keys pot ramane goale deocamdata
 
----
+**Verificare:** `npm run dev` → Homepage incarca fara erori, categoriile apar din DB
 
-## 🔄 Faza 0 — Setup & Migrare (NOUĂ)
+### Task 1.3: Deploy Vercel
 
-> **Obiectiv:** Creează Mega-Mark pornind de la AgroMark-EU, cu features complete din 4sale.
-> **Bază:** AgroMark-EU (Next.js 16, arhitectură curată)
-> **Adaugă:** Features testate din 4sale
+**Obiectiv:** Site live pe Vercel cu auto-deploy din `main`.
 
-### Step 0 — Setup proiect nou
+**Steps:**
+1. Import repo `gimigit/mega-mark` pe Vercel
+2. Seteaza env vars (aceleasi ca `.env.local` + Stripe keys)
+3. Seteaza `DATABASE_URL` cu pooler connection string
+4. Deploy si verifica ca build-ul trece
+5. Testeaza homepage pe URL-ul live
 
-- [ ] **0a** Creează folder `mega-mark` în `~/Projects/Mega-Mark/`
-- [ ] **0b** Copiază structura AgroMark-EU: `src/`, `supabase/`, `package.json`, configs
-- [ ] **0c** Upgrade la Next.js 16 (dacă AgroMark-EU are 16 deja, păstrează)
-- [ ] **0d** Setup git: `git init`, repo GitHub `gimigit/mega-mark`
-- [ ] **0e** Configurează Vercel project + env vars
+**Verificare:** `https://mega-mark-*.vercel.app` incarca homepage cu categorii din DB
 
-### Step 1 — Port features complete din 4sale
+### Task 1.4: Seed data via API
 
-- [ ] **1a** Copiază `src/app/api/stripe/*` din 4sale → Mega-Mark
-  - checkout, webhook, portal, cancel subscriptions
-  - Verify: `npm run build`
-- [ ] **1b** Copiază `src/app/api/cron/*` din 4sale → Mega-Mark
-  - `expire-ads`: marchează anunțuri expirate
-  - `check-expiring-ads`: notifică înainte de expirare
-  - Verify: `npm run build`
-- [ ] **1c** Copiază paginile de Stripe din 4sale → Mega-Mark
-  - `/promoveaza/[slug]`: checkout flow (din 4sale)
-  - `/pricing`: pagina de prețuri
-  - Verify: `npm run build`
-- [ ] **1d** Copiază admin dashboard din 4sale → Mega-Mark
-  - `/admin`: tabel anunțuri, acțiuni, rapoarte
-  - Verify: `npm run build`
-- [ ] **1e** Copiază email templates din 4sale → Mega-Mark
-  - Mesaj nou, expirare anunț, confirmare plată
-  - Resend integration (verifică că RESEND_API_KEY funcționează pe Vercel)
-  - Verify: `npm run build`
-- [ ] **1f** Copiază Toast notifications din 4sale → Mega-Mark
-  - `sonner` already in AgroMark-EU deps? Verifică
-  - Adaugă `<Toaster />` în layout
-  - Verify: `npm run build`
-- [ ] **1g** Copiază PhoneReveal + ShareButton din 4sale → Mega-Mark
-  - Phone reveal cu click-to-show
-  - Share WhatsApp + Copy link
-  - Verify: `npm run build`
-- [ ] **1h** Copiază cron email notifications din 4sale → Mega-Mark
-  - Verifică Supabase Realtime activ pe tabelele `messages` și `notifications`
-  - Verify: `npm run build`
+**Obiectiv:** Creeaza cateva anunturi de test ca site-ul sa nu fie gol.
 
-### Step 2 — Port features unice AgroMark-EU
+**Steps:**
+1. Creeaza un user manual (signup pe site)
+2. Seteaza-l admin: `UPDATE profiles SET role='admin' WHERE email='...'`
+3. Verifica `/api/seed` — ruleaza seed-ul daca nu e deja populat
+4. Creeaza 3-5 listings de test manual sau prin API
 
-- [ ] **2a** Port recenziilor (ReviewForm, ReviewCard, ReviewsList) la Mega-Mark
-  - Rulează migrarea `004_reviews.sql` din AgroMark-EU
-  - Verifică că funcționează pe noua schema
-  - Verify: `npm run build`
-- [ ] **2b** Port saved searches (migrare `004_saved_searches.sql`) la Mega-Mark
-  - API routes + UI
-  - Verify: `npm run build`
-- [ ] **2c** Port in-app notifications (NotificationBell, NotificationDropdown) la Mega-Mark
-  - Supabase Realtime pentru notificări live
-  - Verify: `npm run build`
-- [ ] **2d** Port profilul public vânzător `/sellers/[id]` la Mega-Mark
-  - Cu recenzii și statistici
-  - Verify: `npm run build`
-
-### Step 3 — Unifică cele mai bune UI components
-
-- [ ] **3a** Alege design system: StyleSeed (din 4sale) sau shadcn/ui curat (AgroMark)
-  - Decision: shadcn/ui curat (mai simplu, baza AgroMark)
-  - Adaugă StyleSeed tokens în Tailwind pentru consistență
-  - Verify: `npm run build`
-- [ ] **3b** Redesign AdCard — ia best from both:
-  - Badge "Promovat" (din 4sale)
-  - Image optimization cu next/image (din AgroMark)
-  - Rating stele pentru vânzători (nou)
-  - Verify: `npm run build`
-- [ ] **3c** Redesign Homepage — hero section + search + categorii + anunțuri recente (din 4sale)
-  - Folosește Next.js 16 features
-  - Verify: `npm run build`
-- [ ] **3d** Crează `/contul-meu/dashboard` unificat
-  - Anunțuri active + statistici + quick actions
-  - Verify: `npm run build`
-
-### Step 4 — Fix critical issues (din experiența 4sale)
-
-- [ ] **4a** Supabase IPv6 + Vercel IPv4 fix
-  - DATABASE_URL pooler: `aws-0-eu-west-2.pooler.supabase.com:6543?pgbouncer=true`
-  - DIRECT_URL = direct db URL
-  - Verify: deploy pe Vercel funcționează
-- [ ] **4b** Pagini blocate pe loading skeleton fix
-  - `force-dynamic` + try/catch pe toate DB calls
-  - Verify: `npm run build`
-- [ ] **4c** Stripe lazy init (Proxy pattern din 4sale)
-  - Verify: `npm run build`
-- [ ] **4d** Sitemap force-dynamic + try/catch
-  - Verify: `curl localhost:3000/sitemap.xml`
-
-### Step 5 — Database setup
-
-- [ ] **5a** Unifică schema din AgroMark-EU + features noi
-  - Fuzionează: slug, viewCount, featured, featuredUntil, searchVector
-  - Adaugă: Review, SavedSearch, Notification models
-  - Rulează migrări în ordine
-  - Verify: `npm run build`
-- [ ] **5b** Setup Supabase Storage bucket pentru photos
-  - Verifică RLS policies
-  - Verify: upload foto funcționează
-
-### Step 6 — Test integration
-
-- [ ] **6a** Test complet flow: register → login → creare anunț → checkout Stripe → email Resend
-- [ ] **6b** Verifică că toate paginile încarcă fără erori
-- [ ] **6c** Deploy pe Vercel, verifică production
+**Verificare:** Browse page arata listings; Homepage arata categorii cu count > 0
 
 ---
 
-## ✅ Faza 1 — Core MVP
+## Faza 2 — Auth & Core Flow
 
-Utilizator poate crea cont, posta anunț cu poze, alt utilizator îl găsește.
+> **Obiectiv:** User poate crea cont, posta anunt cu poze, alt user il gaseste si il contacteaza.
 
-- [ ] Step 1 — Scaffold (Next.js 16, Tailwind, Supabase, folder structure) ← din AgroMark-EU
-- [ ] Step 2 — Schema DB + migrații + seed categorii ← unificat
-- [ ] Step 3 — Auth (register, login, forgot-password, middleware, OAuth)
-- [ ] Step 4 — Listing CRUD API (create, read, update, delete, sold, photo upload)
-- [ ] Step 5 — UI Browse & Search (filtre: categorie, județ, preț, stare; paginare; sortare)
-- [ ] Step 6 — UI Detaliu anunț (galerie foto, telefon, favorite, card vânzător)
-- [ ] Step 7 — UI Creare/Editare anunț (form multi-step, drag&drop poze)
-- [ ] Step 8 — Favorite (API + pagina)
+### Task 2.1: Fix auth flow
 
----
+**Obiectiv:** Register → Login → Dashboard functioneaza end-to-end.
 
-## ✅ Faza 2 — Engagement
+**Files:**
+- Verify: `src/app/login/page.tsx`, `src/app/signup/page.tsx`
+- Verify: `src/app/auth/callback/route.ts`
+- Verify: `src/lib/supabase/middleware.ts`
 
-- [ ] Step 9 — Mesagerie internă (inbox, conversații, badge unread, mark-read)
-- [ ] Step 10 — Email notifications (Resend: mesaj nou, anunț expiră, plată confirmată)
-- [ ] Step 11 — Profil public vânzător (`/sellers/[id]` cu anunțuri active + recenzii + rating)
-- [ ] Step 12 — In-app notifications (NotificationBell, NotificationDropdown, Supabase Realtime)
+**Steps:**
+1. Testeaza signup cu email → verifica ca profile se creeaza automat (trigger `handle_new_user`)
+2. Testeaza login cu email + parola
+3. Testeaza magic link (daca e configurat in Supabase Auth)
+4. Verifica ca `/dashboard` e protejat (redirect la login daca nu e autentificat)
+5. Testeaza logout
 
----
+**Verificare:** User nou: signup → email confirmare → login → vede dashboard → logout → redirect login
 
-## ✅ Faza 3 — Monetizare
+### Task 2.2: Listing create flow
 
-- [ ] Step 13 — Stripe Checkout + Webhooks (din 4sale — deja testat)
-- [ ] Step 14 — Promovare anunțuri: 7 zile (15 RON) / 30 zile (45 RON)
-- [ ] Step 15 — Badge "Promovat" în AdCard + anunțuri featured primele
-- [ ] Step 16 — Pagina `/promoveaza/[slug]` — checkout flow complet
-- [ ] Step 17 — Dashboard Admin (din 4sale — deja testat)
-- [ ] Step 18 — Cron jobs: expirare anunțuri + notificări înainte de expirare
+**Obiectiv:** User autentificat posteaza anunt cu poze.
 
----
+**Files:**
+- Verify: `src/app/listings/create/page.tsx`
+- Verify: `src/app/api/listings/route.ts` (POST)
+- Verify: `src/lib/upload.ts`
 
-## ✅ Faza 4 — SEO & Launch
+**Steps:**
+1. Testeaza form-ul de creare anunt (all fields)
+2. Testeaza upload imagini in Supabase Storage
+3. Verifica ca listing-ul apare in browse cu status `active`
+4. Testeaza edit listing (`src/app/listings/[id]/edit/page.tsx`)
+5. Testeaza delete/archive listing
 
-- [ ] Step 19 — Sitemap dinamic `/sitemap.xml`
-- [ ] Step 20 — Meta tags + Open Graph pe toate paginile
-- [ ] Step 21 — JSON-LD Schema.org Product pe paginile de anunț
-- [ ] Step 22 — Pagini SEO programatice: categorie × județ (ex: `/tractoare/cluj`)
-- [ ] Step 23 — robots.txt corect
-- [ ] Step 24 — Footer cu linkuri interne la categorii + județe
-- [ ] Step 25 — GDPR pages: Termeni, Confidențialitate, Despre, Cookie banner
+**Verificare:** Create listing → apare in Browse → Edit → Delete
 
----
+### Task 2.3: Browse & Search
 
-## ✅ Faza 5 — Polish & UX
+**Obiectiv:** Browse page cu filtre functionale.
 
-- [ ] Step 26 — Toast notifications (Sonner) — global
-- [ ] Step 27 — Phone reveal (click-to-show)
-- [ ] Step 28 — Share button (WhatsApp + Copy link)
-- [ ] Step 29 — Recenzii vânzători (ReviewForm, ReviewCard, ReviewsList)
-- [ ] Step 30 — Saved searches (create, list, delete, email alert)
-- [ ] Step 31 — Empty states pe toate paginile
-- [ ] Step 32 — Skeleton loaders (page + browse)
-- [ ] Step 33 — Performance: next/image pe toate imaginile, lazy loading
-- [ ] Step 34 — Mobile responsive polish
-- [ ] Step 35 — Not-found page custom cu search bar
+**Files:**
+- Verify: `src/app/browse/page.tsx`
 
----
+**Steps:**
+1. Verifica ca filtrele (categorie, tara, pret) functioneaza
+2. Verifica paginare
+3. Verifica sortare (pret, data, views)
+4. Fix search box pe Homepage — conecteaza-l la `/browse?q=...`
 
-## Faza 6 — Scale & Internațional
+**Verificare:** Browse cu filtre → rezultate corecte; Search din Homepage → redirect la Browse cu query
 
-> **Obiectiv:** Expansiune UE: Polonia, Bulgaria, Ungaria, Slovacia, Cehia.
+### Task 2.4: Listing detail page
 
-- [ ] Step 36 — i18n cu next-intl: RO (default), EN, HU, PL, BG, SK, CZ
-- [ ] Step 37 — URL structure: `/en/listings`, `/hu/hirdetesek`
-- [ ] Step 38 — Traduceri interfață + meta tags + categorii
-- [ ] Step 39 — hreflang tags în `<head>`
-- [ ] Step 40 — Adaptare monedă + TVA per țară
-- [ ] Step 41 — Locale-aware SEO (subdomain: ro.megamark.eu, en.megamark.eu)
+**Obiectiv:** Pagina de detaliu anunt completa.
 
----
+**Files:**
+- Verify: `src/app/listings/[id]/page.tsx`
+- Verify: `src/app/listings/[id]/ListingDetailClient.tsx`
 
-## Faza 7 — Advanced Features
+**Steps:**
+1. Verifica galerie foto, informatii listing, seller card
+2. Verifica PhoneReveal (click-to-show)
+3. Verifica ShareButton (copy link)
+4. Verifica favorites toggle
+5. Verifica increment view count
 
-- [ ] Step 42 — AI categorizare anunțuri (clasificare automată bazată pe descriere + titlu)
-- [ ] Step 43 — Comparator utilaje (side-by-side 2-3 anunțuri)
-- [ ] Step 44 — Dealer tools: bulk upload, API access
-- [ ] Step 45 — App Mobil (React Native / Expo)
-- [ ] Step 46 — Push notifications mobile
-- [ ] Step 47 — Dealer accounts extins: logo, descriere, locație pe hartă, ore program
-- [ ] Step 48 — Badge "Dealer Verificat" (admin approval)
-- [ ] Step 49 — Full-text search avansat (autocomplete, suggestions)
-- [ ] Step 50 — "Alertă căutare" — notify email când apare anunț nou
+**Verificare:** Listing detail arata corect, phone reveal functioneaza, share copiaza link
 
 ---
 
-## De ce Mega-Mark e mai bun decât ambele
+## Faza 3 — Messaging & API routes lipsa
 
-| Aspect | AgroMark-EU | 4sale | Mega-Mark |
-|---|---|---|---|
-| Next.js | 16 ✅ | 14 | **16 ✅** |
-| Arhitectură DB | Supabase direct ✅ | Prisma ⚠️ | **Supabase direct ✅** |
-| Stripe | În lucru | ✅ Complet | **✅ Complet** |
-| Email | În lucru | ✅ Complet | **✅ Complet** |
-| Cron jobs | — | ✅ | **✅** |
-| Admin dashboard | — | ✅ | **✅** |
-| Toast notifications | — | ✅ | **✅** |
-| Phone reveal | — | ✅ | **✅** |
-| Share button | — | ✅ | **✅** |
-| Recenzii | În lucru | — | **✅** |
-| Saved searches | În lucru | — | **✅** |
-| In-app notifications | În lucru | — | **✅** |
-| i18n | — | — | **✅ Planificat** |
-| Design system | shadcn/ui | StyleSeed | **shadcn/ui + StyleSeed tokens** |
-| Maturitate | 65% MVP | ✅ 7 faze | **Bază testată + features complete** |
+> **Obiectiv:** Mesagerie interna functionala + API routes pentru toate componentele UI existente.
+
+### Task 3.1: Conversations API
+
+**Obiectiv:** CRUD pentru conversatii intre buyer si seller.
+
+**Files:**
+- Create: `src/app/api/conversations/route.ts` (GET list, POST create)
+- Create: `src/app/api/conversations/[id]/route.ts` (GET messages)
+- Create: `src/app/api/conversations/[id]/messages/route.ts` (POST send message)
+
+**Steps:**
+1. GET `/api/conversations` — returneaza conversatiile userului curent (buyer sau seller)
+2. POST `/api/conversations` — creeaza conversatie noua (body: `{ listing_id, message }`)
+3. GET `/api/conversations/[id]` — returneaza mesajele unei conversatii
+4. POST `/api/conversations/[id]/messages` — trimite mesaj nou
+5. Conecteaza ChatWindow + MessageBubble la aceste API routes
+
+**Verificare:** Buyer trimite mesaj pe listing → Seller vede conversatia → Reply → Buyer vede reply
+
+### Task 3.2: Message read status API
+
+**Obiectiv:** Mark messages as read, badge unread count.
+
+**Files:**
+- Create: `src/app/api/conversations/[id]/read/route.ts` (POST mark read)
+
+**Steps:**
+1. POST `/api/conversations/[id]/read` — seteaza `buyer_unread=0` sau `seller_unread=0`
+2. Adauga badge unread in Navbar sau inbox page
+
+**Verificare:** New message → badge unread → click → badge dispare
+
+### Task 3.3: Saved searches API
+
+**Obiectiv:** User salveaza cautari si primeste alerte.
+
+**Files:**
+- Create: `src/app/api/saved-searches/route.ts` (GET list, POST create, DELETE remove)
+
+**Steps:**
+1. GET `/api/saved-searches` — returneaza saved searches ale userului
+2. POST `/api/saved-searches` — salveaza cautare (body: `{ name, filters }`)
+3. DELETE `/api/saved-searches?id=...` — sterge saved search
+4. Conecteaza componenta SavedSearches la API
+
+**Verificare:** Save search pe browse → apare in lista → delete → dispare
+
+### Task 3.4: Auth me API
+
+**Obiectiv:** Endpoint pentru sync profil user curent.
+
+**Files:**
+- Create: `src/app/api/auth/me/route.ts` (GET profile)
+
+**Steps:**
+1. GET `/api/auth/me` — returneaza profilul userului autentificat (din `profiles` table)
+2. Foloseste `supabase.auth.getUser()` pentru a identifica userul
+
+**Verificare:** GET `/api/auth/me` cu auth header → returneaza profil complet
 
 ---
 
-## Git Workflow
+## Faza 4 — Engagement Features
 
-- Commit-uri în engleză, format convențional: `feat:`, `fix:`, `chore:`, `docs:`
+> **Obiectiv:** Favorites, reviews, notifications, profil vanzator.
+
+### Task 4.1: Favorites page
+
+**Obiectiv:** Pagina cu anunturile favorite ale userului.
+
+**Files:**
+- Create: `src/app/dashboard/favorites/page.tsx`
+- Verify: `src/app/api/favorites/route.ts`
+
+**Steps:**
+1. Creeaza pagina `/dashboard/favorites` — lista de favorites
+2. Verifica toggle favorite de pe ListingCard si ListingDetail
+3. Adauga link in Dashboard navigation
+
+**Verificare:** Toggle favorite → apare in `/dashboard/favorites` → toggle off → dispare
+
+### Task 4.2: Reviews pe seller profile
+
+**Obiectiv:** Reviews vizibile pe profilul vanzatorului.
+
+**Files:**
+- Verify: `src/app/sellers/[id]/page.tsx`
+- Verify: `src/app/api/reviews/route.ts`
+- Verify: ReviewForm, ReviewCard, ReviewsList components
+
+**Steps:**
+1. Verifica ca ReviewsList arata reviews pe `/sellers/[id]`
+2. Verifica ca ReviewForm permite adaugare review (doar buyeri autentificati)
+3. Verifica ca rating_avg se actualizeaza pe profil (trigger `update_review_stats`)
+
+**Verificare:** Buyer adauga review → apare pe seller profile → rating_avg se actualizeaza
+
+### Task 4.3: Notifications in-app
+
+**Obiectiv:** NotificationBell functionala cu Supabase Realtime.
+
+**Files:**
+- Modify: `src/components/NotificationBell.tsx`
+- Modify: `src/components/NotificationDropdown.tsx`
+- Verify: `src/app/api/notifications/events/route.ts`
+
+**Steps:**
+1. Conecteaza NotificationBell la Supabase Realtime (subscribe pe `notifications` table)
+2. Afiseaza count unread
+3. NotificationDropdown listeaza ultimele notificari
+4. Click pe notificare → marcheaza ca citita
+
+**Verificare:** Actiune (mesaj nou, review nou) → bell arata count → click → notificari vizibile
+
+### Task 4.4: Email notifications (Resend)
+
+**Obiectiv:** Email-uri trimise la evenimente cheie.
+
+**Files:**
+- Verify: `src/lib/email.ts`
+- Verify: `src/emails/` (WelcomeEmail, NewMessageEmail, NewReviewEmail, ListingPublishedEmail, ListingExpiringEmail, PasswordResetEmail)
+
+**Steps:**
+1. Configureaza RESEND_API_KEY in env
+2. Testeaza welcome email la signup
+3. Testeaza email la mesaj nou
+4. Testeaza email la review nou
+5. Testeaza email la listing publicat
+
+**Verificare:** Signup → primeste welcome email; Mesaj nou → primeste email notificare
+
+---
+
+## Faza 5 — Monetizare
+
+> **Obiectiv:** Stripe functional — promovare anunturi cu plata.
+
+### Task 5.1: Stripe setup
+
+**Obiectiv:** Stripe configurat cu produse si preturi.
+
+**Steps:**
+1. Creeaza produse in Stripe Dashboard: "Promovare 7 zile" (15 RON), "Promovare 30 zile" (45 RON)
+2. Seteaza env vars: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_7_DAYS`, `STRIPE_PRICE_30_DAYS`
+3. Configureaza webhook: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+
+**Verificare:** Webhook events apar in terminal
+
+### Task 5.2: Promovare anunt flow
+
+**Obiectiv:** User plateste sa promoveze anuntul.
+
+**Files:**
+- Verify: `src/app/api/stripe/checkout/route.ts`
+- Verify: `src/app/api/stripe/webhook/route.ts`
+- Create: `src/app/listings/[id]/promote/page.tsx` (daca nu exista)
+
+**Steps:**
+1. Testeaza checkout flow: listing → promote → Stripe → redirect inapoi
+2. Verifica webhook: payment success → `is_featured = true` + `expires_at` setat
+3. Verifica badge "Promovat" pe ListingCard
+4. Verifica ca anunturile promovate apar primele in Browse
+
+**Verificare:** Promote listing → plata Stripe (test card) → listing devine featured → apare sus in Browse
+
+### Task 5.3: Admin dashboard
+
+**Obiectiv:** Admin poate vedea stats si gestiona anunturi/useri.
+
+**Files:**
+- Verify: `src/app/admin/page.tsx`
+- Verify: `src/app/api/admin/*`
+
+**Steps:**
+1. Seteaza un user ca admin: `UPDATE profiles SET role='admin' WHERE email='...'`
+2. Testeaza `/admin` — stats, lista anunturi, lista useri
+3. Verifica ca non-admin nu poate accesa `/admin`
+
+**Verificare:** Admin vede dashboard cu stats; Non-admin primeste 403 sau redirect
+
+---
+
+## Faza 6 — SEO & Launch
+
+> **Obiectiv:** Site optimizat pentru motoare de cautare, GDPR compliant, performant.
+
+### Task 6.1: Meta tags & Open Graph
+
+**Obiectiv:** Fiecare pagina are meta tags corecte.
+
+**Files:**
+- Modify: `src/app/layout.tsx` (metadata globala — deja partiala)
+- Verify: listing detail, browse, seller profile — metadata dinamica
+
+**Steps:**
+1. Verifica `<title>` si `<meta description>` pe fiecare pagina
+2. Adauga Open Graph tags pe listing detail (title, description, image)
+3. Testeaza cu Facebook Sharing Debugger
+
+### Task 6.2: Sitemap & robots.txt
+
+**Files:**
+- Verify: `src/app/sitemap.ts` (deja exista)
+- Verify: `src/app/robots.ts` (deja exista)
+
+**Steps:**
+1. Verifica ca sitemap include toate paginile statice + listings active + categorii
+2. Verifica robots.txt — permite crawling pe paginile publice
+
+### Task 6.3: JSON-LD Schema.org
+
+**Obiectiv:** Structured data pe listing detail.
+
+**Files:**
+- Modify: `src/app/listings/[id]/page.tsx`
+
+**Steps:**
+1. Adauga JSON-LD `Product` schema pe listing detail
+2. Testeaza cu Google Rich Results Test
+
+### Task 6.4: Performance & images
+
+**Steps:**
+1. Verifica ca toate `<img>` sunt `next/image`
+2. Verifica lazy loading pe imagini in browse/listing
+3. Ruleaza Lighthouse — target: Performance > 90
+
+### Task 6.5: GDPR compliance
+
+**Files:**
+- Verify: `src/app/terms/page.tsx`, `src/app/privacy/page.tsx`
+
+**Steps:**
+1. Verifica paginile Terms si Privacy — contin info corecta
+2. Adauga cookie banner (daca lipseste)
+
+---
+
+## Backlog (post-launch)
+
+> Aceste features sunt planificate dar NU sunt prioritare. Se implementeaza dupa ce MVP-ul e live si functional.
+
+- **i18n:** next-intl — RO (default), EN, HU, PL, BG, SK, CZ
+- **SEO pages programatice:** `/tractoare/cluj`, `/combine/timis` etc.
+- **AI categorizare:** Clasificare automata bazata pe titlu + descriere
+- **Comparator utilaje:** Side-by-side 2-3 anunturi
+- **Dealer tools:** Bulk upload, API dealer, logo, ore program, locatie pe harta
+- **App mobil:** React Native / Expo
+- **Push notifications mobile**
+- **Full-text search avansat:** Autocomplete, suggestions
+- **Alerta cautare:** Email cand apare anunt nou matching saved search
+
+---
+
+## Reguli de lucru
+
+### Build & Deploy
+- Verifica `npm run build` inainte de orice commit
+- Toate paginile cu DB calls → `force-dynamic`
+- NU apela DB in `generateStaticParams`
+- Supabase + Stripe → lazy init (nu arunca la import time)
+
+### Git
+- Commit-uri in engleza: `feat:`, `fix:`, `chore:`, `docs:`
 - Un commit per feature/fix
-- Nu comite `.env`, chei API sau date sensibile
-- Verifică `npm run build` înainte de orice commit
-- Nu face push direct pe `main` dacă build-ul nu trece
+- NU comite `.env`, chei API, date sensibile
+- `git status` inainte de commit
+
+### Cod
+- TypeScript strict — fara `any` fara motiv
+- shadcn/ui pentru UI — nu reinventa
+- `next/image` pentru imagini — nu `<img>`
+- Supabase client: `src/lib/supabase/client.ts`; server: `src/lib/supabase/server.ts`
+
+### DB
+- Schimbari schema → fisier nou in `supabase/migrations/` (format: `00N_descriere.sql`)
+- NU modifica migratii existente
+- Testeaza RLS policies
+- Soft delete (`deleted_at`) — nu sterge date
 
 ---
 
@@ -341,7 +510,6 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 DATABASE_URL              # pooler pentru Vercel
-DIRECT_URL                # direct connection
 
 # Stripe
 STRIPE_SECRET_KEY
@@ -355,25 +523,3 @@ RESEND_API_KEY
 # App
 NEXT_PUBLIC_APP_URL
 ```
-
----
-
-## Jurnal de progres
-
-| Data | Faza | Activitate | Agent |
-|---|---|---|---|
-| 2026-04-14 | Plan | Plan fuziune creat (AgroMark-EU + 4sale) | Hermes |
-| 2026-04-14 | Faza 0 | Setup proiect nou Mega-Mark | — |
-| 2026-04-14 | Faza 0 | Port features complete din 4sale | — |
-| 2026-04-14 | Faza 0 | Port features AgroMark-EU | — |
-| 2026-04-14 | Faza 0 | Fix critical issues | — |
-
----
-
-## Link-uri utile
-
-- **Repo:** https://github.com/gimigit/mega-mark
-- **Repo AgroMark-EU:** https://github.com/gimigit/agromark-eu
-- **Repo 4sale:** https://github.com/gimigit/4sale
-- **Live 4sale:** https://4sale-roan.vercel.app
-- **Vercel Dashboard:** https://vercel.com/gimigits-projects

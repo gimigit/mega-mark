@@ -19,7 +19,7 @@ export default function TermsPage() {
       <nav className={`sticky top-0 z-50 ${isDark ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md border-b ${isDark ? 'border-gray-800' : 'border-gray-200'} shadow-sm`}>
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-800'} flex items-center gap-1`}>
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             <Link href="/" className={`font-semibold hover:text-green-700 ${isDark ? 'text-gray-400 hover:text-green-400' : ''}`}>
@@ -37,19 +37,19 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Introducere</h2>
           <p className="text-gray-700 mb-4">
-            AgroMark EU (&quot;noi&quot;, &quot;nostru&quot; sau &quot;platforma&quot;) este o platformă online care facilitează 
+            Mega-Mark (&quot;noi&quot;, &quot;nostru&quot; sau &quot;platforma&quot;) este o platformă online care facilitează 
             cumpărarea și vânzarea de utilaje agricole și echipamente industriale între utilizatori 
             din Spațiul Economic European.
           </p>
           <p className="text-gray-700 mb-4">
-            Prin accesarea și utilizarea platformei AgroMark EU, acceptați acești Termeni și Condiții 
+            Prin accesarea și utilizarea platformei Mega-Mark, acceptați acești Termeni și Condiții 
             în totalitate. Dacă nu sunteți de acord cu oricare parte a acestor termeni, vă rugăm să 
             nu utilizați platforma noastră.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Definiții</h2>
           <ul className="list-disc pl-6 text-gray-700 mb-4 space-y-2">
-            <li><strong>Utilizator</strong> — orice persoană care accesează sau utilizează platforma AgroMark EU</li>
+            <li><strong>Utilizator</strong> — orice persoană care accesează sau utilizează platforma Mega-Mark</li>
             <li><strong>Vânzător</strong> — utilizatorul care oferă bunuri sau servicii spre vânzare</li>
             <li><strong>Cumpărător</strong> — utilizatorul care achiziționează bunuri sau servicii</li>
             <li><strong>Anunț</strong> — lista unui bun sau serviciu publicat pe platformă</li>
@@ -58,7 +58,7 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. Utilizarea Platformei</h2>
           <p className="text-gray-700 mb-4">
-            Pentru a utiliza platforma AgroMark EU, trebuie să:
+            Pentru a utiliza platforma Mega-Mark, trebuie să:
           </p>
           <ul className="list-disc pl-6 text-gray-700 mb-4 space-y-2">
             <li>Aveți cel puțin 18 ani sau vârsta legală pentru a încheia contracte în țara dvs. de reședință</li>
@@ -82,12 +82,12 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">5. Tranzacții și Plăți</h2>
           <p className="text-gray-700 mb-4">
-            AgroMark EU facilitează conexiunea dintre vânzători și cumpărători, dar nu este parte 
+            Mega-Mark facilitează conexiunea dintre vânzători și cumpărători, dar nu este parte 
             din tranzacțiile efective de vânzare-cumpărare. Plățile se efectuează direct între 
             părți, prin metodele convenite de comun acord.
           </p>
           <p className="text-gray-700 mb-4">
-            <strong>Notă importantă:</strong> AgroMark EU nu procesează plăți în numele utilizatorilor 
+            <strong>Notă importantă:</strong> Mega-Mark nu procesează plăți în numele utilizatorilor 
             și nu este responsabil pentru pierderile rezultate din tranzacții directe între părți.
           </p>
 
@@ -104,7 +104,7 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Limitarea Răspunderii</h2>
           <p className="text-gray-700 mb-4">
-            AgroMark EU nu este responsabil pentru:
+            Mega-Mark nu este responsabil pentru:
           </p>
           <ul className="list-disc pl-6 text-gray-700 mb-4 space-y-2">
             <li>Calitatea, starea sau funcționalitatea bunurilor vândute</li>
@@ -115,7 +115,7 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Proprietatea Intelectuală</h2>
           <p className="text-gray-700 mb-4">
-            Conținutul platformei AgroMark EU (texte, design, logo-uri, imagini) este protejat 
+            Conținutul platformei Mega-Mark (texte, design, logo-uri, imagini) este protejat 
             prin drepturi de autor. Este interzisă reproducerea sau distribuirea neautorizată a 
             acestui conținut.
           </p>

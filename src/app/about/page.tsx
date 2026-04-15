@@ -19,7 +19,7 @@ export default function AboutPage() {
       <nav className={`sticky top-0 z-50 ${isDark ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md border-b ${isDark ? 'border-gray-800' : 'border-gray-200'} shadow-sm`}>
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-800'} flex items-center gap-1`}>
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             <Link href="/" className={`font-semibold hover:text-green-700 ${isDark ? 'text-gray-400 hover:text-green-400' : ''}`}>
@@ -31,7 +31,7 @@ export default function AboutPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-10">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-black text-gray-900 mb-4">Despre AgroMark EU</h1>
+          <h1 className="text-5xl font-black text-gray-900 mb-4">Despre Mega-Mark</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Marketplace-ul #1 pentru utilaje agricole și echipamente industriale în Europa
           </p>
@@ -40,7 +40,7 @@ export default function AboutPage() {
         <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Misiunea Noastră</h2>
           <p className="text-gray-700 mb-4">
-            AgroMark EU a fost creat pentru a conecta fermierii, dealerii și profesioniștii 
+            Mega-Mark a fost creat pentru a conecta fermierii, dealerii și profesioniștii 
             din agricultura europeană cu utilajele de care au nevoie. Credem că accesul la 
             echipamente agricole de calitate ar trebui să fie simplu, transparent și accesibil 
             pentru toți cei care lucrează în acest domeniu esențial.
@@ -123,7 +123,7 @@ export default function AboutPage() {
         <div className="bg-gradient-to-r from-green-700 to-green-600 rounded-2xl p-8 text-white mb-8">
           <h2 className="text-2xl font-bold mb-4">Tehnologie și Inovație</h2>
           <p className="text-green-100 mb-4">
-            AgroMark EU este construit pe o infrastructură modernă care oferă:
+            Mega-Mark este construit pe o infrastructură modernă care oferă:
           </p>
           <ul className="space-y-2 text-green-100">
             <li className="flex items-center gap-2">

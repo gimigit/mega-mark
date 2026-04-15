@@ -22,7 +22,7 @@ interface SellerCardProps {
 export default function SellerCard({ seller, listingCount, compact = false, onContact }: SellerCardProps) {
   const sellerName = seller.full_name || 'Vânzător'
   const avatarUrl = seller.avatar_url
-  const isDealer = seller.account_type === 'dealer'
+  const isDealer = seller.role === 'dealer'
 
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating)

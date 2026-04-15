@@ -77,7 +77,17 @@ NEXT_PUBLIC_APP_URL
 3. **Migrări** — rulează în ordine; nu modifica migrările existente, adaugă fișiere noi
 4. **Stripe webhooks** — în dev: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
 
-## Referință proiecte sursă
+## Note tehnice importante (din experienta 4sale + AgroMark-EU)
+
+1. **Supabase client la build time** — config.ts returneaza placeholders daca env vars lipsesc la build. NU arunca erori.
+2. **Stripe lazy init** — Proxy pattern in `src/lib/stripe.ts`. NU initializa Stripe la import time.
+3. **`force-dynamic` pe toate paginile cu DB** — altfel build crapa pe Vercel
+4. **`generateStaticParams` nu apeleaza DB** — ruleaza la build time
+5. **Supabase Realtime** — activeaza pe tabelele `messages` si `notifications` in Dashboard → Database → Replication
+6. **Admin role** — seteaza manual: `UPDATE profiles SET role='admin' WHERE email='...'`
+7. **Stripe webhooks** — in dev: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+
+## Referinta proiecte sursa
 
 - **AgroMark-EU:** https://github.com/gimigit/agromark-eu (Next.js 16, Supabase direct)
-- **4sale:** https://github.com/gimigit/4sale (features complete, testate în producție)
+- **4sale:** https://github.com/gimigit/4sale (features complete, testate in productie)

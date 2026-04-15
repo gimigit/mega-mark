@@ -67,7 +67,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         )}
 
         {/* Price Type Badge */}
-        {listing.price_type !== 'fixed' && (
+        {listing.price_type && listing.price_type !== 'fixed' && (
           <span className="absolute bottom-3 left-3 px-2 py-1 rounded text-xs font-semibold bg-white/90 dark:bg-dark-900/90 text-gray-600 dark:text-gray-300">
             {priceTypeLabels[listing.price_type]}
           </span>
@@ -83,7 +83,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
         {/* Price */}
         <div className="text-xl font-black text-green-700 dark:text-green-400 mb-2">
-          {formatPrice(listing.price, listing.currency)}
+          {listing.price != null ? formatPrice(listing.price, listing.currency || 'EUR') : 'Preț la cerere'}
         </div>
 
         {/* Specs */}

@@ -16,17 +16,17 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!seller) {
     return {
-      title: 'Vânzător negăsit | AgroMark EU',
+      title: 'Vânzător negăsit | Mega-Mark',
     }
   }
 
   const name = seller.full_name || 'Vânzător'
   const description = seller.bio
     ? seller.bio.slice(0, 160)
-    : `Vezi profilul vânzătorului ${name} pe AgroMark EU. Rating: ${seller.rating_avg?.toFixed(1) || 'N/A'} din ${seller.location_country || 'UE'}.`
+    : `Vezi profilul vânzătorului ${name} pe Mega-Mark. Rating: ${seller.rating_avg?.toFixed(1) || 'N/A'} din ${seller.location_country || 'UE'}.`
 
   return {
-    title: `${name} — Vânzător | AgroMark EU`,
+    title: `${name} — Vânzător | Mega-Mark`,
     description,
   }
 }

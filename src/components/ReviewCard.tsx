@@ -73,8 +73,8 @@ export default function ReviewCard({ review, showListing, listingTitle, listingI
             </Link>
           )}
 
-          {review.comment && (
-            <p className="text-gray-700">{review.comment}</p>
+          {review.content && (
+            <p className="text-gray-700">{review.content}</p>
           )}
 
           <p className="text-sm text-gray-500 mt-2">

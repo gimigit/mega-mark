@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import { sendAdExpiringEmail } from '@/lib/email'
 
 // This endpoint should be called by a cron job (e.g., Vercel Cron, GitHub Actions, or external service)

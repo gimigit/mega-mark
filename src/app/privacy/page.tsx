@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <nav className={`sticky top-0 z-50 ${isDark ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md border-b ${isDark ? 'border-gray-800' : 'border-gray-200'} shadow-sm`}>
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className={`text-2xl font-black ${isDark ? 'text-green-400' : 'text-green-800'} flex items-center gap-1`}>
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             <Link href="/" className={`font-semibold hover:text-green-700 ${isDark ? 'text-gray-400 hover:text-green-400' : ''}`}>
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
           <p className="text-gray-600 mb-6"><strong>Ultima actualizare:</strong> Aprilie 2026</p>
 
           <p className="text-gray-700 mb-4">
-            AgroMark EU (&quot;noi&quot;, &quot;nostru&quot; sau &quot;platforma&quot;) se angajează să protejeze 
+            Mega-Mark (&quot;noi&quot;, &quot;nostru&quot; sau &quot;platforma&quot;) se angajează să protejeze 
             confidențialitatea și securitatea datelor dvs. personale. Această Politică de 
             Confidențialitate explică ce date colectăm, cum le utilizăm și ce drepturi aveți.
           </p>
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
             Operatorul de date pentru procesarea datelor dvs. personale este:
           </p>
           <ul className="list-none pl-6 text-gray-700 mb-4 space-y-2">
-            <li><strong>Denumire:</strong> AgroMark EU SRL</li>
+            <li><strong>Denumire:</strong> Mega-Mark SRL</li>
             <li><strong>CUI:</strong> RO12345678</li>
             <li><strong>Adresă:</strong> București, România</li>
             <li><strong>Email:</strong> privacy@agromark.eu</li>

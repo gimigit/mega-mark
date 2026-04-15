@@ -19,13 +19,13 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 
   if (keyword) {
     return {
-      title: `${keyword} — AgroMark EU`,
-      description: `Caută ${keyword} pe AgroMark EU. Găsește tractoare, utilaje agricole second-hand și noi de la vânzători verificați.`,
+      title: `${keyword} — Mega-Mark`,
+      description: `Caută ${keyword} pe Mega-Mark. Găsește tractoare, utilaje agricole second-hand și noi de la vânzători verificați.`,
     }
   }
 
   return {
-    title: 'Browse — AgroMark EU',
+    title: 'Browse — Mega-Mark',
     description: 'Cumpără și vinde tractoare, combine, recoltatoare și utilaje agricole în 16 țări UE. Marketplace-ul #1 pentru agricultura europeană.',
   }
 }

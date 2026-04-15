@@ -1,6 +1,17 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy initialize Resend client only when needed
+let resend: Resend | null = null
+
+function getResend() {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      return null
+    }
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 const FROM_EMAIL = 'Mega-Mark <noreply@megamark.eu>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -17,7 +28,12 @@ async function sendEmail({ to, subject, react }: EmailOptions) {
     return null
   }
 
-  const { data, error } = await resend.emails.send({
+  const client = getResend()
+  if (!client) {
+    return null
+  }
+
+  const { data, error } = await client.emails.send({
     from: FROM_EMAIL,
     to,
     subject,
@@ -36,7 +52,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
   const { WelcomeEmail } = await import('@/emails/WelcomeEmail')
   return sendEmail({
     to,
-    subject: 'Bine ai venit pe AgroMark EU!',
+    subject: 'Bine ai venit pe Mega-Mark!',
     react: WelcomeEmail({ name, appUrl: APP_URL }),
   })
 }

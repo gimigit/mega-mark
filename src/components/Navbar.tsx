@@ -19,7 +19,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-8">
         {/* Logo */}
         <Link href="/" className="text-2xl font-black text-green-800 dark:text-green-400 flex items-center gap-1">
-          AgroMark <em className="text-amber-500 not-italic">EU</em>
+          Mega<em className="text-amber-500 not-italic">Mark</em>
         </Link>
 
         {/* Desktop Navigation */}

@@ -19,17 +19,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!listing) {
     return {
-      title: 'Anunț negăsit | AgroMark EU',
+      title: 'Anunț negăsit | Mega-Mark',
     }
   }
 
   const images = listing.images as string[] | null
+  const categoryName = listing.categories?.[0]?.name || 'Agricultural'
   const description = listing.description
     ? listing.description.slice(0, 160)
-    : `Vezi detalii pentru ${listing.title} — ${listing.categories?.name || 'Agricultural'} în ${listing.location_country || 'UE'}`
+    : `Vezi detalii pentru ${listing.title} — ${categoryName} în ${listing.location_country || 'UE'}`
 
   const keywords = [
-    listing.categories?.name,
+    categoryName,
     listing.title,
     'agricultural equipment',
     'tractors',
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   ].filter(Boolean)
 
   return {
-    title: `${listing.title} | AgroMark EU`,
+    title: `${listing.title} | Mega-Mark`,
     description,
     keywords: keywords as string[],
     openGraph: {
@@ -50,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${listing.title} | AgroMark EU`,
+      title: `${listing.title} | Mega-Mark`,
       description,
       ...(images && images.length > 0 && { images: [images[0]] }),
     },

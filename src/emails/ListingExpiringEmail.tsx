@@ -9,7 +9,7 @@ export function ListingExpiringEmail({ listingTitle, daysUntilExpiry, appUrl }: 
     <div style={{ fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{ backgroundColor: '#166534', padding: '24px', textAlign: 'center' }}>
         <h1 style={{ color: 'white', margin: 0, fontSize: '24px' }}>
-          AgroMark <span style={{ fontStyle: 'italic', color: '#fbbf24' }}>EU</span>
+          Mega<span style={{ fontStyle: 'italic', color: '#fbbf24' }}>Mark</span>
         </h1>
       </div>
       
@@ -56,7 +56,7 @@ export function ListingExpiringEmail({ listingTitle, daysUntilExpiry, appUrl }: 
       
       <div style={{ backgroundColor: '#f3f4f6', padding: '16px 24px', textAlign: 'center' }}>
         <p style={{ color: '#9ca3af', fontSize: '12px', margin: 0 }}>
-          © 2026 AgroMark EU. Toate drepturile rezervate.
+          © 2026 Mega-Mark. Toate drepturile rezervate.
         </p>
       </div>
     </div>

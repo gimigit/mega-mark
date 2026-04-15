@@ -133,7 +133,7 @@ export default function SellerProfileClient() {
 
   const sellerName = seller.full_name || 'Vânzător'
   const avatarUrl = seller.avatar_url
-  const isDealer = seller.account_type === 'dealer'
+  const isDealer = seller.role === 'dealer'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,7 +141,7 @@ export default function SellerProfileClient() {
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
           <Link href="/" className="text-2xl font-black text-green-800 flex items-center gap-1">
-            AgroMark <em className="text-amber-500 not-italic">EU</em>
+            Mega<em className="text-amber-500 not-italic">Mark</em>
           </Link>
           <div className="ml-auto text-sm text-gray-500">
             <Link href="/" className="text-green-700 font-semibold hover:text-green-800">← Acasă</Link>
@@ -184,7 +184,7 @@ export default function SellerProfileClient() {
                     )}
                   </div>
                   <p className="text-gray-500 mb-3">
-                    {accountTypeLabels[seller.account_type || 'seller'] || 'Vânzător'}
+                    {accountTypeLabels[seller.role || 'seller'] || 'Vânzător'}
                   </p>
                 </div>
                 <button
@@ -302,7 +302,7 @@ export default function SellerProfileClient() {
                         </h3>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-xl font-black text-green-700">
-                            {formatPrice(listing.price, listing.currency)}
+                            {listing.price != null ? formatPrice(listing.price, listing.currency || 'EUR') : 'Preț la cerere'}
                           </span>
                           {listing.condition && (
                             <span className="text-xs text-gray-500 capitalize">
@@ -358,8 +358,8 @@ export default function SellerProfileClient() {
                             ))}
                           </div>
                         </div>
-                        {review.comment && (
-                          <p className="text-gray-700">{review.comment}</p>
+                        {review.content && (
+                          <p className="text-gray-700">{review.content}</p>
                         )}
                         <p className="text-sm text-gray-500 mt-2">
                           {new Date(review.created_at).toLocaleDateString('ro-RO', {

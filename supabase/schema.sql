@@ -1,4 +1,4 @@
--- AgroMark EU - Supabase Database Schema
+-- Mega-Mark - Supabase Database Schema
 -- Agricultural Machinery Marketplace for Europe
 
 -- Enable UUID extension
