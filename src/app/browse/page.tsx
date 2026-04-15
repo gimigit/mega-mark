@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Suspense } from 'react'
 import BrowseClient from './BrowseClient'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import type { Metadata } from 'next'
 import type { Database } from '@/types/database'
 
@@ -20,13 +20,13 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   if (keyword) {
     return {
       title: `${keyword} — Mega-Mark`,
-      description: `Caută ${keyword} pe Mega-Mark. Găsește tractoare, utilaje agricole second-hand și noi de la vânzători verificați.`,
+      description: `Cauta ${keyword} pe Mega-Mark. Gaseste tractoare, utilaje agricole second-hand si noi de la vanzatori verificati.`,
     }
   }
 
   return {
-    title: 'Browse — Mega-Mark',
-    description: 'Cumpără și vinde tractoare, combine, recoltatoare și utilaje agricole în 16 țări UE. Marketplace-ul #1 pentru agricultura europeană.',
+    title: 'Anunturi — Mega-Mark',
+    description: 'Cumpara si vinde tractoare, combine, recoltatoare si utilaje agricole in 16 tari UE. Marketplace-ul #1 pentru agricultura europeana.',
   }
 }
 
@@ -127,7 +127,7 @@ function buildCountQuery(supabase: Awaited<ReturnType<typeof createClient>>, par
 function buildDataQuery(supabase: Awaited<ReturnType<typeof createClient>>, params: SearchParams, offset: number, limit: number) {
   let query = supabase
     .from('listings')
-    .select('*, profiles(full_name, avatar_url, rating_avg, is_verified), categories(name, icon)')
+    .select('*, profiles(full_name, avatar_url, rating_avg, rating_count, is_verified), categories(name, slug, icon)')
     .eq('status', 'active')
     .range(offset, offset + limit - 1)
 
@@ -236,16 +236,31 @@ export default async function BrowsePage({
   if (params.listingType) activeFilters.push({ key: 'listingType', value: params.listingType })
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="bg-gradient-to-br from-green-900 via-green-800 to-green-950 text-white py-12 px-6">
+      <section className="bg-gradient-to-br from-green-900 via-green-800 to-green-950 text-white py-10 px-6">
         <div className="max-w-7xl mx-auto">
+          {/* Breadcrumbs */}
+          <nav className="flex items-center gap-1.5 text-sm text-white/50 mb-6">
+            <a href="/" className="hover:text-white/80 transition-colors">Acasa</a>
+            <span>/</span>
+            <span className="text-white/80 font-medium">Anunturi</span>
+            {params.category && activeFilters.find(f => f.key === 'category') && (
+              <>
+                <span>/</span>
+                <span className="text-white font-medium">
+                  {activeFilters.find(f => f.key === 'category')?.value}
+                </span>
+              </>
+            )}
+          </nav>
+
           <h1 className="text-3xl md:text-4xl font-black mb-2">
-            Caută <span className="text-amber-400">Echipament Agricol</span>
+            Cauta <span className="text-amber-400">Echipament Agricol</span>
           </h1>
           <p className="text-white/70 mb-8">
-            Găsește tractoare, combine și utilaje agricole din toată UE
+            Gaseste tractoare, combine si utilaje agricole din toata UE
           </p>
 
           <Suspense fallback={<div className="h-48 bg-white/10 rounded-2xl animate-pulse" />}>
@@ -262,6 +277,8 @@ export default async function BrowsePage({
           </Suspense>
         </div>
       </section>
+
+      <Footer />
     </div>
   )
 }
