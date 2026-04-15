@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
@@ -288,7 +288,19 @@ const SAMPLE_LISTINGS = [
 ]
 
 export async function GET(request: Request) {
-  const supabase = await createClient()
+  // Debug: check if env vars are present at runtime
+  const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL
+  const hasKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!hasUrl || !hasServiceKey) {
+    return NextResponse.json({
+      error: 'Missing env vars',
+      debug: { hasUrl, hasKey, hasServiceKey },
+    }, { status: 500 })
+  }
+
+  const supabase = createAdminClient()
 
   // Check if already seeded
   const { count } = await supabase.from('categories').select('id', { count: 'exact', head: true })
