@@ -1,12 +1,16 @@
 import {
   Tractor,
   Wheat,
+  Crop,
   SprayCan,
   Sprout,
   Disc,
+  Package,
   Truck,
   Forklift,
   Droplets,
+  Construction,
+  Wrench,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -14,12 +18,16 @@ import {
 export const categoryIconMap: Record<string, LucideIcon> = {
   tractors: Tractor,
   combines: Wheat,
+  harvesters: Crop,
   sprayers: SprayCan,
   seeders: Sprout,
   plows: Disc,
+  balers: Package,
   trailers: Truck,
   loaders: Forklift,
   irrigation: Droplets,
+  construction: Construction,
+  other: Wrench,
 }
 
 export function getCategoryIcon(slug: string): LucideIcon {

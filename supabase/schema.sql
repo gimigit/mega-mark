@@ -441,7 +441,7 @@ INSERT INTO manufacturers (slug, name, country, logo_url) VALUES
   ('poettinger', 'Pöttinger', 'Austria', NULL),
   ('lemken', 'Lemken', 'Germany', NULL),
   ('kverneland', 'Kverneland', 'Norway', NULL),
-|  ('other', 'Other / Unknown', NULL, NULL);
+  ('other', 'Other / Unknown', NULL, NULL);
 
 -- ============================================
 -- STORAGE RLS POLICIES
