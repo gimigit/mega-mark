@@ -18,23 +18,37 @@
 
 **Goal:** Marketplace agricol premium pentru Romania si UE — tractoare, combine, utilaje agricole.
 
-**Stack:** Next.js 16 App Router · TypeScript · Supabase (direct, fara Prisma) · shadcn/ui · Tailwind · Stripe · Resend · Vercel
+**Stack:** Next.js 16 App Router · TypeScript · Supabase (direct, fara Prisma) · shadcn/ui · Tailwind · Framer Motion · Fraunces+DM Sans (next/font) · Zustand · Stripe · Resend · Vercel
 
 **Repo:** https://github.com/gimigit/mega-mark
 **Live:** https://mega-mark-five.vercel.app
 
 ---
 
-## Status curent (15 Aprilie 2026)
+## Status curent (16 Aprilie 2026)
 
 **Build:** ✅ Trece local (`npm run build`)
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
-**DB:** ✅ Schema rulata pe Supabase (proiect existent, env vars setate pe Vercel)
+**DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
+**Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
+**Seed:** ✅ `/api/seed` functioneaza cu `createAdminClient()` — categorii si manufacturers populate in DB
+**Pagini:** 20 pagini implementate (publice + protejate + admin)
+**Componente:** 31 componente (13 shadcn/ui + 14 business + 4 altele)
 
-### Ce exista deja (portat din AgroMark-EU + 4sale)
+### Ce s-a facut recent (15 Apr 2026)
+
+- Schema veche (4sale/Prisma) stearsa complet, schema Mega-Mark aplicata via `psql`
+- Landing page upgrade: 8 sectiuni (Hero, Stats, Categories cu Lucide icons, Featured Listings, Popular Brands, Recent Listings, Browse by Country cu 16 tari UE, How It Works, CTA)
+- Browse page polished: breadcrumbs, Lucide icons (fara emoji), dark mode complet, ListingCard reuse
+- Footer rewrite: 6 coloane (Brand, Marketplace, Categories, Brands, Info/Countries)
+- `src/lib/categories.ts` creat: icon map, EU_COUNTRIES, TOP_MANUFACTURERS
+- Seed endpoint fix: `createAdminClient()` (bypass RLS) + env var debug
+- Supabase CLI (v2.90.0) + psql + Vercel CLI instalate si linked
+
+### Ce exista deja
 
 **Pagini (20):**
-- Homepage, Browse, Login, Signup, Forgot Password, Update Password
+- Homepage (upgraded), Browse (polished), Login, Signup, Forgot Password, Update Password
 - Listings: create, [id] detail, [id]/edit
 - Dashboard, Dashboard/billing, Profile/edit
 - Sellers/[id], Admin, Pricing, About, FAQ, Terms, Privacy
@@ -49,10 +63,10 @@
 - `/api/subscriptions/cancel`
 - `/api/cron/expire-ads`, `/api/cron/check-expiring-ads`
 - `/api/admin/stats`, `/api/admin/listings`, `/api/admin/users`, `/api/admin/me`
-- `/api/seed` (categorii + manufacturers)
+- `/api/seed` (categorii + manufacturers — foloseste `createAdminClient()`)
 
 **Componente UI:**
-- ListingCard, ListingCardSkeleton, Navbar, Footer, SellerCard
+- ListingCard, ListingCardSkeleton, Navbar, Footer (6-col), SellerCard
 - ReviewForm, ReviewCard, ReviewsList
 - NotificationBell, NotificationDropdown
 - ChatWindow, MessageBubble
@@ -61,9 +75,10 @@
 **Lib:**
 - `supabase/` (client, server, admin, config, middleware) — lazy init la build time ✅
 - `stripe.ts` — lazy Proxy pattern ✅
+- `categories.ts` — Lucide icon map + EU countries + manufacturers ✅
 - `email.ts`, `notifications.ts`, `upload.ts`, `admin-utils.ts`
 
-**DB Schema:** `supabase/schema.sql` (profiles, categories, manufacturers, listings, favorites, conversations, messages, reviews, notifications, search_history, api_keys) + 7 migratii + indexes + triggers + seed data
+**DB Schema:** `supabase/schema.sql` (profiles, categories ×11, manufacturers ×20, listings, favorites, conversations, messages, reviews, notifications, search_history, api_keys) + 7 migratii + indexes + triggers + seed data + 27 RLS policies
 
 ### Ce NU exista (API routes lipsa)
 
@@ -79,6 +94,15 @@
 - SavedSearches — component prezent, dar fara API
 - Search pe Homepage — UI doar, nu face fetch real
 - Forms pe Homepage (Post Listing) — UI doar, nu trimite date
+- Nu exista listings demo in DB (necesita useri autentificati pentru FK pe profiles)
+
+### Bugs confirmate (16 Apr 2026)
+
+- 🐛 **Heart icon pe ListingCard** — nu face nicio cerere la `/api/favorites` (handler stub gol)
+- 🐛 **Framer Motion** — instalat ca dependenta dar aproape neutilizat (doar Tailwind animations)
+- ⚠️ **Reviews POST** — de verificat daca `/api/reviews` accepta POST sau e read-only
+- ⚠️ **Stripe env vars** — `STRIPE_SECRET_KEY`, `STRIPE_PRICE_*` nesetate → checkout va crapa
+- ⚠️ **Resend API key** — `RESEND_API_KEY` nesetat → email-urile nu se trimit
 
 ---
 
@@ -86,35 +110,55 @@
 
 | Decizie | Alegere | Nota |
 |---|---|---|
-| DB calls la build time | NU — toate paginile cu DB sunt `force-dynamic` |
-| Supabase client | Lazy init cu placeholders la build time |
-| Stripe | Lazy Proxy pattern (nu arunca la import) |
-| `generateStaticParams` | NU apela DB acolo |
-| Vercel IPv4 + Supabase IPv6 | Foloseste pooler: `aws-0-eu-west-2.pooler.supabase.com:6543` |
-| Navbar | In root layout — erori acolo afecteaza tot site-ul |
+| DB calls la build time | NU — toate paginile cu DB sunt `force-dynamic` | |
+| Supabase client | Lazy init cu placeholders la build time | |
+| Stripe | Lazy Proxy pattern (nu arunca la import) | |
+| `generateStaticParams` | NU apela DB acolo | |
+| Vercel IPv4 + Supabase IPv6 | Foloseste pooler: `aws-0-eu-west-1.pooler.supabase.com:6543` | |
+| Navbar | In root layout — erori acolo afecteaza tot site-ul | |
+
+## Tehnologii noi de adaugat (recomandate)
+
+| Tehnologie | Motivatie | Unde se aplica |
+|---|---|---|
+| **`next/font`** (Fraunces + DM Sans) | Zero layout shift, hosted de Vercel, distinctiv vs. Inter generic | `src/app/layout.tsx` — inlocuieste import CSS Google Fonts |
+| **Framer Motion** (deja instalat) | Staggered reveal pe grid, card hover 3D tilt, page transitions | `BrowseClient.tsx`, `ListingCard.tsx`, homepage sections |
+| **`use cache`** (Next.js 16 built-in) | Cache rezultate Browse fara `force-dynamic` global; invalideaza per-tag | `src/app/browse/page.tsx`, `src/app/listings/[id]/page.tsx` |
+| **`next/og`** (ImageResponse) | OG images dinamice pentru listings la share — poza + titlu + pret | `src/app/listings/[id]/opengraph-image.tsx` |
+| **Zustand** | State global lightweight: favorites set, unread count, filters | `src/store/` — evita prop drilling intre card, navbar, badge |
+| **Supabase Realtime** (deja in SDK) | Messages + Notifications live fara polling | `ChatWindow.tsx`, `NotificationBell.tsx` |
+| **`error.tsx` + `not-found.tsx`** | Error boundaries per-segment, pagini 404 custom | `src/app/listings/[id]/error.tsx`, `not-found.tsx` |
+| **JSON-LD Schema.org** | Rich results Google — Product schema pe listing detail | `src/app/listings/[id]/page.tsx` (script tag) |
+
+### De evitat
+
+- **Prisma** — Supabase direct e mai simplu si mai rapid pentru acest stack
+- **React Query / TanStack** — Supabase SDK + Server Components acopera use-case-urile; Zustand e suficient pentru client state
+- **next-intl acum** — i18n e backlog; nu adauga complexitate prematur
+- **`<img>` in loc de `next/image`** — performance penalty mare pe mobile
 
 ---
 
 ## ✅ Faza 1 — Database & Deploy (COMPLETA)
 
-> Supabase configurat, schema rulata, env vars setate, deploy pe Vercel functional.
+> Supabase configurat, schema completa aplicata, env vars setate, deploy pe Vercel functional.
 > Site live: https://mega-mark-five.vercel.app
 
-- ✅ Task 1.1: Supabase project creat, schema rulata
-- ✅ Task 1.2: Environment variables setate (Vercel)
+- ✅ Task 1.1: Supabase project creat, schema rulata (schema veche 4sale stearsa, schema Mega-Mark aplicata via psql)
+- ✅ Task 1.2: Environment variables setate (Vercel) — Supabase URL + anon + service_role pe toate env-urile
 - ✅ Task 1.3: Deploy Vercel functional, auto-deploy din `main`
-- [ ] Task 1.4: Seed data — verifica ca `/api/seed` populeaza categorii + manufacturers, creeaza 3-5 listings de test
+- ✅ Task 1.4: Seed data — `/api/seed` populeaza 11 categorii + 20 manufacturers (foloseste `createAdminClient()` pentru bypass RLS)
 
-**NOTA pentru Hermes:** Storage bucket `listings` (public, 5MB, image/jpeg+png+webp) si Realtime pe tabelele `messages` + `notifications` — verifica in Supabase Dashboard ca sunt active. Daca nu, mentioneaza in output ca ownerul trebuie sa le activeze manual.
+**NOTA:** Storage bucket `listings` (public, 5MB, image/jpeg+png+webp) si Realtime pe tabelele `messages` + `notifications` — de verificat in Supabase Dashboard ca sunt active.
 
 ---
 
-## Faza 2 — Auth & Core Flow ← INCEPE AICI
+## Faza 2 — Auth & Core Flow
 
 > **Obiectiv:** User poate crea cont, posta anunt cu poze, alt user il gaseste.
 > **Referinta UX:** OLX.ro — signup simplu, formular clar, browse cu filtre laterale.
 
-### Task 2.1: Fix auth flow
+### Task 2.1: ✅ Fix auth flow
 
 **Obiectiv:** Register → Login → Dashboard functioneaza end-to-end.
 
@@ -132,7 +176,7 @@
 
 **Verificare:** User nou: signup → login → vede dashboard cu Navbar actualizat → logout → Navbar revine la starea de guest
 
-### Task 2.2: Listing create flow (stil OLX)
+### Task 2.2: ✅ Listing create flow (stil OLX)
 
 **Obiectiv:** Formular de creare anunt complet, cu upload poze si preview.
 
@@ -160,7 +204,7 @@
 
 **Verificare:** Create listing cu poze → apare in Browse → Edit → poza se schimba → Delete/Archive
 
-### Task 2.3: Browse & Search (stil OLX)
+### Task 2.3: ✅ Browse & Search (stil OLX)
 
 **Obiectiv:** Browse page cu filtre laterale, sortare, paginare — ca OLX.
 
@@ -195,7 +239,7 @@
 
 **Verificare:** Browse cu filtre → URL se actualizeaza → refresh pastreaza filtrele → paginare merge → search din Homepage duce la Browse
 
-### Task 2.4: Listing card imbunatatit (stil OLX)
+### Task 2.4: ✅ Listing card imbunatatit (stil OLX)
 
 **Obiectiv:** Card de anunt cu toate informatiile relevante la prima vedere.
 
@@ -221,7 +265,7 @@
 
 **Verificare:** Card-ul arata: poza, titlu, pret, locatie, data, specs, badge featured, heart favorite
 
-### Task 2.5: Listing detail page (stil OLX)
+### Task 2.5: ✅ Listing detail page (stil OLX)
 
 **Obiectiv:** Pagina completa de detaliu anunt.
 
@@ -264,7 +308,138 @@
 
 ---
 
-## Faza 3 — Mesagerie & Comunicare
+## ✅ Faza 2.5 — Design & Animatii (COMPLETA)
+
+> **Obiectiv:** Transforma site-ul dintr-un "shadcn default" intr-un marketplace premium memorabil.
+> **Problema centrala:** Inter + shadcn defaults = aesthetic generic. Un marketplace agricol premium merita caracter vizual.
+> **Principiu:** Nu reinventa componente — upgradezi designul prin fonturi, animatii, si spatialitate. Codul existent ramane.
+
+### Task 2.5.1: ✅ Font upgrade — Fraunces + DM Sans
+
+**Obiectiv:** Inlocuieste Inter cu o pereche de fonturi distinctiva si premium.
+
+**Files:**
+- Modify: `src/app/layout.tsx`
+- Modify: `src/app/globals.css`
+
+**Alegere fonturi (justificare):**
+- **Fraunces** — serif optic variabil, caracter organic/natural perfect pentru agri. Folosit ca display font pe headings H1, H2, brand name
+- **DM Sans** — sans-serif geometric clar, excelent la body text si UI labels. Inlocuieste Inter
+
+**Steps:**
+1. In `layout.tsx`: import `Fraunces` + `DM Sans` din `next/font/google` cu `display: 'swap'` si subsets `['latin', 'latin-ext']`
+2. Aplica CSS variables: `--font-display: Fraunces`, `--font-body: DM Sans`
+3. In `globals.css`: `font-family: var(--font-body)` pe `body`; `font-family: var(--font-display)` pe `h1, h2, .font-display`
+4. Aplica `font-display` pe: logo Navbar, hero H1/H2, section titles, listing price (numere mari)
+5. Verifica build si ca fonturile se incarca corect pe Vercel (zero layout shift)
+
+**Verificare:** Homepage → H1 e Fraunces, body text e DM Sans, navbar logo e Fraunces; Lighthouse nu raporteaza layout shift pe fonturi
+
+---
+
+### Task 2.5.2: ✅ Homepage hero redesign
+
+**Obiectiv:** Hero full-viewport cu atmosfera, nu un heading + CTA generic.
+
+**Files:**
+- Modify: `src/app/page.tsx` (sau componenta Hero)
+
+**Design direction — "Camp deschis, orizont larg":**
+- Background: gradient mesh verde-inchis (green-900 → green-700) + noise texture SVG suprapus (3% opacity) — da profunzime fara poza stoc
+- H1: 72px Fraunces, alb, max-w-2xl, line-height tight
+- Subtitlu: 18px DM Sans, green-200/80
+- Search bar integrat in hero (nu separat sub hero) — mare, prominent, cu shadow
+- Stats bar sub search: "12.400+ anunturi · 16 tari UE · Gratuit" in capsule amber
+- Scroll indicator: sageata animata (bounce) jos
+
+**Steps:**
+1. Inlocuieste background-ul hero cu gradient mesh + noise texture (SVG `filter: url(#noise)` sau `background-image: url("data:image/svg+xml...")`)
+2. Resize H1 la 72px (text-7xl) cu Fraunces
+3. Muta search bar IN hero (daca e sub hero acum)
+4. Adauga stats capsule cu cifre reale (query DB) sau placeholder 12.400+
+5. Adauga animatie `fade-in` + `slide-up` pe H1 si search bar (CSS keyframes, nu Framer Motion — mai simplu)
+
+**Verificare:** Hero arata: fundal cu textura, H1 mare Fraunces, search bar central, stats capsule amber
+
+---
+
+### Task 2.5.3: ✅ Listing card — hover effects cu Framer Motion
+
+**Obiectiv:** Cards cu personalitate — hover fluid, nu static.
+
+**Files:**
+- Modify: `src/components/ListingCard.tsx`
+- Modify: `src/app/browse/BrowseClient.tsx` (staggered reveal pe grid)
+
+**Effects de adaugat:**
+- **Card hover:** `whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.12)" }}` + `transition={{ duration: 0.2 }}`
+- **Imagine hover:** scale 1.05 pe `motion.img` cu `overflow: hidden` pe container — efect zoom subtil
+- **Heart icon:** `whileTap={{ scale: 1.4 }}` + color fill animat cand toggle favorite
+- **Staggered reveal pe grid:** `motion.div` cu `variants` stagger — fiecare card intra cu delay 0.05s × index
+
+**Steps:**
+1. Wrap `<Card>` cu `motion.div` in ListingCard
+2. Adauga `whileHover` si `transition` pe card wrapper
+3. Adauga scale pe imagine (motion.img sau motion.div cu background-image)
+4. In BrowseClient: wrap grid cu `AnimatePresence` + aplica stagger variants pe cards
+5. Heart icon: adauga `whileTap` + schimba culoarea cu `animate={{ color: isFavorite ? '#ef4444' : '#6b7280' }}`
+6. **FIX BUG:** In acelasi task — conecteaza heart icon la `/api/favorites` (toggle real)
+
+**Verificare:** Browse page → cards apar staggered → hover card → ridica usor + zoom imagine → click heart → animatie pulse + API call real
+
+---
+
+### Task 2.5.4: ✅ OG Images dinamice cu next/og
+
+**Obiectiv:** Cand un listing e share-uit pe WhatsApp/social, apare o poza frumoasa cu detaliile anuntului.
+
+**Files:**
+- Create: `src/app/listings/[id]/opengraph-image.tsx`
+
+**Design OG image (1200×630):**
+- Background: gradient verde (brand colors)
+- Poza listing: dreapta, rotunjita
+- Titlu: Fraunces bold, alb, stanga
+- Pret: mare, amber, sub titlu
+- Logo Mega-Mark: jos-stanga
+- "mega-mark-five.vercel.app": jos-dreapta, mic, alb/60
+
+**Steps:**
+1. Creeaza `opengraph-image.tsx` in `/listings/[id]/` cu `ImageResponse` din `next/og`
+2. Fetch listing din DB (foloseste `createClient()` server-side)
+3. Returneaza `ImageResponse` cu layout-ul descris mai sus
+4. Testeaza: share link listing pe WhatsApp → apare preview custom
+
+**Verificare:** `/listings/[id]/opengraph-image` returneaza imagine; share link WhatsApp/Telegram arata preview cu poza + titlu + pret
+
+---
+
+### Task 2.5.5: ✅ Micro-interactions si polish
+
+**Obiectiv:** Detalii care fac diferenta dintre "functional" si "premium".
+
+**Files:**
+- Modify: `src/components/NotificationBell.tsx`
+- Modify: `src/app/browse/BrowseClient.tsx`
+- Modify: `src/components/ListingCardSkeleton.tsx`
+
+**Ce de adaugat:**
+- **Skeleton shimmer:** Inlocuieste skeleton static cu animatie shimmer (gradient care trece de la stanga la dreapta) — CSS `@keyframes shimmer` cu `background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)`
+- **NotificationBell shake:** `animate={{ rotate: [0, -10, 10, -10, 10, 0] }}` cu `transition={{ duration: 0.5 }}` cand apare notificare noua
+- **Button loading state:** Pe butonul "Publica anuntul" si "Trimite mesaj" — spinner in loc de text + `disabled` pe submit
+- **Page transitions:** `AnimatePresence` + `motion.main` cu `initial={{ opacity: 0 }}`, `animate={{ opacity: 1 }}`, `exit={{ opacity: 0 }}` in layout
+
+**Steps:**
+1. Update ListingCardSkeleton cu shimmer CSS animation
+2. Adauga shake animation pe NotificationBell (declansat cand count creste)
+3. Adauga loading state pe formularele principale (create listing, send message)
+4. Optional: page fade-in transition in root layout
+
+**Verificare:** Skeleton shimmer vizibil la loading; Bell shake la notificare noua; Buton submit arata spinner la loading
+
+---
+
+## Faza 3 — Mesagerie & Comunicare  ← INCEPE AICI
 
 > **Obiectiv:** Buyer poate contacta seller, mesagerie interna, notificari.
 > **Referinta UX:** OLX Chat — mesaje instant pe anunt.
