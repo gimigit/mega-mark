@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
@@ -552,11 +553,26 @@ export default function BrowseClient({
 
         {/* Grid of listings */}
         {!loading && viewMode === 'grid' && listings.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {listings.map(listing => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </div>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+          >
+            <AnimatePresence>
+              {listings.map((listing, i) => (
+                <motion.div
+                  key={listing.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                  }}
+                >
+                  <ListingCard listing={listing} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* Pagination */}

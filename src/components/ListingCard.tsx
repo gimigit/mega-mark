@@ -1,8 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
+import { useSupabase } from '@/components/providers/SupabaseProvider'
 import type { Database } from '@/types/database'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
@@ -12,6 +16,7 @@ type Listing = Database['public']['Tables']['listings']['Row'] & {
 
 interface ListingCardProps {
   listing: Listing
+  isFavorite?: boolean
 }
 
 const conditionLabels: Record<string, string> = {
@@ -46,10 +51,44 @@ function formatRelativeDate(dateStr: string): string {
   return `${day} ${months[date.getMonth()]}`
 }
 
-export default function ListingCard({ listing }: ListingCardProps) {
+export default function ListingCard({ listing, isFavorite: initialFavorite = false }: ListingCardProps) {
+  const router = useRouter()
+  const { user } = useSupabase()
+  const [isFavorite, setIsFavorite] = useState(initialFavorite)
+  const [isToggling, setIsToggling] = useState(false)
+
   const formatPrice = (price: number, currency: string) => {
     const symbol = currency === 'EUR' ? '€' : currency
     return `${symbol}${price.toLocaleString()}`
+  }
+
+  async function handleFavoriteToggle(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    if (isToggling) return
+    setIsToggling(true)
+
+    try {
+      if (isFavorite) {
+        const res = await fetch(`/api/favorites?listing_id=${listing.id}`, { method: 'DELETE' })
+        if (res.ok) setIsFavorite(false)
+      } else {
+        const res = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ listing_id: listing.id }),
+        })
+        if (res.ok || res.status === 409) setIsFavorite(true)
+      }
+    } finally {
+      setIsToggling(false)
+    }
   }
 
   const images = listing.images as string[] | null
@@ -57,128 +96,145 @@ export default function ListingCard({ listing }: ListingCardProps) {
   const categoryIcon = listing.categories?.icon || '🚜'
 
   return (
-    <Link
-      href={`/listings/${listing.id}`}
-      className="group bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all hover:border-green-400 dark:hover:border-green-500"
+    <motion.div
+      whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="rounded-2xl"
     >
-      {/* Image Container */}
-      <div className="relative h-48 bg-gradient-to-br from-green-100 to-green-50 dark:from-dark-700 dark:to-dark-600 flex items-center justify-center overflow-hidden">
-        {hasImages ? (
-          <Image
-            src={images[0]}
-            alt={listing.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 33vw"
-          />
-        ) : (
-          <span className="text-6xl opacity-50">{categoryIcon}</span>
-        )}
+      <Link
+        href={`/listings/${listing.id}`}
+        className="group block bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-2xl overflow-hidden shadow-sm hover:border-green-400 dark:hover:border-green-500 transition-colors"
+      >
+        {/* Image Container */}
+        <div className="relative h-48 bg-gradient-to-br from-green-100 to-green-50 dark:from-dark-700 dark:to-dark-600 flex items-center justify-center overflow-hidden">
+          {hasImages ? (
+            <motion.div
+              className="absolute inset-0"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              <Image
+                src={images[0]}
+                alt={listing.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            </motion.div>
+          ) : (
+            <span className="text-6xl opacity-50">{categoryIcon}</span>
+          )}
 
-        {/* Favorite Heart Button */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 transition-colors shadow-sm"
-          aria-label="Adaugă la favorite"
-        >
-          <Heart className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors" />
-        </button>
+          {/* Favorite Heart Button */}
+          <motion.button
+            type="button"
+            onClick={handleFavoriteToggle}
+            whileTap={{ scale: 1.4 }}
+            animate={{ color: isFavorite ? '#ef4444' : '#6b7280' }}
+            transition={{ duration: 0.15 }}
+            disabled={isToggling}
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 transition-colors shadow-sm disabled:opacity-50"
+            aria-label="Adaugă la favorite"
+          >
+            <Heart
+              className="w-4 h-4 transition-colors"
+              fill={isFavorite ? '#ef4444' : 'none'}
+              stroke={isFavorite ? '#ef4444' : 'currentColor'}
+            />
+          </motion.button>
 
-        {/* Featured Badge */}
-        {listing.is_featured && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-amber-500 shadow-sm animate-pulse-subtle flex items-center gap-1">
-            <Award className="w-3.5 h-3.5" />
-            Featured
-          </span>
-        )}
-
-        {/* Condition Badge */}
-        {listing.condition && (
-          <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 dark:bg-dark-900/90 text-gray-700 dark:text-gray-200 shadow-sm">
-            {conditionLabels[listing.condition] || listing.condition}
-          </span>
-        )}
-
-        {/* Price Type Badge */}
-        {listing.price_type && listing.price_type !== 'fixed' && (
-          <span className="absolute bottom-3 left-3 px-2 py-1 rounded text-xs font-semibold bg-white/90 dark:bg-dark-900/90 text-gray-600 dark:text-gray-300">
-            {priceTypeLabels[listing.price_type]}
-          </span>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-4">
-        {/* Title */}
-        <h3 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors line-clamp-2">
-          {listing.title}
-        </h3>
-
-        {/* Price */}
-        <div className="text-xl font-black text-green-700 dark:text-green-400 mb-2">
-          {listing.price != null ? formatPrice(listing.price, listing.currency || 'EUR') : 'Preț la cerere'}
-        </div>
-
-        {/* Specs */}
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
-          {listing.year && (
-            <span className="bg-gray-100 dark:bg-dark-700 px-2 py-1 rounded font-medium">
-              {listing.year}
+          {/* Featured Badge */}
+          {listing.is_featured && (
+            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-amber-500 shadow-sm animate-pulse-subtle flex items-center gap-1">
+              <Award className="w-3.5 h-3.5" />
+              Featured
             </span>
           )}
-          {listing.hours && (
-            <span className="bg-gray-100 dark:bg-dark-700 px-2 py-1 rounded font-medium">
-              {listing.hours.toLocaleString()}h
+
+          {/* Condition Badge */}
+          {listing.condition && (
+            <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 dark:bg-dark-900/90 text-gray-700 dark:text-gray-200 shadow-sm">
+              {conditionLabels[listing.condition] || listing.condition}
             </span>
           )}
-          {listing.mileage && (
-            <span className="bg-gray-100 dark:bg-dark-700 px-2 py-1 rounded font-medium">
-              {listing.mileage.toLocaleString()} km
+
+          {/* Price Type Badge */}
+          {listing.price_type && listing.price_type !== 'fixed' && (
+            <span className="absolute bottom-3 left-3 px-2 py-1 rounded text-xs font-semibold bg-white/90 dark:bg-dark-900/90 text-gray-600 dark:text-gray-300">
+              {priceTypeLabels[listing.price_type]}
             </span>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 pt-3 border-t border-gray-100 dark:border-dark-700">
-          <span className="flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5" />
-            {listing.location_country || 'UE'}
-          </span>
-          <span className="flex items-center gap-1">
-            {listing.categories?.name || 'Agricultural'}
-            {listing.profiles?.is_verified && (
-              <span title="Verified Seller">
-                <BadgeCheck className="w-3.5 h-3.5 text-green-600 dark:text-green-400 ml-1" />
+        {/* Content */}
+        <div className="p-4">
+          {/* Title */}
+          <h3 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors line-clamp-2">
+            {listing.title}
+          </h3>
+
+          {/* Price */}
+          <div className="text-xl font-black text-green-700 dark:text-green-400 mb-2">
+            {listing.price != null ? formatPrice(listing.price, listing.currency || 'EUR') : 'Preț la cerere'}
+          </div>
+
+          {/* Specs */}
+          <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
+            {listing.year && (
+              <span className="bg-gray-100 dark:bg-dark-700 px-2 py-1 rounded font-medium">
+                {listing.year}
               </span>
             )}
-          </span>
-        </div>
-
-        {/* Seller Rating + Relative Date */}
-        <div className="flex items-center justify-between mt-2">
-          {listing.profiles?.rating_avg && listing.profiles.rating_avg > 0 ? (
-            <div className="flex items-center gap-1 text-xs text-amber-500">
-              <Star className="w-3.5 h-3.5 fill-amber-500" />
-              <span className="font-semibold">{listing.profiles.rating_avg.toFixed(1)}</span>
-              <span className="text-gray-400 dark:text-gray-500">
-                ({listing.profiles.rating_count} reviews)
+            {listing.hours && (
+              <span className="bg-gray-100 dark:bg-dark-700 px-2 py-1 rounded font-medium">
+                {listing.hours.toLocaleString()}h
               </span>
-            </div>
-          ) : (
-            <span />
-          )}
-          {listing.created_at && (
-            <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-              <Clock className="w-3 h-3" />
-              {formatRelativeDate(listing.created_at)}
+            )}
+            {listing.mileage && (
+              <span className="bg-gray-100 dark:bg-dark-700 px-2 py-1 rounded font-medium">
+                {listing.mileage.toLocaleString()} km
+              </span>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 pt-3 border-t border-gray-100 dark:border-dark-700">
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5" />
+              {listing.location_country || 'UE'}
             </span>
-          )}
+            <span className="flex items-center gap-1">
+              {listing.categories?.name || 'Agricultural'}
+              {listing.profiles?.is_verified && (
+                <span title="Verified Seller">
+                  <BadgeCheck className="w-3.5 h-3.5 text-green-600 dark:text-green-400 ml-1" />
+                </span>
+              )}
+            </span>
+          </div>
+
+          {/* Seller Rating + Relative Date */}
+          <div className="flex items-center justify-between mt-2">
+            {listing.profiles?.rating_avg && listing.profiles.rating_avg > 0 ? (
+              <div className="flex items-center gap-1 text-xs text-amber-500">
+                <Star className="w-3.5 h-3.5 fill-amber-500" />
+                <span className="font-semibold">{listing.profiles.rating_avg.toFixed(1)}</span>
+                <span className="text-gray-400 dark:text-gray-500">
+                  ({listing.profiles.rating_count} reviews)
+                </span>
+              </div>
+            ) : (
+              <span />
+            )}
+            {listing.created_at && (
+              <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                <Clock className="w-3 h-3" />
+                {formatRelativeDate(listing.created_at)}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   )
 }
