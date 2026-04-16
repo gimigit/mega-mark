@@ -51,3 +51,8 @@ public/uploads/
 
 # Cron output
 .cron/
+.env*.local
+
+# Local dev docs
+CLAUDE.md
+PLAN.md
