@@ -148,7 +148,7 @@ export function useNotifications(userId: string | undefined) {
     const data = notification.data as Record<string, string>
     switch (notification.type) {
       case 'new_message':
-        return '/dashboard?tab=messages'
+        return data.conversation_id ? `/dashboard/messages` : '/dashboard/messages'
       case 'listing_favorite':
       case 'listing_expired':
       case 'listing_approved':

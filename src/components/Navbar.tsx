@@ -7,6 +7,8 @@ import { Search, Menu, X, User, Plus, Heart, MessageSquare, LogOut } from 'lucid
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { Button } from '@/components/ui/button'
 import ThemeToggle from './ThemeToggle'
+import { NotificationBell } from './NotificationBell'
+import { useNotifications } from '@/hooks/useNotifications'
 
 const navLinks = [
   { href: '/browse', label: 'Anunturi' },
@@ -21,6 +23,7 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const { user, isLoading, supabase } = useSupabase()
+  const { notifications, unreadCount, loading: notifsLoading, markAsRead, markAllAsRead, getNotificationIcon, getNotificationLink } = useNotifications(user?.id)
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -97,6 +100,15 @@ export default function Navbar() {
               <Link href="/dashboard/messages" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-green-600 transition-colors" title="Mesaje">
                 <MessageSquare className="size-5" />
               </Link>
+              <NotificationBell
+                notifications={notifications}
+                unreadCount={unreadCount}
+                loading={notifsLoading}
+                onMarkAsRead={markAsRead}
+                onMarkAllAsRead={markAllAsRead}
+                getIcon={getNotificationIcon}
+                getLink={getNotificationLink}
+              />
 
               <Link href="/sell">
                 <Button className="bg-green-700 hover:bg-green-800 text-white font-bold gap-1.5 px-4 py-2">

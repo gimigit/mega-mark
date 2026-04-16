@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { useSupabase } from '@/components/providers/SupabaseProvider'
+import Navbar from '@/components/Navbar'
+import ReviewForm from '@/components/ReviewForm'
 import type { Database } from '@/types/database'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -33,6 +37,7 @@ export default function SellerProfileClient() {
   const router = useRouter()
   const sellerId = params.id as string
   const supabase = createClient()
+  const { user } = useSupabase()
 
   const [seller, setSeller] = useState<Profile | null>(null)
   const [listings, setListings] = useState<Listing[]>([])
@@ -40,6 +45,7 @@ export default function SellerProfileClient() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<'listings' | 'reviews'>('listings')
+  const [showReviewForm, setShowReviewForm] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +80,7 @@ export default function SellerProfileClient() {
       const { data: reviewsData } = await supabase
         .from('reviews')
         .select('*, reviewer:profiles!reviews_reviewer_id_fkey(id, full_name, avatar_url)')
-        .eq('seller_id', sellerId)
+        .eq('reviewed_id', sellerId)
         .order('created_at', { ascending: false })
         .limit(10)
 
@@ -136,28 +142,17 @@ export default function SellerProfileClient() {
   const isDealer = seller.role === 'dealer'
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
-          <Link href="/" className="text-2xl font-black text-green-800 flex items-center gap-1">
-            Mega<em className="text-amber-500 not-italic">Mark</em>
-          </Link>
-          <div className="ml-auto text-sm text-gray-500">
-            <Link href="/" className="text-green-700 font-semibold hover:text-green-800">← Acasă</Link>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-background">
+      <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-sm">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Avatar */}
             <div className="flex-shrink-0">
-              <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden">
+              <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden relative">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt={sellerName} className="w-full h-full object-cover" />
+                  <Image src={avatarUrl} alt={sellerName} fill className="object-cover" sizes="128px" />
                 ) : (
                   <span className="text-5xl font-black text-green-700">
                     {sellerName.charAt(0).toUpperCase()}
@@ -187,12 +182,14 @@ export default function SellerProfileClient() {
                     {accountTypeLabels[seller.role || 'seller'] || 'Vânzător'}
                   </p>
                 </div>
-                <button
-                  onClick={() => router.push(`/dashboard?contact=${sellerId}`)}
-                  className="px-5 py-2.5 bg-green-700 text-white rounded-xl font-bold hover:bg-green-800 transition-colors"
-                >
-                  📩 Contactează
-                </button>
+                {user && user.id !== sellerId && (
+                  <Link
+                    href={`/dashboard/messages`}
+                    className="px-5 py-2.5 bg-green-700 text-white rounded-xl font-bold hover:bg-green-800 transition-colors"
+                  >
+                    Contactează
+                  </Link>
+                )}
               </div>
 
               {/* Stats */}
@@ -282,10 +279,12 @@ export default function SellerProfileClient() {
                     >
                       <div className="relative h-48 bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden">
                         {hasImages ? (
-                          <img
+                          <Image
                             src={images[0]}
                             alt={listing.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            fill
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 33vw"
                           />
                         ) : (
                           <span className="text-6xl opacity-50">{categoryIcon}</span>
@@ -321,21 +320,39 @@ export default function SellerProfileClient() {
 
         {/* Reviews Tab */}
         {activeTab === 'reviews' && (
-          <div>
+          <div className="space-y-4">
+            {/* Leave review */}
+            {user && user.id !== sellerId && (
+              showReviewForm ? (
+                <ReviewForm
+                  sellerId={sellerId}
+                  onSuccess={() => { setShowReviewForm(false); window.location.reload() }}
+                  onCancel={() => setShowReviewForm(false)}
+                />
+              ) : (
+                <button
+                  onClick={() => setShowReviewForm(true)}
+                  className="w-full py-3 border-2 border-dashed border-green-300 rounded-xl text-green-700 font-semibold hover:border-green-500 hover:bg-green-50 transition-colors text-sm"
+                >
+                  + Lasă o recenzie
+                </button>
+              )
+            )}
+
             {reviews.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+              <div className="bg-surface rounded-2xl border border-border p-12 text-center">
                 <span className="text-5xl block mb-4">⭐</span>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Nicio recenzie</h3>
-                <p className="text-gray-500">Acest vânzător nu are încă recenzii.</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">Nicio recenzie</h3>
+                <p className="text-muted-foreground">Acest vânzător nu are încă recenzii.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {reviews.map(review => (
                   <div key={review.id} className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                         {review.reviewer?.avatar_url ? (
-                          <img src={review.reviewer.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                          <Image src={review.reviewer.avatar_url} alt="" fill className="object-cover" sizes="48px" />
                         ) : (
                           <span className="text-lg font-bold text-green-700">
                             {(review.reviewer?.full_name || 'U').charAt(0).toUpperCase()}

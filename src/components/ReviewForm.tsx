@@ -37,10 +37,10 @@ export default function ReviewForm({ sellerId, listingId, onSuccess, onCancel }:
       .from('reviews')
       .insert({
         reviewer_id: user.id,
-        reviewee_id: sellerId,
+        reviewed_id: sellerId,
         listing_id: listingId || null,
         rating,
-        comment: comment.trim() || null,
+        content: comment.trim() || null,
       })
 
     setSubmitting(false)
