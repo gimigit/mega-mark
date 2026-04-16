@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { MessageBubble } from './MessageBubble'
 import type { Message, Conversation } from '@/hooks/useMessages'
 
@@ -72,10 +73,12 @@ export function ChatWindow({
           </button>
         )}
         {conversation.otherUserAvatar ? (
-          <img
+          <Image
             src={conversation.otherUserAvatar}
             alt=""
-            className="w-10 h-10 rounded-full"
+            fill
+            sizes="40px"
+            className="rounded-full"
           />
         ) : (
           <div className="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center text-white font-bold">

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://agromark.eu'
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://mega-mark-five.vercel.app'
 
 export const dynamic = 'force-dynamic'
 

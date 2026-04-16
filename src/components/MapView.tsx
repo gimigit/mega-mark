@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Database } from '@/types/database'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
@@ -93,9 +94,11 @@ export default function MapView({ listings, center, zoom }: MapViewProps) {
               <div className="min-w-[200px]">
                 <Link href={`/listings/${listing.id}`} className="block hover:opacity-80">
                   {listing.images && (listing.images as string[]).length > 0 ? (
-                    <img
+                    <Image
                       src={(listing.images as string[])[0]}
                       alt={listing.title}
+                      fill
+                      sizes="200px"
                       className="w-full h-32 object-cover rounded mb-2"
                     />
                   ) : (

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   BarChart3, Users, MessageSquare, AlertTriangle, 
   CheckCircle, XCircle, Trash2, Eye, Shield,

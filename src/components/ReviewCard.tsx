@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Database } from '@/types/database'
 
 type Review = Database['public']['Tables']['reviews']['Row'] & {
@@ -38,9 +39,11 @@ export default function ReviewCard({ review, showListing, listingTitle, listingI
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt={reviewerName}
+              fill
+              sizes="48px"
               className="w-full h-full rounded-full object-cover"
             />
           ) : (

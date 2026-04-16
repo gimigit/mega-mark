@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://agromark.eu'
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://mega-mark-five.vercel.app'
 
 export default function robots(): MetadataRoute.Robots {
   return {

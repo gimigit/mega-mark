@@ -12,6 +12,8 @@ const EU_COUNTRIES: Record<string, string> = {
   FI: 'Finlanda'
 }
 
+import Image from 'next/image'
+
 interface SellerCardProps {
   seller: Profile
   listingCount?: number
@@ -50,7 +52,13 @@ export default function SellerCard({ seller, listingCount, compact = false, onCo
       >
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden flex-shrink-0">
           {avatarUrl ? (
-            <img src={avatarUrl} alt={sellerName} className="w-full h-full object-cover rounded-full" />
+            <Image
+              src={avatarUrl}
+              alt={sellerName}
+              fill
+              sizes="40px"
+              className="object-cover rounded-full"
+            />
           ) : (
             <span className="text-sm font-bold text-green-700">
               {sellerName.charAt(0).toUpperCase()}
@@ -81,7 +89,13 @@ export default function SellerCard({ seller, listingCount, compact = false, onCo
         <Link href={`/sellers/${seller.id}`} className="relative">
           <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden">
             {avatarUrl ? (
-              <img src={avatarUrl} alt={sellerName} className="w-full h-full object-cover rounded-full" />
+              <Image
+              src={avatarUrl}
+              alt={sellerName}
+              fill
+              sizes="40px"
+              className="object-cover rounded-full"
+            />
             ) : (
               <span className="text-xl font-bold text-green-700">
                 {sellerName.charAt(0).toUpperCase()}

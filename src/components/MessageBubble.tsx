@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { format, isToday, isYesterday } from 'date-fns'
 import { ro } from 'date-fns/locale'
 import type { Message } from '@/hooks/useMessages'
@@ -23,10 +24,12 @@ export function MessageBubble({ message, isMine, showAvatar = true }: MessageBub
       {showAvatar && !isMine && (
         <div className="w-8 h-8 flex-shrink-0">
           {message.sender_profile?.avatar_url ? (
-            <img
+            <Image
               src={message.sender_profile.avatar_url}
               alt=""
-              className="w-8 h-8 rounded-full object-cover"
+              fill
+              sizes="32px"
+              className="rounded-full object-cover"
             />
           ) : (
             <div className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white text-sm font-bold">
