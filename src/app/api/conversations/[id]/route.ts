@@ -19,10 +19,10 @@ export async function GET(
     const { data: conversation, error: convErr } = await supabase
       .from('conversations')
       .select(`
-        *,
+        id, buyer_id, seller_id,
         listing:listings(id, title, images),
-        buyer:profiles(id, full_name, avatar_url),
-        seller:profiles(id, full_name, avatar_url)
+        buyer:profiles!conversations_buyer_id_fkey(id, full_name, avatar_url),
+        seller:profiles!conversations_seller_id_fkey(id, full_name, avatar_url)
       `)
       .eq('id', id)
       .maybeSingle()

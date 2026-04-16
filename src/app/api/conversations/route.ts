@@ -11,29 +11,41 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: conversations, error } = await supabase
+    const { data, error } = await supabase
       .from('conversations')
       .select(`
-        *,
+        id, buyer_id, seller_id, last_message_preview, last_message_at, buyer_unread, seller_unread, status,
         listing:listings(id, title, images),
-        buyer:profiles(id, full_name, avatar_url),
-        seller:profiles(id, full_name, avatar_url)
+        buyer:profiles!conversations_buyer_id_fkey(id, full_name, avatar_url),
+        seller:profiles!conversations_seller_id_fkey(id, full_name, avatar_url)
       `)
       .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
-      .order('last_message_at', { ascending: false })
+      .eq('status', 'active')
+      .order('last_message_at', { ascending: false, nullsFirst: false })
 
     if (error) {
       console.error('Error fetching conversations:', error)
       return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 })
     }
 
-    // Enrich each conversation with unread count relative to current user
-    const enriched = (conversations || []).map((c) => ({
-      ...c,
-      unread_count: c.buyer_id === user.id ? c.buyer_unread || 0 : c.seller_unread || 0,
-    }))
+    const conversations = (data || []).map((c: any) => {
+      const isBuyer = c.buyer_id === user.id
+      const otherUser = isBuyer ? c.seller : c.buyer
+      return {
+        id: c.id,
+        otherUserId: otherUser?.id ?? null,
+        otherUserName: otherUser?.full_name ?? 'Utilizator',
+        otherUserAvatar: otherUser?.avatar_url ?? null,
+        listingId: c.listing?.id ?? null,
+        listingTitle: c.listing?.title ?? null,
+        listingThumbnail: (c.listing?.images as string[] | null)?.[0] ?? null,
+        lastMessagePreview: c.last_message_preview,
+        lastMessageAt: c.last_message_at,
+        unreadCount: isBuyer ? (c.buyer_unread ?? 0) : (c.seller_unread ?? 0),
+      }
+    })
 
-    return NextResponse.json({ conversations: enriched })
+    return NextResponse.json({ conversations })
   } catch (error) {
     console.error('Conversations GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

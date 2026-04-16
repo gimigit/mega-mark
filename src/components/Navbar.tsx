@@ -94,7 +94,7 @@ export default function Navbar() {
               <Link href="/favorites" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-red-500 transition-colors" title="Favorite">
                 <Heart className="size-5" />
               </Link>
-              <Link href="/chat" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-green-600 transition-colors" title="Mesaje">
+              <Link href="/dashboard/messages" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-green-600 transition-colors" title="Mesaje">
                 <MessageSquare className="size-5" />
               </Link>
 
