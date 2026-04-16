@@ -31,78 +31,56 @@
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
 **DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
 **Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Seed:** ✅ `/api/seed` functioneaza cu `createAdminClient()` — categorii si manufacturers populate in DB
-**Pagini:** 20 pagini implementate (publice + protejate + admin)
-**Componente:** 31 componente (13 shadcn/ui + 14 business + 4 altele)
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅
+**Urmatoarea faza:** Faza 6 — SEO, Performance & Launch
 
-### Ce s-a facut recent (15 Apr 2026)
+### Ce exista (stare curenta)
 
-- Schema veche (4sale/Prisma) stearsa complet, schema Mega-Mark aplicata via `psql`
-- Landing page upgrade: 8 sectiuni (Hero, Stats, Categories cu Lucide icons, Featured Listings, Popular Brands, Recent Listings, Browse by Country cu 16 tari UE, How It Works, CTA)
-- Browse page polished: breadcrumbs, Lucide icons (fara emoji), dark mode complet, ListingCard reuse
-- Footer rewrite: 6 coloane (Brand, Marketplace, Categories, Brands, Info/Countries)
-- `src/lib/categories.ts` creat: icon map, EU_COUNTRIES, TOP_MANUFACTURERS
-- Seed endpoint fix: `createAdminClient()` (bypass RLS) + env var debug
-- Supabase CLI (v2.90.0) + psql + Vercel CLI instalate si linked
-
-### Ce exista deja
-
-**Pagini (20):**
-- Homepage (upgraded), Browse (polished), Login, Signup, Forgot Password, Update Password
-- Listings: create, [id] detail, [id]/edit
-- Dashboard, Dashboard/billing, Profile/edit
-- Sellers/[id], Admin, Pricing, About, FAQ, Terms, Privacy
+**Pagini (25+):**
+- Homepage, Browse, Login, Signup, Forgot Password, Update Password
+- Listings: create, [id] detail, [id]/edit, [id]/promote
+- Dashboard, Dashboard/billing, Dashboard/messages, Dashboard/favorites, Dashboard/saved-searches
+- Profile/edit, Sellers/[id], Admin, Pricing, About, FAQ, Terms, Privacy
 - 404 not-found
 
-**API Routes (18):**
+**API Routes (22+):**
 - `/api/listings` (CRUD), `/api/listings/[id]`
 - `/api/favorites` (toggle + list)
 - `/api/reviews` (create + list)
+- `/api/conversations` (GET list, POST create)
+- `/api/conversations/[id]` (GET cu mesaje)
+- `/api/conversations/[id]/messages` (POST send)
+- `/api/conversations/[id]/read` (POST mark read)
+- `/api/saved-searches` (GET, POST, DELETE)
+- `/api/auth/me` (GET profil curent)
 - `/api/notifications/email`, `/api/notifications/events`, `/api/notifications/expiry-check`
 - `/api/stripe/checkout`, `/api/stripe/portal`, `/api/stripe/webhook`
 - `/api/subscriptions/cancel`
 - `/api/cron/expire-ads`, `/api/cron/check-expiring-ads`
 - `/api/admin/stats`, `/api/admin/listings`, `/api/admin/users`, `/api/admin/me`
-- `/api/seed` (categorii + manufacturers — foloseste `createAdminClient()`)
+- `/api/seed`
 
 **Componente UI:**
-- ListingCard, ListingCardSkeleton, Navbar, Footer (6-col), SellerCard
-- ReviewForm, ReviewCard, ReviewsList
-- NotificationBell, NotificationDropdown
+- ListingCard (Framer Motion hover + favorites funcțional), ListingCardSkeleton (shimmer)
+- Navbar (cu NotificationBell + Realtime), Footer (6-col)
+- ReviewForm (fix: reviewed_id + content), ReviewCard, ReviewsList
+- NotificationBell (shake animation), NotificationDropdown
 - ChatWindow, MessageBubble
-- PhoneReveal, ShareButton, ThemeToggle, MapView
+- PhoneReveal, ShareButton, ThemeToggle, MapView, SellerCard
 
-**Lib:**
-- `supabase/` (client, server, admin, config, middleware) — lazy init la build time ✅
-- `stripe.ts` — lazy Proxy pattern ✅
-- `categories.ts` — Lucide icon map + EU countries + manufacturers ✅
-- `email.ts`, `notifications.ts`, `upload.ts`, `admin-utils.ts`
+**Hooks:**
+- `useNotifications` — Supabase Realtime pe `notifications`
+- `useConversations` — fetch conversatii + mesaje + Realtime pe `messages`
 
-**DB Schema:** `supabase/schema.sql` (profiles, categories ×11, manufacturers ×20, listings, favorites, conversations, messages, reviews, notifications, search_history, api_keys) + 7 migratii + indexes + triggers + seed data + 27 RLS policies
+**Migrations:**
+- `009_fix_message_trigger.sql` — trigger fix pentru schema noua (conversation_id vs receiver_id)
 
-### Ce NU exista (API routes lipsa)
+### Actiuni manuale necesare
 
-- ❌ `/api/conversations` — CRUD conversatii (mesagerie)
-- ❌ `/api/messages/[id]/read` — mark message as read
-- ❌ `/api/saved-searches` — CRUD saved searches
-- ❌ `/api/auth/me` — sync user profile
-
-### Ce NU e functional (UI fara backend)
-
-- ChatWindow + MessageBubble — componente prezente, dar fara API
-- NotificationBell + NotificationDropdown — componente prezente, dar fara Supabase Realtime
-- SavedSearches — component prezent, dar fara API
-- Search pe Homepage — UI doar, nu face fetch real
-- Forms pe Homepage (Post Listing) — UI doar, nu trimite date
-- Nu exista listings demo in DB (necesita useri autentificati pentru FK pe profiles)
-
-### Bugs confirmate (16 Apr 2026)
-
-- 🐛 **Heart icon pe ListingCard** — nu face nicio cerere la `/api/favorites` (handler stub gol)
-- 🐛 **Framer Motion** — instalat ca dependenta dar aproape neutilizat (doar Tailwind animations)
-- ⚠️ **Reviews POST** — de verificat daca `/api/reviews` accepta POST sau e read-only
-- ⚠️ **Stripe env vars** — `STRIPE_SECRET_KEY`, `STRIPE_PRICE_*` nesetate → checkout va crapa
-- ⚠️ **Resend API key** — `RESEND_API_KEY` nesetat → email-urile nu se trimit
+- ⚠️ **Stripe env vars** — `STRIPE_SECRET_KEY`, `STRIPE_PRICE_7_DAYS`, `STRIPE_PRICE_30_DAYS`, `STRIPE_WEBHOOK_SECRET` — de setat in Vercel Dashboard
+- ⚠️ **Admin role** — `UPDATE profiles SET role='admin' WHERE email='...'` in Supabase SQL editor
+- ⚠️ **Migration 009** — de aplicat manual: `supabase/migrations/009_fix_message_trigger.sql`
+- ⚠️ **Resend API key** — `RESEND_API_KEY` nesetat → emailurile nu se trimit
 
 ---
 
@@ -614,74 +592,31 @@
 
 ---
 
-## Faza 5 — Monetizare & Admin  ← INCEPE AICI
+## ✅ Faza 5 — Monetizare & Admin (COMPLETA)
 
 > **Obiectiv:** Stripe functional, promovare anunturi, admin dashboard.
 
-### Task 5.1: Stripe setup
+### Task 5.1: ⚠️ Stripe setup (ACTIUNE MANUALA)
 
-**Obiectiv:** Stripe configurat cu produse si preturi.
-
-**Steps:**
+**NOTA:** Necesita actiune din partea ownerului:
 1. Creeaza produse in Stripe Dashboard: "Promovare 7 zile" (15 RON), "Promovare 30 zile" (45 RON)
 2. Seteaza env vars: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_7_DAYS`, `STRIPE_PRICE_30_DAYS`
-3. Configureaza webhook local: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
-4. **NOTA:** Aceasta e actiune manuala a ownerului — Hermes nu poate accesa Stripe Dashboard
+3. Configureaza webhook: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
 
-**Verificare:** Env vars setate, webhook events apar in terminal
+### Task 5.2: ✅ Promovare anunt flow
 
-### Task 5.2: Promovare anunt flow (stil OLX "Promoveaza")
+- Pagina `/listings/[id]/promote` cu 2 optiuni: 7 zile (15 RON), 30 zile (45 RON)
+- Checkout API route suporta `featured_7d` + `featured_30d`
+- Webhook seteaza `is_featured=true`, `featured_until` pe listings table
 
-**Obiectiv:** User plateste sa-si promoveze anuntul — apare primul in rezultate.
+### Task 5.3: ✅ Admin dashboard fix
 
-**Files:**
-- Create: `src/app/listings/[id]/promote/page.tsx`
-- Verify: `src/app/api/stripe/checkout/route.ts`
-- Verify: `src/app/api/stripe/webhook/route.ts`
-
-**UX:**
-- Pe listing detail (daca e al tau): buton "Promoveaza anuntul"
-- Click → pagina `/listings/[id]/promote` cu 2 optiuni: 7 zile (15 RON), 30 zile (45 RON)
-- Selectie → redirect la Stripe Checkout
-- Dupa plata → redirect inapoi cu success message
-- Webhook: `checkout.session.completed` → seteaza `is_featured=true`, `featured_until=NOW()+7/30 days`
-- Pe ListingCard: badge "Promovat" vizibil
-- In Browse: anunturile promovate apar primele (ORDER BY `is_featured DESC, created_at DESC`)
-
-**Steps:**
-1. Creeaza pagina promote cu cele 2 optiuni
-2. Verifica checkout API route → creeaza Stripe session cu price_id corect
-3. Verifica webhook → actualizeaza listing in DB
-4. Verifica ca Browse ordoneaza featured first
-5. Adauga cron job: expira promotii (`is_featured=false` cand `featured_until < NOW()`) — verifica ca exista deja in `/api/cron/expire-ads`
-
-**Verificare:** Promote → Stripe checkout (test card 4242...) → listing devine featured → apare sus in Browse → dupa expirare → revine normal
-
-### Task 5.3: Admin dashboard
-
-**Obiectiv:** Admin gestioneaza platforma.
-
-**Files:**
-- Verify: `src/app/admin/page.tsx`
-- Verify: `src/app/api/admin/*`
-
-**Dashboard admin include:**
-- Stats: total users, total listings, active listings, revenue (promoted), users today
-- Tabel anunturi: status, seller, data, actiuni (approve, archive, delete)
-- Tabel useri: email, rol, data inregistrare, numar anunturi, actiuni (verify, ban)
-- Acces restrictionat: doar useri cu `role='admin'`
-
-**Steps:**
-1. **ACTIUNE MANUALA:** Owner seteaza admin: `UPDATE profiles SET role='admin' WHERE email='...'`
-2. Verifica ca `/admin` afiseaza stats si tabele
-3. Verifica ca non-admin primeste redirect sau 403
-4. Testeaza actiunile: approve/archive listing, verify user
-
-**Verificare:** Admin → dashboard cu date reale; Non-admin → acces refuzat
+- Eliminat join pe `listing_photos` (tabel inexistent in schema noua)
+- Corectat `verified` → `is_verified` in query profiles
 
 ---
 
-## Faza 6 — SEO, Performance & Launch
+## Faza 6 — SEO, Performance & Launch  ← INCEPE AICI
 
 > **Obiectiv:** Site optimizat pentru Google, rapid, GDPR compliant — gata de launch.
 

@@ -86,11 +86,10 @@ supabase/
 7. **Stripe webhooks** — in dev: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
 8. **Vercel IPv4 + Supabase IPv6** — foloseste pooler connection string (`DATABASE_URL`)
 9. **Seed endpoint** — `/api/seed` foloseste `createAdminClient()` (bypass RLS). Ruleaza o singura data.
-10. **DB schema** — Schema veche 4sale a fost inlocuita complet cu schema Mega-Mark (16 Apr 2026).
-11. **Heart icon pe ListingCard** — handler-ul e stub gol, nu face API call la `/api/favorites`. De fix in Faza 2.5.3.
-12. **Framer Motion** — instalat dar neutilizat (doar Tailwind animations). De integrat incepand cu Faza 2.5.
-13. **`next/og`** — pentru OG images dinamice per listing: `src/app/listings/[id]/opengraph-image.tsx` cu `ImageResponse`.
-14. **Zustand store** — la creare: `src/store/useFavoritesStore.ts`, `src/store/useUIStore.ts`. Nu pune logica DB in store — doar state UI.
+10. **DB schema** — Schema veche 4sale a fost inlocuita complet cu schema Mega-Mark (16 Apr 2026). Migratia 009 (fix trigger mesaje) e in repo dar trebuie aplicata manual pe DB.
+11. **Conversations FK joins** — Supabase nu rezolva ambiguitatea pe FK-uri duble spre aceeasi tabela. Foloseste sintaxa explicita: `buyer:profiles!conversations_buyer_id_fkey(...)`.
+12. **`next/og`** — OG image dinamica per listing: `src/app/listings/[id]/opengraph-image.tsx` cu `ImageResponse`. Runtime: nodejs.
+13. **Zustand store** — la creare: `src/store/useFavoritesStore.ts`, `src/store/useUIStore.ts`. Nu pune logica DB in store — doar state UI.
 
 ## Environment variables (Vercel)
 
@@ -101,7 +100,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY   # anon JWT key
 SUPABASE_SERVICE_ROLE_KEY       # service_role JWT key
 NEXT_PUBLIC_APP_URL             # https://mega-mark-five.vercel.app
 
-# ⚠️ De setat (Faza 5)
+# ⚠️ De setat (manual — actiuni owner)
 STRIPE_SECRET_KEY               # Stripe Dashboard → Developers → API Keys
 STRIPE_WEBHOOK_SECRET           # Stripe Dashboard → Webhooks → signing secret
 STRIPE_PRICE_7_DAYS             # Price ID produs "Promovare 7 zile"
