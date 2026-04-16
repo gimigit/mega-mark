@@ -1,4 +1,4 @@
-import type { ListingData } from './page'
+import type { ListingData } from '@/types/listing'
 
 type Props = {
   listing: ListingData

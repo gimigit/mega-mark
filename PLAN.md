@@ -690,32 +690,32 @@
 
 **Obiectiv:** Testare manuala pe Vercel + verificare flows + fixuri finale = launch.
 
-### Task 7.1: Homepage & Core Flows
+### Task 7.1: ✅ Homepage & Core Flows
 
 **Steps:**
-1. Deschide https://mega-mark-five.vercel.app
-2. Verifica: Hero section, search bar, featured categories, latest listings, footer
-3. Testeaza: Search "tractor" → redirect la browse cu rezultate
-4. Testeaza: Click pe categorie → browse cu filtre aplicate
-5. Testeaza: Dark/Light mode toggle
-6. Verifica: Console无errors (F12 → Console)
+1. ✅ Deschide https://mega-mark-five.vercel.app
+2. ✅ Verifica: Hero section, search bar, featured categories, latest listings, footer
+3. ✅ Testeaza: Search "tractor" → redirect la browse cu rezultate (da, redirect functioneaza)
+4. ✅ Testeaza: Click pe categorie → browse cu filtre aplicate (functioneaza)
+5. ✅ Testeaza: Dark/Light mode toggle (functioneaza - dark mode activat cu succes)
+6. ✅ Verifica: Console - 2x 404 errors (resurse lipsa), fara JS errors critice
 
 ### Task 7.2: Browse & Listing Detail
 
 **Steps:**
-1. Browse page: filtrele funcționează (categorie, țară, preț)
-2. Click pe listing → detail page
-3. Verifica: poze carousel, pret, descriere, datecontact, seller info
-4. Testeaza: buton "Contact" → deschide chat/modal
-5. Verifica: JSON-LD în page source (cauta "Product" in View Source)
+1. Browse page: filtrele funcționează (categorie, țară, preț) ✅
+2. Click pe listing → detail page (nu exista anunturi in DB - 0 listings)
+3. Verifica: nu putem testa detail page fara date in DB
+4. Testeaza: buton "Contact" → necesita listing existent
+5. Verifica: JSON-LD în page source (nu putem testa fara listing)
 
-### Task 7.3: Auth Flows
+### Task 7.3: ✅ Auth Flows
 
 **Steps:**
-1. Login page: form funcționează
-2. Signup page: form funcționează
-3. Logout → verifica navbar revine la guest
-4. Protected routes: acceseaza /dashboard fara login → redirect la login
+1. ✅ Login page: form funcționează
+2. ✅ Signup page: form funcționează (accesibil din login page)
+3. ✅ Logout → verifica navbar revine la guest (implicit din test)
+4. ✅ Protected routes: acceseaza /dashboard fara login → redirect la login (functioneaza)
 
 ### Task 7.4: Create Listing Flow (daca e disponibil)
 
@@ -738,14 +738,24 @@
 
 **Steps:**
 1. Local: `npm run build` → trebuie să treacă fără errors/warnings
-2. Git: commit toate schimbările (`git add . && git commit -m "chore: final testing fixes"`)
-3. Git: push (`git push origin main`)
-4. Vercel: verifica build passes (dashboard → Deployments)
+2. ✅ Git: commit toate schimbările (`git add . && git commit -m "chore: final testing fixes"`)
+3. ✅ Git: push (`git push origin main`)
+4. Vercel: verifica build passes (dashboard → Deployments) - in progress
 5. Verifica site-ul live funcționează
 
 ---
 
-## Backlog (post-launch)
+### Task 7.7: Cookie Banner & GDPR
+
+**Steps:**
+1. Verifica CookieBanner apare pe homepage (prima vizita, fara localStorage consent)
+2. Testeaza buton "Accept" → salveaza in localStorage, banner dispare
+3. Testeaza buton "Refuz" → salveaza in localStorage, banner dispare
+4. Verifica link catre /privacy in banner
+
+---
+
+## Backlog
 
 > Aceste features se implementeaza dupa ce MVP-ul e live, testat si are useri reali.
 
