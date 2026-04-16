@@ -301,9 +301,11 @@ export function AdminDashboard({ initialAds, initialReports, initialStats, admin
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
                           {ad.photos && ad.photos.length > 0 ? (
-                            <img
+                            <Image
                               src={ad.photos[0].url}
                               alt={ad.title}
+                              fill
+                              sizes="48px"
                               className="w-12 h-12 object-cover rounded"
                             />
                           ) : (

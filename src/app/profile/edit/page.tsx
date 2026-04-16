@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { uploadListingImage } from '@/lib/upload'
@@ -193,9 +194,11 @@ export default function ProfileEditPage() {
               <div className="flex items-center gap-6">
                 <div className="relative">
                   {avatarUrl ? (
-                    <img
+                    <Image
                       src={avatarUrl}
                       alt="Avatar"
+                      fill
+                      sizes="96px"
                       className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
                     />
                   ) : (

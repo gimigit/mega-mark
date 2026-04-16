@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
@@ -310,7 +311,7 @@ export default function DashboardPage() {
               ✏️ Editează profil
             </Link>
             {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-full" />
+              <Image src={profile.avatar_url} alt="" fill sizes="40px" className="rounded-full" />
             ) : (
               <div className="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center text-white font-bold">
                 {profile?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
@@ -449,9 +450,11 @@ export default function DashboardPage() {
                         <div className="flex gap-4">
                           <div className="w-24 h-20 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
                             {listing.images && (listing.images as string[]).length > 0 ? (
-                              <img
+                              <Image
                                 src={(listing.images as string[])[0]}
                                 alt=""
+                                fill
+                                sizes="96px"
                                 className="w-full h-full object-cover rounded-lg"
                               />
                             ) : (
@@ -546,9 +549,11 @@ export default function DashboardPage() {
                       >
                         <div className="h-36 bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center relative">
                           {fav.listings.images && (fav.listings.images as string[]).length > 0 ? (
-                            <img
+                            <Image
                               src={(fav.listings.images as string[])[0]}
                               alt=""
+                              fill
+                              sizes="200px"
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -624,7 +629,7 @@ export default function DashboardPage() {
                           >
                             <div className="relative">
                               {conv.otherUserAvatar ? (
-                                <img src={conv.otherUserAvatar} alt="" className="w-12 h-12 rounded-full" />
+                                <Image src={conv.otherUserAvatar} alt="" fill sizes="48px" className="w-12 h-12 rounded-full" />
                               ) : (
                                 <div className="w-12 h-12 bg-green-700 rounded-full flex items-center justify-center text-white text-lg font-bold">
                                   {conv.otherUserName.charAt(0)}

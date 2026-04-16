@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { format } from 'date-fns'
@@ -300,9 +301,11 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
               {images && images.length > 0 ? (
                 <>
                   <div className="relative bg-gray-100 aspect-[16/9] flex items-center justify-center">
-                    <img
+                    <Image
                       src={images[activeImage]}
                       alt={listing.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 800px"
                       className="max-h-full max-w-full object-contain"
                     />
                     <span className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold text-white ${listing.status ? statusColors[listing.status] : 'bg-gray-500'}`}>
@@ -317,7 +320,7 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                           onClick={() => setActiveImage(i)}
                           className={`w-20 h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 transition-colors ${i === activeImage ? 'border-green-600' : 'border-gray-200 hover:border-gray-300'}`}
                         >
-                          <img src={img} alt="" className="w-full h-full object-cover" />
+                          <Image src={img} alt="" fill sizes="80px" className="w-full h-full object-cover" />
                         </button>
                       ))}
                     </div>

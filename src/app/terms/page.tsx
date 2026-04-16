@@ -144,7 +144,7 @@ export default function TermsPage() {
             Pentru întrebări sau sesizări legate de acești termeni, ne puteți contacta la:
           </p>
           <ul className="list-none pl-6 text-gray-700 mb-4 space-y-2">
-            <li><strong>Email:</strong> legal@agromark.eu</li>
+            <li><strong>Email:</strong> legal@mega-mark.eu</li>
             <li><strong>Adresă:</strong> București, România</li>
           </ul>
         </div>

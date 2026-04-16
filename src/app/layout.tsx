@@ -5,6 +5,7 @@ import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
 import { ThemeProvider } from 'next-themes'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
+import CookieBanner from '@/components/CookieBanner'
 
 const fraunces = Fraunces({
   subsets: ['latin', 'latin-ext'],
@@ -54,6 +55,7 @@ export default function RootLayout({
           </TooltipProvider>
         </ThemeProvider>
         <Toaster position="top-center" richColors />
+        <CookieBanner />
       </body>
     </html>
   )

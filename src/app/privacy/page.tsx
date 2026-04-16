@@ -49,7 +49,7 @@ export default function PrivacyPage() {
             <li><strong>Denumire:</strong> Mega-Mark SRL</li>
             <li><strong>CUI:</strong> RO12345678</li>
             <li><strong>Adresă:</strong> București, România</li>
-            <li><strong>Email:</strong> privacy@agromark.eu</li>
+            <li><strong>Email:</strong> privacy@mega-mark.eu</li>
           </ul>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Datele Personale pe Care le Colectăm</h2>
@@ -186,7 +186,7 @@ export default function PrivacyPage() {
             <li><strong>Restricționare:</strong> Limitați procesarea</li>
           </ul>
           <p className="text-gray-700 mb-4">
-            Pentru a vă exercita drepturile, ne puteți contacta la: <strong>privacy@agromark.eu</strong>
+            Pentru a vă exercita drepturile, ne puteți contacta la: <strong>privacy@mega-mark.eu</strong>
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">9. Securitatea Datelor</h2>
@@ -219,7 +219,7 @@ export default function PrivacyPage() {
             exercita drepturile:
           </p>
           <ul className="list-none pl-6 text-gray-700 mb-4 space-y-2">
-            <li><strong>Email:</strong> privacy@agromark.eu</li>
+            <li><strong>Email:</strong> privacy@mega-mark.eu</li>
             <li><strong>Adresă:</strong> București, România</li>
             <li><strong>Autoritate de supraveghere:</strong> ANSPDCP (România) — <a href="https://www.dataprotection.ro" className="text-green-700 hover:underline">www.dataprotection.ro</a></li>
           </ul>
