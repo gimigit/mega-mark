@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 import ListingCard from '@/components/ListingCard'
 import { createClient } from '@/lib/supabase/server'
 import {
-  Search, ArrowRight, Shield, Globe, Zap, ChevronRight,
+  Search, ArrowRight, Globe, ChevronRight,
   Camera, MessageSquare, Handshake, TrendingUp, Users, MapPin,
 } from 'lucide-react'
 import { getCategoryIcon, EU_COUNTRIES } from '@/lib/categories'
@@ -93,36 +93,47 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-green-900 via-green-800 to-green-950 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
-        <div className="relative max-w-7xl mx-auto px-6 py-16 lg:py-24">
-          <p className="text-green-300 text-sm font-semibold tracking-wide uppercase mb-3">
+      <section className="relative bg-gradient-to-br from-green-900 via-green-800 to-green-700 text-white overflow-hidden min-h-[580px] flex flex-col justify-center">
+        {/* Noise texture overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '200px 200px',
+          }}
+        />
+        {/* Subtle radial glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(34,197,94,0.15),transparent)] pointer-events-none" />
+
+        <div className="relative max-w-4xl mx-auto px-6 py-20 lg:py-28 text-center animate-fade-in">
+          <p className="text-green-300 text-xs font-semibold tracking-widest uppercase mb-5">
             Marketplace agricol Romania & UE
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-4 font-display">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-5 max-w-2xl mx-auto font-display animate-slide-up">
             Cumpara si vinde<br />
             <span className="text-amber-400">utilaje agricole</span>
           </h1>
-          <p className="text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
+          <p className="text-lg text-green-200/80 max-w-xl mx-auto mb-10 leading-relaxed">
             Tractoare, combine, recoltatoare si echipamente agricole
             de la vanzatori verificati din toata Europa.
           </p>
 
-          {/* Search */}
-          <form action="/browse" method="GET" className="max-w-2xl">
-            <div className="flex">
+          {/* Search bar — central, prominent */}
+          <form action="/browse" method="GET" className="max-w-2xl mx-auto animate-slide-up">
+            <div className="flex shadow-2xl rounded-xl overflow-hidden">
               <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
                 <input
                   type="text"
                   name="keyword"
                   placeholder="Cauta: John Deere 6330, tractor 150 CP..."
-                  className="w-full h-14 pl-12 pr-4 rounded-l-xl border-0 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  className="w-full h-14 pl-12 pr-4 border-0 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
                 />
               </div>
               <button
                 type="submit"
-                className="h-14 px-8 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-r-xl transition-colors flex items-center gap-2"
+                className="h-14 px-8 bg-amber-500 hover:bg-amber-600 text-white font-bold transition-colors flex items-center gap-2 shrink-0"
               >
                 Cauta
                 <ArrowRight className="size-4" />
@@ -130,36 +141,40 @@ export default async function HomePage() {
             </div>
           </form>
 
-          {/* Quick category links under search */}
+          {/* Stats capsules */}
+          <div className="flex flex-wrap justify-center gap-3 mt-8">
+            {[
+              `${stats.listings > 0 ? `${stats.listings.toLocaleString()}+` : '12.400+'} anunturi`,
+              '16 tari UE',
+              'Publicare gratuita',
+            ].map(label => (
+              <span key={label} className="px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-sm font-medium">
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {/* Quick category links */}
           {categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-5">
+            <div className="flex flex-wrap justify-center gap-2 mt-6">
               {categories.slice(0, 6).map(cat => (
                 <Link
                   key={cat.id}
                   href={`/browse?category=${cat.id}`}
-                  className="px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors"
+                  className="px-3 py-1.5 rounded-full bg-white/10 text-white/70 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors"
                 >
                   {cat.name}
                 </Link>
               ))}
             </div>
           )}
+        </div>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap gap-6 mt-8 text-sm text-white/60">
-            <span className="flex items-center gap-2">
-              <Shield className="size-4" />
-              Vanzatori verificati
-            </span>
-            <span className="flex items-center gap-2">
-              <Globe className="size-4" />
-              16 tari UE
-            </span>
-            <span className="flex items-center gap-2">
-              <Zap className="size-4" />
-              Publicare gratuita
-            </span>
-          </div>
+        {/* Scroll indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce text-white/40">
+          <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
       </section>
 
