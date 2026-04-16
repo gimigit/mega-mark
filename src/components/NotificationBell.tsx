@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { NotificationDropdown } from './NotificationDropdown'
 import type { Notification } from '@/hooks/useNotifications'
 
@@ -24,19 +25,26 @@ export function NotificationBell({
   getLink,
 }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [shouldShake, setShouldShake] = useState(false)
+  const prevCount = useRef(unreadCount)
+
+  useEffect(() => {
+    if (unreadCount > prevCount.current) {
+      setShouldShake(true)
+      setTimeout(() => setShouldShake(false), 600)
+    }
+    prevCount.current = unreadCount
+  }, [unreadCount])
 
   return (
     <div className="relative">
-      <button
+      <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-500 hover:text-gray-700 transition-colors"
+        animate={shouldShake ? { rotate: [0, -10, 10, -10, 10, 0] } : {}}
+        transition={{ duration: 0.5 }}
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -49,14 +57,11 @@ export function NotificationBell({
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
-      </button>
+      </motion.button>
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <NotificationDropdown
             notifications={notifications}
             loading={loading}
