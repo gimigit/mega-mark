@@ -65,3 +65,54 @@ export const TOP_MANUFACTURERS = [
   'Kubota',
   'Valtra',
 ] as const
+
+/** Romanian counties (județe) for SEO pages */
+export const ROMANIAN_COUNTIES = [
+  { slug: 'alba', name: 'Alba' },
+  { slug: 'arad', name: 'Arad' },
+  { slug: 'arges', name: 'Argeș' },
+  { slug: 'bacau', name: 'Bacău' },
+  { slug: 'bihor', name: 'Bihor' },
+  { slug: 'bistrita-nasaud', name: 'Bistrița-Năsăud' },
+  { slug: 'botosani', name: 'Botoșani' },
+  { slug: 'braila', name: 'Brăila' },
+  { slug: 'brasov', name: 'Brașov' },
+  { slug: 'bucuresti', name: 'București' },
+  { slug: 'buzau', name: 'Buzău' },
+  { slug: 'calarasi', name: 'Călărași' },
+  { slug: 'caras-severin', name: 'Caraș-Severin' },
+  { slug: 'cluj', name: 'Cluj' },
+  { slug: 'constanta', name: 'Constanța' },
+  { slug: 'covasna', name: 'Covasna' },
+  { slug: 'dambovita', name: 'Dâmbovița' },
+  { slug: 'dolj', name: 'Dolj' },
+  { slug: 'galati', name: 'Galați' },
+  { slug: 'giurgiu', name: 'Giurgiu' },
+  { slug: 'gorj', name: 'Gorj' },
+  { slug: 'harghita', name: 'Harghita' },
+  { slug: 'hunedoara', name: 'Hunedoara' },
+  { slug: 'ialomita', name: 'Ialomița' },
+  { slug: 'iasi', name: 'Iași' },
+  { slug: 'ilfov', name: 'Ilfov' },
+  { slug: 'maramures', name: 'Maramureș' },
+  { slug: 'mehedinti', name: 'Mehedinți' },
+  { slug: 'mures', name: 'Mureș' },
+  { slug: 'neamt', name: 'Neamț' },
+  { slug: 'olt', name: 'Olt' },
+  { slug: 'prahova', name: 'Prahova' },
+  { slug: 'salaj', name: 'Sălaj' },
+  { slug: 'satu-mare', name: 'Satu Mare' },
+  { slug: 'sibiu', name: 'Sibiu' },
+  { slug: 'suceava', name: 'Suceava' },
+  { slug: 'teleorman', name: 'Teleorman' },
+  { slug: 'timis', name: 'Timiș' },
+  { slug: 'tulcea', name: 'Tulcea' },
+  { slug: 'valcea', name: 'Vâlcea' },
+  { slug: 'vaslui', name: 'Vaslui' },
+  { slug: 'vrancea', name: 'Vrancea' },
+] as const
+
+export function getCountyName(slug: string): string {
+  const county = ROMANIAN_COUNTIES.find(c => c.slug === slug)
+  return county?.name || slug
+}

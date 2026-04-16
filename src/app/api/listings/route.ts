@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '12')
     const offset = (page - 1) * limit
 
-    const categoryId = searchParams.get('category_id')
+    const category = searchParams.get('category')
+    const categoryId = searchParams.get('category_id') || searchParams.get('category')
     const county = searchParams.get('county')
     const minPrice = searchParams.get('min_price')
     const maxPrice = searchParams.get('max_price')
@@ -26,10 +27,9 @@ export async function GET(request: NextRequest) {
       .from('listings')
       .select(`
         *,
-        seller:profiles(id, full_name, avatar_url, verified, avg_rating, reviews_count),
-        category:categories(id, name, slug),
-        manufacturer:manufacturers(id, name),
-        photos:listing_photos(id, url, position)
+        seller:profiles(id, full_name, avatar_url, is_verified, avg_rating, reviews_count),
+        categories(id, name, slug),
+        manufacturers(id, name)
       `)
       .eq('status', status)
 
@@ -85,12 +85,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       listings: listings || [],
-      pagination: {
-        page,
-        limit,
-        total: count || 0,
-        totalPages: Math.ceil((count || 0) / limit)
-      }
+      totalCount: count || 0,
+      totalPages: Math.ceil((count || 0) / limit),
     })
   } catch (error) {
     console.error('Listings GET error:', error)
