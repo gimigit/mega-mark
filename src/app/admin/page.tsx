@@ -21,9 +21,8 @@ export default async function AdminPage() {
       .from('listings')
       .select(`
         *,
-        seller:profiles!listings_seller_id_fkey(id, full_name, email, avatar_url, role, verified),
-        category:categories(id, name, slug),
-        photos:listing_photos(id, url, position)
+        seller:profiles!listings_seller_id_fkey(id, full_name, email, avatar_url, role, is_verified),
+        category:categories(id, name, slug)
       `)
       .order('created_at', { ascending: false })
       .limit(50),

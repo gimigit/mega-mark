@@ -110,13 +110,22 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
       case 'featured_7d':
         expiresAt.setDate(now.getDate() + 7)
         break
+      case 'featured_30d':
+        expiresAt.setDate(now.getDate() + 30)
+        break
       case 'featured_14d':
       case 'top_position':
         expiresAt.setDate(now.getDate() + 14)
         break
       default:
-        expiresAt.setDate(now.getDate() + 7) // fallback
+        expiresAt.setDate(now.getDate() + 7)
     }
+
+    // Update listing is_featured + featured_until
+    await supabase.from('listings').update({
+      is_featured: true,
+      featured_until: expiresAt.toISOString(),
+    }).eq('id', listingId)
 
     // Create listing_boost record
     const { error } = await supabase.from('listing_boosts').insert({

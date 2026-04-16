@@ -60,7 +60,8 @@ export async function POST(request: NextRequest) {
 
       // Map boost type to Stripe price ID
       const boostPriceIdMap: Record<string, string> = {
-        featured_7d: process.env.STRIPE_PRICE_BOOST_FEATURED_7D!,
+        featured_7d: process.env.STRIPE_PRICE_7_DAYS || process.env.STRIPE_PRICE_BOOST_FEATURED_7D!,
+        featured_30d: process.env.STRIPE_PRICE_30_DAYS || process.env.STRIPE_PRICE_BOOST_FEATURED_14D!,
         featured_14d: process.env.STRIPE_PRICE_BOOST_FEATURED_14D!,
         top_position: process.env.STRIPE_PRICE_BOOST_TOP_POSITION!,
       }
