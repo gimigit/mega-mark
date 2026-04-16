@@ -1,12 +1,22 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Fraunces, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
 import { ThemeProvider } from 'next-themes'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
 
-const inter = Inter({ subsets: ['latin'] })
+const fraunces = Fraunces({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-display',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-body',
+})
 
 export const metadata: Metadata = {
   title: 'Mega-Mark — Piața Utilajelor Agricole din România și UE',
@@ -37,7 +47,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ro" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${fraunces.variable} ${dmSans.variable} font-body`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <TooltipProvider>
             <SupabaseProvider>{children}</SupabaseProvider>

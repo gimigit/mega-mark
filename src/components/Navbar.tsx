@@ -51,7 +51,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/95 dark:bg-dark-950/95 backdrop-blur-md border-b border-gray-200 dark:border-dark-700 shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-6">
         {/* Brand */}
-        <Link href="/" className="text-2xl font-black flex items-center shrink-0">
+        <Link href="/" className="text-2xl font-black flex items-center shrink-0 font-display">
           <span className="text-green-800 dark:text-green-400">Mega</span>
           <span className="text-amber-500">Mark</span>
         </Link>

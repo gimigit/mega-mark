@@ -82,6 +82,10 @@ const config: Config = {
         input: 'var(--input)',
         ring: 'var(--ring)',
       },
+      fontFamily: {
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
+      },
       borderRadius: {
         DEFAULT: '0.75rem',
         lg: '1rem',

@@ -99,7 +99,7 @@ export default async function HomePage() {
           <p className="text-green-300 text-sm font-semibold tracking-wide uppercase mb-3">
             Marketplace agricol Romania & UE
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-4">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-4 font-display">
             Cumpara si vinde<br />
             <span className="text-amber-400">utilaje agricole</span>
           </h1>

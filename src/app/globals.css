@@ -73,10 +73,14 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+}
+
+h1, h2, .font-display {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
 }
 
 a {
