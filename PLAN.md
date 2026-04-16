@@ -518,12 +518,12 @@
 
 ---
 
-## Faza 4 — Engagement & Trust  ← INCEPE AICI
+## ✅ Faza 4 — Engagement & Trust (COMPLETA)
 
 > **Obiectiv:** Features care construiesc incredere: reviews, favorites, notifications, profil public.
 > **Referinta UX:** OLX — profil seller cu rating, badge verificat, istoric.
 
-### Task 4.1: Favorites system
+### Task 4.1: ✅ Favorites system
 
 **Obiectiv:** User poate salva anunturi favorite si le vede intr-o pagina dedicata.
 
@@ -541,7 +541,7 @@
 
 **Verificare:** Click heart → filled → apare in favorites page → click again → unfilled → dispare din favorites
 
-### Task 4.2: Seller profile page (stil OLX)
+### Task 4.2: ✅ Seller profile page (stil OLX)
 
 **Obiectiv:** Profil public vanzator cu incredere si transparenta.
 
@@ -565,7 +565,7 @@
 
 **Verificare:** Seller profile arata: info completa, anunturi, reviews, rating
 
-### Task 4.3: Reviews system
+### Task 4.3: ✅ Reviews system
 
 **Obiectiv:** Buyeri pot lasa review pe seller dupa o tranzactie/interactiune.
 
@@ -582,7 +582,7 @@
 
 **Verificare:** Buyer lasa review → apare pe seller profile → rating_avg se schimba
 
-### Task 4.4: Notifications (in-app + email)
+### Task 4.4: ✅ Notifications (in-app + email)
 
 **Obiectiv:** Userul e notificat la evenimente importante.
 
@@ -614,7 +614,7 @@
 
 ---
 
-## Faza 5 — Monetizare & Admin
+## Faza 5 — Monetizare & Admin  ← INCEPE AICI
 
 > **Obiectiv:** Stripe functional, promovare anunturi, admin dashboard.
 
