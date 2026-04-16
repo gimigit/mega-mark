@@ -439,12 +439,12 @@
 
 ---
 
-## Faza 3 — Mesagerie & Comunicare  ← INCEPE AICI
+## ✅ Faza 3 — Mesagerie & Comunicare (COMPLETA)
 
 > **Obiectiv:** Buyer poate contacta seller, mesagerie interna, notificari.
 > **Referinta UX:** OLX Chat — mesaje instant pe anunt.
 
-### Task 3.1: Conversations API
+### Task 3.1: ✅ Conversations API
 
 **Obiectiv:** Backend complet pentru mesagerie.
 
@@ -463,7 +463,7 @@
 
 **Verificare:** Create conversation → GET listeaza → send message → GET arata mesajul → mark read → unread count = 0
 
-### Task 3.2: Inbox page + Chat UI
+### Task 3.2: ✅ Inbox page + Chat UI
 
 **Obiectiv:** Pagina de mesaje cu lista conversatii si chat.
 
@@ -487,7 +487,7 @@
 
 **Verificare:** Listing detail → "Trimite mesaj" → se deschide conversatia → reply → badge unread pe celalalt user
 
-### Task 3.3: Saved searches API
+### Task 3.3: ✅ Saved searches API
 
 **Obiectiv:** User salveaza cautari favorite.
 
@@ -503,7 +503,7 @@
 
 **Verificare:** Browse cu filtre → "Salveaza cautarea" → apare in dashboard → click → browse cu filtrele
 
-### Task 3.4: Auth me API
+### Task 3.4: ✅ Auth me API
 
 **Obiectiv:** Endpoint pentru profil user curent.
 
@@ -518,7 +518,7 @@
 
 ---
 
-## Faza 4 — Engagement & Trust
+## Faza 4 — Engagement & Trust  ← INCEPE AICI
 
 > **Obiectiv:** Features care construiesc incredere: reviews, favorites, notifications, profil public.
 > **Referinta UX:** OLX — profil seller cu rating, badge verificat, istoric.
