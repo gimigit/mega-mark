@@ -477,6 +477,36 @@ export default function BrowseClient({
         </div>
       </div>
 
+      {/* Brand pills — quick manufacturer filter */}
+      {manufacturers.length > 0 && (
+        <div className="max-w-7xl mx-auto px-6 pb-4">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Branduri:</span>
+            {manufacturers.slice(0, 10).map(mfr => (
+              <button
+                key={mfr.id}
+                onClick={() => {
+                  setSelectedManufacturer(selectedManufacturer === mfr.name ? '' : mfr.name)
+                  const newFilters = activeFilters.filter(f => f.key !== 'manufacturer')
+                  if (selectedManufacturer !== mfr.name) newFilters.push({ key: 'manufacturer', value: mfr.name })
+                  setActiveFilters(newFilters)
+                  setPage(1)
+                  const params = buildParams(newFilters, 1)
+                  router.push(`${pathname}?${params}`, { scroll: false })
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                  selectedManufacturer === mfr.name
+                    ? 'bg-green-700 text-white border-green-700'
+                    : 'bg-white dark:bg-dark-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-dark-600 hover:border-green-500 hover:text-green-700'
+                }`}
+              >
+                {mfr.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Results area */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -555,7 +585,7 @@ export default function BrowseClient({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(12)].map((_, i) => (
               <div key={i} className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-2xl overflow-hidden">
-                <div className="h-48 bg-gray-200 dark:bg-dark-700 animate-pulse" />
+                <div className="aspect-[4/3] bg-gray-200 dark:bg-dark-700 animate-pulse" />
                 <div className="p-4 space-y-3">
                   <div className="h-4 bg-gray-200 dark:bg-dark-700 rounded animate-pulse w-3/4" />
                   <div className="h-6 bg-gray-200 dark:bg-dark-700 rounded animate-pulse w-1/2" />

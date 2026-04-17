@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ListingCard from '@/components/ListingCard'
+import HeroSearch from '@/components/HeroSearch'
 import { createClient } from '@/lib/supabase/server'
 import {
   Search, ArrowRight, Globe, ChevronRight,
@@ -119,27 +120,8 @@ export default async function HomePage() {
             de la vanzatori verificati din toata Europa.
           </p>
 
-          {/* Search bar — central, prominent */}
-          <form action="/browse" method="GET" className="max-w-2xl mx-auto animate-slide-up">
-            <div className="flex shadow-2xl rounded-xl overflow-hidden">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="keyword"
-                  placeholder="Cauta: John Deere 6330, tractor 150 CP..."
-                  className="w-full h-14 pl-12 pr-4 border-0 text-gray-900 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                />
-              </div>
-              <button
-                type="submit"
-                className="h-14 px-8 bg-amber-500 hover:bg-amber-600 text-white font-bold transition-colors flex items-center gap-2 shrink-0"
-              >
-                Cauta
-                <ArrowRight className="size-4" />
-              </button>
-            </div>
-          </form>
+          {/* Search bar — autocomplete */}
+          <HeroSearch />
 
           {/* Stats capsules */}
           <div className="flex flex-wrap justify-center gap-3 mt-8">

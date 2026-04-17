@@ -2,7 +2,7 @@ export default function ListingCardSkeleton() {
   return (
     <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-2xl overflow-hidden">
       {/* Image Skeleton */}
-      <div className="h-48 animate-shimmer" />
+      <div className="aspect-[4/3] animate-shimmer" />
 
       {/* Content Skeleton */}
       <div className="p-4 space-y-3">

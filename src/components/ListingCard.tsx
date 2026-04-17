@@ -114,7 +114,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
         className="group block bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-2xl overflow-hidden shadow-sm hover:border-green-400 dark:hover:border-green-500 transition-colors"
       >
         {/* Image Container */}
-        <div className="relative h-48 bg-gradient-to-br from-green-100 to-green-50 dark:from-dark-700 dark:to-dark-600 flex items-center justify-center overflow-hidden">
+        <div className="relative aspect-[4/3] bg-gradient-to-br from-green-100 to-green-50 dark:from-dark-700 dark:to-dark-600 flex items-center justify-center overflow-hidden">
           {hasImages ? (
             <motion.div
               className="absolute inset-0"
@@ -126,7 +126,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
                 alt={listing.title}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 33vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
             </motion.div>
           ) : (
