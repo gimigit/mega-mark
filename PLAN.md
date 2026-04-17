@@ -39,8 +39,15 @@
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
 **DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
 **Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 (parțial)
-**Urmatoarea faza:** Task 11.3 — Listing Detail improvements (galerie swipe, similar listings)
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅
+**Urmatoarea faza:** Faza 12 — Competitor-inspired UX upgrades (seed imagini, lightbox, browse 4-col, autocomplete)
+
+**Completat 18 Apr 2026 (Claude Code):**
+- ✅ Seed data rewrite: 20 listings cu imagini reale Unsplash (3/listing), 6 demo sellers
+- ✅ Similar listings server component (`SimilarListings.tsx`) pe listing detail
+- ✅ Lightbox galerie: click → fullscreen, ←→ taste, swipe mobile, dot indicators
+- ✅ Curățat console.log din 18 API routes + sitemap
+- ✅ Fix schema columns: `avg_rating`→`rating_avg`, `listing_photos`→`images`, `county`→`location_city`
 
 **Bugs fixate (audit 18 Apr 2026):**
 - `BUMP` export invalid Next.js → mutat la `/api/listings/[id]/bump/route.ts` ca `PATCH`
@@ -632,7 +639,7 @@
 
 ---
 
-## Faza 6 — SEO, Performance & Launch  ← INCEPE AICI
+## ✅ Faza 6 — SEO, Performance & Launch
 
 > **Obiectiv:** Site optimizat pentru Google, rapid, GDPR compliant — gata de launch.
 
@@ -773,7 +780,7 @@
 
 ---
 
-## Faza 8: SEO Programatic ← INCEPE AICI
+## ✅ Faza 8: SEO Programatic
 
 **Obiectiv:** Pagini SEO pentru fiecare categorie × judet — `/tractoare/cluj`, `/combine/timis`.
 
@@ -889,6 +896,146 @@
 1. Adauga galeriere poze (swipe)
 2. Adauga "分享" (share) buton
 3. Adauga "similar listings" section
+
+---
+
+## Faza 12 — Competitor-Inspired UX Upgrades  ← INCEPE AICI
+
+> **Baza:** Analiza design competitori agricoli EU (18 Apr 2026) cu `designlang` CLI.
+> **Competitori analizati:** landwirt.com (1852 elemente reale), agriaffaires.com, mascus.com, machineryzone.eu.
+> **Insight cheie:** Landwirt — verde `#008a4c`, grid 4 col, 4:3 aspect ratio, Swiper.js. Agriaffaires/Mascus — search-first UX, autocomplete, filtru make/model proeminent.
+
+---
+
+### Task 12.1: Browse grid → 4 coloane la xl + aspect ratio 4:3
+
+**Motivatie:** Landwirt foloseste 4 coloane fixe (295px × 4, gap 32px) la max-width 1300px. Aspect ratio 4:3 e cel mai frecvent pe imagini listing (27x vs 16:9 care e 15x).
+
+**Files:**
+- `src/app/browse/BrowseClient.tsx` — grid + ListingCard aspect ratio
+- `src/components/ListingCard.tsx` — schimba aspect din `aspect-[16/9]` in `aspect-[4/3]`
+
+**Steps:**
+1. In `BrowseClient.tsx`: adauga `xl:grid-cols-4` la grid-ul de cards (grid view)
+2. In `ListingCard.tsx`: schimba thumbnail aspect ratio la `aspect-[4/3]` (era `aspect-[16/9]`)
+3. Verifica ca list view nu e afectat (are layout horizontal propriu)
+4. Build + vizual check
+
+**Verificare:** La 1280px+ → 4 coloane. La 1024px → 3 coloane. Imagini card 4:3, nu 16:9.
+
+---
+
+### Task 12.2: Brand green `#008a4c` + polish culori
+
+**Motivatie:** Landwirt (lider DE/AT) si agriaffaires (lider EU) folosesc ambele verde `#008a4c` — un verde mai vibrant/teal vs `green-700` (#15803d) al nostru. Nuanta comunica mai puternic "agricol".
+
+**Files:**
+- `src/app/globals.css` — adauga culoarea ca CSS variable
+- `tailwind.config.ts` sau `tailwind.config.js` — adauga culoare custom
+
+**Steps:**
+1. Adauga in tailwind.config `agri: { DEFAULT: '#008a4c', dark: '#006b3a', light: '#00b862' }`
+2. In `globals.css`: `--agri: 153 100% 27%;` (HSL)
+3. Inlocuieste `green-700` / `green-800` cu `agri` pe elementele principale: Navbar brand, butoane CTA principale, badge-uri
+4. Pastreaza `green-600`/`green-100` pentru statusuri secundare (nu totul cu agri)
+5. Build + verifica contrast (agri pe alb = 4.43:1 — trece AA conform datelor landwirt)
+
+**Verificare:** Navbar logo, butoane "Contacteaza", "Adauga anunt", badge Featured — toate folosesc `#008a4c`. Build trece.
+
+---
+
+### Task 12.3: Search autocomplete pe homepage + browse
+
+**Motivatie:** Mascus si agriaffaires au autocomplete — user scrie "John Deer" si vede sugestii imediat. Reduce friction considerabil.
+
+**Files:**
+- `src/app/page.tsx` sau componenta HeroSearch — adauga autocomplete
+- `src/app/api/listings/search-suggestions/route.ts` — nou endpoint
+
+**Steps:**
+1. Creeaza `GET /api/listings/search-suggestions?q=query` — returneaza top 5 titluri unice cu `ilike` + `limit(5)`, fields: `id, title, categories(name)`
+2. In search bar (homepage hero): adauga `useState` pentru suggestions dropdown
+3. Debounce 300ms pe input
+4. Afiseaza max 5 sugestii: icon categorie + titlu + categorie
+5. Click pe sugestie → `/browse?search=titlu` sau direct `/listings/[id]`
+6. Escape / click outside → inchide dropdown
+7. Keyboard navigation (Up/Down arrows in dropdown, Enter selecteaza)
+
+**Verificare:** Scrie "tractor" → dropdown cu 5 sugestii in < 300ms. Escape → inchide. Click → redirect corect.
+
+---
+
+### Task 12.4: Filtru Producator (Make/Model) proeminent in Browse
+
+**Motivatie:** Pe Mascus si Machineryzone, filtrul de producator (John Deere, Fendt, Case IH) e pe locul 2 in sidebar dupa categorie — nu ascuns jos. Utilizatorii cauta frecvent dupa brand.
+
+**Files:**
+- `src/app/browse/BrowseClient.tsx`
+
+**Steps:**
+1. Muta filtrul de `manufacturer_id` in top 3 in sidebar (dupa categorie + stare)
+2. Afiseaza producatorii ca lista cu count per producator (query: `count(*) group by manufacturer_id`)
+3. Adauga query param `manufacturer_id` in URL (ca sa poti share link cu filtru)
+4. Verifica ca filtrul se aplica corect la listing query
+
+**Verificare:** Browse → sidebar arata producatori sus → click "John Deere" → URL se actualizeaza → listings filtrate.
+
+---
+
+### Task 12.5: Currency inline RON/EUR
+
+**Motivatie:** Machineryzone afiseaza ambele valute per listing. In Romania, cumparatorii vor sa stie pretul in RON imediat.
+
+**Files:**
+- `src/components/ListingCard.tsx`
+- `src/app/listings/[id]/ListingDetailClient.tsx`
+- `src/store/useCurrencyStore.ts` — nou Zustand store
+
+**Steps:**
+1. Creeaza `useCurrencyStore`: `{ currency: 'EUR' | 'RON', rate: 5.0, toggle: () => void }`
+2. Adauga toggle buton in Navbar (langa ThemeToggle): "EUR | RON"
+3. In `ListingCard`: daca `currency === 'RON'` si listing e in EUR → afiseaza `RON ${price * rate}`
+4. In listing detail: afiseaza ambele: `€89.000 / RON 445.000`
+5. Rate hardcodat `5.0` (nu fetch extern — evita complexity)
+
+**Verificare:** Toggle EUR→RON → toate cardurile arata pretul in RON. Toggle inapoi → EUR.
+
+---
+
+### Task 12.6: SEO URLs cu sluguri pentru categorii + producatori
+
+**Motivatie:** Agriaffaires are `/tracteurs-occasion`, `/moissonneuses-batteuses` — URL-uri curate cu keywords. Rankeaza #1 in FR/ES/PT pentru termenii agricoli. Mascus are `/used-tractors-for-sale/john-deere`.
+
+**Files:**
+- `src/app/browse/[category]/page.tsx` — deja exista, extinde
+- `src/app/browse/[category]/[manufacturer]/page.tsx` — nou
+- `src/app/sitemap.ts` — adauga noile pagini
+
+**Steps:**
+1. Creeaza ruta `/browse/[category]/[manufacturer]/page.tsx`
+2. `generateMetadata`: title = "John Deere Tractoare second-hand | Mega-Mark", description cu keywords
+3. Filtreaza listings dupa `category.slug + manufacturer.slug`
+4. Adauga link-uri inter-pagini pe category page (grid de producatori cu count)
+5. Adauga aceste combinatii in `sitemap.ts`
+
+**Verificare:** `/browse/tractoare/john-deere` → listings filtrate, meta tags corecte, in sitemap.
+
+---
+
+### Task 12.7: "Watchlist" badge animat pe card
+
+**Motivatie:** Landwirt are `watchlist_added` class cu animatie vizibila la adaugare in lista (din z-index map). Heart icon cu feedback vizual clar (not just toggle).
+
+**Files:**
+- `src/components/ListingCard.tsx`
+
+**Steps:**
+1. La click pe heart: animatie `scale(1.4) → scale(1)` + fill rosu instant (Framer Motion `whileTap`)
+2. Afiseaza toast mic: "Adaugat la favorite" (deja exista Sonner, adauga toast)
+3. Daca listing e deja in favorite → heart pre-filled la load (query Zustand store sau supabase)
+4. Badge count pe heart icon din Navbar se actualizeaza instant (Zustand)
+
+**Verificare:** Click heart → animatie + toast + count navbar +1. Refresh → heart ramane filled.
 
 ---
 
