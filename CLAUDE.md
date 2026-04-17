@@ -90,6 +90,12 @@ supabase/
 11. **Conversations FK joins** — Supabase nu rezolva ambiguitatea pe FK-uri duble spre aceeasi tabela. Foloseste sintaxa explicita: `buyer:profiles!conversations_buyer_id_fkey(...)`.
 12. **`next/og`** — OG image dinamica per listing: `src/app/listings/[id]/opengraph-image.tsx` cu `ImageResponse`. Runtime: nodejs.
 13. **Zustand store** — la creare: `src/store/useFavoritesStore.ts`, `src/store/useUIStore.ts`. Nu pune logica DB in store — doar state UI.
+14. **Next.js route exports** — DOAR `GET POST PUT PATCH DELETE HEAD OPTIONS` sunt valide. Orice alt export (ex: `BUMP`) e ignorat silentios → 405. Endpoint-uri separate = fisiere separate (`/bump/route.ts`).
+15. **Supabase FK join column** — Sintaxa `profiles:seller_id(...)` foloseste numele coloanei din tabel (nu numele tabelului). Verifica `supabase/schema.sql` inainte. `owner_id` NU exista — coloana e `seller_id`.
+16. **Supabase TypeScript join types** — Joined rows au tip ambiguu. Foloseste `as unknown as MyType[]` cu interfata explicita care reflecta structura din query. Nu folosi `as any`.
+17. **Messages schema** — `messages` table NU are `receiver_id` sau `listing_id`. Are: `conversation_id`, `sender_id`, `content`. Trimite mesaje via `/api/conversations` POST, nu direct in DB.
+18. **`<img>` interzis** — Foloseste `next/image` cu `fill` + `sizes` sau `width`/`height`. Singura exceptie: `opengraph-image.tsx` (ImageResponse context).
+19. **console.log in production** — Nu lasa console.log in API routes. In catch blocks: `catch {}` fara parametru sau `catch (e) { return error response }` fara log.
 
 ## Environment variables (Vercel)
 

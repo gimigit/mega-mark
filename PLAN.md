@@ -1,15 +1,23 @@
 # PLAN.md — Mega-Mark Agricultural Marketplace
 
-> **For Hermes:** Use `structured-project-execution` skill. Execute task-by-task, verify each step, update status here.
+> **For Hermes:** Use `structured-project-execution` + `nextjs-api-route-patterns` skills. Execute task-by-task, verify each step, update status here.
 >
 > **Cum sa lucrezi:**
 > 1. Citeste tot PLAN.md inainte sa incepi
 > 2. Gaseste markerul `← INCEPE AICI` — acolo e urmatoarea faza
 > 3. Executa task-urile in ordine (Task N.1, N.2, ...)
-> 4. Dupa fiecare task: ruleaza `npm run build` si verifica ca trece
+> 4. Dupa fiecare task: ruleaza `npm run build` si verifica ca trece — **ZERO TypeScript errors**
 > 5. Commit + push dupa fiecare task completat (format: `feat:`, `fix:`, `chore:`)
 > 6. Marcheaza task-ul `✅` in acest fisier si muta `← INCEPE AICI` la urmatorul task/faza
 > 7. Daca un task necesita actiune manuala (ex: Supabase Dashboard, Stripe Dashboard), scrie clar ce trebuie facut si treci la urmatorul task
+>
+> **⚠️ REGULI CRITICE (invatate din bugs produse anterior):**
+> - Next.js route exports valide: DOAR `GET POST PUT PATCH DELETE HEAD OPTIONS` — nu inventa alte metode (ex: `BUMP`)
+> - Inainte de orice join Supabase `table:coloana(...)` verifica numele coloanei in `supabase/schema.sql`
+> - Nu folosi `as any` — defineste tipuri explicite pentru join-uri Supabase (`as unknown as MyType[]`)
+> - Nu insera direct in tabele DB fara a verifica schema curenta (`supabase/schema.sql`)
+> - Nu lasa `console.log` in production code (catch blocks: foloseste `catch {}` fara parametru)
+> - Supabase join FK sintaxa: `profiles:seller_id(...)` — coloana TREBUIE sa existe in schema
 >
 > **Working directory:** `~/projects/mega-mark`
 > **Test local:** `npm run dev` (port 3000)
@@ -27,12 +35,20 @@
 
 ## Status curent (18 Aprilie 2026)
 
-**Build:** ⚠️ Blocat pe TypeScript error (Task 11.2)
+**Build:** ✅ Trece — ZERO TypeScript errors (18 Apr 2026, auditat + fixat de Claude Code)
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
 **DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
 **Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 (parțial)
-**Urmatoarea task:** Task 11.2 → fix TypeScript error → commit → Task 11.3 (Listing Detail improvements)
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 (parțial)
+**Urmatoarea faza:** Task 11.3 — Listing Detail improvements (galerie swipe, similar listings)
+
+**Bugs fixate (audit 18 Apr 2026):**
+- `BUMP` export invalid Next.js → mutat la `/api/listings/[id]/bump/route.ts` ca `PATCH`
+- `profiles:owner_id` FK inexistent → corectat la `profiles:seller_id` in 2 cron-uri
+- Insert direct in `messages` cu schema veche → înlocuit cu apel la `/api/conversations`
+- `as any` casts în 3 cron-uri → tipuri explicite `ListingWithSeller`, `SavedSearchRow`
+- `<img>` în BrowseClient list view → `next/image`
+- `manufacturers` lipsă din tipul `Listing` in browse → adăugat
 
 ### Ce exista (stare curenta)
 
