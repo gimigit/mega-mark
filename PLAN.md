@@ -40,8 +40,8 @@
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
 **DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
 **Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅
-**Urmatoarea faza:** Faza 12 — Competitor-inspired UX upgrades (seed imagini, lightbox, browse 4-col, autocomplete)
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 (12.1✅ 12.2✅ 12.3✅ 12.4✅ — 12.5-12.7 in progress)
+**Urmatoarea faza:** Faza 12 in progress — Task 12.5 (currency RON/EUR), 12.6 (SEO URLs), 12.7 (watchlist animation)
 
 **Completat 18 Apr 2026 (Claude Code):**
 - ✅ Seed data rewrite: 20 listings cu imagini reale Unsplash (3/listing), 6 demo sellers
@@ -900,7 +900,7 @@
 
 ---
 
-## Faza 12 — Competitor-Inspired UX Upgrades  ← INCEPE AICI
+## Faza 12 — Competitor-Inspired UX Upgrades
 
 > **Baza:** Analiza design competitori agricoli EU (18 Apr 2026) cu `designlang` CLI.
 > **Competitori analizati:** landwirt.com (1852 elemente reale), agriaffaires.com, mascus.com, machineryzone.eu.
@@ -908,7 +908,7 @@
 
 ---
 
-### Task 12.1: Browse grid → 4 coloane la xl + aspect ratio 4:3
+### ✅ Task 12.1: Browse grid → 4 coloane la xl + aspect ratio 4:3
 
 **Motivatie:** Landwirt foloseste 4 coloane fixe (295px × 4, gap 32px) la max-width 1300px. Aspect ratio 4:3 e cel mai frecvent pe imagini listing (27x vs 16:9 care e 15x).
 
@@ -926,7 +926,7 @@
 
 ---
 
-### Task 12.2: Brand green `#008a4c` + polish culori
+### ✅ Task 12.2: Brand green `#008a4c` + polish culori
 
 **Motivatie:** Landwirt (lider DE/AT) si agriaffaires (lider EU) folosesc ambele verde `#008a4c` — un verde mai vibrant/teal vs `green-700` (#15803d) al nostru. Nuanta comunica mai puternic "agricol".
 
@@ -945,7 +945,7 @@
 
 ---
 
-### Task 12.3: Search autocomplete pe homepage + browse
+### ✅ Task 12.3: Search autocomplete pe homepage + browse
 
 **Motivatie:** Mascus si agriaffaires au autocomplete — user scrie "John Deer" si vede sugestii imediat. Reduce friction considerabil.
 
@@ -966,7 +966,7 @@
 
 ---
 
-### Task 12.4: Filtru Producator (Make/Model) proeminent in Browse
+### ✅ Task 12.4: Filtru Producator (Make/Model) proeminent in Browse
 
 **Motivatie:** Pe Mascus si Machineryzone, filtrul de producator (John Deere, Fendt, Case IH) e pe locul 2 in sidebar dupa categorie — nu ascuns jos. Utilizatorii cauta frecvent dupa brand.
 
@@ -983,7 +983,7 @@
 
 ---
 
-### Task 12.5: Currency inline RON/EUR
+### Task 12.5: Currency inline RON/EUR  ← INCEPE AICI
 
 **Motivatie:** Machineryzone afiseaza ambele valute per listing. In Romania, cumparatorii vor sa stie pretul in RON imediat.
 
