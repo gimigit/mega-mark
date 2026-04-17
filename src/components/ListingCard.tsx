@@ -9,6 +9,17 @@ import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import type { Database } from '@/types/database'
 
+// Helper to check if a date is today
+function isUpdatedToday(dateString: string): boolean {
+  const date = new Date(dateString)
+  const today = new Date()
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  )
+}
+
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles?: Database['public']['Tables']['profiles']['Row']
   categories?: Database['public']['Tables']['categories']['Row']
@@ -144,10 +155,12 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
           </motion.button>
 
           {/* Featured Badge */}
-          {listing.is_featured && (
-            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white bg-amber-500 shadow-sm animate-pulse-subtle flex items-center gap-1">
-              <Award className="w-3.5 h-3.5" />
-              Featured
+          {(listing.is_featured || (listing.updated_at && isUpdatedToday(listing.updated_at))) && (
+            <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1 ${
+              listing.is_featured ? 'bg-amber-500 animate-pulse-subtle' : 'bg-green-600'
+            }`}>
+              {listing.is_featured && <Award className="w-3.5 h-3.5" />}
+              {listing.is_featured ? 'Featured' : isUpdatedToday(listing.updated_at) ? 'Reactualizat' : null}
             </span>
           )}
 
