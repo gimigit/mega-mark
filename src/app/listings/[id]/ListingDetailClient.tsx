@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -37,6 +37,8 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
   const [reportReason, setReportReason] = useState('')
   const [reportDescription, setReportDescription] = useState('')
   const [reportLoading, setReportLoading] = useState(false)
+  const [showLightbox, setShowLightbox] = useState(false)
+  const touchStartX = useRef<number | null>(null)
 
   const handleBump = async () => {
     if (!user || !listing) {
@@ -126,8 +128,8 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
               },
             }),
           })
-        } catch (notifError) {
-          console.error('Failed to send favorite notification:', notifError)
+        } catch {
+          // notification failure is non-critical
         }
       }
     }
@@ -223,6 +225,19 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
     window.open(url, '_blank', 'width=600,height=400')
   }
 
+  useEffect(() => {
+    if (!showLightbox) return
+    const images = listing ? (listing.images as string[] | null) : null
+    const total = images?.length ?? 0
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowLightbox(false)
+      if (e.key === 'ArrowRight') setActiveImage(i => (i + 1) % total)
+      if (e.key === 'ArrowLeft') setActiveImage(i => (i - 1 + total) % total)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showLightbox, listing])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -317,7 +332,10 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               {images && images.length > 0 ? (
                 <>
-                  <div className="relative bg-gray-100 aspect-[16/9] flex items-center justify-center">
+                  <div
+                    className="relative bg-gray-100 aspect-[16/9] flex items-center justify-center cursor-zoom-in"
+                    onClick={() => setShowLightbox(true)}
+                  >
                     <Image
                       src={images[activeImage]}
                       alt={listing.title}
@@ -327,6 +345,9 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                     />
                     <span className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold text-white ${listing.status ? statusColors[listing.status] : 'bg-gray-500'}`}>
                       {(listing.status || 'unknown').toUpperCase()}
+                    </span>
+                    <span className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+                      {activeImage + 1} / {images.length}
                     </span>
                   </div>
                   {images.length > 1 && (
@@ -684,6 +705,71 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {showLightbox && images && images.length > 0 && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          onClick={() => setShowLightbox(false)}
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (touchStartX.current === null) return
+            const dx = e.changedTouches[0].clientX - touchStartX.current
+            if (Math.abs(dx) > 50) {
+              setActiveImage(i => dx < 0 ? (i + 1) % images.length : (i - 1 + images.length) % images.length)
+            }
+            touchStartX.current = null
+          }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowLightbox(false) }}
+            className="absolute top-4 right-4 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-10"
+          >
+            ✕
+          </button>
+
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); setActiveImage(i => (i - 1 + images.length) % images.length) }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-xl transition-colors z-10"
+              >
+                ‹
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setActiveImage(i => (i + 1) % images.length) }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-12 h-12 flex items-center justify-center text-xl transition-colors z-10"
+              >
+                ›
+              </button>
+            </>
+          )}
+
+          <div
+            className="relative w-full h-full flex items-center justify-center p-16"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={images[activeImage]}
+              alt={listing.title}
+              fill
+              sizes="100vw"
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.stopPropagation(); setActiveImage(i) }}
+                className={`w-2 h-2 rounded-full transition-colors ${i === activeImage ? 'bg-white' : 'bg-white/40'}`}
+              />
+            ))}
           </div>
         </div>
       )}
