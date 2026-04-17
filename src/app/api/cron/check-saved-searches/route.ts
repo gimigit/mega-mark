@@ -2,6 +2,25 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendSavedSearchMatchEmail } from '@/lib/email'
 
+type SavedSearchRow = {
+  id: string
+  user_id: string
+  name: string | null
+  keyword: string | null
+  category_id: string | null
+  country: string | null
+  condition: string | null
+  price_min: number | null
+  price_max: number | null
+  year_min: number | null
+  year_max: number | null
+  manufacturer_id: string | null
+  listing_type: string | null
+  notify_email: boolean
+  last_notified_at: string | null
+  profiles: { id: string; email: string; full_name: string | null } | null
+}
+
 // Cron job to check for new listings matching saved searches
 // Run this every hour or so
 // URL: /api/cron/check-saved-searches?secret=YOUR_CRON_SECRET
@@ -48,10 +67,9 @@ export async function GET(req: NextRequest) {
         )
       `)
       .eq('notify_email', true)
-      .or('last_notified_at.is.null,last_notified_at.lt.' + oneHourAgo)
+      .or(`last_notified_at.is.null,last_notified_at.lt.${oneHourAgo}`)
 
     if (searchError) {
-      console.error('Error fetching saved searches:', searchError)
       return NextResponse.json({ error: 'Failed to fetch saved searches' }, { status: 500 })
     }
 
@@ -62,14 +80,11 @@ export async function GET(req: NextRequest) {
     let emailsSent = 0
     let emailsFailed = 0
 
-    for (const search of savedSearches) {
-      const userEmail = (search.profiles as any)?.email
-      const userName = (search.profiles as any)?.full_name || 'Utilizator'
+    for (const search of (savedSearches as unknown as SavedSearchRow[])) {
+      const userEmail = search.profiles?.email
+      const userName = search.profiles?.full_name || 'Utilizator'
 
-      if (!userEmail) {
-        console.log(`Skipping search ${search.id}: no user email`)
-        continue
-      }
+      if (!userEmail) continue
 
       // Build query for new listings matching this saved search
       let query = supabase
@@ -125,10 +140,7 @@ export async function GET(req: NextRequest) {
 
       const { data: matchingListings, error: listingError } = await query
 
-      if (listingError) {
-        console.error(`Error finding listings for search ${search.id}:`, listingError)
-        continue
-      }
+      if (listingError) continue
 
       if (!matchingListings || matchingListings.length === 0) {
         // Update last_notified_at even if no matches to avoid re-checking too soon
@@ -164,9 +176,7 @@ export async function GET(req: NextRequest) {
             .eq('id', search.id)
 
           emailsSent++
-          console.log(`Sent saved search notification for search "${search.name}" to ${userEmail}`)
-        } catch (emailError) {
-          console.error(`Failed to send email for search ${search.id}:`, emailError)
+        } catch {
           emailsFailed++
         }
       }
@@ -178,8 +188,7 @@ export async function GET(req: NextRequest) {
       emailsSent,
       emailsFailed,
     })
-  } catch (error) {
-    console.error('Error in check-saved-searches cron:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

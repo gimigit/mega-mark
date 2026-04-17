@@ -9,6 +9,7 @@ import type { Database } from '@/types/database'
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles: Database['public']['Tables']['profiles']['Row']
   categories: Database['public']['Tables']['categories']['Row']
+  manufacturers: Database['public']['Tables']['manufacturers']['Row'] | null
 }
 
 export const dynamic = 'force-dynamic'

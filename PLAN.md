@@ -25,14 +25,14 @@
 
 ---
 
-## Status curent (16 Aprilie 2026)
+## Status curent (18 Aprilie 2026)
 
-**Build:** ✅ Trece local (`npm run build`)
+**Build:** ⚠️ Blocat pe TypeScript error (Task 11.2)
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
 **DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
 **Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅
-**Urmatoarea faza:** Faza 6 — SEO, Performance & Launch
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 (parțial)
+**Urmatoarea task:** Task 11.2 → fix TypeScript error → commit → Task 11.3 (Listing Detail improvements)
 
 ### Ce exista (stare curenta)
 
@@ -849,10 +849,23 @@
 
 ### Task 11.2: îmbunătățiri Browse
 
+**Status:** ✅ IMPLEMENTAT (build blocat pe TypeScript error)
+
 **Steps:**
-1. Adauga "grid/list view" toggle
-2. Adauga sortare dupa: pret crescator, pret descrescator, cele mai noi
-3. Infinite scroll în loc de pagination
+1. ✅ Adauga "grid/list view" toggle
+2. ✅ Adauga sortare dupa: pret crescator, pret descrescator, cele mai noi
+3. ✅ Infinite scroll în loc de pagination
+
+**Changes made:**
+- Added `viewMode: 'grid' | 'list' | 'map'` state and view toggle buttons
+- List view component with horizontal cards
+- Infinite scroll via IntersectionObserver (`observerTarget` ref)
+- Grid view animation with Framer Motion preserved
+- Sort dropdown already existing in UI (7 options)
+
+**Blocking issue:** TypeScript error on line 628: `listing.images?.[0]` — `images` is typed as `Json`, can't index with `[0]`. Need cast: `(listing.images as string[])?.[0]`.
+
+**Next:** Fix TypeScript error → `npm run build` → commit
 
 ### Task 11.3: îmbunătățiri Listing Detail
 

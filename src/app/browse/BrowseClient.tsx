@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition, useCallback } from 'react'
+import Image from 'next/image'
+import { useState, useTransition, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -8,14 +9,15 @@ import { useSupabase } from '@/components/providers/SupabaseProvider'
 import ListingCard from '@/components/ListingCard'
 import MapView from '@/components/MapView'
 import {
-  Search, RotateCcw, Bookmark, X, Grid3X3, Map,
-  ChevronLeft, ChevronRight, SearchX,
+  Search, RotateCcw, Bookmark, X, Grid3X3, Map, List,
+  ChevronLeft, ChevronRight, SearchX, Loader2,
 } from 'lucide-react'
 import type { Database } from '@/types/database'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles: Database['public']['Tables']['profiles']['Row']
   categories: Database['public']['Tables']['categories']['Row']
+  manufacturers: Database['public']['Tables']['manufacturers']['Row'] | null
 }
 
 type Category = Database['public']['Tables']['categories']['Row']
@@ -49,7 +51,9 @@ export default function BrowseClient({
   const { user } = useSupabase()
   const [isPending, startTransition] = useTransition()
 
-  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid')
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid')
+  const observerTarget = useRef<HTMLDivElement>(null)
+
   const [keyword, setKeyword] = useState(initialFilters.find(f => f.key === 'keyword')?.value || '')
   const [selectedCategory, setSelectedCategory] = useState(
     initialFilters.find(f => f.key === 'category')?.value || ''
@@ -85,6 +89,8 @@ export default function BrowseClient({
   const [saveSearchOpen, setSaveSearchOpen] = useState(false)
   const [searchName, setSearchName] = useState('')
   const [saveLoading, setSaveLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
 
   const fetchListings = useCallback(
     async (newPage: number = 1, filters?: typeof initialFilters) => {
@@ -184,12 +190,36 @@ export default function BrowseClient({
 
       const { data } = await dataQuery
       const listingsData = (data as Listing[]) || []
-
+      setHasMore(listingsData.length === limit)
       setListings(prev => newPage === 1 ? listingsData : [...prev, ...listingsData])
       setLoading(false)
+      setLoadingMore(false)
     },
     [supabase, categories, countries, manufacturers, activeFilters]
   )
+
+  const loadMore = useCallback(() => {
+    if (!hasMore || loadingMore || loading) return
+    setLoadingMore(true)
+    fetchListings(page + 1)
+  }, [hasMore, loadingMore, loading, page, fetchListings])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasMore, loadingMore, loading, loadMore])
 
   const buildParams = (newFilters: typeof activeFilters, newPage: number = 1, newSort?: string) => {
     const params = new URLSearchParams()
@@ -294,6 +324,7 @@ export default function BrowseClient({
     setSortBy('featured')
     setActiveFilters([])
     setPage(1)
+    setHasMore(true)
     router.push(pathname, { scroll: false })
     fetchListings(1, [])
   }
@@ -494,6 +525,17 @@ export default function BrowseClient({
                 Grid
               </button>
               <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                  viewMode === 'list'
+                    ? 'bg-green-700 text-white'
+                    : 'bg-white dark:bg-dark-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700'
+                }`}
+              >
+                <List className="size-4" />
+                Listă
+              </button>
+              <button
                 onClick={() => setViewMode('map')}
                 className={`px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                   viewMode === 'map'
@@ -531,27 +573,7 @@ export default function BrowseClient({
           </div>
         )}
 
-        {/* Empty state */}
-        {!loading && viewMode === 'grid' && listings.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-dark-800 rounded-2xl border border-gray-200 dark:border-dark-700">
-            <div className="size-16 rounded-full bg-gray-100 dark:bg-dark-700 flex items-center justify-center mx-auto mb-4">
-              <SearchX className="size-7 text-gray-400 dark:text-gray-500" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Niciun anunt gasit</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">Incearca sa modifici criteriile de cautare</p>
-            {hasActiveFilters && (
-              <button
-                onClick={resetFilters}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white rounded-lg font-semibold hover:bg-green-800 transition-colors"
-              >
-                <RotateCcw className="size-4" />
-                Reseteaza filtrele
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Grid of listings */}
+        {/* Grid view */}
         {!loading && viewMode === 'grid' && listings.length > 0 && (
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
@@ -572,7 +594,72 @@ export default function BrowseClient({
                 </motion.div>
               ))}
             </AnimatePresence>
+            <div ref={observerTarget} className="h-10" />
           </motion.div>
+        )}
+
+        {/* Empty state */}
+        {!loading && viewMode === 'grid' && listings.length === 0 && (
+          <div className="text-center py-16 bg-white dark:bg-dark-800 rounded-2xl border border-gray-200 dark:border-dark-700">
+            <div className="size-16 rounded-full bg-gray-100 dark:bg-dark-700 flex items-center justify-center mx-auto mb-4">
+              <SearchX className="size-7 text-gray-400 dark:text-gray-500" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Niciun anunt gasit</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Incearca sa modifici criteriile de cautare</p>
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white rounded-lg font-semibold hover:bg-green-800 transition-colors"
+              >
+                <RotateCcw className="size-4" />
+                Reseteaza filtrele
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* List view */}
+        {!loading && viewMode === 'list' && listings.length > 0 && (
+          <div className="flex flex-col gap-3">
+            {listings.map((listing) => (
+              <div
+                key={listing.id}
+                className="flex items-center gap-4 p-4 bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-xl hover:shadow-lg transition-all"
+              >
+                <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                  <Image
+                    src={(listing.images as string[] | null)?.[0] || '/placeholder.jpg'}
+                    alt={listing.title}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                    {listing.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                    {listing.categories?.name} • {listing.manufacturers?.name}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {listing.location_city}, {listing.location_country}
+                  </p>
+                </div>
+                <div className="flex-shrink-0 text-right">
+                  <p className="text-lg font-bold text-green-700">
+                    {listing.price?.toLocaleString()} {listing.currency === 'EUR' ? '€' : 'RON'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(listing.created_at).toLocaleDateString('ro-RO')}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {/* Infinite scroll trigger */}
+            <div ref={observerTarget} className="h-10" />
+          </div>
         )}
 
         {/* Pagination */}

@@ -2,19 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendAdExpiredEmail } from '@/lib/email'
 
-// This endpoint should be called by a cron job (e.g., Vercel Cron)
-// It marks ads as expired when their expiresAt date has passed
-// and sends notification emails to users
-//
-// Example cron schedule: hourly
-// URL: /api/cron/expire-ads?secret=YOUR_CRON_SECRET
-
 const CRON_SECRET = process.env.CRON_SECRET || ''
 
 export const dynamic = 'force-dynamic'
 
+type ListingWithSeller = {
+  id: string
+  title: string
+  slug: string | null
+  expires_at: string
+  profiles: { id: string; email: string; full_name: string | null } | null
+}
+
 export async function GET(req: NextRequest) {
-  // Verify cron secret if provided
   const secret = req.nextUrl.searchParams.get('secret')
   if (CRON_SECRET && secret !== CRON_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient()
     const now = new Date().toISOString()
 
-    // Find all active listings that have expired
     const { data: expiredListings, error: findError } = await supabase
       .from('listings')
       .select(`
@@ -32,7 +31,7 @@ export async function GET(req: NextRequest) {
         title,
         slug,
         expires_at,
-        profiles:owner_id (
+        profiles:seller_id (
           id,
           email,
           full_name
@@ -43,7 +42,6 @@ export async function GET(req: NextRequest) {
       .not('expires_at', 'is', null)
 
     if (findError) {
-      console.error('Error finding expired listings:', findError)
       return NextResponse.json({ error: 'Failed to find expired listings' }, { status: 500 })
     }
 
@@ -51,44 +49,33 @@ export async function GET(req: NextRequest) {
     let emailsSent = 0
     let emailsFailed = 0
 
-    // Process each expired listing
-    for (const listing of expiredListings || []) {
-      try {
-        // Update listing status to expired
-        const { error: updateError } = await supabase
-          .from('listings')
-          .update({ status: 'expired', updated_at: now })
-          .eq('id', listing.id)
-          .eq('status', 'active') // optimistic lock
+    for (const listing of (expiredListings as unknown as ListingWithSeller[]) || []) {
+      const { error: updateError } = await supabase
+        .from('listings')
+        .update({ status: 'expired', updated_at: now })
+        .eq('id', listing.id)
+        .eq('status', 'active')
 
-        if (updateError) {
-          console.error(`Failed to expire listing ${listing.id}:`, updateError)
-          continue
+      if (updateError) continue
+
+      listingsExpired++
+
+      const userEmail = listing.profiles?.email
+      const userName = listing.profiles?.full_name || 'Vânzător'
+
+      if (userEmail && process.env.RESEND_API_KEY) {
+        try {
+          await sendAdExpiredEmail({
+            to: userEmail,
+            userName,
+            listingTitle: listing.title,
+            listingId: listing.id,
+            listingSlug: listing.slug ?? undefined
+          })
+          emailsSent++
+        } catch {
+          emailsFailed++
         }
-
-        listingsExpired++
-
-        // Send email notification to user
-        const userEmail = (listing.profiles as any)?.email
-        const userName = (listing.profiles as any)?.full_name || 'Vânzător'
-
-        if (userEmail && process.env.RESEND_API_KEY) {
-          try {
-            await sendAdExpiredEmail({
-              to: userEmail,
-              userName,
-              listingTitle: listing.title,
-              listingId: listing.id,
-              listingSlug: listing.slug
-            })
-            emailsSent++
-          } catch (err) {
-            console.error(`Failed to send expired email for listing ${listing.id}:`, err)
-            emailsFailed++
-          }
-        }
-      } catch (err) {
-        console.error(`Failed to expire listing ${listing.id}:`, err)
       }
     }
 
@@ -99,13 +86,11 @@ export async function GET(req: NextRequest) {
       emailsSent,
       emailsFailed
     })
-  } catch (error) {
-    console.error('Error in expire-ads cron:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// Also support POST method
 export async function POST(req: NextRequest) {
   return GET(req)
 }

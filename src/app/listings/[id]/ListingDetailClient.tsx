@@ -158,40 +158,26 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
     if (!user || !listing) return
 
     setSendLoading(true)
-    const { error } = await supabase.from('messages').insert({
-      sender_id: user.id,
-      receiver_id: listing.seller_id,
-      listing_id: listingId,
-      content: messageContent.trim(),
-    })
+    try {
+      const res = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listing_id: listingId, message: messageContent.trim() }),
+      })
+      const data = await res.json()
 
-      if (error) {
-        toast.error('Eroare la trimiterea mesajului. Încearcă din nou.')
+      if (!res.ok) {
+        toast.error(data.error || 'Eroare la trimiterea mesajului. Încearcă din nou.')
       } else {
         toast.success('Mesaj trimis!')
         setShowContactModal(false)
         setMessageContent('')
-
-        // Notify seller via in-app notification and email
-        try {
-          await fetch('/api/notifications/events', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event: 'message_received',
-              data: {
-                userId: listing.seller_id,
-                senderName: user.user_metadata?.full_name || user.email,
-                messagePreview: messageContent.slice(0, 100),
-                listingTitle: listing.title,
-              },
-            }),
-          })
-        } catch (notifError) {
-          console.error('Failed to send notification:', notifError)
-        }
       }
+    } catch {
+      toast.error('Eroare. Încearcă din nou.')
+    } finally {
       setSendLoading(false)
+    }
   }
 
   const handleCloseModal = () => {

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-// GET /api/listings/[id] - Get single listing
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -15,12 +14,11 @@ export async function GET(
       .select(`
         *,
         seller:profiles(
-          id, full_name, avatar_url, phone, email, verified, 
-          avg_rating, reviews_count, created_at
+          id, full_name, avatar_url, phone, email, is_verified,
+          rating_avg, reviews_count, created_at
         ),
         category:categories(id, name, slug),
-        manufacturer:manufacturers(id, name),
-        photos:listing_photos(id, url, position)
+        manufacturer:manufacturers(id, name)
       `)
       .eq('id', id)
       .single()
@@ -29,20 +27,17 @@ export async function GET(
       if (error.code === 'PGRST116') {
         return NextResponse.json({ error: 'Listing not found' }, { status: 404 })
       }
-      console.error('Error fetching listing:', error)
       return NextResponse.json({ error: 'Failed to fetch listing' }, { status: 500 })
     }
 
-    // Increment view count
     await supabase
       .from('listings')
       .update({ views_count: (listing.views_count || 0) + 1 })
       .eq('id', id)
 
-    // Check if user has favorited (if authenticated)
     const { data: { user } } = await supabase.auth.getUser()
     let isFavorited = false
-    
+
     if (user) {
       const { data: favorite } = await supabase
         .from('favorites')
@@ -50,18 +45,15 @@ export async function GET(
         .eq('user_id', user.id)
         .eq('listing_id', id)
         .single()
-      
       isFavorited = !!favorite
     }
 
     return NextResponse.json({ listing, isFavorited })
-  } catch (error) {
-    console.error('Listing GET error:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// PATCH /api/listings/[id] - Update listing
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -75,7 +67,6 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check ownership
     const { data: listing } = await supabase
       .from('listings')
       .select('seller_id')
@@ -100,18 +91,15 @@ export async function PATCH(
       .single()
 
     if (error) {
-      console.error('Error updating listing:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ listing: updated })
-  } catch (error) {
-    console.error('Listing PATCH error:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// DELETE /api/listings/[id] - Delete listing
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -125,7 +113,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check ownership
     const { data: listing } = await supabase
       .from('listings')
       .select('seller_id')
@@ -146,74 +133,11 @@ export async function DELETE(
       .eq('id', id)
 
     if (error) {
-      console.error('Error deleting listing:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ message: 'Listing deleted' })
-  } catch (error) {
-    console.error('Listing DELETE error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-// PATCH /api/listings/[id]/bump - Bump listing to top (once per day for free)
-export async function BUMP(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check ownership
-    const { data: listing } = await supabase
-      .from('listings')
-      .select('seller_id, updated_at')
-      .eq('id', id)
-      .single()
-
-    if (!listing) {
-      return NextResponse.json({ error: 'Listing not found' }, { status: 404 })
-    }
-
-    if (listing.seller_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
-    // Check if bumped in last 24 hours
-    const lastBump = new Date(listing.updated_at)
-    const now = new Date()
-    const hoursSinceBump = (now.getTime() - lastBump.getTime()) / (1000 * 60 * 60)
-
-    if (hoursSinceBump < 24) {
-      return NextResponse.json({ 
-        error: 'Poți face bump o singură dată la 24 de ore',
-        next_bump: new Date(lastBump.getTime() + 24 * 60 * 60 * 1000).toISOString()
-      }, { status: 429 })
-    }
-
-    // Update listing to bump it
-    const { data: updated, error } = await supabase
-      .from('listings')
-      .update({ updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error bumping listing:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    return NextResponse.json({ listing: updated, message: 'Anunțul a fost reactualizat cu succes!' })
-  } catch (error) {
-    console.error('Listing BUMP error:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

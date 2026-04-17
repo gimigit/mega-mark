@@ -18,10 +18,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Lipsesc date obligatorii.' }, { status: 400 })
   }
 
-  // Validate reason
   const validReasons = ['spam', 'inappropriate', 'scam', 'duplicate', 'expired', 'other']
   if (!validReasons.includes(reason)) {
     return NextResponse.json({ error: 'Motiv invalid.' }, { status: 400 })
+  }
+
+  const { data: listingExists } = await supabase
+    .from('listings')
+    .select('id')
+    .eq('id', listing_id)
+    .single()
+
+  if (!listingExists) {
+    return NextResponse.json({ error: 'Anunțul nu există.' }, { status: 404 })
   }
 
   const { error } = await supabase
@@ -35,7 +44,6 @@ export async function POST(request: NextRequest) {
     })
 
   if (error) {
-    console.error('Report insert error:', error)
     return NextResponse.json({ error: 'Nu s-a putut trimite raportul.' }, { status: 500 })
   }
 

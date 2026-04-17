@@ -2,18 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendAdExpiringEmail } from '@/lib/email'
 
-// This endpoint should be called by a cron job (e.g., Vercel Cron, GitHub Actions, or external service)
-// It sends email reminders for listings that are about to expire
-//
-// Example cron schedule: daily at 9:00 AM
-// URL: /api/cron/check-expiring-ads?secret=YOUR_CRON_SECRET
-
 const CRON_SECRET = process.env.CRON_SECRET || ''
 
 export const dynamic = 'force-dynamic'
 
+type ListingWithSeller = {
+  id: string
+  title: string
+  slug: string | null
+  expires_at: string
+  profiles: { id: string; email: string; full_name: string | null } | null
+}
+
 export async function GET(req: NextRequest) {
-  // Verify cron secret if provided
   const secret = req.nextUrl.searchParams.get('secret')
   if (CRON_SECRET && secret !== CRON_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -25,7 +26,6 @@ export async function GET(req: NextRequest) {
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
     const eightDaysFromNow = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000).toISOString()
 
-    // Find listings that expire in 7 days (between 7 and 8 days from now)
     const { data: expiringListings, error: findError } = await supabase
       .from('listings')
       .select(`
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         title,
         slug,
         expires_at,
-        profiles:owner_id (
+        profiles:seller_id (
           id,
           email,
           full_name
@@ -45,16 +45,15 @@ export async function GET(req: NextRequest) {
       .not('expires_at', 'is', null)
 
     if (findError) {
-      console.error('Error finding expiring listings:', findError)
       return NextResponse.json({ error: 'Failed to find expiring listings' }, { status: 500 })
     }
 
     let emailsSent = 0
     let emailsFailed = 0
 
-    for (const listing of expiringListings || []) {
-      const userEmail = (listing.profiles as any)?.email
-      const userName = (listing.profiles as any)?.full_name || 'Vânzător'
+    for (const listing of (expiringListings as unknown as ListingWithSeller[]) || []) {
+      const userEmail = listing.profiles?.email
+      const userName = listing.profiles?.full_name || 'Vânzător'
 
       if (userEmail && process.env.RESEND_API_KEY) {
         try {
@@ -66,8 +65,7 @@ export async function GET(req: NextRequest) {
             daysUntilExpiry: 7
           })
           emailsSent++
-        } catch (err) {
-          console.error(`Failed to send expiring email for listing ${listing.id}:`, err)
+        } catch {
           emailsFailed++
         }
       }
@@ -79,13 +77,11 @@ export async function GET(req: NextRequest) {
       emailsSent,
       emailsFailed
     })
-  } catch (error) {
-    console.error('Error in check-expiring-ads cron:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// Also support POST method
 export async function POST(req: NextRequest) {
   return GET(req)
 }
