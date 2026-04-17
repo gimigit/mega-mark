@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Fraunces, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
+import { CurrencyProvider } from '@/components/providers/CurrencyProvider'
 import { ThemeProvider } from 'next-themes'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
@@ -51,7 +52,9 @@ export default function RootLayout({
       <body className={`${fraunces.variable} ${dmSans.variable} font-body`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <TooltipProvider>
-            <SupabaseProvider>{children}</SupabaseProvider>
+            <CurrencyProvider>
+              <SupabaseProvider>{children}</SupabaseProvider>
+            </CurrencyProvider>
           </TooltipProvider>
         </ThemeProvider>
         <Toaster position="top-center" richColors />

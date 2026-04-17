@@ -7,6 +7,7 @@ import { Search, Menu, X, User, Plus, Heart, MessageSquare, LogOut } from 'lucid
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { Button } from '@/components/ui/button'
 import ThemeToggle from './ThemeToggle'
+import CurrencyToggle from './CurrencyToggle'
 import { NotificationBell } from './NotificationBell'
 import { useNotifications } from '@/hooks/useNotifications'
 
@@ -88,6 +89,7 @@ export default function Navbar() {
 
         {/* Right Side Actions - desktop */}
         <div className="hidden md:flex items-center gap-2 ml-auto">
+          <CurrencyToggle />
           <ThemeToggle />
 
           {isLoading ? (
@@ -272,6 +274,9 @@ export default function Navbar() {
               )}
               <div className="pt-2">
                 <ThemeToggle />
+                <div className="mt-2">
+                  <CurrencyToggle />
+                </div>
               </div>
             </div>
           </div>

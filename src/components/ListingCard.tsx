@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
+import { useCurrency } from '@/components/providers/CurrencyProvider'
 import type { Database } from '@/types/database'
 
 // Helper to check if a date is today
@@ -67,13 +68,9 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
   const { user } = useSupabase()
   const [isFavorite, setIsFavorite] = useState(initialFavorite)
   const [isToggling, setIsToggling] = useState(false)
+  const { formatPrice } = useCurrency()
 
-  const formatPrice = (price: number, currency: string) => {
-    const symbol = currency === 'EUR' ? '€' : currency
-    return `${symbol}${price.toLocaleString()}`
-  }
-
-  async function handleFavoriteToggle(e: React.MouseEvent) {
+  const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -139,7 +136,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
           {/* Favorite Heart Button */}
           <motion.button
             type="button"
-            onClick={handleFavoriteToggle}
+            onClick={toggleFavorite}
             whileTap={{ scale: 1.4 }}
             animate={{ color: isFavorite ? '#ef4444' : '#6b7280' }}
             transition={{ duration: 0.15 }}
@@ -188,7 +185,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
 
           {/* Price */}
           <div className="text-xl font-black text-green-700 dark:text-green-400 mb-2">
-            {listing.price != null ? formatPrice(listing.price, listing.currency || 'EUR') : 'Preț la cerere'}
+            {listing.price != null ? formatPrice(listing.price, listing.currency as any) : 'Preț la cerere'}
           </div>
 
           {/* Specs */}
