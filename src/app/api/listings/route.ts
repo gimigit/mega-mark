@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       .from('listings')
       .select(`
         *,
-        seller:profiles(id, full_name, avatar_url, is_verified, avg_rating, reviews_count),
+        seller:profiles(id, full_name, avatar_url, is_verified, rating_avg, rating_count),
         categories(id, name, slug),
         manufacturers(id, name)
       `)
@@ -69,7 +69,6 @@ export async function GET(request: NextRequest) {
     const { data: listings, error } = await query
 
     if (error) {
-      console.error('Error fetching listings:', error)
       return NextResponse.json({ error: 'Failed to fetch listings' }, { status: 500 })
     }
 
@@ -94,7 +93,6 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil((count || 0) / limit),
     })
   } catch (error) {
-    console.error('Listings GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -172,13 +170,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error creating listing:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ listing }, { status: 201 })
   } catch (error) {
-    console.error('Listings POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
     // Redirect to Stripe portal
     return NextResponse.redirect(portalSession.url)
   } catch (error) {
-    console.error('Stripe portal error:', error)
     return NextResponse.json({ error: 'Failed to create portal session' }, { status: 500 })
   }
 }

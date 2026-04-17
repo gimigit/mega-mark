@@ -43,13 +43,11 @@ export async function GET(request: NextRequest) {
     const { data: listings, error } = await query
 
     if (error) {
-      console.error('Error fetching admin listings:', error)
       return NextResponse.json({ error: 'Failed to fetch listings' }, { status: 500 })
     }
 
     return NextResponse.json({ listings: listings || [] })
   } catch (error) {
-    console.error('Admin listings GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -94,13 +92,11 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error updating listing:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ listing })
   } catch (error) {
-    console.error('Admin listings PATCH error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

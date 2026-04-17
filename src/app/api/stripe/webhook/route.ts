@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err: any) {
-    console.error('Webhook signature verification failed:', err.message)
     return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
   }
 
@@ -40,10 +39,8 @@ export async function POST(request: NextRequest) {
         break
 
       default:
-        console.log(`Unhandled Stripe event type: ${event.type}`)
     }
   } catch (error) {
-    console.error('Error processing webhook:', error)
     // Still return 200 to avoid Stripe retrying, but log error
   }
 
@@ -61,7 +58,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
     // Determine plan_type from metadata
     const planType = session.metadata?.plan_type
     if (!planType) {
-      console.error('Subscription checkout missing plan_type in metadata')
       return
     }
 
@@ -87,9 +83,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
     })
 
     if (error) {
-      console.error('Failed to upsert subscription:', error.message)
     } else {
-      console.log(`Subscription ${subscription.id} saved for profile ${session.metadata?.profile_id}`)
     }
   } else if (session.mode === 'payment') {
     // Handle one-time boost payment
@@ -99,7 +93,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
     const quantity = parseInt((session as any).quantity?.toString() || '1', 10)
 
     if (!listingId || !boostType || !profileId) {
-      console.error('Boost checkout missing metadata (listing_id, boost_type, profile_id)')
       return
     }
 
@@ -141,9 +134,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session, 
     })
 
     if (error) {
-      console.error('Failed to create listing_boost:', error.message)
     } else {
-      console.log(`Listing boost created for listing ${listingId}, type ${boostType}`)
     }
   }
 }
@@ -163,9 +154,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, supa
     .eq('stripe_subscription_id', sub.id)
 
   if (error) {
-    console.error('Failed to update subscription:', error.message)
   } else {
-    console.log(`Subscription ${subscription.id} updated to status ${subscription.status}`)
   }
 }
 
@@ -180,9 +169,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription, supa
     .eq('stripe_subscription_id', subscription.id)
 
   if (error) {
-    console.error('Failed to delete subscription:', error.message)
   } else {
-    console.log(`Subscription ${subscription.id} marked as cancelled`)
   }
 }
 
@@ -190,6 +177,5 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice, supabase: any
   // If the invoice is for a subscription, the subscription status will be updated via separate event
   // But we can log or send notification
   const inv = invoice as any
-  console.log(`Invoice ${inv.id} payment failed for subscription ${inv.subscription}`)
   // Could send email notification to user about failed payment
 }

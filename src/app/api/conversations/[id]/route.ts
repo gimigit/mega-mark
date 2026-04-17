@@ -47,7 +47,6 @@ export async function GET(
       .order('created_at', { ascending: true })
 
     if (msgsErr) {
-      console.error('Error fetching messages:', msgsErr)
       return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 })
     }
 
@@ -56,7 +55,6 @@ export async function GET(
       messages: messages || [],
     })
   } catch (error) {
-    console.error('Conversation GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

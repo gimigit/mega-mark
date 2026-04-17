@@ -28,7 +28,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ admin })
   } catch (error) {
-    console.error('Admin me error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -28,13 +28,11 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Error fetching users:', error)
       return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
     }
 
     return NextResponse.json({ users: users || [] })
   } catch (error) {
-    console.error('Admin users GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -79,13 +77,11 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error updating user:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ user: updatedUser })
   } catch (error) {
-    console.error('Admin users PATCH error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

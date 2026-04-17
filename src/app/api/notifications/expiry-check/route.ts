@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     .lte('expires_at', endOfDay.toISOString())
 
   if (error) {
-    console.error('Error fetching expiring listings:', error)
     return NextResponse.json({ error: 'Failed to fetch listings' }, { status: 500 })
   }
 
@@ -37,7 +36,6 @@ export async function POST(request: NextRequest) {
       await notifyListingExpiring(listing.seller_id, listing.title, 3)
       sentCount++
     } catch (err) {
-      console.error(`Failed for listing ${listing.id}:`, err)
     }
   }
 

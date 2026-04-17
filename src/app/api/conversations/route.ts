@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
       .order('last_message_at', { ascending: false, nullsFirst: false })
 
     if (error) {
-      console.error('Error fetching conversations:', error)
       return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 })
     }
 
@@ -47,7 +46,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ conversations })
   } catch (error) {
-    console.error('Conversations GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -104,7 +102,6 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (existingErr) {
-      console.error('Error checking existing conversation:', existingErr)
       return NextResponse.json({ error: 'Failed to check existing conversation' }, { status: 500 })
     }
 
@@ -139,7 +136,6 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (convErr) {
-        console.error('Error creating conversation:', convErr)
         return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
       }
 
@@ -157,13 +153,11 @@ export async function POST(request: NextRequest) {
       })
 
     if (msgErr) {
-      console.error('Error sending message:', msgErr)
       return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
     }
 
     return NextResponse.json({ conversation_id: conversationId }, { status: 201 })
   } catch (error) {
-    console.error('Conversations POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -87,7 +87,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Notification event error:', error)
     return NextResponse.json(
       { error: 'Failed to process notification event' },
       { status: 500 }

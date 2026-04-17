@@ -20,22 +20,23 @@ export async function GET(request: NextRequest) {
           id,
           title,
           price,
-          county,
-          category:categories(name),
-          photos:listing_photos(url, position)
+          currency,
+          images,
+          location_city,
+          location_country,
+          condition,
+          categories(name)
         )
       `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Error fetching favorites:', error)
       return NextResponse.json({ error: 'Failed to fetch favorites' }, { status: 500 })
     }
 
     return NextResponse.json({ favorites: favorites || [] })
   } catch (error) {
-    console.error('Favorites GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -90,13 +91,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error adding favorite:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ favorite, message: 'Added to favorites' })
   } catch (error) {
-    console.error('Favorites POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -125,13 +124,11 @@ export async function DELETE(request: NextRequest) {
       .eq('listing_id', listing_id)
 
     if (error) {
-      console.error('Error removing favorite:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ message: 'Removed from favorites' })
   } catch (error) {
-    console.error('Favorites DELETE error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

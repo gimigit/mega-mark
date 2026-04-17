@@ -37,7 +37,6 @@ export async function POST(request: NextRequest) {
     // Redirect back to billing page with success
     return NextResponse.redirect(new URL('/dashboard/billing?canceled=true', request.url))
   } catch (error) {
-    console.error('Cancel subscription error:', error)
     return NextResponse.json({ error: 'Failed to cancel subscription' }, { status: 500 })
   }
 }

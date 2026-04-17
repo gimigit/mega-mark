@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
     const { data: reviews, error } = await query
 
     if (error) {
-      console.error('Error fetching reviews:', error)
       return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 })
     }
 
@@ -50,7 +49,6 @@ export async function GET(request: NextRequest) {
       count: reviews?.length || 0
     })
   } catch (error) {
-    console.error('Reviews GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -95,7 +93,6 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error creating review:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
@@ -110,15 +107,14 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('profiles')
         .update({ 
-          avg_rating: Math.round(avgRating * 10) / 10,
-          reviews_count: reviews.length
+          rating_avg: Math.round(avgRating * 10) / 10,
+          rating_count: reviews.length
         })
         .eq('id', reviewed_id)
     }
 
     return NextResponse.json({ review })
   } catch (error) {
-    console.error('Reviews POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

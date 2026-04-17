@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
       messagesToday: messagesTodayResult.count || 0,
     })
   } catch (error) {
-    console.error('Admin stats error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

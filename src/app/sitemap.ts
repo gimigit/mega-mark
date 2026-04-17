@@ -70,8 +70,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       return [...staticRoutes, ...listingRoutes]
     }
-  } catch (error) {
-    console.error('Error fetching listings for sitemap:', error)
+  } catch {
+    // Return static routes on error
   }
 
   return staticRoutes

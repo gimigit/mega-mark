@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ListingDetailClient from './ListingDetailClient'
 import ListingJsonLd from '@/components/ListingJsonLd'
+import SimilarListings from '@/components/SimilarListings'
 
 import type { ListingData } from '@/types/listing'
 
@@ -71,15 +72,14 @@ export default async function ListingDetailPage({ params }: Props) {
   // Increment view count asynchronously (fire and forget)
   try {
     await supabase.rpc('increment_view_count', { listing_id: id })
-  } catch (e) {
-    // Ignore errors - view count increment should not break the page
-    console.error('Failed to increment view count:', e)
+  } catch {
+    // Ignore — view count is non-critical
   }
 
-  // Fetch listing data for JSON-LD
+  // Fetch listing data for JSON-LD + similar listings
   const { data: listing } = await supabase
     .from('listings')
-    .select('title, description, price, currency, condition, year, hours, images, location_country, categories(name), profiles(full_name)')
+    .select('title, description, price, currency, condition, year, hours, images, location_country, category_id, categories(name), profiles(full_name)')
     .eq('id', id)
     .single()
 
@@ -87,6 +87,11 @@ export default async function ListingDetailPage({ params }: Props) {
     <>
       {listing && <ListingJsonLd listing={listing} />}
       <ListingDetailClient listingId={id} />
+      {listing?.category_id && (
+        <div className="max-w-7xl mx-auto px-4 pb-16">
+          <SimilarListings categoryId={listing.category_id} excludeId={id} />
+        </div>
+      )}
     </>
   )
 }
