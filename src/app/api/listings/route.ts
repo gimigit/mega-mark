@@ -35,7 +35,11 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (categoryId) query = query.eq('category_id', categoryId)
-    if (county) query = query.eq('location_region', county)
+    // For Romanian counties SEO pages, filter by location_city containing county name
+    if (county) {
+      // Use ilike for partial match on city (e.g., "Cluj" matches "Cluj-Napoca")
+      query = query.ilike('location_city', `%${county}%`)
+    }
     if (minPrice) query = query.gte('price', parseFloat(minPrice))
     if (maxPrice) query = query.lte('price', parseFloat(maxPrice))
     if (condition) query = query.eq('condition', condition)
@@ -76,7 +80,8 @@ export async function GET(request: NextRequest) {
       .eq('status', status)
 
     if (categoryId) countQuery = countQuery.eq('category_id', categoryId)
-    if (county) countQuery = countQuery.eq('location_region', county)
+    // For Romanian counties SEO pages, filter by location_city
+    if (county) countQuery = countQuery.ilike('location_city', `%${county}%`)
     if (minPrice) countQuery = countQuery.gte('price', parseFloat(minPrice))
     if (maxPrice) countQuery = countQuery.lte('price', parseFloat(maxPrice))
     if (condition) countQuery = countQuery.eq('condition', condition)

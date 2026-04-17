@@ -116,3 +116,71 @@ export function getCountyName(slug: string): string {
   const county = ROMANIAN_COUNTIES.find(c => c.slug === slug)
   return county?.name || slug
 }
+
+/** SEO content tips per category */
+export const CATEGORY_TIPS: Record<string, string[]> = {
+  tractors: [
+    'Verifică orele de funcționare - tractoarele sub 5000h sunt o investiție bună',
+    'Caută tractoare cu revizia la zi (carte de service)',
+    'Verifică starea anvelopelor - costă scump la înlocuire',
+  ],
+  combines: [
+    'Combine-urile necesită întreținere specifică - verifică cutsorele',
+    'Anul de fabricație e crucial pentru fiabilitate',
+    'Solicită istoricul reviziilor de la dealer',
+  ],
+  harvesters: [
+    'Verifică capacitatea tamburului de treierat',
+    'Caută modele cu sistem de automatizare GPS',
+    'Hours count e critic - sub 2000h e ideal',
+  ],
+  sprayers: [
+    'Verifică duzele și pompa - costă mult la înlocuire',
+    'Tancul de pesticide trebuie curățat complet',
+    'Caută sisteme de ghidare auto',
+  ],
+  seeders: [
+    'Verifică discurile de semințe - uzură neuniformă = probleme',
+    'Adâncimea de semănat e ajustabilă electronic',
+    'Row spacing trebuie să fie compatibil cu tractorul',
+  ],
+  plows: [
+    'Caută brăzdarele cu taisuri SCH - durabilitate maximă',
+    'Verifică adâncimea maximă de lucru',
+    'Plow reversible = productivitate dublă',
+  ],
+  balers: [
+    'Verifică density settings și presiunea',
+    'Ruloanele de inserție trebuie să fie intacte',
+    'Square vs round bales - diferă prețul și manipularea',
+  ],
+  trailers: [
+    'Verifică dimensiunile și sarcina utilă',
+    'Frânele trebuie să funcționeze perfect',
+    'Podeaua metalică e mai durabilă decât lemnul',
+  ],
+  loaders: [
+    'Verifică cilindrii hidraulici - scurgere = probleme',
+    'Cupe de diferite dimensiuni disponibile',
+    'Quick coupler e esențial pentru utilaje multiple',
+  ],
+  irrigation: [
+    'Verifică debitul pompei (litri/min)',
+    'Sistemele central pivot acoperă suprafețe mari',
+    'Consumabilele (duze) costă în timp',
+  ],
+  construction: [
+    'Verifică ore funcționare și revizii',
+    'Auxiliary hydraulics pentru atașamente',
+    'Oferte leasing disponibile pentru utilaje grele',
+  ],
+  other: [
+    'Verifică compatibilitatea cu utilajele existente',
+    'Solicită manual de utilizare și service',
+    'Piese de schimb disponibile în UE',
+  ],
+}
+
+export function getCategoryTips(slug: string): string[] {
+  return CATEGORY_TIPS[slug] || CATEGORY_TIPS.other
+}

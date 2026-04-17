@@ -1,143 +1,131 @@
 import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import BrowseByCategoryCounty from '@/components/BrowseByCategoryCounty'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { getCountyName, ROMANIAN_COUNTIES } from '@/lib/categories'
-import type { Metadata } from 'next'
+import BrowseByCategoryCounty from '@/components/BrowseByCategoryCounty'
+import { getCountyName, getCategoryTips, ROMANIAN_COUNTIES } from '@/lib/categories'
 import type { Database } from '@/types/database'
 
+// Force dynamic - SEO pages need DB access at runtime
 export const dynamic = 'force-dynamic'
 
-type CategoryCountyParams = {
+// Optional: add all category/county combinations for better SEO indexing
+// Remove since it requires DB access at build time
+// export async function generateStaticParams() {...}
+
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ category: string; county: string }>
-}
+}): Promise<Metadata> {
+  const { category: categorySlug, county: countySlug } = await params
 
-export async function generateMetadata({ params }: CategoryCountyParams): Promise<Metadata> {
-  const { category: catSlug, county: countySlug } = await params
+  // Validate county exists
+  const validCounty = ROMANIAN_COUNTIES.find(c => c.slug === countySlug)
+  if (!validCounty) {
+    return {
+      title: 'Pagina inexistentă — Mega-Mark',
+    }
+  }
+
+  // Get category name from DB
   const supabase = await createClient()
-
-  const { data: cat } = await supabase
+  const { data: category } = await supabase
     .from('categories')
-    .select('id, name, slug, description')
-    .eq('slug', catSlug)
+    .select('name')
+    .eq('slug', categorySlug)
     .eq('is_active', true)
     .single()
 
+  const categoryName = category?.name || categorySlug
   const countyName = getCountyName(countySlug)
 
-  if (!cat) {
-    return { title: 'Pagina nu a fost găsită — Mega-Mark' }
-  }
-
   return {
-    title: `${cat.name} în ${countyName} — Mega-Mark`,
-    description: `Cumpără ${cat.name.toLowerCase()} agricol în ${countyName}. Găsește tractoare, utilaje și echipamente agricole second-hand și noi.`,
-    alternates: {
-      canonical: `/browse/${catSlug}/${countySlug}`,
+    title: `${categoryName} în ${countyName} — Mega-Mark`,
+    description: `Găsește ${categoryName.toLowerCase()} în ${countyName}. Anunțuri cu tractoare, combine și utilaje agricole din ${countyName}, Romania.`,
+    openGraph: {
+      title: `${categoryName} în ${countyName} — Mega-Mark`,
+      description: `Caută ${categoryName.toLowerCase()} în ${countyName}. Anunțuri recente cu utilaje agricole.`,
     },
   }
 }
 
-const CATEGORY_CONTENT: Record<string, { intro: string; tips: string[] }> = {
-  tractors: {
-    intro: 'Tractorul este piesa centrală a oricărei ferme. Când cauți tractoare second-hand, verifică cu atenție orele de funcționare, istoricul intervențiilor și starea anvelopelor.',
-    tips: [
-      'Verifică orele de funcționare (ore motor)',
-      'Verifică istoricul service',
-      'Inspectează anvelopele pentru uzură',
-      'Testează toate funcțiile hidraulice',
-    ],
-  },
-  'combine-harvesters': {
-    intro: 'Combinele sunt echipamente complexe. Verifică starea benzilor de tăiere și a sitei de curățare.',
-    tips: [
-      'Verifică orele combinei',
-      'Inspectează cuțitul de tăiere',
-      'Verifică sita de curățare',
-      'Testează sistemul de descărcare',
-    ],
-  },
-  sprayers: {
-    intro: 'Producătoarele sunt esențiale pentru protecția culturilor. Verifică pompa și duzele.',
-    tips: [
-      'Verifică presiunea de lucru',
-      'Inspectează duzele',
-      'Testează sistemul de agitare',
-      'Verifică rezervorul',
-    ],
-  },
+interface Props {
+  params: Promise<{ category: string; county: string }>
 }
 
-async function getCategoryBySlug(slug: string) {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .single()
-  return data
-}
+export default async function BrowseCategoryCountyPage({ params }: Props) {
+  const { category: categorySlug, county: countySlug } = await params
 
-function isValidCounty(slug: string): boolean {
-  return ROMANIAN_COUNTIES.some(c => c.slug === slug)
-}
-
-export default async function BrowseCategoryCountyPage({ params }: CategoryCountyParams) {
-  const { category: catSlug, county: countySlug } = await params
-
-  // Validate county
-  if (!isValidCounty(countySlug)) {
+  // Validate county exists
+  const validCounty = ROMANIAN_COUNTIES.find(c => c.slug === countySlug)
+  if (!validCounty) {
     notFound()
   }
 
-  const category = await getCategoryBySlug(catSlug)
+  // Get category by slug
+  const supabase = await createClient()
+  const { data: category } = await supabase
+    .from('categories')
+    .select('id, name, slug')
+    .eq('slug', categorySlug)
+    .eq('is_active', true)
+    .single()
+
   if (!category) {
     notFound()
   }
 
   const countyName = getCountyName(countySlug)
 
-  const content = CATEGORY_CONTENT[catSlug] || {
-    intro: `Găsește ${category.name} agricol de calitate în ${countyName}. Verifică orele de funcționare și istoricul înainte de cumpărare.`,
-    tips: [
-      'Verifică orele de funcționare',
-      'Verifică starea generală',
-      'Solicită istoricul service',
-    ],
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="bg-gradient-to-br from-green-900 via-green-800 to-green-950 text-white py-10 px-6">
+      <div className="bg-gradient-to-br from-green-900 via-green-800 to-green-950 text-white py-8 px-6">
         <div className="max-w-7xl mx-auto">
-          <nav className="flex items-center gap-1.5 text-sm text-white/50 mb-6">
+          {/* Breadcrumbs */}
+          <nav className="flex items-center gap-1.5 text-sm text-white/50 mb-4">
             <a href="/" className="hover:text-white/80 transition-colors">Acasă</a>
             <span>/</span>
             <a href="/browse" className="hover:text-white/80 transition-colors">Anunțuri</a>
             <span>/</span>
-            <a href={`/browse/${catSlug}`} className="hover:text-white/80 transition-colors">{category.name}</a>
+            <a href={`/browse/${categorySlug}`} className="hover:text-white/80 transition-colors">{category.name}</a>
             <span>/</span>
             <span className="text-white/80 font-medium">{countyName}</span>
           </nav>
 
-          <h1 className="text-3xl md:text-4xl font-black mb-2">
-            <span className="text-amber-400">{category.name}</span> în {countyName}
+          <h1 className="text-3xl md:text-4xl font-black">
+            {category.name} în <span className="text-amber-400">{countyName}</span>
           </h1>
-          <p className="text-white/70 mb-8 max-w-2xl">
-            {content.intro}
+          <p className="text-white/70 mt-2">
+            Anunțuri cu {category.name.toLowerCase()} disponibile în {countyName}
           </p>
-
-          <div className="flex flex-wrap gap-2">
-            {content.tips.map((tip, i) => (
-              <span key={i} className="bg-white/10 px-3 py-1.5 rounded-full text-sm">
-                ✅ {tip}
-              </span>
-            ))}
+          <div className="mt-4 p-3 bg-white/10 rounded-lg">
+            <p className="text-white/80 text-sm">
+              Găsește {category.name.toLowerCase()} în {countyName}. Oferte de la fermieri și dealeri locali, 
+              verificare gratuită a istoricului utilajului.
+            </p>
           </div>
+        </div>
+      </div>
+
+      {/* SEO Content: Tips for this category in this county */}
+      <section className="py-8 px-6 bg-card border-b">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <span className="text-xl">💡</span>
+            Sfaturi pentru {category.name.toLowerCase()} în {countyName}
+          </h2>
+          <ul className="grid md:grid-cols-2 gap-3">
+            {getCategoryTips(categorySlug).map((tip, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="text-green-600 font-bold">✓</span>
+                {tip}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
