@@ -15,8 +15,8 @@ export default async function AdminPage() {
   const now = new Date()
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
 
-  // Fetch initial data
-  const [listings, totalStats] = await Promise.all([
+  // Get all stats in parallel
+  const [listings, totalStats, reportsData] = await Promise.all([
     supabase
       .from('listings')
       .select(`
@@ -36,7 +36,16 @@ export default async function AdminPage() {
       supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', todayStart),
       supabase.from('messages').select('*', { count: 'exact', head: true }),
       supabase.from('messages').select('*', { count: 'exact', head: true }).gte('created_at', todayStart),
-    ])
+    ]),
+    supabase
+      .from('listing_reports')
+      .select(`
+        *,
+        listing:listings(id, title, seller:profiles!listings_seller_id_fkey(id, full_name, email)),
+        reporter:profiles!listing_reports_user_id_fkey(id, full_name, email)
+      `)
+      .order('created_at', { ascending: false })
+      .limit(50)
   ])
 
   const [
@@ -50,22 +59,42 @@ export default async function AdminPage() {
     messagesToday,
   ] = totalStats.map(r => r.count || 0)
 
+  const pendingReports = reportsData.data?.filter(r => r.status === 'pending').length || 0
+
   const statsData = {
     totalAds: totalListings || 0,
     activeAds: activeListings || 0,
     expiredAds: expiredListings || 0,
     soldAds: soldListings || 0,
-    unresolvedReports: 0, // placeholder - no reports table yet
+    unresolvedReports: pendingReports,
     totalUsers: totalUsers || 0,
     newUsersToday: newUsersToday || 0,
     totalMessages: totalMessages || 0,
     messagesToday: messagesToday || 0,
   }
 
+  const formattedReports = reportsData.data?.map(r => ({
+    id: r.id,
+    reason: r.reason,
+    description: r.description,
+    created_at: r.created_at,
+    resolved: r.status === 'resolved' || r.status === 'rejected',
+    listing: r.listing ? {
+      id: r.listing.id,
+      title: r.listing.title,
+      seller: r.listing.seller
+    } : null,
+    reporter: r.reporter ? {
+      id: r.reporter.id,
+      full_name: r.reporter.full_name,
+      email: r.reporter.email
+    } : { id: '', full_name: 'Anonim', email: '' }
+  })) || []
+
   return (
     <AdminDashboard 
       initialAds={listings.data || []}
-      initialReports={[]} // no reports table yet
+      initialReports={formattedReports}
       initialStats={statsData}
       adminUser={{ ...admin, name: admin.full_name || admin.email || '' }}
     />

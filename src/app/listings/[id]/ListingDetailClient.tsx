@@ -31,6 +31,37 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
   const [showContactModal, setShowContactModal] = useState(false)
   const [messageContent, setMessageContent] = useState('')
   const [sendLoading, setSendLoading] = useState(false)
+  const [bumpLoading, setBumpLoading] = useState(false)
+  const [isJustBumped, setIsJustBumped] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reportDescription, setReportDescription] = useState('')
+  const [reportLoading, setReportLoading] = useState(false)
+
+  const handleBump = async () => {
+    if (!user || !listing) {
+      router.push('/login')
+      return
+    }
+    
+    setBumpLoading(true)
+    try {
+      const res = await fetch(`/api/listings/${listingId}/bump`, { method: 'PATCH' })
+      const data = await res.json()
+      
+      if (res.ok) {
+        setIsJustBumped(true)
+        toast.success('Anunțul a fost reactualizat!')
+        setTimeout(() => setIsJustBumped(false), 3000)
+      } else {
+        toast.error(data.error || 'Nu s-a putut reactualiza anunțul.')
+      }
+    } catch (err) {
+      toast.error('Eroare. Încearcă din nou.')
+    } finally {
+      setBumpLoading(false)
+    }
+  }
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -420,6 +451,18 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                 />
               </div>
 
+              <div className="mt-4 border-t border-gray-100 pt-4">
+                <button
+                  onClick={() => setShowReportModal(true)}
+                  className="w-full py-2 text-sm text-gray-500 hover:text-red-600 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                  </svg>
+                  Raportează anunțul
+                </button>
+              </div>
+
               {listing.listing_type !== 'sale' && (
                 <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
                   ℹ️ Pentru {listing.listing_type === 'rent' ? 'închiriere' : 'lease'}, contactează vânzătorul pentru detalii.
@@ -466,7 +509,22 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                <p>Vizualizări: {listing.views_count || 0}</p>
               {user?.id === listing.seller_id && (
                 <div className="mt-3 space-y-2">
-                  <Link href={`/listings/${listing.id}/edit`} className="block bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-colors">
+                  <button 
+                    onClick={handleBump}
+                    disabled={bumpLoading}
+                    className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {bumpLoading ? (
+                      <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : isJustBumped ? (
+                      <span>✅ Reactualizat!</span>
+                    ) : (
+                      <>
+                        <span>🔄</span> Reactualizează (gratuit)
+                      </>
+                    )}
+                  </button>
+                  <Link href={`/listings/${listing.id}/edit`} className="block bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-colors text-center">
                     ✏️ Editează anunțul
                   </Link>
                 </div>
@@ -528,6 +586,121 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
         </div>
       )}
 
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full animate-in fade-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setShowReportModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              🚩 Raportează anunțul
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Ajută-ne să menținem platforma sigură raportând anunțurile problematice.
+            </p>
+            
+            <div className="space-y-2 mb-4">
+              {[
+                { value: 'spam', label: 'Spam sau publicitate' },
+                { value: 'inappropriate', label: 'Conținut inadecvat' },
+                { value: 'scam', label: 'Înșelătorie sau fraudă' },
+                { value: 'duplicate', label: 'Anunț duplicat' },
+                { value: 'expired', label: 'Anunț expirat' },
+                { value: 'other', label: 'Alt motiv' },
+              ].map(reason => (
+                <label
+                  key={reason.value}
+                  className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                    reportReason === reason.value 
+                      ? 'border-green-600 bg-green-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="reportReason"
+                    value={reason.value}
+                    checked={reportReason === reason.value}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    className="sr-only"
+                  />
+                  <span className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center ${
+                    reportReason === reason.value ? 'border-green-600' : 'border-gray-300'
+                  }`}>
+                    {reportReason === reason.value && <span className="w-2 h-2 bg-green-600 rounded-full" />}
+                  </span>
+                  <span className="text-sm text-gray-700">{reason.label}</span>
+                </label>
+              ))}
+            </div>
+            
+            <textarea
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value)}
+              placeholder="Descrie detalii suplimentare (opțional)"
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-green-600 focus:border-transparent resize-none mb-4"
+              rows={3}
+            />
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="flex-1 py-3 border-2 border-gray-200 rounded-xl font-bold text-sm text-gray-700 hover:border-gray-400 transition-colors"
+              >
+                Anulează
+              </button>
+              <button
+                onClick={async () => {
+                  if (!reportReason) {
+                    toast.error('Te rog selectează un motiv.')
+                    return
+                  }
+                  setReportLoading(true)
+                  try {
+                    const res = await fetch('/api/reports', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        listing_id: listingId,
+                        reason: reportReason,
+                        description: reportDescription || null
+                      })
+                    })
+                    const data = await res.json()
+                    if (res.ok) {
+                      toast.success('Raportul a fost trimis. Mulțumim!')
+                      setShowReportModal(false)
+                      setReportReason('')
+                      setReportDescription('')
+                    } else {
+                      toast.error(data.error || 'Nu s-a putut trimite raportul.')
+                    }
+                  } catch (err) {
+                    toast.error('Eroare. Încearcă din nou.')
+                  } finally {
+                    setReportLoading(false)
+                  }
+                }}
+                disabled={reportLoading || !reportReason}
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {reportLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Se trimite...
+                  </>
+                ) : (
+                  'Trimite raport'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

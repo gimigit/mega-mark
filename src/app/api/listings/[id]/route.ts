@@ -156,3 +156,64 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+// PATCH /api/listings/[id]/bump - Bump listing to top (once per day for free)
+export async function BUMP(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check ownership
+    const { data: listing } = await supabase
+      .from('listings')
+      .select('seller_id, updated_at')
+      .eq('id', id)
+      .single()
+
+    if (!listing) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 })
+    }
+
+    if (listing.seller_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Check if bumped in last 24 hours
+    const lastBump = new Date(listing.updated_at)
+    const now = new Date()
+    const hoursSinceBump = (now.getTime() - lastBump.getTime()) / (1000 * 60 * 60)
+
+    if (hoursSinceBump < 24) {
+      return NextResponse.json({ 
+        error: 'Poți face bump o singură dată la 24 de ore',
+        next_bump: new Date(lastBump.getTime() + 24 * 60 * 60 * 1000).toISOString()
+      }, { status: 429 })
+    }
+
+    // Update listing to bump it
+    const { data: updated, error } = await supabase
+      .from('listings')
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error bumping listing:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ listing: updated, message: 'Anunțul a fost reactualizat cu succes!' })
+  } catch (error) {
+    console.error('Listing BUMP error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
