@@ -159,3 +159,30 @@ export async function sendAdExpiredEmail(opts: {
     }),
   })
 }
+
+export async function sendSavedSearchMatchEmail(opts: {
+  to: string
+  searchName: string
+  listingTitle: string
+  listingPrice?: number
+  listingCurrency?: string
+  listingLocation?: string
+  listingId: string
+  listingSlug?: string
+}) {
+  const { SavedSearchMatchEmail } = await import('@/emails/SavedSearchMatchEmail')
+  const listingUrl = `${APP_URL}/listings/${opts.listingSlug || opts.listingId}`
+  return sendEmail({
+    to: opts.to,
+    subject: `Anunț nou: ${opts.listingTitle}`,
+    react: SavedSearchMatchEmail({
+      searchName: opts.searchName,
+      listingTitle: opts.listingTitle,
+      listingPrice: opts.listingPrice,
+      listingCurrency: opts.listingCurrency,
+      listingLocation: opts.listingLocation,
+      listingUrl,
+      appUrl: APP_URL,
+    }),
+  })
+}
