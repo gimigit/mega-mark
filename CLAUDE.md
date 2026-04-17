@@ -124,3 +124,12 @@ profiles, categories (11), manufacturers (20), listings, favorites, conversation
 - `vercel` CLI — linked la `gimigits-projects/mega-mark`
 - `psql` — `/usr/local/opt/libpq/bin/psql`
 - `gh` — GitHub CLI (user: `gimigit`)
+- `megamark-security-check` — alias ~/.zshrc: diff vs origin/main → Claude Code security review (fara API key in GitHub)
+
+## Claude Code Tools instalate (18 Apr 2026)
+
+- **gstack** — `~/.claude/skills/gstack` (35 role-based skills: CEO, designer, QA, security etc.)
+- **claude-mem** — plugin `claude-mem@thedotmack` v12.1.6 (memorie persistenta, SQLite, port 37777)
+- **frontend-design** — built-in Claude Code (skill `frontend-design:frontend-design`)
+- **code-review** — built-in Claude Code (skill `review`)
+- **superpowers** — ⚠️ necesita actiune manuala: `/plugin install superpowers@claude-plugins-official`

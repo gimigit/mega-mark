@@ -23,6 +23,7 @@
 > **Test local:** `npm run dev` (port 3000)
 > **Build check:** `npm run build`
 > **Push:** `git push origin main` (Vercel rebuilds automat)
+> **Security review local:** `megamark-security-check` (alias in ~/.zshrc — ruleaza diff vs main prin Claude Code, fara API key in GitHub)
 
 **Goal:** Marketplace agricol premium pentru Romania si UE — tractoare, combine, utilaje agricole.
 
