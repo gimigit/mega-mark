@@ -61,6 +61,25 @@ export default async function BrowseCategoryPage({ params }: Props) {
     notFound()
   }
 
+  // Manufacturers with listing counts for this category
+  const { data: mfRows } = await supabase
+    .from('listings')
+    .select('manufacturer_id, manufacturers!inner(id, name, slug)')
+    .eq('category_id', category.id)
+    .eq('status', 'active')
+    .not('manufacturer_id', 'is', null)
+
+  const mfMap = new Map<string, { id: string; name: string; slug: string; count: number }>()
+  for (const row of (mfRows ?? [])) {
+    const m = (row as unknown as { manufacturers: { id: string; name: string; slug: string } }).manufacturers
+    if (m?.slug) {
+      const e = mfMap.get(m.slug)
+      if (e) e.count++
+      else mfMap.set(m.slug, { ...m, count: 1 })
+    }
+  }
+  const manufacturers = Array.from(mfMap.values()).sort((a, b) => b.count - a.count).slice(0, 12)
+
   const CategoryIcon = getCategoryIcon(categorySlug)
 
   return (
@@ -114,6 +133,27 @@ export default async function BrowseCategoryPage({ params }: Props) {
           </ul>
         </div>
       </section>
+
+      {/* Browse by manufacturer links */}
+      {manufacturers.length > 0 && (
+        <section className="py-8 px-6 bg-background border-b">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-lg font-semibold mb-4">Caută după producător:</h2>
+            <div className="flex flex-wrap gap-2">
+              {manufacturers.map(mf => (
+                <a
+                  key={mf.slug}
+                  href={`/browse/${categorySlug}/${mf.slug}`}
+                  className="px-3 py-1.5 bg-card hover:bg-green-600 hover:text-white rounded-full text-sm transition-colors border flex items-center gap-1.5"
+                >
+                  {mf.name}
+                  <span className="text-xs opacity-60">({mf.count})</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Browse by county links - SEO helper */}
       <section className="py-8 px-6 bg-muted/30">

@@ -54,22 +54,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const supabase = await createClient()
 
-    const { data: listings } = await supabase
+    const [{ data: listings }, { data: categories }] = await Promise.all([
+      supabase.from('listings').select('id, updated_at').eq('status', 'active').limit(5000),
+      supabase.from('categories').select('slug').eq('is_active', true),
+    ])
+
+    const listingRoutes: MetadataRoute.Sitemap = (listings ?? []).map((listing) => ({
+      url: `${BASE_URL}/listings/${listing.id}`,
+      lastModified: new Date(listing.updated_at),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+
+    const categoryRoutes: MetadataRoute.Sitemap = (categories ?? []).map((cat) => ({
+      url: `${BASE_URL}/browse/${cat.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.85,
+    }))
+
+    // category × manufacturer combinations with active listings
+    const { data: combos } = await supabase
       .from('listings')
-      .select('id, updated_at, status')
+      .select('categories!inner(slug), manufacturers!inner(slug)')
       .eq('status', 'active')
-      .limit(5000)
+      .not('manufacturer_id', 'is', null)
 
-    if (listings && listings.length > 0) {
-      const listingRoutes: MetadataRoute.Sitemap = listings.map((listing) => ({
-        url: `${BASE_URL}/listings/${listing.id}`,
-        lastModified: new Date(listing.updated_at),
-        changeFrequency: 'weekly' as const,
-        priority: listing.status === 'active' ? 0.8 : 0.5,
-      }))
-
-      return [...staticRoutes, ...listingRoutes]
+    const comboSet = new Set<string>()
+    for (const row of (combos ?? [])) {
+      const r = row as unknown as { categories: { slug: string }; manufacturers: { slug: string } }
+      if (r.categories?.slug && r.manufacturers?.slug) {
+        comboSet.add(`${r.categories.slug}/${r.manufacturers.slug}`)
+      }
     }
+
+    const comboRoutes: MetadataRoute.Sitemap = Array.from(comboSet).map((combo) => ({
+      url: `${BASE_URL}/browse/${combo}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    }))
+
+    return [...staticRoutes, ...categoryRoutes, ...comboRoutes, ...listingRoutes]
   } catch {
     // Return static routes on error
   }
