@@ -105,6 +105,8 @@
 - ⚠️ **Admin role** — `UPDATE profiles SET role='admin' WHERE email='...'` in Supabase SQL editor
 - ⚠️ **Migration 009** — de aplicat manual: `supabase/migrations/009_fix_message_trigger.sql`
 - ⚠️ **Resend API key** — `RESEND_API_KEY` nesetat → emailurile nu se trimit
+- ⚠️ **Migration 010** — aplică manual `supabase/migrations/010_listing_reports.sql` în Supabase SQL Editor (tabelul `listing_reports` pentru Report feature)
+- ⚠️ **CRON_SECRET** — setează env var `CRON_SECRET=<random_string>` în Vercel Dashboard (Production + Preview) pentru securizarea endpoint-urilor cron (`/api/cron/*`)
 
 ---
 

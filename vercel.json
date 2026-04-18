@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/expire-ads",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/check-expiring-ads",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/check-saved-searches",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
