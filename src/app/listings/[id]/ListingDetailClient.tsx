@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import type { Database } from '@/types/database'
 import PhoneReveal from '@/components/PhoneReveal'
 import ShareButton from '@/components/ShareButton'
+import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles: Database['public']['Tables']['profiles']['Row']
@@ -22,6 +23,7 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
   const router = useRouter()
   const { user } = useSupabase()
   const supabase = createClient()
+  const { currency, rate } = useCurrencyStore()
   const [listing, setListing] = useState<Listing | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -425,9 +427,18 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               <div className="text-sm text-gray-500 mb-1">{listing.listing_type === 'sale' ? 'Preț' : listing.listing_type === 'rent' ? 'Preț/lună' : 'Preț/zi'}</div>
               <div className="text-3xl font-black text-green-700 mb-1">
-                {listing.price != null ? `€${listing.price.toLocaleString()}` : 'Preț la cerere'}
+                {listing.price != null
+                  ? formatPrice(listing.price, listing.currency as 'EUR' | 'RON' | undefined)
+                  : 'Preț la cerere'}
                 {listing.price_type === 'negotiable' && <span className="text-sm font-normal text-gray-400 ml-2">negociabil</span>}
               </div>
+              {listing.price != null && (
+                <div className="text-sm text-gray-400">
+                  {currency === 'RON'
+                    ? `≈ €${(listing.price / rate).toLocaleString('de-DE', { maximumFractionDigits: 0 })}`
+                    : `≈ ${Math.round(listing.price * rate).toLocaleString('ro-RO')} RON`}
+                </div>
+              )}
               <div className="text-sm text-gray-400 mb-5">
                 {listing.categories?.name} · {listing.year || '—'} · ID #{listing.id.slice(0, 8)}
               </div>

@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
-import { useCurrency } from '@/components/providers/CurrencyProvider'
+import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
+import { toast } from 'sonner'
 import type { Database } from '@/types/database'
 
 // Helper to check if a date is today
@@ -68,7 +69,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
   const { user } = useSupabase()
   const [isFavorite, setIsFavorite] = useState(initialFavorite)
   const [isToggling, setIsToggling] = useState(false)
-  const { formatPrice } = useCurrency()
+
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -85,14 +86,20 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
     try {
       if (isFavorite) {
         const res = await fetch(`/api/favorites?listing_id=${listing.id}`, { method: 'DELETE' })
-        if (res.ok) setIsFavorite(false)
+        if (res.ok) {
+          setIsFavorite(false)
+          toast.success('Anunț eliminat din favorite')
+        }
       } else {
         const res = await fetch('/api/favorites', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ listing_id: listing.id }),
         })
-        if (res.ok || res.status === 409) setIsFavorite(true)
+        if (res.ok || res.status === 409) {
+          setIsFavorite(true)
+          toast.success('Anunț adăugat la favorite')
+        }
       }
     } finally {
       setIsToggling(false)
@@ -137,8 +144,12 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
           <motion.button
             type="button"
             onClick={toggleFavorite}
-            whileTap={{ scale: 1.4 }}
-            animate={{ color: isFavorite ? '#ef4444' : '#6b7280' }}
+            whileTap={{ scale: 0.75 }}
+            animate={isFavorite ? {
+              scale: [1, 1.45, 1],
+              rotate: [0, -10, 10, 0],
+              transition: { duration: 0.4, ease: 'easeOut' }
+            } : {}}
             transition={{ duration: 0.15 }}
             disabled={isToggling}
             className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 transition-colors shadow-sm disabled:opacity-50"

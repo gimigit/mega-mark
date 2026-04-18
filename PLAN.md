@@ -983,7 +983,7 @@
 
 ---
 
-### Task 12.5: Currency inline RON/EUR  ← INCEPE AICI
+### ✅ Task 12.5: Currency inline RON/EUR
 
 **Motivatie:** Machineryzone afiseaza ambele valute per listing. In Romania, cumparatorii vor sa stie pretul in RON imediat.
 
@@ -1003,7 +1003,7 @@
 
 ---
 
-### Task 12.6: SEO URLs cu sluguri pentru categorii + producatori
+### Task 12.6: SEO URLs cu sluguri pentru categorii + producatori  ← INCEPE AICI
 
 **Motivatie:** Agriaffaires are `/tracteurs-occasion`, `/moissonneuses-batteuses` — URL-uri curate cu keywords. Rankeaza #1 in FR/ES/PT pentru termenii agricoli. Mascus are `/used-tractors-for-sale/john-deere`.
 
