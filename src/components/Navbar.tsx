@@ -10,6 +10,7 @@ import ThemeToggle from './ThemeToggle'
 import CurrencyToggle from './CurrencyToggle'
 import { NotificationBell } from './NotificationBell'
 import { useNotifications } from '@/hooks/useNotifications'
+import { useFavoritesStore } from '@/store/useFavoritesStore'
 
 const navLinks = [
   { href: '/browse', label: 'Anunturi' },
@@ -25,6 +26,7 @@ export default function Navbar() {
   const router = useRouter()
   const { user, isLoading, supabase } = useSupabase()
   const { notifications, unreadCount, loading: notifsLoading, markAsRead, markAllAsRead, getNotificationIcon, getNotificationLink } = useNotifications(user?.id)
+  const { hydrate, hydrated, count: favCount } = useFavoritesStore()
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -35,6 +37,16 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (!user || hydrated) return
+    fetch('/api/favorites')
+      .then(r => r.json())
+      .then((data: { listing_id: string }[]) => {
+        if (Array.isArray(data)) hydrate(data.map(d => d.listing_id))
+      })
+      .catch(() => {})
+  }, [user, hydrated, hydrate])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -96,8 +108,13 @@ export default function Navbar() {
             <div className="size-8 rounded-lg bg-gray-100 dark:bg-dark-700 animate-pulse" />
           ) : user ? (
             <>
-              <Link href="/favorites" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-red-500 transition-colors" title="Favorite">
+              <Link href="/favorites" className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-red-500 transition-colors" title="Favorite">
                 <Heart className="size-5" />
+                {favCount() > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                    {favCount() > 99 ? '99+' : favCount()}
+                  </span>
+                )}
               </Link>
               <Link href="/dashboard/messages" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-green-600 transition-colors" title="Mesaje">
                 <MessageSquare className="size-5" />

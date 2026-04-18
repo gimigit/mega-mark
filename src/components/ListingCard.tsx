@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
+import { useFavoritesStore } from '@/store/useFavoritesStore'
 import { toast } from 'sonner'
 import type { Database } from '@/types/database'
 
@@ -67,9 +68,12 @@ function formatRelativeDate(dateStr: string): string {
 export default function ListingCard({ listing, isFavorite: initialFavorite = false }: ListingCardProps) {
   const router = useRouter()
   const { user } = useSupabase()
-  const [isFavorite, setIsFavorite] = useState(initialFavorite)
+  const favStore = useFavoritesStore()
+  // Use store state when hydrated, fallback to prop
+  const [isFavorite, setIsFavorite] = useState(
+    () => favStore.hydrated ? favStore.has(listing.id) : initialFavorite
+  )
   const [isToggling, setIsToggling] = useState(false)
-
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -88,6 +92,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
         const res = await fetch(`/api/favorites?listing_id=${listing.id}`, { method: 'DELETE' })
         if (res.ok) {
           setIsFavorite(false)
+          favStore.remove(listing.id)
           toast.success('Anunț eliminat din favorite')
         }
       } else {
@@ -98,6 +103,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
         })
         if (res.ok || res.status === 409) {
           setIsFavorite(true)
+          favStore.add(listing.id)
           toast.success('Anunț adăugat la favorite')
         }
       }
