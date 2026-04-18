@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { ChatWindow } from '@/components/ChatWindow'
@@ -62,6 +63,8 @@ export default function DashboardPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [listingToDelete, setListingToDelete] = useState<Listing | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [bumpingId, setBumpingId] = useState<string | null>(null)
+  const [bumpedIds, setBumpedIds] = useState<Set<string>>(new Set())
 
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
   const [threadMessages, setThreadMessages] = useState<Message[]>([])
@@ -96,6 +99,36 @@ export default function DashboardPage() {
   const handleDeleteCancel = () => {
     setDeleteModalOpen(false)
     setListingToDelete(null)
+  }
+
+  const handleBump = async (listingId: string, updatedAt: string) => {
+    const hoursSince = (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60)
+    if (hoursSince < 24) {
+      toast.error('Poți face bump o singură dată la 24 de ore')
+      return
+    }
+
+    setBumpingId(listingId)
+    try {
+      const res = await fetch(`/api/listings/${listingId}/bump`, { method: 'PATCH' })
+      const data = await res.json() as { error?: string }
+      if (!res.ok) {
+        toast.error(data.error || 'Eroare la reactualizare')
+        return
+      }
+      setBumpedIds(prev => new Set(prev).add(listingId))
+      toast.success('Anunțul a fost reactualizat!')
+      const { data: listingsData } = await supabase
+        .from('listings')
+        .select('*, categories(name, icon)')
+        .eq('seller_id', user!.id)
+        .order('created_at', { ascending: false })
+      setListings(listingsData || [])
+    } catch {
+      toast.error('Eroare la reactualizare')
+    } finally {
+      setBumpingId(null)
+    }
   }
 
   const handleSelectConversation = useCallback(
@@ -493,6 +526,17 @@ export default function DashboardPage() {
                               >
                                 ✏️ Editează
                               </Link>
+                              <button
+                                onClick={() => handleBump(listing.id, listing.updated_at || listing.created_at)}
+                                disabled={bumpingId === listing.id || bumpedIds.has(listing.id)}
+                                className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {bumpingId === listing.id
+                                  ? 'Se actualizează...'
+                                  : bumpedIds.has(listing.id)
+                                  ? '✓ Reactualizat'
+                                  : '↑ Reactualizează'}
+                              </button>
                               <button
                                 onClick={() => handleDeleteClick(listing)}
                                 className="text-xs font-semibold text-red-500 hover:text-red-700 transition-colors"
