@@ -71,6 +71,42 @@ export type Database = {
           updated_at?: string
         }
       }
+      listing_reports: {
+        Row: {
+          id: string
+          listing_id: string
+          user_id: string | null
+          reason: string
+          description: string | null
+          status: string
+          reviewed_by: string | null
+          reviewed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          listing_id: string
+          user_id?: string | null
+          reason: string
+          description?: string | null
+          status?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          listing_id?: string
+          user_id?: string | null
+          reason?: string
+          description?: string | null
+          status?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       listings: {
         Row: {
           id: string
