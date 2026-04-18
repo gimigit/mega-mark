@@ -40,8 +40,8 @@
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
 **DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
 **Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 (12.1✅ 12.2✅ 12.3✅ 12.4✅ — 12.5-12.7 in progress)
-**Urmatoarea faza:** Faza 12 in progress — Task 12.5 (currency RON/EUR), 12.6 (SEO URLs), 12.7 (watchlist animation)
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 ✅ (12.1-12.7 toate complete)
+**Urmatoarea faza:** Backlog — vezi sectiunea Backlog din PLAN.md pentru features post-launch
 
 **Completat 18 Apr 2026 (Claude Code):**
 - ✅ Seed data rewrite: 20 listings cu imagini reale Unsplash (3/listing), 6 demo sellers
@@ -1003,7 +1003,7 @@
 
 ---
 
-### Task 12.6: SEO URLs cu sluguri pentru categorii + producatori  ← INCEPE AICI
+### ✅ Task 12.6: SEO URLs cu sluguri pentru categorii + producatori
 
 **Motivatie:** Agriaffaires are `/tracteurs-occasion`, `/moissonneuses-batteuses` — URL-uri curate cu keywords. Rankeaza #1 in FR/ES/PT pentru termenii agricoli. Mascus are `/used-tractors-for-sale/john-deere`.
 
@@ -1023,7 +1023,7 @@
 
 ---
 
-### Task 12.7: "Watchlist" badge animat pe card
+### ✅ Task 12.7: "Watchlist" badge animat pe card
 
 **Motivatie:** Landwirt are `watchlist_added` class cu animatie vizibila la adaugare in lista (din z-index map). Heart icon cu feedback vizual clar (not just toggle).
 
