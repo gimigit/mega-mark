@@ -43,7 +43,13 @@ export async function GET(request: NextRequest) {
     if (minPrice) query = query.gte('price', parseFloat(minPrice))
     if (maxPrice) query = query.lte('price', parseFloat(maxPrice))
     if (condition) query = query.eq('condition', condition)
-    if (search) query = query.ilike('title', `%${search}%`)
+    if (search) {
+      // Split into tokens and require each to appear in title OR description
+      const tokens = search.trim().split(/\s+/).filter(Boolean)
+      for (const token of tokens) {
+        query = query.or(`title.ilike.%${token}%,description.ilike.%${token}%`)
+      }
+    }
 
     // Sorting
     switch (sortBy) {
@@ -79,11 +85,16 @@ export async function GET(request: NextRequest) {
       .eq('status', status)
 
     if (categoryId) countQuery = countQuery.eq('category_id', categoryId)
-    // For Romanian counties SEO pages, filter by location_city
     if (county) countQuery = countQuery.ilike('location_city', `%${county}%`)
     if (minPrice) countQuery = countQuery.gte('price', parseFloat(minPrice))
     if (maxPrice) countQuery = countQuery.lte('price', parseFloat(maxPrice))
     if (condition) countQuery = countQuery.eq('condition', condition)
+    if (search) {
+      const tokens = search.trim().split(/\s+/).filter(Boolean)
+      for (const token of tokens) {
+        countQuery = countQuery.or(`title.ilike.%${token}%,description.ilike.%${token}%`)
+      }
+    }
 
     const { count } = await countQuery
 

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     .from('listings')
     .select('id, title, categories(name, icon)')
     .eq('status', 'active')
-    .ilike('title', `%${q}%`)
+    .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
     .order('views_count', { ascending: false })
     .limit(6)
 
