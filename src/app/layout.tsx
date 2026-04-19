@@ -7,6 +7,7 @@ import { ThemeProvider } from 'next-themes'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
 import CookieBanner from '@/components/CookieBanner'
+import CompareBar from '@/components/CompareBar'
 
 const fraunces = Fraunces({
   subsets: ['latin', 'latin-ext'],
@@ -59,6 +60,7 @@ export default function RootLayout({
         </ThemeProvider>
         <Toaster position="top-center" richColors />
         <CookieBanner />
+        <CompareBar />
       </body>
     </html>
   )

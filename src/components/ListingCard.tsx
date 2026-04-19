@@ -5,10 +5,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { MapPin, Star, Clock, Heart, BadgeCheck, Award } from 'lucide-react'
+import { MapPin, Star, Clock, Heart, BadgeCheck, Award, GitCompare } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
 import { useFavoritesStore } from '@/store/useFavoritesStore'
+import { useCompareStore } from '@/store/useCompareStore'
 import { toast } from 'sonner'
 import type { Database } from '@/types/database'
 
@@ -74,6 +75,22 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
     () => favStore.hydrated ? favStore.has(listing.id) : initialFavorite
   )
   const [isToggling, setIsToggling] = useState(false)
+  const compareStore = useCompareStore()
+  const isCompared = compareStore.has(listing.id)
+
+  const toggleCompare = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isCompared) {
+      compareStore.remove(listing.id)
+      toast.info('Eliminat din comparare')
+    } else if (compareStore.listings.length >= 3) {
+      toast.error('Poți compara maxim 3 anunțuri')
+    } else {
+      compareStore.add(listing)
+      toast.success('Adăugat la comparare')
+    }
+  }
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -146,27 +163,43 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
             <span className="text-6xl opacity-50">{categoryIcon}</span>
           )}
 
-          {/* Favorite Heart Button */}
-          <motion.button
-            type="button"
-            onClick={toggleFavorite}
-            whileTap={{ scale: 0.75 }}
-            animate={isFavorite ? {
-              scale: [1, 1.45, 1],
-              rotate: [0, -10, 10, 0],
-              transition: { duration: 0.4, ease: 'easeOut' }
-            } : {}}
-            transition={{ duration: 0.15 }}
-            disabled={isToggling}
-            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 transition-colors shadow-sm disabled:opacity-50"
-            aria-label="Adaugă la favorite"
-          >
-            <Heart
-              className="w-4 h-4 transition-colors"
-              fill={isFavorite ? '#ef4444' : 'none'}
-              stroke={isFavorite ? '#ef4444' : 'currentColor'}
-            />
-          </motion.button>
+          {/* Action Buttons (Favorite + Compare) */}
+          <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">
+            <motion.button
+              type="button"
+              onClick={toggleFavorite}
+              whileTap={{ scale: 0.75 }}
+              animate={isFavorite ? {
+                scale: [1, 1.45, 1],
+                rotate: [0, -10, 10, 0],
+                transition: { duration: 0.4, ease: 'easeOut' }
+              } : {}}
+              transition={{ duration: 0.15 }}
+              disabled={isToggling}
+              className="p-1.5 rounded-full bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 transition-colors shadow-sm disabled:opacity-50"
+              aria-label="Adaugă la favorite"
+            >
+              <Heart
+                className="w-4 h-4 transition-colors"
+                fill={isFavorite ? '#ef4444' : 'none'}
+                stroke={isFavorite ? '#ef4444' : 'currentColor'}
+              />
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={toggleCompare}
+              whileTap={{ scale: 0.75 }}
+              transition={{ duration: 0.15 }}
+              className={`p-1.5 rounded-full transition-colors shadow-sm ${
+                isCompared
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white/80 dark:bg-dark-900/80 hover:bg-white dark:hover:bg-dark-900 text-gray-600 dark:text-gray-400'
+              }`}
+              aria-label="Adaugă la comparare"
+            >
+              <GitCompare className="w-4 h-4" />
+            </motion.button>
+          </div>
 
           {/* Featured Badge */}
           {(listing.is_featured || (listing.updated_at && isUpdatedToday(listing.updated_at))) && (
