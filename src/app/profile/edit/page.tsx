@@ -58,6 +58,8 @@ export default function ProfileEditPage() {
     location_country: 'RO',
     location_region: '',
     role: 'seller',
+    company_name: '',
+    vat_number: '',
   })
 
   useEffect(() => {
@@ -87,6 +89,8 @@ export default function ProfileEditPage() {
           location_country: data.location_country || 'RO',
           location_region: data.location_region || '',
           role: data.role || 'seller',
+          company_name: data.company_name || '',
+          vat_number: data.vat_number || '',
         })
       }
       setLoading(false)
@@ -131,6 +135,8 @@ export default function ProfileEditPage() {
         location_country: form.location_country,
         location_region: form.location_region || null,
         role: form.role,
+        company_name: form.company_name || null,
+        vat_number: form.vat_number || null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id)
@@ -320,6 +326,38 @@ export default function ProfileEditPage() {
                 <p className="text-xs text-gray-400 mt-1.5">{form.bio.length} / 500 caractere</p>
               </div>
             </div>
+
+            {/* Dealer Info */}
+            {form.role === 'dealer' && (
+              <div className="bg-white rounded-2xl border border-amber-200 p-8 shadow-sm">
+                <h2 className="text-lg font-bold text-gray-900 mb-1">Informații dealer 🏢</h2>
+                <p className="text-sm text-gray-500 mb-6">Vizibile pe profilul tău public și pe anunțurile tale.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5">Denumire firmă</label>
+                    <input
+                      type="text"
+                      value={form.company_name}
+                      onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                      placeholder="SC Agro SRL"
+                      maxLength={100}
+                      className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500/10 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5">CUI / VAT</label>
+                    <input
+                      type="text"
+                      value={form.vat_number}
+                      onChange={(e) => setForm({ ...form, vat_number: e.target.value })}
+                      placeholder="RO12345678"
+                      maxLength={20}
+                      className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500/10 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Submit */}
             <div className="flex justify-end">

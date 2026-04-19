@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import CompareClient from './CompareClient'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Comparator Utilaje | Mega-Mark',
@@ -7,5 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default function ComparePage() {
-  return <CompareClient />
+  return (
+    <Suspense>
+      <CompareClient />
+    </Suspense>
+  )
 }

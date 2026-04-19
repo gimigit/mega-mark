@@ -1,10 +1,14 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, X, GitCompare } from 'lucide-react'
+import { ArrowLeft, X, GitCompare, Share2 } from 'lucide-react'
 import { useCompareStore } from '@/store/useCompareStore'
 import { formatPrice } from '@/store/useCurrencyStore'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 import type { Database } from '@/types/database'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
@@ -53,7 +57,38 @@ function highlight(values: (string | null | undefined)[]): boolean[] {
 }
 
 export default function CompareClient() {
-  const { listings, remove, clear } = useCompareStore()
+  const searchParams = useSearchParams()
+  const { listings: storeListings, remove, clear } = useCompareStore()
+  const [listings, setListings] = useState<Listing[]>(storeListings)
+  const supabase = createClient()
+
+  // Load from ?ids= URL param (shared compare link)
+  useEffect(() => {
+    const ids = searchParams.get('ids')
+    if (!ids) { setListings(storeListings); return }
+    const idList = ids.split(',').filter(Boolean).slice(0, 3)
+    if (idList.length === 0) { setListings(storeListings); return }
+
+    supabase
+      .from('listings')
+      .select('*, categories(id, name, slug, icon), profiles:seller_id(id, full_name, avatar_url, is_verified, is_dealer, company_name, rating_avg, rating_count)')
+      .in('id', idList)
+      .then(({ data }) => {
+        if (data && data.length > 0) setListings(data as unknown as Listing[])
+      })
+  }, [searchParams])
+
+  // Sync with store when no URL param
+  useEffect(() => {
+    if (!searchParams.get('ids')) setListings(storeListings)
+  }, [storeListings, searchParams])
+
+  const shareUrl = () => {
+    const ids = listings.map(l => l.id).join(',')
+    const url = `${window.location.origin}/compare?ids=${ids}`
+    navigator.clipboard.writeText(url)
+    toast.success('Link copiat în clipboard!')
+  }
 
   if (listings.length === 0) {
     return (
@@ -88,12 +123,23 @@ export default function CompareClient() {
               <p className="text-sm text-gray-500 dark:text-gray-400">{colCount} anunț{colCount !== 1 ? 'uri' : ''} selectat{colCount !== 1 ? 'e' : ''}</p>
             </div>
           </div>
-          <button
-            onClick={clear}
-            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-          >
-            Golește tot
-          </button>
+          <div className="flex items-center gap-3">
+            {listings.length >= 2 && (
+              <button
+                onClick={shareUrl}
+                className="flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400 hover:text-green-800 font-semibold transition-colors"
+              >
+                <Share2 className="w-4 h-4" />
+                Distribuie
+              </button>
+            )}
+            <button
+              onClick={clear}
+              className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            >
+              Golește tot
+            </button>
+          </div>
         </div>
 
         {/* Compare Table */}
