@@ -42,7 +42,11 @@
 **Env vars:** ✅ Supabase + CRON_SECRET setate în Vercel (production + preview + development)
 **Cron jobs:** ✅ Configurate în `vercel.json` — expire-ads (02:00), check-expiring-ads (09:00), check-saved-searches (orar)
 **Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 ✅ · Faza 13 ✅
-**Urmatoarea faza:** Backlog low-priority — i18n, comparator, full-text search, dealer tools
+**Urmatoarea faza:** Backlog — dealer tools, i18n
+
+**Completat 19 Apr 2026 (Backlog — Claude Code):**
+- ✅ Comparator utilaje — `/compare`, CompareBar (bara fixa jos), useCompareStore (max 3, persisted), GitCompare buton pe ListingCard
+- ✅ Search upgrade — multi-field (title + description) + multi-keyword (AND logic per token)
 
 **Completat 19 Apr 2026 (Faza 13 — Claude Code):**
 - ✅ Bump button în Dashboard tab "Anunțurile mele" (cu cooldown 24h + refresh)
@@ -1064,11 +1068,11 @@
 **Prioritate scazuta (6+ luni):**
 - **i18n:** next-intl — RO (default), EN, HU, PL, BG, SK, CZ
 - **AI categorizare:** Clasificare automata bazata pe titlu + descriere
-- **Comparator utilaje:** Side-by-side 2-3 anunturi
+- ✅ **Comparator utilaje:** Side-by-side 2-3 anunturi (19 Apr 2026 — `/compare`, CompareBar, useCompareStore)
 - **Dealer tools:** Bulk upload, API dealer, logo, ore program, locatie pe harta
 - **App mobil:** React Native / Expo
-- **Push notifications mobile
-- **Full-text search avansat:** Autocomplete cu suggestions din titluri existente
+- **Push notifications mobile**
+- ✅ **Full-text search avansat:** Autocomplete cu suggestions din titluri existente (Task 12.3 — /api/listings/search-suggestions)
 
 ---
 
