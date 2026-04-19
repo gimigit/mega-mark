@@ -34,14 +34,22 @@
 
 ---
 
-## Status curent (18 Aprilie 2026)
+## Status curent (19 Aprilie 2026)
 
-**Build:** ✅ Trece — ZERO TypeScript errors (18 Apr 2026, auditat + fixat de Claude Code)
+**Build:** ✅ Trece — ZERO TypeScript errors (19 Apr 2026)
 **Deploy:** ✅ Live pe https://mega-mark-five.vercel.app (auto-deploy din `main`)
-**DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
-**Env vars:** ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
-**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 ✅ (12.1-12.7 toate complete)
-**Urmatoarea faza:** Backlog — vezi sectiunea Backlog din PLAN.md pentru features post-launch
+**DB:** ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies + `listing_reports` (migration 010 aplicata 19 Apr)
+**Env vars:** ✅ Supabase + CRON_SECRET setate în Vercel (production + preview + development)
+**Cron jobs:** ✅ Configurate în `vercel.json` — expire-ads (02:00), check-expiring-ads (09:00), check-saved-searches (orar)
+**Faze complete:** Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 ✅ · Faza 13 ✅
+**Urmatoarea faza:** Backlog low-priority — i18n, comparator, full-text search, dealer tools
+
+**Completat 19 Apr 2026 (Faza 13 — Claude Code):**
+- ✅ Bump button în Dashboard tab "Anunțurile mele" (cu cooldown 24h + refresh)
+- ✅ `vercel.json` cu cron schedule: expire-ads, check-expiring-ads, check-saved-searches
+- ✅ `listing_reports` adăugat în `database.ts` types (TypeScript strict)
+- ✅ Migration 010 aplicată — `listing_reports` table activă
+- ✅ CRON_SECRET configurat în Vercel
 
 **Completat 18 Apr 2026 (Claude Code):**
 - ✅ Seed data rewrite: 20 listings cu imagini reale Unsplash (3/listing), 6 demo sellers
@@ -105,8 +113,8 @@
 - ⚠️ **Admin role** — `UPDATE profiles SET role='admin' WHERE email='...'` in Supabase SQL editor
 - ⚠️ **Migration 009** — de aplicat manual: `supabase/migrations/009_fix_message_trigger.sql`
 - ⚠️ **Resend API key** — `RESEND_API_KEY` nesetat → emailurile nu se trimit
-- ⚠️ **Migration 010** — aplică manual `supabase/migrations/010_listing_reports.sql` în Supabase SQL Editor (tabelul `listing_reports` pentru Report feature)
-- ⚠️ **CRON_SECRET** — setează env var `CRON_SECRET=<random_string>` în Vercel Dashboard (Production + Preview) pentru securizarea endpoint-urilor cron (`/api/cron/*`)
+- ✅ **Migration 010** — aplicată 19 Apr 2026: `listing_reports` table activa în Supabase
+- ✅ **CRON_SECRET** — setat în Vercel (19 Apr 2026)
 
 ---
 

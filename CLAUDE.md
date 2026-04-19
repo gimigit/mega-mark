@@ -126,6 +126,13 @@ profiles, categories (11), manufacturers (20), listings, favorites, conversation
 - `gh` — GitHub CLI (user: `gimigit`)
 - `megamark-security-check` — alias ~/.zshrc: diff vs origin/main → Claude Code security review (fara API key in GitHub)
 
+## Note tehnice adăugate (19 Apr 2026)
+
+20. **`vercel.json`** — cron jobs configurate: `/api/cron/expire-ads` (02:00 UTC), `/api/cron/check-expiring-ads` (09:00 UTC), `/api/cron/check-saved-searches` (orar). `CRON_SECRET` env var protejează endpoint-urile.
+21. **`listing_reports`** — tabelă activă în DB (migration 010 aplicată). Types în `src/types/database.ts`.
+22. **SEO URLs** — ruta `/browse/[category]/[slug]` unificată detectează runtime dacă slug e județ (ROMANIAN_COUNTIES) sau producător (DB lookup).
+23. **Zustand stores** — `useCurrencyStore` (currency RON/EUR cu persist) + `useFavoritesStore` (favorites IDs, hydrated din `/api/favorites` la login).
+
 ## Claude Code Tools instalate (18 Apr 2026)
 
 - **gstack** — `~/.claude/skills/gstack` (35 role-based skills: CEO, designer, QA, security etc.)
