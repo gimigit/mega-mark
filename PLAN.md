@@ -48,6 +48,8 @@
 - ✅ Comparator utilaje — `/compare`, CompareBar (bara fixa jos), useCompareStore (max 3, persisted), GitCompare buton pe ListingCard
 - ✅ Search upgrade — multi-field (title + description) + multi-keyword (AND logic per token)
 - ✅ Dealer tools — badge Building2 pe card, company_name+VAT pe seller profile, `/dashboard/bulk-upload` CSV (max 50), `/api/listings/bulk` POST
+- ✅ AI categorizare — auto-detect categorie + producător din titlu, debounce 500ms, badge '✦ auto' pe câmpuri
+- ✅ Compare URL shareable — `/compare?ids=id1,id2,id3` + buton Share (clipboard), profile edit dealer fields
 
 **Completat 19 Apr 2026 (Faza 13 — Claude Code):**
 - ✅ Bump button în Dashboard tab "Anunțurile mele" (cu cooldown 24h + refresh)
@@ -1068,7 +1070,7 @@
 
 **Prioritate scazuta (6+ luni):**
 - **i18n:** next-intl — RO (default), EN, HU, PL, BG, SK, CZ
-- **AI categorizare:** Clasificare automata bazata pe titlu + descriere
+- ✅ **AI categorizare:** Auto-detect categorie + producător din titlu (19 Apr 2026 — `/api/listings/auto-classify`, 80+ keywords RO/EN/DE/FR, 20 brands + aliases)
 - ✅ **Comparator utilaje:** Side-by-side 2-3 anunturi (19 Apr 2026 — `/compare`, CompareBar, useCompareStore)
 - ✅ **Dealer tools:** Bulk CSV upload `/dashboard/bulk-upload`, dealer badge pe ListingCard, company_name + VAT pe seller profile (19 Apr 2026)
 - **App mobil:** React Native / Expo
