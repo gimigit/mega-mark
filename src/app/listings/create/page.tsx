@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -52,6 +52,10 @@ export default function CreateListingPage() {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [uploadingCount, setUploadingCount] = useState(0)
 
+  const [autoClassified, setAutoClassified] = useState<{ category_id: string | null; manufacturer_id: string | null } | null>(null)
+  const [classifying, setClassifying] = useState(false)
+  const classifyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const [form, setForm] = useState({
     title: '',
     category_id: '',
@@ -86,6 +90,29 @@ export default function CreateListingPage() {
     }
     if (user) fetchData()
   }, [user, supabase])
+
+  // Auto-classify on title change
+  const triggerAutoClassify = useCallback((title: string) => {
+    if (classifyTimeoutRef.current) clearTimeout(classifyTimeoutRef.current)
+    if (title.length < 5) return
+    classifyTimeoutRef.current = setTimeout(async () => {
+      setClassifying(true)
+      try {
+        const res = await fetch(`/api/listings/auto-classify?title=${encodeURIComponent(title)}`)
+        const data = await res.json()
+        if (data.category_id || data.manufacturer_id) {
+          setAutoClassified(data)
+          setForm(prev => ({
+            ...prev,
+            ...(data.category_id && !prev.category_id ? { category_id: data.category_id } : {}),
+            ...(data.manufacturer_id && !prev.manufacturer_id ? { manufacturer_id: data.manufacturer_id } : {}),
+          }))
+        }
+      } finally {
+        setClassifying(false)
+      }
+    }, 500)
+  }, [])
 
   // Handle file selection
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,11 +270,22 @@ export default function CreateListingPage() {
             </h2>
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Titlu anunț *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                  Titlu anunț *
+                  {classifying && (
+                    <span className="ml-2 text-xs font-normal text-green-600">⟳ detectând...</span>
+                  )}
+                  {!classifying && autoClassified && (
+                    <span className="ml-2 text-xs font-normal text-green-600">✓ auto-detectat</span>
+                  )}
+                </label>
                 <input
                   type="text"
                   value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, title: e.target.value })
+                    triggerAutoClassify(e.target.value)
+                  }}
                   placeholder="ex: John Deere 6155M, 2021, 4500 ore"
                   required
                   maxLength={200}
@@ -257,7 +295,12 @@ export default function CreateListingPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Categorie *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                    Categorie *
+                    {autoClassified?.category_id && form.category_id === autoClassified.category_id && (
+                      <span className="ml-1.5 text-xs font-normal text-green-600 bg-green-50 px-1.5 py-0.5 rounded">✦ auto</span>
+                    )}
+                  </label>
                   <select
                     value={form.category_id}
                     onChange={(e) => setForm({ ...form, category_id: e.target.value })}
@@ -271,7 +314,12 @@ export default function CreateListingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Producător</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                    Producător
+                    {autoClassified?.manufacturer_id && form.manufacturer_id === autoClassified.manufacturer_id && (
+                      <span className="ml-1.5 text-xs font-normal text-green-600 bg-green-50 px-1.5 py-0.5 rounded">✦ auto</span>
+                    )}
+                  </label>
                   <select
                     value={form.manufacturer_id}
                     onChange={(e) => setForm({ ...form, manufacturer_id: e.target.value })}
