@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { MapPin, Star, Clock, Heart, BadgeCheck, Award, GitCompare } from 'lucide-react'
+import { MapPin, Star, Clock, Heart, BadgeCheck, Award, GitCompare, Building2 } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
 import { useFavoritesStore } from '@/store/useFavoritesStore'
@@ -264,9 +264,16 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
               {listing.location_country || 'UE'}
             </span>
             <span className="flex items-center gap-1">
-              {listing.categories?.name || 'Agricultural'}
+              {listing.profiles?.is_dealer && listing.profiles.company_name
+                ? listing.profiles.company_name
+                : listing.categories?.name || 'Agricultural'}
+              {listing.profiles?.is_dealer && (
+                <span title="Dealer Oficial">
+                  <Building2 className="w-3.5 h-3.5 text-amber-500 ml-1" />
+                </span>
+              )}
               {listing.profiles?.is_verified && (
-                <span title="Verified Seller">
+                <span title="Vânzător verificat">
                   <BadgeCheck className="w-3.5 h-3.5 text-green-600 dark:text-green-400 ml-1" />
                 </span>
               )}

@@ -210,6 +210,16 @@ export default function SellerProfileClient() {
                 </div>
               </div>
 
+              {/* Dealer company info */}
+              {isDealer && seller.company_name && (
+                <div className="text-gray-700 font-semibold">
+                  🏢 {seller.company_name}
+                  {seller.vat_number && (
+                    <span className="ml-2 text-gray-400 text-sm font-normal">CUI: {seller.vat_number}</span>
+                  )}
+                </div>
+              )}
+
               {/* Location */}
               {(seller.location_country || seller.location_region) && (
                 <div className="text-gray-600">

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       .from('listings')
       .select(`
         *,
-        seller:profiles(id, full_name, avatar_url, is_verified, rating_avg, rating_count),
+        seller:profiles(id, full_name, avatar_url, is_verified, is_dealer, company_name, rating_avg, rating_count),
         categories(id, name, slug),
         manufacturers(id, name)
       `)

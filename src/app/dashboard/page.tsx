@@ -361,12 +361,22 @@ export default function DashboardPage() {
             <h1 className="text-3xl font-black text-gray-900">Dashboard</h1>
             <p className="text-gray-500 mt-1">Bună, {profile?.full_name || 'Utilizator'}</p>
           </div>
-          <Link
-            href="/listings/create"
-            className="bg-gradient-to-r from-green-700 to-green-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-green-700/30 transition-all flex items-center gap-2"
-          >
-            <span className="text-lg">+</span> Post New Listing
-          </Link>
+          <div className="flex items-center gap-3">
+            {(profile?.is_dealer || profile?.role === 'dealer' || profile?.role === 'admin') && (
+              <Link
+                href="/dashboard/bulk-upload"
+                className="border border-green-600 text-green-700 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-green-50 transition-colors"
+              >
+                📤 Bulk Upload
+              </Link>
+            )}
+            <Link
+              href="/listings/create"
+              className="bg-gradient-to-r from-green-700 to-green-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-green-700/30 transition-all flex items-center gap-2"
+            >
+              <span className="text-lg">+</span> Post New Listing
+            </Link>
+          </div>
         </div>
 
         {/* Stats Bar */}
