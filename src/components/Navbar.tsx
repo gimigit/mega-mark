@@ -8,6 +8,7 @@ import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { Button } from '@/components/ui/button'
 import ThemeToggle from './ThemeToggle'
 import CurrencyToggle from './CurrencyToggle'
+import LanguageToggle from './LanguageToggle'
 import { NotificationBell } from './NotificationBell'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useFavoritesStore } from '@/store/useFavoritesStore'
@@ -102,6 +103,7 @@ export default function Navbar() {
         {/* Right Side Actions - desktop */}
         <div className="hidden md:flex items-center gap-2 ml-auto">
           <CurrencyToggle />
+          <LanguageToggle />
           <ThemeToggle />
 
           {isLoading ? (
@@ -291,8 +293,9 @@ export default function Navbar() {
               )}
               <div className="pt-2">
                 <ThemeToggle />
-                <div className="mt-2">
+                <div className="mt-2 flex gap-2">
                   <CurrencyToggle />
+                  <LanguageToggle />
                 </div>
               </div>
             </div>
