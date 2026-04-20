@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BrowseByCategoryCounty from '@/components/BrowseByCategoryCounty'
-import { getCategoryIcon, getCountyName, getCategoryTips, ROMANIAN_COUNTIES } from '@/lib/categories'
+import { getCategoryIcon, getCountyName, getCategoryTips, getCategoryIntro, ROMANIAN_COUNTIES } from '@/lib/categories'
 import { MapPin, Clock } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -189,10 +189,27 @@ export default async function BrowseCategorySlugPage({
               <p className="text-white/70 mt-1">{listings?.length ?? 0} anunțuri disponibile</p>
             </div>
           </div>
+
+          <p className="text-white/80 mt-4 text-lg max-w-2xl">{getCategoryIntro(categorySlug)}</p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto py-10 px-6">
+      <div className="max-w-7xl mx-auto py-6 px-6">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-5">
+          <h3 className="font-bold text-amber-800 dark:text-amber-200 mb-3 flex items-center gap-2">
+            💡 Sfaturi la achiziție
+          </h3>
+          <ul className="space-y-2">
+            {getCategoryTips(categorySlug).map((tip, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-amber-900 dark:text-amber-100">
+                <span className="text-amber-500 mt-0.5">✓</span>
+                {tip}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <h2 className="text-2xl font-black mt-10 mb-6">Anunțuri disponibile</h2>
         {listings && listings.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {listings.map((listing) => {

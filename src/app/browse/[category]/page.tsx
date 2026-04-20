@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { getCategoryIcon, getCategoryTips, ROMANIAN_COUNTIES } from '@/lib/categories'
+import { getCategoryIcon, getCategoryTips, getCategoryIntro, ROMANIAN_COUNTIES } from '@/lib/categories'
 import type { Database } from '@/types/database'
 
 // Force dynamic - needs DB access at runtime
@@ -109,8 +109,7 @@ export default async function BrowseCategoryPage({ params }: Props) {
           </p>
           <div className="mt-6 p-4 bg-white/10 rounded-lg">
             <p className="text-white/80 text-sm">
-              Explorează selecția noastră de {category.name.toLowerCase()} de la distribuitori și vânzători particulari din România și Europa. 
-              Comparaază prețuri, verifică specificațiile tehnice și găsește utilajul perfect pentru ferma ta.
+              {getCategoryIntro(categorySlug)}
             </p>
           </div>
         </div>

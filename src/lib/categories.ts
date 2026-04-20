@@ -184,3 +184,23 @@ export const CATEGORY_TIPS: Record<string, string[]> = {
 export function getCategoryTips(slug: string): string[] {
   return CATEGORY_TIPS[slug] || CATEGORY_TIPS.other
 }
+
+/** Intro text per category for SEO pages */
+export const CATEGORY_INTROS: Record<string, string> = {
+  tractors: "Tractoare agricole de toate puterile - de la 50 CP la 500+ CP. Oferim tractoare noi și second-hand de la dealerii autorizați și producători particulari din toată România.",
+  combines: "Combine de recoltat pentru cereale - echipamente profesionale pentru recolte de grâu, porumb, floarea-soarelui. Branduri leader: Claas, John Deere, New Holland.",
+  harvesters: "Recoltatoare și vindtoare pentru legume și fructe. Echipamente specializate pentru cartofi, morcov, ceapă, struguri. Soluții complete pentru fermele medii și mari.",
+  sprayers: "Prăpăriatoare și stropitori pentru tratamente fitosanitare. Sisteme de pulverizare cu control GPS, Tanuri de pesticide, echipamente pentru agricultura de precizie.",
+  seeders: "Semănători de precizie pentru cereale și legume. Sisteme electronice de control al adâncimii, distribuire uniformă, compatibile cu tractoare de toate puterile.",
+  plows: "Pluguri și brăzdare pentru pregătirea solului. Pluguri reversibile, discuri, cultimatoare - echipamente pentru arat și pregătirea patului germinativ.",
+  balers: "Prese și balotieri pentru furaje. Baloți pătrați și rotunzi, density settings ajustabile, sisteme de legătură cu sârmă sau plasă.",
+  trailers: "Remorci agricole și utilitare. Remorci de 1-20 tone, basculante, platforme - compatibile cu tractoare și camioane.",
+  loaders: "Încărcătoare frontale și cuppe hidraulice. Sisteme de atașamente rapide, forță de ridicare 500-5000 kg, compatibile majoritatea tractoare.",
+  irrigation: "Sisteme de irigație și pompare. Pivot central, tunuri de irigație, Pompe și conducte - soluții pentru hectari de culturi.",
+  construction: "Utilaje de construcții: excavatoare, Încarcatoare, buldozere. Echipamente pentru amenajări funciare, podețe, drumuri fermă.",
+  other: "Echipamente agricole diverse. Piese, accesorii, atașamente - tot ce ai nevoie pentru ferma ta.",
+}
+
+export function getCategoryIntro(slug: string): string {
+  return CATEGORY_INTROS[slug] || CATEGORY_INTROS.other
+}
