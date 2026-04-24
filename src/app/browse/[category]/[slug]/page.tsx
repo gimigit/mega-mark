@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BrowseByCategoryCounty from '@/components/BrowseByCategoryCounty'
-import { getCategoryIcon, getCountyName, getCategoryTips, getCategoryIntro, ROMANIAN_COUNTIES } from '@/lib/categories'
+import { getCategoryIcon, getCountyName, getCategoryTips, getCategoryIntro, getCountyIntro, ROMANIAN_COUNTIES } from '@/lib/categories'
 import { MapPin, Clock } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -122,6 +122,9 @@ export default async function BrowseCategorySlugPage({
             </h1>
             <p className="text-white/70 mt-2">
               Anunțuri cu {category.name.toLowerCase()} disponibile în {countyName}
+            </p>
+            <p className="text-white/60 mt-3 max-w-2xl text-base leading-relaxed">
+              {getCountyIntro(slug)}
             </p>
           </div>
         </div>

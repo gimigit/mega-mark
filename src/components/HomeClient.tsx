@@ -1,0 +1,369 @@
+'use client'
+
+import Link from 'next/link'
+import { ArrowRight, Globe, TrendingUp, Users, Search, Camera, MessageSquare, Handshake, ChevronRight } from 'lucide-react'
+import { getCategoryIcon, EU_COUNTRIES } from '@/lib/categories'
+import { useTranslations } from '@/i18n/I18nProvider'
+import ListingCard from '@/components/ListingCard'
+import HeroSearch from '@/components/HeroSearch'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import type { Database } from '@/types/database'
+
+type Listing = Database['public']['Tables']['listings']['Row'] & {
+  profiles: Database['public']['Tables']['profiles']['Row']
+  categories: Database['public']['Tables']['categories']['Row']
+}
+
+type Category = {
+  id: number
+  name: string
+  slug: string
+  icon: string
+  count: number
+}
+
+type Manufacturer = {
+  id: number
+  name: string
+  slug: string
+  logo_url: string | null
+}
+
+type Stats = {
+  listings: number
+  users: number
+}
+
+interface HomeClientProps {
+  featuredListings: Listing[]
+  recentListings: Listing[]
+  categories: Category[]
+  manufacturers: Manufacturer[]
+  stats: Stats
+}
+
+export default function HomeClient({ featuredListings, recentListings, categories, manufacturers, stats }: HomeClientProps) {
+  const t = useTranslations().t
+
+  return (
+    <main className="min-h-screen bg-background">
+      <Navbar />
+
+      {/* Hero */}
+      <section className="relative bg-gradient-to-br from-green-900 via-green-800 to-green-700 text-white overflow-hidden min-h-[580px] flex flex-col justify-center">
+        <div
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '200px 200px',
+          }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(34,197,94,0.15),transparent)] pointer-events-none" />
+
+        <div className="relative max-w-4xl mx-auto px-6 py-20 lg:py-28 text-center animate-fade-in">
+          <p className="text-green-300 text-xs font-semibold tracking-widest uppercase mb-5">
+            {t('hero.tagline')}
+          </p>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-5 max-w-2xl mx-auto font-display animate-slide-up">
+            {t('hero.title')}<br />
+            <span className="text-amber-400">{t('hero.titleHighlight')}</span>
+          </h1>
+          <p className="text-lg text-green-200/80 max-w-xl mx-auto mb-10 leading-relaxed">
+            {t('hero.subtitle')}
+          </p>
+
+          <HeroSearch />
+
+          <div className="flex flex-wrap justify-center gap-3 mt-8">
+            <span className="px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-sm font-medium">
+              {stats.listings > 0 ? `${stats.listings.toLocaleString()}+` : '12.400+'} {t('hero.statsListings')}
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-sm font-medium">
+              {t('hero.statsCountries')}
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-sm font-medium">
+              {t('hero.statsFree')}
+            </span>
+          </div>
+
+          {categories.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mt-6">
+              {categories.slice(0, 6).map(cat => (
+                <Link
+                  key={cat.id}
+                  href={`/browse?category=${cat.id}`}
+                  className="px-3 py-1.5 rounded-full bg-white/10 text-white/70 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce text-white/40">
+          <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="border-b border-border bg-surface">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+          {[
+            { value: stats.listings > 0 ? `${stats.listings.toLocaleString()}+` : '0', label: t('stats.listings'), icon: TrendingUp },
+            { value: String(categories.length), label: t('stats.categories'), icon: Search },
+            { value: '16', label: t('stats.countries'), icon: Globe },
+            { value: stats.users > 0 ? `${stats.users.toLocaleString()}+` : '0', label: t('stats.users'), icon: Users },
+          ].map(stat => (
+            <div key={stat.label} className="px-6 py-5 text-center">
+              <stat.icon className="size-4 text-green-600 dark:text-green-400 mx-auto mb-1" />
+              <div className="text-2xl font-extrabold text-green-700 dark:text-green-400">{stat.value}</div>
+              <div className="text-xs text-muted-foreground font-medium mt-0.5">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="py-14 px-6 bg-background">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">{t('categories.title')}</h2>
+              <p className="text-muted-foreground text-sm mt-1">{t('categories.subtitle')}</p>
+            </div>
+            <Link href="/browse" className="text-sm font-semibold text-green-700 dark:text-green-400 hover:underline flex items-center gap-1">
+              {t('categories.allCategories')} <ChevronRight className="size-4" />
+            </Link>
+          </div>
+          {categories.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
+              {categories.map(cat => {
+                const IconComponent = getCategoryIcon(cat.slug)
+                return (
+                  <Link
+                    key={cat.id}
+                    href={`/browse?category=${cat.id}`}
+                    className="group flex items-center gap-4 p-5 rounded-xl border border-border bg-surface hover:border-green-400 hover:shadow-md transition-all"
+                  >
+                    <div className="shrink-0 size-12 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center group-hover:bg-green-100 dark:group-hover:bg-green-900/40 transition-colors">
+                      <IconComponent className="size-6 text-green-700 dark:text-green-400" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-sm font-bold text-foreground group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">
+                        {cat.name}
+                      </span>
+                      <span className="block text-xs text-muted-foreground mt-0.5">
+                        {cat.count} {cat.count === 1 ? t('categories.listing') : t('categories.listings')}
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>{t('categories.noAvailable')}</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Featured Listings */}
+      {featuredListings.length > 0 && (
+        <section className="py-14 px-6 bg-muted/30">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">{t('featured.title')}</h2>
+                <p className="text-muted-foreground text-sm mt-1">{t('featured.subtitle')}</p>
+              </div>
+              <Link href="/browse" className="text-sm font-semibold text-green-700 dark:text-green-400 hover:underline flex items-center gap-1">
+                {t('featured.viewAll')} <ChevronRight className="size-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {featuredListings.map(listing => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Popular Brands */}
+      {manufacturers.length > 0 && (
+        <section className="py-14 px-6 bg-background">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">{t('brands.title')}</h2>
+                <p className="text-muted-foreground text-sm mt-1">{t('brands.subtitle')}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {manufacturers.map(mfr => (
+                <Link
+                  key={mfr.id}
+                  href={`/browse?manufacturer=${mfr.id}`}
+                  className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-surface hover:border-green-400 hover:shadow-md transition-all"
+                >
+                  <div className="size-10 rounded-full bg-gray-100 dark:bg-dark-700 flex items-center justify-center text-sm font-black text-gray-600 dark:text-gray-300 group-hover:bg-green-50 dark:group-hover:bg-green-900/30 transition-colors">
+                    {mfr.name.split(' ').map((w: string) => w[0]).join('').slice(0, 2)}
+                  </div>
+                  <span className="text-xs font-semibold text-foreground text-center leading-tight group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">
+                    {mfr.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recent Listings */}
+      {recentListings.length > 0 && (
+        <section className="py-14 px-6 bg-muted/30">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">{t('recent.title')}</h2>
+                <p className="text-muted-foreground text-sm mt-1">{t('recent.subtitle')}</p>
+              </div>
+              <Link href="/browse?sort=newest" className="text-sm font-semibold text-green-700 dark:text-green-400 hover:underline flex items-center gap-1">
+                {t('recent.viewAll')} <ChevronRight className="size-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {recentListings.map(listing => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Browse by Country */}
+      <section className="py-14 px-6 bg-background">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">{t('countries.title')}</h2>
+              <p className="text-muted-foreground text-sm mt-1">{t('countries.subtitle')}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+            {EU_COUNTRIES.map(country => (
+              <Link
+                key={country.code}
+                href={`/browse?country=${country.code}`}
+                className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-border bg-surface hover:border-green-400 hover:shadow-md transition-all"
+              >
+                <span className="text-2xl">{country.flag}</span>
+                <span className="text-xs font-semibold text-foreground group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors text-center leading-tight">
+                  {country.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-14 px-6 bg-muted/30">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-foreground">{t('howItWorks.title')}</h2>
+            <p className="text-muted-foreground text-sm mt-1">{t('howItWorks.subtitle')}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Camera,
+                title: t('howItWorks.step1Title'),
+                desc: t('howItWorks.step1Desc'),
+                step: '1',
+              },
+              {
+                icon: MessageSquare,
+                title: t('howItWorks.step2Title'),
+                desc: t('howItWorks.step2Desc'),
+                step: '2',
+              },
+              {
+                icon: Handshake,
+                title: t('howItWorks.step3Title'),
+                desc: t('howItWorks.step3Desc'),
+                step: '3',
+              },
+            ].map(item => (
+              <div key={item.step} className="text-center">
+                <div className="relative inline-flex">
+                  <div className="size-16 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center mx-auto">
+                    <item.icon className="size-7 text-green-700 dark:text-green-400" />
+                  </div>
+                  <span className="absolute -top-2 -right-2 size-7 rounded-full bg-amber-500 text-white text-xs font-black flex items-center justify-center">
+                    {item.step}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-foreground mt-4 mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Empty state + CTA */}
+      {featuredListings.length === 0 && recentListings.length === 0 && (
+        <section className="py-14 px-6 bg-background">
+          <div className="text-center py-16 bg-surface rounded-xl border border-border max-w-3xl mx-auto">
+            <div className="size-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+              <Search className="size-7 text-green-600" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-2">{t('empty.title')}</h3>
+            <p className="text-muted-foreground mb-6 text-sm">{t('empty.subtitle')}</p>
+            <Link
+              href="/listings/create"
+              className="inline-flex items-center gap-2 bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors"
+            >
+              {t('empty.button')}
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* CTA */}
+      <section className="py-14 px-6 bg-background">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-3">{t('cta.title')}</h2>
+          <p className="text-muted-foreground mb-6">
+            {t('cta.subtitle')}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/listings/create"
+              className="inline-flex items-center justify-center gap-2 bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition-colors"
+            >
+              {t('cta.buttonCreate')}
+              <ArrowRight className="size-4" />
+            </Link>
+            <Link
+              href="/browse"
+              className="inline-flex items-center justify-center gap-2 border border-border text-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors"
+            >
+              {t('cta.buttonBrowse')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  )
+}

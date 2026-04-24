@@ -12,11 +12,12 @@ import LanguageToggle from './LanguageToggle'
 import { NotificationBell } from './NotificationBell'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useFavoritesStore } from '@/store/useFavoritesStore'
+import { useTranslations } from '@/i18n/I18nProvider'
 
 const navLinks = [
-  { href: '/browse', label: 'Anunturi' },
-  { href: '/request', label: 'Cereri' },
-  { href: '/about', label: 'Despre' },
+  { href: '/browse', labelKey: 'nav.browse' },
+  { href: '/request', labelKey: 'nav.requests' },
+  { href: '/about', labelKey: 'nav.about' },
 ]
 
 export default function Navbar() {
@@ -28,6 +29,7 @@ export default function Navbar() {
   const { user, isLoading, supabase } = useSupabase()
   const { notifications, unreadCount, loading: notifsLoading, markAsRead, markAllAsRead, getNotificationIcon, getNotificationLink } = useNotifications(user?.id)
   const { hydrate, hydrated, count: favCount } = useFavoritesStore()
+  const { t } = useTranslations()
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -81,7 +83,7 @@ export default function Navbar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cauta anunturi..."
+              placeholder={t('nav.search')}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500 transition-colors"
             />
           </div>
@@ -95,7 +97,7 @@ export default function Navbar() {
               href={link.href}
               className="text-gray-600 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 font-medium text-sm transition-colors"
             >
-              {link.label}
+              {t(link.labelKey)}
             </Link>
           ))}
         </div>
@@ -110,7 +112,7 @@ export default function Navbar() {
             <div className="size-8 rounded-lg bg-gray-100 dark:bg-dark-700 animate-pulse" />
           ) : user ? (
             <>
-              <Link href="/favorites" className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-red-500 transition-colors" title="Favorite">
+              <Link href="/favorites" className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-red-500 transition-colors" title={t('nav.favorites')}>
                 <Heart className="size-5" />
                 {favCount() > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
@@ -118,7 +120,7 @@ export default function Navbar() {
                   </span>
                 )}
               </Link>
-              <Link href="/dashboard/messages" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-green-600 transition-colors" title="Mesaje">
+              <Link href="/dashboard/messages" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-green-600 transition-colors" title={t('nav.messages')}>
                 <MessageSquare className="size-5" />
               </Link>
               <NotificationBell
@@ -134,7 +136,7 @@ export default function Navbar() {
               <Link href="/sell">
                 <Button className="bg-green-700 hover:bg-green-800 text-white font-bold gap-1.5 px-4 py-2">
                   <Plus className="size-4" />
-                  Adauga anunt
+                  {t('common.addListing')}
                 </Button>
               </Link>
 
@@ -143,7 +145,7 @@ export default function Navbar() {
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors"
-                  aria-label="Meniu utilizator"
+                  aria-label={t('nav.userMenu')}
                 >
                   <User className="size-5" />
                 </button>
@@ -156,7 +158,7 @@ export default function Navbar() {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors"
                     >
                       <User className="size-4" />
-                      Contul meu
+                      {t('common.myAccount')}
                     </Link>
                     <Link
                       href="/account/listings"
@@ -164,7 +166,7 @@ export default function Navbar() {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors"
                     >
                       <Plus className="size-4" />
-                      Anunturile mele
+                      {t('common.myListings')}
                     </Link>
                     <Link
                       href="/account/settings"
@@ -172,7 +174,7 @@ export default function Navbar() {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors"
                     >
                       <Search className="size-4" />
-                      Setari
+                      {t('common.settings')}
                     </Link>
                     <hr className="my-1 border-gray-200 dark:border-dark-700" />
                     <button
@@ -180,7 +182,7 @@ export default function Navbar() {
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
                       <LogOut className="size-4" />
-                      Deconectare
+                      {t('nav.logout')}
                     </button>
                   </div>
                 )}
@@ -191,14 +193,14 @@ export default function Navbar() {
               <Link href="/sell">
                 <Button className="bg-green-700 hover:bg-green-800 text-white font-bold gap-1.5 px-4 py-2">
                   <Plus className="size-4" />
-                  Adauga anunt
+                  {t('common.addListing')}
                 </Button>
               </Link>
               <Link
                 href="/login"
                 className="text-gray-600 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 font-medium text-sm transition-colors px-3 py-2"
               >
-                Autentificare
+                {t('nav.login')}
               </Link>
             </>
           )}
@@ -226,7 +228,7 @@ export default function Navbar() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cauta anunturi..."
+                  placeholder={t('nav.search')}
                   className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500 transition-colors"
                 />
               </div>
@@ -239,7 +241,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-2 text-gray-600 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 font-medium transition-colors"
               >
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             ))}
 
@@ -249,21 +251,21 @@ export default function Navbar() {
                   <div className="flex items-center gap-3">
                     <Link href="/favorites" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 py-2 text-gray-600 dark:text-gray-300 hover:text-red-500 font-medium transition-colors">
                       <Heart className="size-5" />
-                      Favorite
+                      {t('nav.favorites')}
                     </Link>
                   </div>
                   <Link href="/chat" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 py-2 text-gray-600 dark:text-gray-300 hover:text-green-600 font-medium transition-colors">
                     <MessageSquare className="size-5" />
-                    Mesaje
+                    {t('nav.messages')}
                   </Link>
                   <Link href="/account" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 py-2 text-gray-600 dark:text-gray-300 font-medium transition-colors">
                     <User className="size-5" />
-                    Contul meu
+                    {t('common.myAccount')}
                   </Link>
                   <Link href="/sell" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-green-700 hover:bg-green-800 text-white font-bold gap-1.5 py-2">
                       <Plus className="size-4" />
-                      Adauga anunt
+                      {t('common.addListing')}
                     </Button>
                   </Link>
                   <button
@@ -271,7 +273,7 @@ export default function Navbar() {
                     className="flex items-center gap-2 py-2 text-red-600 dark:text-red-400 font-medium transition-colors"
                   >
                     <LogOut className="size-5" />
-                    Deconectare
+                    {t('nav.logout')}
                   </button>
                 </>
               ) : (
@@ -279,7 +281,7 @@ export default function Navbar() {
                   <Link href="/sell" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-green-700 hover:bg-green-800 text-white font-bold gap-1.5 py-2">
                       <Plus className="size-4" />
-                      Adauga anunt
+                      {t('common.addListing')}
                     </Button>
                   </Link>
                   <Link
@@ -287,7 +289,7 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block text-center py-2 text-gray-600 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 font-medium transition-colors"
                   >
-                    Autentificare
+                    {t('nav.login')}
                   </Link>
                 </>
               )}

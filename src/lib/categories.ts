@@ -204,3 +204,52 @@ export const CATEGORY_INTROS: Record<string, string> = {
 export function getCategoryIntro(slug: string): string {
   return CATEGORY_INTROS[slug] || CATEGORY_INTROS.other
 }
+
+/** Unique intro text per Romanian county for SEO pages */
+export const COUNTY_INTROS: Record<string, string> = {
+  alba: "Piețele locale din Alba oferă utilaje agricole pentru fermele din zona Mureș și Apuseni. Tractoare și combine la prețuri competitive de la producători locali.",
+  arad: "Arad — poartă spre vestul Europei. Fermierii din Arad au acces la utilaje importate din Germania și Austria, cu service și garanție.",
+  arges: "Agricultura în Argeș se concentrează pe legumicultură și pomicultură. Utilaje pentru livezi și sere disponibile în zona Pitești.",
+  bacau: "Bacău — centru agricol al Moldovei. Utilaje pentru culturi cerealiere și zootehnie, cu livrare în tot județul.",
+  bihor: "Bihor, lângă granița cu Ungaria, oferă utilaje din import la prețuri bune. Piață activă pentru tractoare și combine second-hand.",
+  bistrita: "Agricultura montană în Bistrița-Năsăud. Echipamente pentru pajiști, fânețe și zootehnie de munte.",
+  botosani: "Botoșani — nordul Moldovei. Utilaje agricole pentru culturi de câmp și zootehnie, disponibile în zona Suceava-Botoșani.",
+  braila: "Brăila — agricultura de câmp pe scară mare în Bărăgan. Combine și tractoare de mare putere pentru ferme mari.",
+  brasov: "Brașov — centru agricol și turistic al Transilvaniei. Ofertă variată de utilaje, service specializat și piese de schimb.",
+  bucuresti: "București și Ilfov — cea mai mare piață de utilaje agricole din România. Dealer autorizat, import direct, livrare în toată țara.",
+  buzau: "Agricultura în Buzău: viticultură, legumicultură, apicultură. Utilaje pentru podgorii și culturi de legume.",
+  calarasi: "Călărași — agricultura irigată în Bărăganul Sudic. Tractoare și sisteme de irigație pentru ferme mari.",
+  cluj: "Cluj — centru universitar și agricol al Transilvaniei. Cea mai activă piață de utilaje din vestul României. Dealer local și service.",
+  constanta: "Constanța — port și centru agricol. Acces la utilaje importate și prețuri competitive pentru echipamente maritime și agricole.",
+  covasna: "Covasna — zootehnie și pajiști montane. Utilaje pentru creșterea animalelor și prelucrarea furajelor.",
+  dambovita: "Dâmbovița — agricultură mixtă în apropierea Bucureștiului. Tractoare și echipamente pentru livezi și legumicultură.",
+  dolj: "Dolj — inima Olteniei agricole. Combine și tractoare pentru culturile de cereale în Câmpia Română.",
+  galati: "Galați — centru agroindustrial al Moldovei. Utilaje pentru zootehnie, culturi de câmp și procesare.",
+  giurgiu: "Grajduri și parcuri industriale lângă București. Tractoare și remorci pentru ferme de animale și culturi vegetale.",
+  gorj: "Gorj — agricultura de semi-munte. Utilaje pentru pajiști naturale și creșterea oilor.",
+  harghita: "Harghita — zootehnie ecologică în Carpații Orientali. Echipamente pentru ferme de vaci și producție de lactate.",
+  hunedoara: "Hunedoara — minerit și agricultură în Depresiunea Hațeg. Tractoare și combine pentru ferme de munte.",
+  ialomita: "Ialomița — Bărăganul Estic. Utilaje pentru cereale și floarea-soarelui pe ferme de 100-1000 hectare.",
+  iasi: "Iași — centru universitar și agricol al Moldovei. Cea mai mare piață agricolă din estul României.",
+  ilfov: "Zona periurbană a Bucureștiului. Utilaje pentru ferme mici, legumicultură și horticultură.",
+  maramures: "Maramureș — agricultură tradițională și ecologică. Utilaje pentru pajiști și creșterea animalelor în zona montană.",
+  mehedinti: "Mehedinți — agricultură în Depresiunea Motru. Utilaje pentru livezi și zootehnie.",
+  mures: "Mureș — una dintre cele mai puternice zone agricole din Transilvania. Tractoare și combine de la dealeri autorizați.",
+  neamt: "Neamț — zonă viticolă și pomicolă renumită. Utilaje pentru podgorii și livezi de meri.",
+  olt: "Olt — câmpia Olteniei. Combine și tractoare pentru culturi de cereale și plante tehnice.",
+  prahova: "Prahova — agricultură și turism viticol. Utilaje pentru podgorii Dealu Mare și legumicultură.",
+  salaj: "Sălaj — zonă cerealieră în nord-vest. Tractoare și prese pentru furaje.",
+  'satu-mare': "Satu Mare — poartă spre Ungaria și Polonia. Utilaje din import la prețuri bune.",
+  sibiu: "Sibiu — centru agricol și turistic al Transilvaniei. Piață activă pentru utilaje mici și medii.",
+  suceava: "Suceava — cea mai mare suprafață agricolă din Moldova. Tractoare și combine pentru ferme mari.",
+  teleorman: "Teleorman — agricultura în sudul Olteniei. Utilaje pentru culturi de câmp pe terenuri plane.",
+  timis: "Timișoara și Timiș — cea mai dezvoltată zonă agricolă din vestul României. Import de utilaje germane, dealer autorizați.",
+  tulcea: "Tulcea — Delta Dunării și agricultura în Dobrogea. Utilaje pentru orez și legumicultură în zone umede.",
+  valcea: "Vâlcea — agricultură de submontană și viticultură. Utilaje pentru livezi și podgorii.",
+  vaslui: "Vaslui — zonă cerealieră în Moldova Centrală. Tractoare și combine pentru ferme de câmp.",
+  vrancea: "Vrancea — viticultură renumită și agricultură. Utilaje pentru podgorii și culturi de câmp.",
+}
+
+export function getCountyIntro(slug: string): string {
+  return COUNTY_INTROS[slug] || `Descoperă anunțuri cu utilaje agricole în ${slug}. Oferte de la fermieri și dealeri din zonă.`
+}

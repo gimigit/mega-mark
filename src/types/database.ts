@@ -125,6 +125,7 @@ export type Database = {
           price: number | null
           price_type: 'fixed' | 'negotiable' | 'on_request' | 'auction' | null
           currency: string | null
+          price_history: any | null
           year: number | null
           hours: number | null
           mileage: number | null
@@ -170,6 +171,7 @@ export type Database = {
           price?: number | null
           price_type?: 'fixed' | 'negotiable' | 'on_request' | 'auction' | null
           currency?: string | null
+          price_history?: any | null
           year?: number | null
           hours?: number | null
           mileage?: number | null
@@ -215,6 +217,7 @@ export type Database = {
           price?: number | null
           price_type?: 'fixed' | 'negotiable' | 'on_request' | 'auction' | null
           currency?: string | null
+          price_history?: any | null
           year?: number | null
           hours?: number | null
           mileage?: number | null

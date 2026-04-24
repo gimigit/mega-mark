@@ -12,12 +12,16 @@ import {
   Search, RotateCcw, Bookmark, X, Grid3X3, Map, List,
   ChevronLeft, ChevronRight, SearchX, Loader2,
 } from 'lucide-react'
-import type { Database } from '@/types/database'
+import { useTranslations } from '@/i18n/I18nProvider'
+import type { Database, Json } from '@/types/database'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles: Database['public']['Tables']['profiles']['Row']
   categories: Database['public']['Tables']['categories']['Row']
   manufacturers: Database['public']['Tables']['manufacturers']['Row'] | null
+  export_countries?: string[]
+  video_url?: string
+  specs?: Json
 }
 
 type Category = Database['public']['Tables']['categories']['Row']
@@ -49,6 +53,7 @@ export default function BrowseClient({
   const pathname = usePathname()
   const supabase = createClient()
   const { user } = useSupabase()
+  const t = useTranslations().t
   const [isPending, startTransition] = useTransition()
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid')
@@ -330,13 +335,13 @@ export default function BrowseClient({
   }
 
   const sortLabels: Record<string, string> = {
-    featured: 'Recomandate',
-    newest: 'Cele mai noi',
-    oldest: 'Cele mai vechi',
-    price_asc: 'Pret crescator',
-    price_desc: 'Pret descrescator',
-    year_desc: 'An mai nou',
-    year_asc: 'An mai vechi',
+    featured: t('browse.sortFeatured'),
+    newest: t('browse.sortNewest'),
+    oldest: t('browse.sortOldest'),
+    price_asc: t('browse.sortPriceAsc'),
+    price_desc: t('browse.sortPriceDesc'),
+    year_desc: t('browse.sortYearDesc'),
+    year_asc: t('browse.sortYearAsc'),
   }
 
   const hasActiveFilters = keyword || selectedCategory || selectedCountry || selectedCondition || priceMin || priceMax || yearMin || yearMax || selectedManufacturer || selectedListingType || sortBy !== 'featured'
@@ -351,23 +356,23 @@ export default function BrowseClient({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-3">
           <div className="lg:col-span-2">
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Cuvinte cheie
+              {t('browse.filtersKeyword')}
             </label>
             <input
               type="text"
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && applyFilters()}
-              placeholder="John Deere..."
+              placeholder={t('browse.placeholderKeyword')}
               className={inputClass}
             />
           </div>
           <div>
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Categorie
+              {t('browse.filtersCategory')}
             </label>
             <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className={selectClass}>
-              <option value="">Toate</option>
+              <option value="">{t('browse.all')}</option>
               {categories.map(cat => (
                 <option key={cat.id} value={cat.name}>{cat.name}</option>
               ))}
@@ -375,10 +380,10 @@ export default function BrowseClient({
           </div>
           <div>
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Producator
+              {t('browse.filtersManufacturer')}
             </label>
             <select value={selectedManufacturer} onChange={e => setSelectedManufacturer(e.target.value)} className={selectClass}>
-              <option value="">Toti</option>
+              <option value="">{t('browse.allManufacturers')}</option>
               {manufacturers.map(mfr => (
                 <option key={mfr.id} value={mfr.name}>{mfr.name}</option>
               ))}
@@ -386,10 +391,10 @@ export default function BrowseClient({
           </div>
           <div>
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Tara
+              {t('browse.filtersCountry')}
             </label>
             <select value={selectedCountry} onChange={e => setSelectedCountry(e.target.value)} className={selectClass}>
-              <option value="">Toate</option>
+              <option value="">{t('browse.allCountries')}</option>
               {countries.map(country => (
                 <option key={country.code} value={country.code}>{country.name}</option>
               ))}
@@ -397,48 +402,48 @@ export default function BrowseClient({
           </div>
           <div>
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Stare
+              {t('browse.filtersCondition')}
             </label>
             <select value={selectedCondition} onChange={e => setSelectedCondition(e.target.value)} className={selectClass}>
-              <option value="">Oricare</option>
-              <option value="new">Nou</option>
-              <option value="used">Folosit</option>
-              <option value="refurbished">Refurbished</option>
+              <option value="">{t('browse.anyCondition')}</option>
+              <option value="new">{t('browse.conditionNew')}</option>
+              <option value="used">{t('browse.conditionUsed')}</option>
+              <option value="refurbished">{t('browse.conditionRefurbished')}</option>
             </select>
           </div>
           <div>
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Pret min
+              {t('browse.filtersPriceMin')}
             </label>
-            <input type="number" value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder="€ 0" className={inputClass} />
+            <input type="number" value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder={t('browse.placeholderPriceMin')} className={inputClass} />
           </div>
           <div>
             <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">
-              Pret max
+              {t('browse.filtersPriceMax')}
             </label>
-            <input type="number" value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder="€ 500000" className={inputClass} />
+            <input type="number" value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder={t('browse.placeholderPriceMax')} className={inputClass} />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
           <div>
-            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">An de la</label>
-            <input type="number" value={yearMin} onChange={e => setYearMin(e.target.value)} placeholder="2000" className={inputClass} />
+            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">{t('browse.filtersYearFrom')}</label>
+            <input type="number" value={yearMin} onChange={e => setYearMin(e.target.value)} placeholder={t('browse.placeholderYearFrom')} className={inputClass} />
           </div>
           <div>
-            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">An pana la</label>
-            <input type="number" value={yearMax} onChange={e => setYearMax(e.target.value)} placeholder="2026" className={inputClass} />
+            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">{t('browse.filtersYearTo')}</label>
+            <input type="number" value={yearMax} onChange={e => setYearMax(e.target.value)} placeholder={t('browse.placeholderYearTo')} className={inputClass} />
           </div>
           <div>
-            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">Tip</label>
+            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">{t('browse.filtersType')}</label>
             <select value={selectedListingType} onChange={e => setSelectedListingType(e.target.value)} className={selectClass}>
-              <option value="">Toate</option>
-              <option value="sale">Vanzare</option>
-              <option value="rent">Inchiriere</option>
-              <option value="lease">Leasing</option>
+              <option value="">{t('browse.all')}</option>
+              <option value="sale">{t('browse.typeSale')}</option>
+              <option value="rent">{t('browse.typeRent')}</option>
+              <option value="lease">{t('browse.typeLease')}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">Sortare</label>
+            <label className="block text-xs font-bold text-white/60 uppercase tracking-wider mb-1">{t('browse.filtersSort')}</label>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)} className={selectClass}>
               {Object.entries(sortLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -452,7 +457,7 @@ export default function BrowseClient({
             className="flex-1 bg-gradient-to-r from-amber-500 to-amber-400 text-white p-3 rounded-lg font-bold text-base hover:shadow-lg hover:shadow-amber-500/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
           >
             <Search className="size-4" />
-            Cauta
+            {t('browse.search')}
           </button>
           {hasActiveFilters && (
             <>
@@ -460,17 +465,17 @@ export default function BrowseClient({
                 onClick={() => setSaveSearchOpen(true)}
                 disabled={!user}
                 className="px-6 py-3 border border-white/20 text-white rounded-lg font-semibold hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                title={user ? 'Salveaza aceasta cautare' : 'Autentifica-te pentru a salva cautarea'}
+                title={user ? t('browse.saveSearchTooltipLoggedIn') : t('browse.saveSearchTooltip')}
               >
                 <Bookmark className="size-4" />
-                Salveaza
+                {t('browse.saveSearch')}
               </button>
               <button
                 onClick={resetFilters}
                 className="px-6 py-3 border border-white/20 text-white rounded-lg font-semibold hover:bg-white/10 transition-colors flex items-center gap-2"
               >
                 <RotateCcw className="size-4" />
-                Reseteaza
+                {t('browse.reset')}
               </button>
             </>
           )}
@@ -481,7 +486,7 @@ export default function BrowseClient({
       {manufacturers.length > 0 && (
         <div className="max-w-7xl mx-auto px-6 pb-4">
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Branduri:</span>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">{t('browse.brandsQuick')}</span>
             {manufacturers.slice(0, 10).map(mfr => (
               <button
                 key={mfr.id}
@@ -513,7 +518,7 @@ export default function BrowseClient({
           <div className="flex items-center gap-4">
             {activeFilters.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Filtre:</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('browse.activeFilters')}</span>
                 {activeFilters.map(filter => (
                   <button
                     key={filter.key}
@@ -530,13 +535,13 @@ export default function BrowseClient({
           <div className="flex items-center gap-4">
             <p className="text-gray-600 dark:text-gray-300">
               {loading ? (
-                <span className="animate-pulse">Se incarca...</span>
+                <span className="animate-pulse">{t('browse.resultsLoading')}</span>
               ) : (
                 <>
-                  <span className="font-bold text-gray-900 dark:text-white">{totalCount}</span> anunturi
+                  <span className="font-bold text-gray-900 dark:text-white">{totalCount}</span> {t('browse.resultsCount')}
                   {page > 1 && (
                     <span className="text-gray-400 dark:text-gray-500 ml-2">
-                      (pagina {page} din {totalPages})
+                      {t('browse.resultsPage').replace('{page}', String(page)).replace('{total}', String(totalPages))}
                     </span>
                   )}
                 </>
@@ -552,7 +557,7 @@ export default function BrowseClient({
                 }`}
               >
                 <Grid3X3 className="size-4" />
-                Grid
+                {t('browse.viewGrid')}
               </button>
               <button
                 onClick={() => setViewMode('list')}
@@ -563,7 +568,7 @@ export default function BrowseClient({
                 }`}
               >
                 <List className="size-4" />
-                Listă
+                {t('browse.viewList')}
               </button>
               <button
                 onClick={() => setViewMode('map')}
@@ -574,7 +579,7 @@ export default function BrowseClient({
                 }`}
               >
                 <Map className="size-4" />
-                Harta
+                {t('browse.viewMap')}
               </button>
             </div>
           </div>
@@ -628,21 +633,21 @@ export default function BrowseClient({
           </motion.div>
         )}
 
-        {/* Empty state */}
+{/* Empty state */}
         {!loading && viewMode === 'grid' && listings.length === 0 && (
           <div className="text-center py-16 bg-white dark:bg-dark-800 rounded-2xl border border-gray-200 dark:border-dark-700">
             <div className="size-16 rounded-full bg-gray-100 dark:bg-dark-700 flex items-center justify-center mx-auto mb-4">
               <SearchX className="size-7 text-gray-400 dark:text-gray-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Niciun anunt gasit</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">Incearca sa modifici criteriile de cautare</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('browse.emptyTitle')}</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">{t('browse.emptySubtitle')}</p>
             {hasActiveFilters && (
               <button
                 onClick={resetFilters}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-700 text-white rounded-lg font-semibold hover:bg-green-800 transition-colors"
               >
                 <RotateCcw className="size-4" />
-                Reseteaza filtrele
+                {t('browse.reset')}
               </button>
             )}
           </div>
@@ -692,7 +697,7 @@ export default function BrowseClient({
           </div>
         )}
 
-        {/* Pagination */}
+{/* Pagination */}
         {!loading && totalPages > 1 && viewMode === 'grid' && (
           <div className="flex justify-center items-center gap-2 mt-8">
             <button
@@ -701,7 +706,7 @@ export default function BrowseClient({
               className="px-4 py-2 border border-gray-200 dark:border-dark-600 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-800 hover:bg-gray-50 dark:hover:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
             >
               <ChevronLeft className="size-4" />
-              Anterior
+              {t('browse.previous')}
             </button>
             <div className="flex gap-1">
               {[...Array(Math.min(5, totalPages))].map((_, i) => {
@@ -735,7 +740,7 @@ export default function BrowseClient({
               disabled={page === totalPages}
               className="px-4 py-2 border border-gray-200 dark:border-dark-600 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-800 hover:bg-gray-50 dark:hover:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
             >
-              Urmator
+              {t('browse.next')}
               <ChevronRight className="size-4" />
             </button>
           </div>
@@ -754,19 +759,19 @@ export default function BrowseClient({
               <div className="size-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bookmark className="size-7 text-green-700 dark:text-green-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Salveaza cautarea</h3>
-              <p className="text-gray-500 dark:text-gray-400">Vei fi notificat cand apar anunturi noi care corespund criteriilor tale.</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('browse.saveSearchTitle')}</h3>
+              <p className="text-gray-500 dark:text-gray-400">{t('browse.saveSearchDesc')}</p>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Nume cautare
+                  {t('browse.saveSearchName')}
                 </label>
                 <input
                   type="text"
                   value={searchName}
                   onChange={e => setSearchName(e.target.value)}
-                  placeholder="Ex: Tractoare John Deere sub 30k"
+                  placeholder={t('browse.saveSearchPlaceholder')}
                   className="w-full p-3 border border-gray-200 dark:border-dark-600 rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-dark-900 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
@@ -778,7 +783,7 @@ export default function BrowseClient({
                   className="w-5 h-5 text-green-700 rounded focus:ring-green-500"
                 />
                 <label htmlFor="notifyEmail" className="text-sm text-gray-700 dark:text-gray-300">
-                  Trimite notificari pe email
+                  {t('browse.saveSearchNotify')}
                 </label>
               </div>
             </div>
@@ -787,7 +792,7 @@ export default function BrowseClient({
                 onClick={() => setSaveSearchOpen(false)}
                 className="flex-1 px-5 py-2.5 border-2 border-gray-200 dark:border-dark-600 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-dark-500 transition-colors"
               >
-                Anuleaza
+                {t('common.cancel')}
               </button>
               <button
                 onClick={async () => {
@@ -823,12 +828,12 @@ export default function BrowseClient({
                 {saveLoading ? (
                   <>
                     <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Se salveaza...
+                    {t('browse.saveSearchSaving')}
                   </>
                 ) : (
                   <>
                     <Bookmark className="size-4" />
-                    Salveaza
+                    {t('browse.saveSearch')}
                   </>
                 )}
               </button>

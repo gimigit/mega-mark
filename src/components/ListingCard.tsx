@@ -5,13 +5,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { MapPin, Star, Clock, Heart, BadgeCheck, Award, GitCompare, Building2 } from 'lucide-react'
+import { MapPin, Star, Clock, Heart, BadgeCheck, Award, GitCompare, Building2, Truck } from 'lucide-react'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
 import { useFavoritesStore } from '@/store/useFavoritesStore'
 import { useCompareStore } from '@/store/useCompareStore'
 import { toast } from 'sonner'
-import type { Database } from '@/types/database'
+import type { Database, Json } from '@/types/database'
+import { calculateQualityScore, getQualityColor } from '@/lib/listingQuality'
 
 // Helper to check if a date is today
 function isUpdatedToday(dateString: string): boolean {
@@ -27,6 +28,9 @@ function isUpdatedToday(dateString: string): boolean {
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles?: Database['public']['Tables']['profiles']['Row']
   categories?: Database['public']['Tables']['categories']['Row']
+  export_countries?: string[]
+  video_url?: string
+  specs?: Json
 }
 
 interface ListingCardProps {
@@ -131,7 +135,22 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
 
   const images = listing.images as string[] | null
   const hasImages = images && images.length > 0
+  const videos = listing.videos as string[] | null
+  const hasVideo = videos && videos.length > 0
+  const exportCountries = listing.export_countries as string[] | null
+  const hasExportCountries = exportCountries && exportCountries.length > 0
   const categoryIcon = listing.categories?.icon || '🚜'
+  
+  // Calculate quality score
+  const { score: qualityScore } = calculateQualityScore({
+    images: listing.images as string[] | null,
+    videos: listing.videos as string[] | null,
+    video_url: listing.video_url,
+    description: listing.description,
+    specs: listing.specs,
+    price: listing.price,
+    listing_type: listing.listing_type,
+  })
 
   return (
     <motion.div
@@ -161,6 +180,17 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
             </motion.div>
           ) : (
             <span className="text-6xl opacity-50">{categoryIcon}</span>
+          )}
+
+          {/* Video Play Button Overlay */}
+          {hasVideo && (
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-green-700 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
           )}
 
           {/* Action Buttons (Favorite + Compare) */}
@@ -208,6 +238,25 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
             }`}>
               {listing.is_featured && <Award className="w-3.5 h-3.5" />}
               {listing.is_featured ? 'Featured' : isUpdatedToday(listing.updated_at) ? 'Reactualizat' : null}
+            </span>
+          )}
+
+          {/* Export Badge */}
+          {hasExportCountries && (
+            <span className="absolute top-3 left-20 px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1 bg-blue-600">
+              <Truck className="w-3.5 h-3.5" />
+              Export
+            </span>
+          )}
+
+          {/* Quality Score Badge */}
+          {qualityScore > 0 && (
+            <span className={`absolute top-3 right-16 px-2 py-1 rounded-full text-xs font-bold shadow-sm ${
+              qualityScore >= 80 ? 'bg-green-100 text-green-700' :
+              qualityScore >= 60 ? 'bg-amber-100 text-amber-700' :
+              'bg-red-100 text-red-700'
+            }`}>
+              {qualityScore}
             </span>
           )}
 

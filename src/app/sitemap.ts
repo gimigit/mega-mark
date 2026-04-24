@@ -95,7 +95,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.75,
     }))
 
-    return [...staticRoutes, ...categoryRoutes, ...comboRoutes, ...listingRoutes]
+    // ── category × Romanian county SEO pages ──────────────────────────────
+    // ROMANIAN_COUNTIES slugs hardcoded here to avoid circular imports
+    const ROMANIAN_COUNTY_SLUGS = [
+      'alba','arad','arges','bacau','bihor','bistrita','botosani','braila','brasov',
+      'bucuresti','buzau','calarasi','cluj','constanta','covasna','dambovita','dolj',
+      'galati','giurgiu','gorj','harghita','hunedoara','ialomita','iasi','ilfov',
+      'maramures','mehedinti','mures','neamt','olt','prahova','salaj','satu-mare',
+      'sibiu','suceava','teleorman','timis','tulcea','valcea','vaslui','vrancea',
+    ]
+    const countyRoutes: MetadataRoute.Sitemap = ROMANIAN_COUNTY_SLUGS.flatMap((countySlug) =>
+      (categories ?? []).map((cat) => ({
+        url: `${BASE_URL}/browse/${cat.slug}/${countySlug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
+    )
+
+    return [...staticRoutes, ...categoryRoutes, ...countyRoutes, ...comboRoutes, ...listingRoutes]
   } catch {
     // Return static routes on error
   }

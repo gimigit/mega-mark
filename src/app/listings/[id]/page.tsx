@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { data: listing } = await supabase
     .from('listings')
-    .select('title, description, price, currency, year, location_country, condition, images, categories(name), profiles(full_name)')
+    .select('title, description, price, currency, price_history, year, location_country, condition, images, categories(name), profiles(full_name)')
     .eq('id', id)
     .single()
 
@@ -79,7 +79,7 @@ export default async function ListingDetailPage({ params }: Props) {
   // Fetch listing data for JSON-LD + similar listings
   const { data: listing } = await supabase
     .from('listings')
-    .select('title, description, price, currency, condition, year, hours, images, location_country, category_id, categories(name), profiles(full_name)')
+    .select('title, description, price, currency, price_history, condition, year, hours, images, location_country, category_id, categories(name), profiles(full_name)')
     .eq('id', id)
     .single()
 

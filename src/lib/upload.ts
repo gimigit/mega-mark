@@ -114,3 +114,101 @@ export async function deleteListingImage(
     error: null,
   }
 }
+
+// Video upload constants
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm']
+
+/**
+ * Upload a listing video to Supabase Storage
+ * @param file - The video file to upload
+ * @param userId - The authenticated user's ID
+ * @returns The public URL of the uploaded video, or an error message
+ */
+export async function uploadListingVideo(
+  file: File,
+  userId: string
+): Promise<{ url: string; error: string | null }> {
+  // Validate file type
+  if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+    return {
+      url: '',
+      error: `Tip de fișier invalid. Se acceptă doar: mp4, webm`,
+    }
+  }
+
+  // Validate file size (100MB limit)
+  if (file.size > MAX_VIDEO_SIZE) {
+    return {
+      url: '',
+      error: 'Video-ul este prea mare. Limita este de 100MB.',
+    }
+  }
+
+  const supabase = createClient()
+
+  // Generate unique filename
+  const timestamp = Date.now()
+  const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+  const filename = `${timestamp}-${sanitizedName}`
+  const filepath = `videos/${userId}/${filename}`
+
+  // Upload to storage
+  const { data, error } = await supabase.storage
+    .from('listings')
+    .upload(filepath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+
+  if (error) {
+    console.error('Video upload error:', error)
+    return {
+      url: '',
+      error: error.message || 'Eroare la încărcarea video-ului.',
+    }
+  }
+
+  // Get public URL
+  const { data: urlData } = supabase.storage
+    .from('listings')
+    .getPublicUrl(filepath)
+
+  return {
+    url: urlData.publicUrl,
+    error: null,
+  }
+}
+
+/**
+ * Delete a listing video from Supabase Storage
+ */
+export async function deleteListingVideo(
+  videoUrl: string,
+  userId: string
+): Promise<{ success: boolean; error: string | null }> {
+  const supabase = createClient()
+
+  // Extract filepath from URL
+  const urlParts = videoUrl.split('/storage/v2/object/public/')
+  if (urlParts.length < 2) {
+    return { success: false, error: 'URL invalid.' }
+  }
+
+  const filepath = urlParts[1]
+
+  const { error } = await supabase.storage.from('listings').remove([filepath])
+
+  if (error) {
+    console.error('Delete video error:', error)
+    return {
+      success: false,
+      error: error.message || 'Eroare la ștergerea video-ului.',
+    }
+  }
+
+  return {
+    success: true,
+    error: null,
+  }
+}

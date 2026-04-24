@@ -12,11 +12,17 @@ import { toast } from 'sonner'
 import type { Database } from '@/types/database'
 import PhoneReveal from '@/components/PhoneReveal'
 import ShareButton from '@/components/ShareButton'
+import FinancingCalculator from '@/components/FinancingCalculator'
+import ShippingCalculator from '@/components/ShippingCalculator'
+import PriceHistoryChart from '@/components/PriceHistoryChart'
 import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
 
 type Listing = Database['public']['Tables']['listings']['Row'] & {
   profiles: Database['public']['Tables']['profiles']['Row']
   categories: Database['public']['Tables']['categories']['Row']
+  price_history?: { date: string; price: number; currency?: string }[]
+  export_countries?: string[]
+  video_url?: string
 }
 
 export default function ListingDetailClient({ listingId }: { listingId: string }) {
@@ -40,6 +46,7 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
   const [reportDescription, setReportDescription] = useState('')
   const [reportLoading, setReportLoading] = useState(false)
   const [showLightbox, setShowLightbox] = useState(false)
+  const [showVideoLightbox, setShowVideoLightbox] = useState(false)
   const touchStartX = useRef<number | null>(null)
 
   const handleBump = async () => {
@@ -267,6 +274,24 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
   }
 
   const images = listing.images as string[] | null
+  const videos = listing.videos as string[] | null
+  const hasVideos = videos && videos.length > 0
+  const videoUrl = listing.video_url
+
+  // Helper to extract video ID
+  const getVideoEmbedUrl = (url: string) => {
+    if (!url) return null
+    // YouTube: youtube.com/watch?v=ID or youtu.be/ID
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`
+    // Vimeo: vimeo.com/ID
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/)
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`
+    return null
+  }
+
+  const embedUrl = videoUrl ? getVideoEmbedUrl(videoUrl) : null
+
   const conditionLabels: Record<string, string> = {
     new: 'Nou',
     used: 'Folosit',
@@ -351,6 +376,19 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                     <span className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
                       {activeImage + 1} / {images.length}
                     </span>
+                    {/* Video Play Button */}
+                    {hasVideos && activeImage === 0 && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setShowVideoLightbox(true) }}
+                        className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity"
+                      >
+                        <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
+                          <svg className="w-10 h-10 text-green-700 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        </div>
+                      </button>
+                    )}
                   </div>
                   {images.length > 1 && (
                     <div className="flex gap-2 p-3 overflow-x-auto">
@@ -372,6 +410,50 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                 </div>
               )}
             </div>
+
+            {/* Video Section */}
+            {hasVideos && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Video</h2>
+                <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
+                  <video
+                    src={videos[0]}
+                    controls
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* YouTube/Vimeo Embed */}
+            {embedUrl && !hasVideos && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Video</h2>
+                <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
+                  <iframe
+                    src={embedUrl}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* YouTube/Vimeo embed when also has local video - show below */}
+            {embedUrl && hasVideos && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mt-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Video Extern</h2>
+                <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
+                  <iframe
+                    src={embedUrl}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Detalii</h2>
@@ -443,6 +525,15 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                 {listing.categories?.name} · {listing.year || '—'} · ID #{listing.id.slice(0, 8)}
               </div>
 
+              {/* Price History Chart - show only if there's price history */}
+              {listing.listing_type === 'sale' && listing.price_history && listing.price_history.length >= 2 && (
+                <PriceHistoryChart 
+                  priceHistory={listing.price_history}
+                  currentPrice={listing.price || 0}
+                  currentCurrency={listing.currency as 'EUR' | 'RON' | undefined}
+                />
+              )}
+
               <h1 className="text-xl font-black text-gray-900 mb-5">{listing.title}</h1>
 
               <div className="space-y-3">
@@ -459,6 +550,26 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                 >
                   {favorite ? '❤️ Salbat din favorite' : '🤍 Adaugă la favorite'}
                 </button>
+
+                {/* Financing Calculator - show only for price > 5000 EUR */}
+                {listing.listing_type === 'sale' && listing.price != null && listing.price >= 5000 && (
+                  <div className="mt-3">
+                    <FinancingCalculator 
+                      price={listing.price} 
+                      currency={listing.currency as 'EUR' | 'RON' | undefined} 
+                    />
+                  </div>
+                )}
+
+                {/* Shipping Calculator - show only if export countries exist */}
+                {listing.export_countries && listing.export_countries.length > 0 && (
+                  <div className="mt-3">
+                    <ShippingCalculator 
+                      exportCountries={listing.export_countries}
+                      weight={15} // default estimate
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="mt-4 border-t border-gray-100 pt-4">
@@ -781,6 +892,32 @@ export default function ListingDetailClient({ listingId }: { listingId: string }
                 className={`w-2 h-2 rounded-full transition-colors ${i === activeImage ? 'bg-white' : 'bg-white/40'}`}
               />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Video Lightbox */}
+      {showVideoLightbox && videos && videos.length > 0 && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          onClick={() => setShowVideoLightbox(false)}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowVideoLightbox(false) }}
+            className="absolute top-4 right-4 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-10"
+          >
+            ✕
+          </button>
+          <div
+            className="relative w-full max-w-4xl aspect-video"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <video
+              src={videos[0]}
+              controls
+              autoPlay
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
       )}

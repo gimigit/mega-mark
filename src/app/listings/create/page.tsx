@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
-import { uploadListingImage, deleteListingImage } from '@/lib/upload'
+import { uploadListingImage, deleteListingImage, uploadListingVideo } from '@/lib/upload'
 
 type Category = { id: string; slug: string; name: string; icon: string | null }
 type Manufacturer = { id: string; slug: string; name: string }
@@ -15,6 +15,14 @@ type UploadedImage = {
   file: File
   uploading: boolean
   error: string | null
+}
+
+type UploadedVideo = {
+  url: string
+  file: File
+  uploading: boolean
+  error: string | null
+  progress: number
 }
 
 const EU_COUNTRIES = [
@@ -52,6 +60,11 @@ export default function CreateListingPage() {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [uploadingCount, setUploadingCount] = useState(0)
 
+  // Video upload state
+  const [uploadedVideos, setUploadedVideos] = useState<UploadedVideo[]>([])
+  const [uploadingVideoCount, setUploadingVideoCount] = useState(0)
+  const videoInputRef = useRef<HTMLInputElement>(null)
+
   const [autoClassified, setAutoClassified] = useState<{ category_id: string | null; manufacturer_id: string | null } | null>(null)
   const [classifying, setClassifying] = useState(false)
   const classifyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -70,6 +83,8 @@ export default function CreateListingPage() {
     location_country: 'RO',
     location_region: '',
     description: '',
+    export_countries: [] as string[],
+    video_url: '',
     status: 'active' as 'active' | 'draft',
   })
 
@@ -171,6 +186,74 @@ export default function CreateListingPage() {
     fileInputRef.current?.click()
   }
 
+  // Handle video selection
+  const handleVideoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user || !e.target.files || e.target.files.length === 0) return
+
+    const files = Array.from(e.target.files)
+    
+    // Limit to 1 video
+    if (uploadedVideos.length + files.length > 1) {
+      setError('Poți încărca maxim 1 video.')
+      return
+    }
+
+    // Create preview entries
+    const newVideos: UploadedVideo[] = files.map(file => ({
+      url: '',
+      file,
+      uploading: true,
+      error: null,
+      progress: 0,
+    }))
+    
+    setUploadedVideos(prev => [...prev, ...newVideos])
+    setUploadingVideoCount(prev => prev + files.length)
+
+    // Upload each video
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const videoIndex = uploadedVideos.length + i
+      
+      const { url, error } = await uploadListingVideo(file, user.id)
+      
+      setUploadedVideos(prev => prev.map((vid, idx) => 
+        idx === videoIndex 
+          ? { ...vid, url, uploading: false, error, progress: 100 } 
+          : vid
+      ))
+      
+      setUploadingVideoCount(prev => prev - 1)
+    }
+
+    // Reset file input
+    if (videoInputRef.current) {
+      videoInputRef.current.value = ''
+    }
+  }
+
+  // Remove video
+  const handleRemoveVideo = async (index: number) => {
+    if (!user) return
+    const video = uploadedVideos[index]
+    
+    // If it was uploaded, try to delete from storage
+    if (video.url) {
+      await fetch('/api/videos/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: video.url }),
+      }).catch(() => {})
+    }
+    
+    setUploadedVideos(prev => prev.filter((_, i) => i !== index))
+  }
+
+  // Trigger video input
+  const handleVideoUploadClick = () => {
+    videoInputRef.current?.click()
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
@@ -194,7 +277,10 @@ export default function CreateListingPage() {
       location_country: form.location_country,
       location_region: form.location_region || null,
       status: form.status,
+      export_countries: form.export_countries,
+      video_url: form.video_url || null,
       images: uploadedImages.filter(img => img.url && !img.error).map(img => img.url),
+      videos: uploadedVideos.filter(vid => vid.url && !vid.error).map(vid => vid.url),
     }).select().single()
 
     setLoading(false)
@@ -455,6 +541,53 @@ export default function CreateListingPage() {
             </div>
           </div>
 
+          {/* Step 2b: Export Services */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-sm">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+              <span className="w-8 h-8 bg-green-700 text-white rounded-full flex items-center justify-center text-sm font-black">2b</span>
+              Servicii Export (Opțional)
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">Selectează țările în care poți oferi transport internațional.</p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {['DE', 'FR', 'IT', 'HU', 'PL', 'BG', 'SK', 'CZ'].map((country) => (
+                <label
+                  key={country}
+                  className={`flex items-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                    form.export_countries.includes(country)
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={form.export_countries.includes(country)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setForm({ ...form, export_countries: [...form.export_countries, country] })
+                      } else {
+                        setForm({ ...form, export_countries: form.export_countries.filter(c => c !== country) })
+                      }
+                    }}
+                    className="sr-only"
+                  />
+                  <span className={`w-4 h-4 rounded border flex items-center justify-center ${
+                    form.export_countries.includes(country)
+                      ? 'bg-green-600 border-green-600'
+                      : 'border-gray-300'
+                  }`}>
+                    {form.export_countries.includes(country) && (
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                      </svg>
+                    )}
+                  </span>
+                  <span className="text-sm font-medium text-gray-700">{country}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           {/* Step 3: Description */}
           <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -556,6 +689,99 @@ export default function CreateListingPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Step 5: Video (Optional) */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6 shadow-sm">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+              <span className="w-8 h-8 bg-green-700 text-white rounded-full flex items-center justify-center text-sm font-black">5</span>
+              Video (Opțional)
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">Adaugă un video pentru a atrage mai mulți cumpărători. Maxim 1 video, max 100MB, format mp4 sau webm.</p>
+            
+            {/* Hidden file input */}
+            <input
+              ref={videoInputRef}
+              type="file"
+              accept="video/mp4,video/webm"
+              onChange={handleVideoSelect}
+              className="hidden"
+            />
+            
+            {/* Upload button - only show if no video uploaded */}
+            {uploadedVideos.length === 0 && (
+              <button
+                type="button"
+                onClick={handleVideoUploadClick}
+                className="w-full p-8 border-2 border-dashed border-gray-300 rounded-xl text-center hover:border-green-500 hover:bg-green-50 transition-all cursor-pointer"
+              >
+                <div className="text-4xl mb-2">🎬</div>
+                <p className="font-bold text-gray-700">Adaugă video</p>
+                <p className="text-sm text-gray-500 mt-1">MP4, WEBM • Max 100MB</p>
+              </button>
+            )}
+
+            {/* Upload progress indicator */}
+            {uploadingVideoCount > 0 && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-blue-600">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                Se încarcă video...
+              </div>
+            )}
+
+            {/* Video preview */}
+            {uploadedVideos.length > 0 && (
+              <div className="mt-6">
+                <div className="grid grid-cols-1 gap-3">
+                  {uploadedVideos.map((video, index) => (
+                    <div key={index} className="relative group">
+                      {video.uploading ? (
+                        <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                          <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      ) : video.error ? (
+                        <div className="aspect-video bg-red-50 rounded-lg flex items-center justify-center p-4">
+                          <p className="text-sm text-red-600 text-center">{video.error}</p>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <video
+                            src={video.url}
+                            controls
+                            className="w-full aspect-video object-cover rounded-lg bg-black"
+                          />
+                        </div>
+                      )}
+                      {/* Remove button */}
+                      {!video.uploading && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveVideo(index)}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold shadow-lg"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Alternative: YouTube/Vimeo Link */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-sm text-gray-500 mb-4">Sau adaugă un link YouTube/Vimeo în loc de video upload:</p>
+              <input
+                type="url"
+                value={form.video_url}
+                onChange={(e) => setForm({ ...form, video_url: e.target.value })}
+                placeholder="https://www.youtube.com/watch?v=... sau https://vimeo.com/..."
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500/10 outline-none transition-all"
+              />
+              {form.video_url && (
+                <p className="text-xs text-green-600 mt-2">✓ Link detectat</p>
+              )}
+            </div>
           </div>
 
           {/* Submit */}
