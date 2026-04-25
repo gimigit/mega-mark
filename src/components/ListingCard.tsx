@@ -10,6 +10,7 @@ import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useCurrencyStore, formatPrice } from '@/store/useCurrencyStore'
 import { useFavoritesStore } from '@/store/useFavoritesStore'
 import { useCompareStore } from '@/store/useCompareStore'
+import { useBrowsingHistoryStore } from '@/store/useBrowsingHistoryStore'
 import { toast } from 'sonner'
 import type { Database, Json } from '@/types/database'
 import { calculateQualityScore, getQualityColor } from '@/lib/listingQuality'
@@ -80,6 +81,7 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
   )
   const [isToggling, setIsToggling] = useState(false)
   const compareStore = useCompareStore()
+  const browseStore = useBrowsingHistoryStore()
   const isCompared = compareStore.has(listing.id)
 
   const toggleCompare = (e: React.MouseEvent) => {

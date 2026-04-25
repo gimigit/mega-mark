@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { ChatWindow } from '@/components/ChatWindow'
 import { NotificationBell } from '@/components/NotificationBell'
+import Recommendations from '@/components/Recommendations'
 import { useMessages, type Message, type Conversation } from '@/hooks/useMessages'
 import { useNotifications } from '@/hooks/useNotifications'
 import { format, isToday, isYesterday } from 'date-fns'
@@ -355,6 +356,9 @@ export default function DashboardPage() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Recommendations for logged in users */}
+        <Recommendations />
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
