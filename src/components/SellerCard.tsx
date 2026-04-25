@@ -68,7 +68,16 @@ export default function SellerCard({ seller, listingCount, compact = false, onCo
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-bold text-gray-900 truncate">{sellerName}</span>
-            {seller.is_verified && (
+            {(seller as any).verification_level === 'verified' && (
+              <span className="text-amber-600 text-xs">✓</span>
+            )}
+            {(seller as any).verification_level === 'premium' && (
+              <span className="text-purple-600 text-xs">★</span>
+            )}
+            {(seller as any).verification_level === 'basic' && !((seller as any).verification_level === 'verified') && (
+              <span className="text-blue-600 text-xs">✓</span>
+            )}
+            {!((seller as any).verification_level) && seller.is_verified && !isDealer && (
               <span className="text-green-600 text-xs">✓</span>
             )}
           </div>
@@ -112,7 +121,22 @@ export default function SellerCard({ seller, listingCount, compact = false, onCo
           <Link href={`/sellers/${seller.id}`} className="font-bold text-gray-900 hover:text-green-700 transition-colors">
             {sellerName}
           </Link>
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+            {(seller as any).verification_level === 'verified' && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold text-amber-900 bg-amber-400 flex items-center gap-1">
+                <span>✓</span> Verificat Mega-Mark
+              </span>
+            )}
+            {(seller as any).verification_level === 'premium' && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold text-purple-900 bg-purple-200 flex items-center gap-1">
+                <span>★</span> Premium
+              </span>
+            )}
+            {(seller as any).verification_level === 'basic' && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold text-blue-700 bg-blue-100 flex items-center gap-1">
+                <span>✓</span> Verificat
+              </span>
+            )}
             {isDealer && (
               <span className="px-2 py-0.5 rounded-full text-xs font-bold text-amber-700 bg-amber-50">
                 🏢 Dealer

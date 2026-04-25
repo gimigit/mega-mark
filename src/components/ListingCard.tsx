@@ -14,6 +14,7 @@ import { useBrowsingHistoryStore } from '@/store/useBrowsingHistoryStore'
 import { toast } from 'sonner'
 import type { Database, Json } from '@/types/database'
 import { calculateQualityScore, getQualityColor } from '@/lib/listingQuality'
+import BuyerProtectionBadge from './BuyerProtectionBadge'
 
 // Helper to check if a date is today
 function isUpdatedToday(dateString: string): boolean {
@@ -260,6 +261,13 @@ export default function ListingCard({ listing, isFavorite: initialFavorite = fal
             }`}>
               {qualityScore}
             </span>
+          )}
+
+          {/* Buyer Protection Badge */}
+          {(listing as any).buyer_protection === true && (
+            <div className="absolute top-3 right-24">
+              <BuyerProtectionBadge compact />
+            </div>
           )}
 
           {/* Condition Badge */}
