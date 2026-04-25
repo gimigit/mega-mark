@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Install the adapter, build the app, and deploy or start it. — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-04-testing-adapters">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#custom-deploy-script-contract">Custom deploy script contract</a></li><li><a href="#custom-logs-script-contract">Custom logs script contract</a></li><li><a href="#custom-cleanup-script-contract">Custom cleanup script contract</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Install the adapter, build the app, and deploy or start it.</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Validate adapters with the Next.js compatibility test harness and custom lifecycle scripts.</td></tr></table><p>Next.js provides a test harness for validating adapters. Running the end-to-end tests for deployment.</p>
+<p>Example GitHub Actions workflow:</p>
+<pre><code class="language-yaml">name: test-e2e-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      nextjsRef:
+        description: 'Next.js repo ref (branch/tag/SHA)'
+        default: 'canary'
+        type: string
+  # schedule:
+  #   - cron: '0 2 * * *'
+
+jobs:
+  build:
+    name: Build Next.js + adapter
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: adapter
+
+      - uses: actions/checkout@v4
+        with:
+          repository: vercel/next.js
+          ref: ${{ inputs.nextjsRef || 'canary' }}
+          path: nextjs
+          fetch-depth: 25
+
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: Setup pnpm
+        run: npm i -g corepack@0.31 &amp;&amp; corepack enable
+
+      - name: Install &amp; build Next.js
+        working-directory: nextjs
+        run: pnpm install &amp;&amp; pnpm build &amp;&amp; pnpm install
+
+      - name: Install Playwright
+        working-directory: nextjs
+        run: pnpm playwright install --with-deps chromium
+
+      - name: Build adapter
+        working-directory: adapter
+        run: pnpm install &amp;&amp; pnpm build
+
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            nextjs
+            adapter
+            ~/.cache/ms-playwright
+          key: build-${{ github.sha }}-${{ github.run_id }}
+
+  test:
+    name: Tests (${{ matrix.group }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        group:
+          [
+            1/16,
+            2/16,
+            3/16,
+            4/16,
+            5/16,
+            6/16,
+            7/16,
+            8/16,
+            9/16,
+            10/16,
+            11/16,
+            12/16,
+            13/16,
+            14/16,
+            15/16,
+            16/16,
+          ]
+    steps:
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            nextjs
+            adapter
+            ~/.cache/ms-playwright
+          key: build-${{ github.sha }}-${{ github.run_id }}
+
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: Setup pnpm
+        run: npm i -g corepack@0.31 &amp;&amp; corepack enable
+
+      - name: Ensure Playwright browser
+        working-directory: nextjs
+        run: pnpm playwright install chromium
+
+      - name: Make scripts executable
+        run: chmod +x adapter/scripts/e2e-deploy.sh
+          adapter/scripts/e2e-logs.sh
+          adapter/scripts/e2e-cleanup.sh
+
+      - name: Run deploy tests
+        working-directory: nextjs
+        env:
+          NEXT_TEST_MODE: deploy
+          NEXT_E2E_TEST_TIMEOUT: 240000
+          NEXT_EXTERNAL_TESTS_FILTERS: test/deploy-tests-manifest.json
+          ADAPTER_DIR: ${{ github.workspace }}/adapter
+          IS_TURBOPACK_TEST: 1
+          NEXT_TEST_JOB: 1
+          NEXT_TELEMETRY_DISABLED: 1
+
+          # Change these to your adapter's scripts
+          # Keep as-is if the scripts are in the adapter repository `scripts` directory
+          NEXT_TEST_DEPLOY_SCRIPT_PATH: ${{ github.workspace }}/adapter/scripts/e2e-deploy.sh
+          NEXT_TEST_DEPLOY_LOGS_SCRIPT_PATH: ${{ github.workspace }}/adapter/scripts/e2e-logs.sh
+          NEXT_TEST_CLEANUP_SCRIPT_PATH: ${{ github.workspace }}/adapter/scripts/e2e-cleanup.sh
+        run: node run-tests.js --timings -g ${{ matrix.group }} -c 2 --type e2e
+</code></pre>
+<p>The test harness looks for these environment variables:</p>
+<ul>
+<li><code>NEXT_TEST_DEPLOY_SCRIPT_PATH</code>: Path to the executable that builds and deploys the isolated test app</li>
+<li><code>NEXT_TEST_DEPLOY_LOGS_SCRIPT_PATH</code>: Path to the executable that returns build and runtime logs for that deployment</li>
+<li><code>NEXT_TEST_CLEANUP_SCRIPT_PATH</code>: Path to the optional executable that tears the deployment down after the test run</li>
+</ul>
+<h2 id="custom-deploy-script-contract">Custom deploy script contract</h2>
+<p>The deploy script <code>NEXT_TEST_DEPLOY_SCRIPT_PATH</code> is executed with <code>cwd</code> set to the isolated temporary app created by the Next.js test harness.</p>
+<p>The deploy script must follow this contract:</p>
+<ul>
+<li>Exit with a non-zero code on failure.</li>
+<li>Print the deployment URL to <code>stdout</code>. This will be used to verify the deployment. Avoid writing anything else to <code>stdout</code>.</li>
+<li>Write diagnostic output to <code>stderr</code> or to files inside the working directory.</li>
+</ul>
+<p>Because the deploy script and logs script run as separate processes, any data you want to use later, such as build IDs or server logs, should be persisted to files inside the working directory.</p>
+<p>Example deploy script:</p>
+<pre><code class="language-bash">#!/usr/bin/env bash
+set -euo pipefail
+
+# Install the adapter, build the app, and deploy or start it.
+node -e &quot;
+const pkg=JSON.parse(require('fs').readFileSync('package.json','utf8'));
+pkg.dependencies=pkg.dependencies||{};
+pkg.dependencies['adapter']='file:${ADAPTER_DIR}';
+require('fs').writeFileSync('package.json',JSON.stringify(pkg,null,2));
+&quot; &gt;&amp;2
+
+# Set the adapter path so that the app uses it.
+export NEXT_ADAPTER_PATH=&quot;${ADAPTER_DIR}/dist/index.js&quot;
+
+# Build the app
+pnpm build
+
+# Write any metadata needed later to files in the working directory.
+BUILD_ID=&quot;$(cat .next/BUILD_ID)&quot;
+DEPLOYMENT_ID=&quot;my-adapter-local&quot;
+# If your adapter generates an immutable asset token, set it here.
+# Otherwise use &quot;undefined&quot; to indicate there is none.
+IMMUTABLE_ASSET_TOKEN=&quot;undefined&quot;
+
+{
+  echo &quot;BUILD_ID: $BUILD_ID&quot;
+  echo &quot;DEPLOYMENT_ID: $DEPLOYMENT_ID&quot;
+  echo &quot;IMMUTABLE_ASSET_TOKEN: $IMMUTABLE_ASSET_TOKEN&quot;
+} &gt;&gt; .adapter-build.log
+
+# Start or deploy the app. Capture the URL at this point or make the script output the URL to stdout.
+provider-cli-to-deploy
+
+# Example URL output:
+# echo &quot;http://127.0.0.1:3000&quot;
+</code></pre>
+<h2 id="custom-logs-script-contract">Custom logs script contract</h2>
+<p>The logs script <code>NEXT_TEST_DEPLOY_LOGS_SCRIPT_PATH</code> is executed with <code>cwd</code> set to the isolated temporary app created by the Next.js test harness.</p>
+<p>Additionally it receives <code>NEXT_TEST_DIR</code> and <code>NEXT_TEST_DEPLOY_URL</code> as environment variables.</p>
+<p>Its output must include lines starting with:</p>
+<ul>
+<li><code>BUILD_ID:</code></li>
+<li><code>DEPLOYMENT_ID:</code></li>
+<li><code>IMMUTABLE_ASSET_TOKEN:</code> (use the value <code>undefined</code> if your adapter does not produce one)</li>
+</ul>
+<p>After those markers, the logs script can print any additional build or server logs that would help debug failures.</p>
+<pre><code class="language-bash">#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -f &quot;.adapter-build.log&quot; ]; then
+  cat &quot;.adapter-build.log&quot;
+fi
+
+if [ -f &quot;.adapter-server.log&quot; ]; then
+  echo &quot;=== .adapter-server.log ===&quot;
+  cat &quot;.adapter-server.log&quot;
+fi
+</code></pre>
+<p>One pattern is to have the deploy script write <code>.adapter-build.log</code> and <code>.adapter-server.log</code>, then have the logs script replay those files so the harness can extract the required markers. This is one option, each platform has different ways to get the logs.</p>
+<h2 id="custom-cleanup-script-contract">Custom cleanup script contract</h2>
+<p>The cleanup script <code>NEXT_TEST_CLEANUP_SCRIPT_PATH</code> is executed with <code>cwd</code> set to the isolated temporary app created by the Next.js test harness.</p>
+<p>Additionally it receives <code>NEXT_TEST_DIR</code> and <code>NEXT_TEST_DEPLOY_URL</code> as environment variables.</p>
+<p>The cleanup script can be used to clean up any resources created by the deploy script. It runs after the tests have completed.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

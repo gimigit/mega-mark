@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>taint — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-taint">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#caveats">Caveats</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#tainting-an-object-reference">Tainting an object reference</a></li><li><a href="#tainting-a-unique-value">Tainting a unique value</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">taint</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Enable tainting Objects and Values.</td></tr><tr><th>version</th><td>experimental</td></tr></table><h2 id="usage">Usage</h2>
+<p>The <code>taint</code> option enables support for experimental React APIs for tainting objects and values. This feature helps prevent sensitive data from being accidentally passed to the client. When enabled, you can use:</p>
+<ul>
+<li><a href="https://react.dev/reference/react/experimental_taintObjectReference" target="_blank" rel="noopener"><code>experimental_taintObjectReference</code></a> taint objects references.</li>
+<li><a href="https://react.dev/reference/react/experimental_taintUniqueValue" target="_blank" rel="noopener"><code>experimental_taintUniqueValue</code></a> to taint unique values.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>: Activating this flag also enables the React <code>experimental</code> channel for <code>app</code> directory.</p>
+</blockquote>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    taint: true,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    taint: true,
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<blockquote>
+<p><strong>Warning:</strong> Do not rely on the taint API as your only mechanism to prevent exposing sensitive data to the client. See our <a href="/blog/security-nextjs-server-components-actions">security recommendations</a>.</p>
+</blockquote>
+<p>The taint APIs allows you to be defensive, by declaratively and explicitly marking data that is not allowed to pass through the Server-Client boundary. When an object or value, is passed through the Server-Client boundary, React throws an error.</p>
+<p>This is helpful for cases where:</p>
+<ul>
+<li>The methods to read data are out of your control</li>
+<li>You have to work with sensitive data shapes not defined by you</li>
+<li>Sensitive data is accessed during Server Component rendering</li>
+</ul>
+<p>It is recommended to model your data and APIs so that sensitive data is not returned to contexts where it is not needed.</p>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li>Tainting can only keep track of objects by reference. Copying an object creates an untainted version, which loses all guarantees given by the API. You’ll need to taint the copy.</li>
+<li>Tainting cannot keep track of data derived from a tainted value. You also need to taint the derived value.</li>
+<li>Values are tainted for as long as their lifetime reference is within scope. See the <a href="https://react.dev/reference/react/experimental_taintUniqueValue#parameters" target="_blank" rel="noopener"><code>experimental_taintUniqueValue</code> parameters reference</a>, for more information.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="tainting-an-object-reference">Tainting an object reference</h3>
+<p>In this case, the <code>getUserDetails</code> function returns data about a given user. We taint the user object reference, so that it cannot cross a Server-Client boundary. For example, assuming <code>UserCard</code> is a Client Component.</p>
+<pre><code class="language-ts">import { experimental_taintObjectReference } from 'react'
+
+function getUserDetails(id: string): UserDetails {
+  const user = await db.queryUserById(id)
+
+  experimental_taintObjectReference(
+    'Do not use the entire user info object. Instead, select only the fields you need.',
+    user
+  )
+
+  return user
+}
+</code></pre>
+<pre><code class="language-js">import { experimental_taintObjectReference } from 'react'
+
+function getUserDetails(id) {
+  const user = await db.queryUserById(id)
+
+  experimental_taintObjectReference(
+    'Do not use the entire user info object. Instead, select only the fields you need.',
+    user
+  )
+
+  return user
+}
+</code></pre>
+<p>We can still access individual fields from the tainted <code>userDetails</code> object.</p>
+<pre><code class="language-tsx">export async function ContactPage({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const { id } = await params
+  const userDetails = await getUserDetails(id)
+
+  return (
+    &lt;UserCard
+      firstName={userDetails.firstName}
+      lastName={userDetails.lastName}
+    /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export async function ContactPage({ params }) {
+  const { id } = await params
+  const userDetails = await getUserDetails(id)
+
+  return (
+    &lt;UserCard
+      firstName={userDetails.firstName}
+      lastName={userDetails.lastName}
+    /&gt;
+  )
+}
+</code></pre>
+<p>Now, passing the entire object to the Client Component will throw an error.</p>
+<pre><code class="language-tsx">export async function ContactPage({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const userDetails = await getUserDetails(id)
+
+  // Throws an error
+  return &lt;UserCard user={userDetails} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export async function ContactPage({ params }) {
+  const { id } = await params
+  const userDetails = await getUserDetails(id)
+
+  // Throws an error
+  return &lt;UserCard user={userDetails} /&gt;
+}
+</code></pre>
+<h3 id="tainting-a-unique-value">Tainting a unique value</h3>
+<p>In this case, we can access the server configuration by awaiting calls to <code>config.getConfigDetails</code>. However, the system configuration contains the <code>SERVICE_API_KEY</code> that we don’t want to expose to clients.</p>
+<p>We can taint the <code>config.SERVICE_API_KEY</code> value.</p>
+<pre><code class="language-ts">import { experimental_taintUniqueValue } from 'react'
+
+function getSystemConfig(): SystemConfig {
+  const config = await config.getConfigDetails()
+
+  experimental_taintUniqueValue(
+    'Do not pass configuration tokens to the client',
+    config,
+    config.SERVICE_API_KEY
+  )
+
+  return config
+}
+</code></pre>
+<pre><code class="language-js">import { experimental_taintUniqueValue } from 'react'
+
+function getSystemConfig() {
+  const config = await config.getConfigDetails()
+
+  experimental_taintUniqueValue(
+    'Do not pass configuration tokens to the client',
+    config,
+    config.SERVICE_API_KEY
+  )
+
+  return config
+}
+</code></pre>
+<p>We can still access other properties of the <code>systemConfig</code> object.</p>
+<pre><code class="language-tsx">export async function Dashboard() {
+  const systemConfig = await getSystemConfig()
+
+  return &lt;ClientDashboard version={systemConfig.SERVICE_API_VERSION} /&gt;
+}
+</code></pre>
+<p>However, passing <code>SERVICE_API_KEY</code> to <code>ClientDashboard</code> throws an error.</p>
+<pre><code class="language-tsx">export async function Dashboard() {
+  const systemConfig = await getSystemConfig()
+  // Someone makes a mistake in a PR
+  const version = systemConfig.SERVICE_API_KEY
+
+  return &lt;ClientDashboard version={version} /&gt;
+}
+</code></pre>
+<p>Note that, even though, <code>systemConfig.SERVICE_API_KEY</code> is reassigned to a new variable. Passing it to a Client Component still throws an error.</p>
+<p>Whereas, a value derived from a tainted unique value, will be exposed to the client.</p>
+<pre><code class="language-tsx">export async function Dashboard() {
+  const systemConfig = await getSystemConfig()
+  // Someone makes a mistake in a PR
+  const version = `version::${systemConfig.SERVICE_API_KEY}`
+
+  return &lt;ClientDashboard version={version} /&gt;
+}
+</code></pre>
+<p>A better approach is to remove <code>SERVICE_API_KEY</code> from the data returned by <code>getSystemConfig</code>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

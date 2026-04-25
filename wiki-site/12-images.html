@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12-images — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-12-images">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#local-images">Local images</a></li><ul><li><a href="#images-without-static-imports">Images without static imports</a></li></ul><li><a href="#remote-images">Remote images</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">12-images</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>See the API Reference for the full feature set of Next.js Image.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The Next.js <a href="/docs/app/api-reference/components/image"><code>&lt;Image&gt;</code></a> component extends the HTML <code>&lt;img&gt;</code> element to provide:</p>
+<ul>
+<li><strong>Size optimization:</strong> Automatically serving correctly sized images for each device, using modern image formats like WebP.</li>
+<li><strong>Visual stability:</strong> Preventing <a href="https://web.dev/articles/cls" target="_blank" rel="noopener">layout shift</a> automatically when images are loading.</li>
+<li><strong>Faster page loads:</strong> Only loading images when they enter the viewport using native browser lazy loading, with optional blur-up placeholders.</li>
+<li><strong>Asset flexibility:</strong> Resizing images on-demand, even images stored on remote servers.</li>
+</ul>
+<p>To start using <code>&lt;Image&gt;</code>, import it from <code>next/image</code> and render it within your component.</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image src=&quot;&quot; alt=&quot;&quot; /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image src=&quot;&quot; alt=&quot;&quot; /&gt;
+}
+</code></pre>
+<p>The <code>src</code> property can be a <a href="#local-images">local</a> or <a href="#remote-images">remote</a> image.</p>
+<blockquote>
+<p><strong>🎥 Watch:</strong> Learn more about how to use <code>next/image</code> → <a href="https://youtu.be/IU_qq_c_lKA" target="_blank" rel="noopener">YouTube (9 minutes)</a>.</p>
+</blockquote>
+<h2 id="local-images">Local images</h2>
+<p>You can store static files, like images and fonts, under a folder called <a href="/docs/app/api-reference/file-conventions/public-folder"><code>public</code></a> in the root directory. Files inside <code>public</code> can then be referenced by your code starting from the base URL (<code>/</code>).</p>
+<p><Image
+  alt="Folder structure showing app and public folders"
+  srcLight="/docs/light/public-folder.png"
+  srcDark="/docs/dark/public-folder.png"
+  width="1600"
+  height="282"
+/></p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+export default function Page() {
+  return (
+    &lt;Image
+      src=&quot;/profile.png&quot;
+      alt=&quot;Picture of the author&quot;
+      width={500}
+      height={500}
+    /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+export default function Page() {
+  return (
+    &lt;Image
+      src=&quot;/profile.png&quot;
+      alt=&quot;Picture of the author&quot;
+      width={500}
+      height={500}
+    /&gt;
+  )
+}
+</code></pre>
+<p>If the image is statically imported, Next.js will automatically determine the intrinsic <a href="/docs/app/api-reference/components/image#width-and-height"><code>width</code></a> and <a href="/docs/app/api-reference/components/image#width-and-height"><code>height</code></a>. These values are used to determine the image ratio and prevent <a href="https://web.dev/articles/cls" target="_blank" rel="noopener">Cumulative Layout Shift</a> while your image is loading.</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+import ProfileImage from './profile.png'
+
+export default function Page() {
+  return (
+    &lt;Image
+      src={ProfileImage}
+      alt=&quot;Picture of the author&quot;
+      // width={500} automatically provided
+      // height={500} automatically provided
+      // blurDataURL=&quot;data:...&quot; automatically provided
+      // placeholder=&quot;blur&quot; // Optional blur-up while loading
+    /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+import ProfileImage from './profile.png'
+
+export default function Page() {
+  return (
+    &lt;Image
+      src={ProfileImage}
+      alt=&quot;Picture of the author&quot;
+      // width={500} automatically provided
+      // height={500} automatically provided
+      // blurDataURL=&quot;data:...&quot; automatically provided
+      // placeholder=&quot;blur&quot; // Optional blur-up while loading
+    /&gt;
+  )
+}
+</code></pre>
+<h3 id="images-without-static-imports">Images without static imports</h3>
+<p>If you can’t use a static <code>import</code> for your images, you can use a dynamic <code>import()</code> in a Server Component to still get automatic <code>width</code>, <code>height</code>, and <code>blurDataURL</code>:</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+async function PostImage({
+  imageFilename,
+  alt,
+}: {
+  imageFilename: string
+  alt: string
+}) {
+  const { default: image } = await import(
+    `../content/blog/images/${imageFilename}`
+  )
+  // image contains width, height, and blurDataURL
+  return &lt;Image src={image} alt={alt} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+async function PostImage({ imageFilename, alt }) {
+  const { default: image } = await import(
+    `../content/blog/images/${imageFilename}`
+  )
+  // image contains width, height, and blurDataURL
+  return &lt;Image src={image} alt={alt} /&gt;
+}
+</code></pre>
+<p>If you have a <a href="https://www.typescriptlang.org/tsconfig/#paths" target="_blank" rel="noopener">path alias</a> configured (e.g. <code>@/</code>), you can use it instead of a relative path:</p>
+<pre><code class="language-tsx">const { default: image } = await import(
+  `@/content/blog/images/${imageFilename}`
+)
+</code></pre>
+<p>The path must include a static prefix (like <code>../content/blog/images/</code>). Be as specific as possible, since <strong>all</strong> files matching that prefix are bundled. Only files in your specified directory are included, so external input cannot reach outside of it.</p>
+<h2 id="remote-images">Remote images</h2>
+<p>To use a remote image, you can provide a URL string for the <code>src</code> property.</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+export default function Page() {
+  return (
+    &lt;Image
+      src=&quot;https://s3.amazonaws.com/my-bucket/profile.png&quot;
+      alt=&quot;Picture of the author&quot;
+      width={500}
+      height={500}
+    /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+export default function Page() {
+  return (
+    &lt;Image
+      src=&quot;https://s3.amazonaws.com/my-bucket/profile.png&quot;
+      alt=&quot;Picture of the author&quot;
+      width={500}
+      height={500}
+    /&gt;
+  )
+}
+</code></pre>
+<p>Since Next.js does not have access to remote files during the build process, you’ll need to provide the <a href="/docs/app/api-reference/components/image#width-and-height"><code>width</code></a>, <a href="/docs/app/api-reference/components/image#width-and-height"><code>height</code></a> and optional <a href="/docs/app/api-reference/components/image#blurdataurl"><code>blurDataURL</code></a> props manually. The <code>width</code> and <code>height</code> are used to infer the correct aspect ratio of image and avoid layout shift from the image loading in. Alternatively, you can use the <a href="/docs/app/api-reference/components/image#fill"><code>fill</code> property</a> to make the image fill the size of the parent element.</p>
+<p>To safely allow images from remote servers, you need to define a list of supported URL patterns in <a href="/docs/app/api-reference/config/next-config-js"><code>next.config.js</code></a>. Be as specific as possible to prevent malicious usage. For example, the following configuration will only allow images from a specific AWS S3 bucket:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const config: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+        port: '',
+        pathname: '/my-bucket/**',
+        search: '',
+      },
+    ],
+  },
+}
+
+export default config
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+        port: '',
+        pathname: '/my-bucket/**',
+        search: '',
+      },
+    ],
+  },
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

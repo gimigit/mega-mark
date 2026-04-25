@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generate-sitemaps — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-generate-sitemaps">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#returns">Returns</a></li><li><a href="#urls">URLs</a></li><li><a href="#example">Example</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">generate-sitemaps</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>generateSitemaps</td></tr><tr><th>description</th><td>Learn how to create sitemaps for your Next.js application.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>You can use the <code>generateSitemaps</code> function to generate multiple sitemaps for your application.</p>
+<h2 id="returns">Returns</h2>
+<p>The <code>generateSitemaps</code> returns an array of objects with an <code>id</code> property.</p>
+<h2 id="urls">URLs</h2>
+<p>Your generated sitemaps will be available at <code>/.../sitemap/[id].xml</code>. For example, <code>/product/sitemap/1.xml</code>.</p>
+<h2 id="example">Example</h2>
+<p>For example, to split a sitemap using <code>generateSitemaps</code>, return an array of objects with the sitemap <code>id</code>. Then, use the <code>id</code> to generate the unique sitemaps.</p>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+import { BASE_URL } from '@/app/lib/constants'
+
+export async function generateSitemaps() {
+  // Fetch the total number of products and calculate the number of sitemaps needed
+  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }]
+}
+
+export default async function sitemap(props: {
+  id: Promise&lt;string&gt;
+}): Promise&lt;MetadataRoute.Sitemap&gt; {
+  const id = await props.id
+  // Google's limit is 50,000 URLs per sitemap
+  const start = id * 50000
+  const end = start + 50000
+  const products = await getProducts(
+    `SELECT id, date FROM products WHERE id BETWEEN ${start} AND ${end}`
+  )
+  return products.map((product) =&gt; ({
+    url: `${BASE_URL}/product/${product.id}`,
+    lastModified: product.date,
+  }))
+}
+</code></pre>
+<pre><code class="language-js">import { BASE_URL } from '@/app/lib/constants'
+
+export async function generateSitemaps() {
+  // Fetch the total number of products and calculate the number of sitemaps needed
+  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }]
+}
+
+export default async function sitemap(props) {
+  const id = await props.id
+  // Google's limit is 50,000 URLs per sitemap
+  const start = id * 50000
+  const end = start + 50000
+  const products = await getProducts(
+    `SELECT id, date FROM products WHERE id BETWEEN ${start} AND ${end}`
+  )
+  return products.map((product) =&gt; ({
+    url: `${BASE_URL}/product/${product.id}`,
+    lastModified: product.date,
+  }))
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td>The <code>id</code> values returned from <code>generateSitemaps</code> are now passed as a promise that resolves to a <code>string</code> to the sitemap function.</td>
+</tr>
+<tr>
+<td><code>v15.0.0</code></td>
+<td><code>generateSitemaps</code> now generates consistent URLs between development and production</td>
+</tr>
+<tr>
+<td><code>v13.3.2</code></td>
+<td><code>generateSitemaps</code> introduced. In development, you can view the generated sitemap on <code>/.../sitemap.xml/[id]</code>. For example, <code>/product/sitemap.xml/1</code>.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

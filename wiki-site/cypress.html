@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cypress — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-cypress">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#quickstart">Quickstart</a></li><li><a href="#manual-setup">Manual setup</a></li><li><a href="#creating-your-first-cypress-e2e-test">Creating your first Cypress E2E test</a></li><ul><li><a href="#running-e2e-tests">Running E2E Tests</a></li></ul><li><a href="#creating-your-first-cypress-component-test">Creating your first Cypress component test</a></li><ul><li><a href="#running-component-tests">Running Component Tests</a></li></ul><li><a href="#continuous-integration-ci">Continuous Integration (CI)</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">cypress</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Cypress</td></tr><tr><th>description</th><td>Learn how to set up Cypress with Next.js for End-to-End (E2E) and Component Testing.</td></tr></table><p><a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a> is a test runner used for <strong>End-to-End (E2E)</strong> and <strong>Component Testing</strong>. This page will show you how to set up Cypress with Next.js and write your first tests.</p>
+<blockquote>
+<p><strong>Warning:</strong></p>
+<ul>
+<li>Cypress versions below 13.6.3 do not support <a href="https://github.com/cypress-io/cypress/issues/27731" target="_blank" rel="noopener">TypeScript version 5</a> with <code>moduleResolution:&quot;bundler&quot;</code>. However, this issue has been resolved in Cypress version 13.6.3 and later. <a href="https://docs.cypress.io/guides/references/changelog#13-6-3" target="_blank" rel="noopener">cypress v13.6.3</a></li>
+</ul>
+</blockquote>
+<AppOnly>
+<h2 id="quickstart">Quickstart</h2>
+<p>You can use <code>create-next-app</code> with the <a href="https://github.com/vercel/next.js/tree/canary/examples/with-cypress" target="_blank" rel="noopener">with-cypress example</a> to quickly get started.</p>
+<pre><code class="language-bash">pnpm create next-app --example with-cypress with-cypress-app
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest --example with-cypress with-cypress-app
+</code></pre>
+<pre><code class="language-bash">yarn create next-app --example with-cypress with-cypress-app
+</code></pre>
+<pre><code class="language-bash">bun create next-app --example with-cypress with-cypress-app
+</code></pre>
+</AppOnly>
+<h2 id="manual-setup">Manual setup</h2>
+<p>To manually set up Cypress, install <code>cypress</code> as a dev dependency:</p>
+<pre><code class="language-bash">pnpm add -D cypress
+</code></pre>
+<pre><code class="language-bash">npm install -D cypress
+</code></pre>
+<pre><code class="language-bash">yarn add -D cypress
+</code></pre>
+<pre><code class="language-bash">bun add -D cypress
+</code></pre>
+<p>Add the Cypress <code>open</code> command to the <code>package.json</code> scripts field:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;,
+    &quot;lint&quot;: &quot;eslint&quot;,
+    &quot;cypress:open&quot;: &quot;cypress open&quot;
+  }
+}
+</code></pre>
+<p>Run Cypress for the first time to open the Cypress testing suite:</p>
+<pre><code class="language-bash">pnpm cypress:open
+</code></pre>
+<pre><code class="language-bash">npm run cypress:open
+</code></pre>
+<pre><code class="language-bash">yarn cypress:open
+</code></pre>
+<pre><code class="language-bash">bun run cypress:open
+</code></pre>
+<p>You can choose to configure <strong>E2E Testing</strong> and/or <strong>Component Testing</strong>. Selecting any of these options will automatically create a <code>cypress.config.js</code> file and a <code>cypress</code> folder in your project.</p>
+<h2 id="creating-your-first-cypress-e2e-test">Creating your first Cypress E2E test</h2>
+<p>Ensure your <code>cypress.config</code> file has the following configuration:</p>
+<pre><code class="language-ts">import { defineConfig } from 'cypress'
+
+export default defineConfig({
+  e2e: {
+    setupNodeEvents(on, config) {},
+  },
+})
+</code></pre>
+<pre><code class="language-js">const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+  e2e: {
+    setupNodeEvents(on, config) {},
+  },
+})
+</code></pre>
+<p>Then, create two new Next.js files:</p>
+<AppOnly>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;About&lt;/h1&gt;
+      &lt;Link href=&quot;/&quot;&gt;Home&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Home() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function About() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;About&lt;/h1&gt;
+      &lt;Link href=&quot;/&quot;&gt;Home&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>Add a test to check your navigation is working correctly:</p>
+<pre><code class="language-js">describe('Navigation', () =&gt; {
+  it('should navigate to the about page', () =&gt; {
+    // Start from the index page
+    cy.visit('http://localhost:3000/')
+
+    // Find a link with an href attribute containing &quot;about&quot; and click it
+    cy.get('a[href*=&quot;about&quot;]').click()
+
+    // The new url should include &quot;/about&quot;
+    cy.url().should('include', '/about')
+
+    // The new page should contain an h1 with &quot;About&quot;
+    cy.get('h1').contains('About')
+  })
+})
+</code></pre>
+<h3 id="running-e2e-tests">Running E2E Tests</h3>
+<p>Cypress will simulate a user navigating your application, this requires your Next.js server to be running. We recommend running your tests against your production code to more closely resemble how your application will behave.</p>
+<p>Run <code>npm run build &amp;&amp; npm run start</code> to build your Next.js application, then run <code>npm run cypress:open</code> in another terminal window to start Cypress and run your E2E Testing suite.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>You can use <code>cy.visit(&quot;/&quot;)</code> instead of <code>cy.visit(&quot;http://localhost:3000/&quot;)</code> by adding <code>baseUrl: 'http://localhost:3000'</code> to the <code>cypress.config.js</code> configuration file.</li>
+<li>Alternatively, you can install the <a href="https://www.npmjs.com/package/start-server-and-test" target="_blank" rel="noopener"><code>start-server-and-test</code></a> package to run the Next.js production server in conjunction with Cypress. After installation, add <code>&quot;test&quot;: &quot;start-server-and-test start http://localhost:3000 cypress&quot;</code> to your <code>package.json</code> scripts field. Remember to rebuild your application after new changes.</li>
+</ul>
+</blockquote>
+<h2 id="creating-your-first-cypress-component-test">Creating your first Cypress component test</h2>
+<p>Component tests build and mount a specific component without having to bundle your whole application or start a server.</p>
+<p>Select <strong>Component Testing</strong> in the Cypress app, then select <strong>Next.js</strong> as your front-end framework. A <code>cypress/component</code> folder will be created in your project, and a <code>cypress.config.js</code> file will be updated to enable Component Testing.</p>
+<p>Ensure your <code>cypress.config</code> file has the following configuration:</p>
+<pre><code class="language-ts">import { defineConfig } from 'cypress'
+
+export default defineConfig({
+  component: {
+    devServer: {
+      framework: 'next',
+      bundler: 'webpack',
+    },
+  },
+})
+</code></pre>
+<pre><code class="language-js">const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+  component: {
+    devServer: {
+      framework: 'next',
+      bundler: 'webpack',
+    },
+  },
+})
+</code></pre>
+<p>Assuming the same components from the previous section, add a test to validate a component is rendering the expected output:</p>
+<AppOnly>
+<pre><code class="language-tsx">import Page from '../../app/page'
+
+describe('&lt;Page /&gt;', () =&gt; {
+  it('should render and display expected content', () =&gt; {
+    // Mount the React component for the Home page
+    cy.mount(&lt;Page /&gt;)
+
+    // The new page should contain an h1 with &quot;Home&quot;
+    cy.get('h1').contains('Home')
+
+    // Validate that a link with the expected URL is present
+    // Following the link is better suited to an E2E test
+    cy.get('a[href=&quot;/about&quot;]').should('be.visible')
+  })
+})
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import AboutPage from '../../pages/about'
+
+describe('&lt;AboutPage /&gt;', () =&gt; {
+  it('should render and display expected content', () =&gt; {
+    // Mount the React component for the About page
+    cy.mount(&lt;AboutPage /&gt;)
+
+    // The new page should contain an h1 with &quot;About page&quot;
+    cy.get('h1').contains('About')
+
+    // Validate that a link with the expected URL is present
+    // *Following* the link is better suited to an E2E test
+    cy.get('a[href=&quot;/&quot;]').should('be.visible')
+  })
+})
+</code></pre>
+</PagesOnly>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Cypress currently doesn’t support Component Testing for <code>async</code> Server Components. We recommend using E2E testing.</li>
+<li>Since component tests do not require a Next.js server, features like <code>&lt;Image /&gt;</code> that rely on a server being available may not function out-of-the-box.</li>
+</ul>
+</blockquote>
+<h3 id="running-component-tests">Running Component Tests</h3>
+<p>Run <code>npm run cypress:open</code> in your terminal to start Cypress and run your Component Testing suite.</p>
+<h2 id="continuous-integration-ci">Continuous Integration (CI)</h2>
+<p>In addition to interactive testing, you can also run Cypress headlessly using the <code>cypress run</code> command, which is better suited for CI environments:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    //...
+    &quot;e2e&quot;: &quot;start-server-and-test dev http://localhost:3000 \&quot;cypress open --e2e\&quot;&quot;,
+    &quot;e2e:headless&quot;: &quot;start-server-and-test dev http://localhost:3000 \&quot;cypress run --e2e\&quot;&quot;,
+    &quot;component&quot;: &quot;cypress open --component&quot;,
+    &quot;component:headless&quot;: &quot;cypress run --component&quot;
+  }
+}
+</code></pre>
+<p>You can learn more about Cypress and Continuous Integration from these resources:</p>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-cypress" target="_blank" rel="noopener">Next.js with Cypress example</a></li>
+<li><a href="https://docs.cypress.io/guides/continuous-integration/introduction" target="_blank" rel="noopener">Cypress Continuous Integration Docs</a></li>
+<li><a href="https://on.cypress.io/github-actions" target="_blank" rel="noopener">Cypress GitHub Actions Guide</a></li>
+<li><a href="https://github.com/cypress-io/github-action" target="_blank" rel="noopener">Official Cypress GitHub Action</a></li>
+<li><a href="https://discord.com/invite/cypress" target="_blank" rel="noopener">Cypress Discord</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

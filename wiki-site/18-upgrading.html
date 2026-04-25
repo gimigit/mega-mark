@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>18-upgrading — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-18-upgrading">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#latest-version">Latest version</a></li><li><a href="#canary-version">Canary version</a></li><ul><li><a href="#features-available-in-canary">Features available in canary</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">18-upgrading</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>See the version guides for in-depth upgrade instructions.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><h2 id="latest-version">Latest version</h2>
+<p>To update to the latest version of Next.js, you can use the <code>upgrade</code> command:</p>
+<pre><code class="language-bash">pnpm next upgrade
+</code></pre>
+<pre><code class="language-bash">npx next upgrade
+</code></pre>
+<pre><code class="language-bash">yarn next upgrade
+</code></pre>
+<pre><code class="language-bash">bunx next upgrade
+</code></pre>
+<p>Versions before Next.js 16.1.0 do not support the <code>upgrade</code> command and need to use a separate package instead:</p>
+<pre><code class="language-bash">npx @next/codemod@canary upgrade latest
+</code></pre>
+<p>If you prefer to upgrade manually, install the latest Next.js and React versions:</p>
+<pre><code class="language-bash">pnpm i next@latest react@latest react-dom@latest eslint-config-next@latest
+</code></pre>
+<pre><code class="language-bash">npm i next@latest react@latest react-dom@latest eslint-config-next@latest
+</code></pre>
+<pre><code class="language-bash">yarn add next@latest react@latest react-dom@latest eslint-config-next@latest
+</code></pre>
+<pre><code class="language-bash">bun add next@latest react@latest react-dom@latest eslint-config-next@latest
+</code></pre>
+<h2 id="canary-version">Canary version</h2>
+<p>To update to the latest canary, make sure you’re on the latest version of Next.js and everything is working as expected. Then, run the following command:</p>
+<pre><code class="language-bash">pnpm add next@canary
+</code></pre>
+<pre><code class="language-bash">npm i next@canary
+</code></pre>
+<pre><code class="language-bash">yarn add next@canary
+</code></pre>
+<pre><code class="language-bash">bun add next@canary
+</code></pre>
+<h3 id="features-available-in-canary">Features available in canary</h3>
+<p>The following features are currently available in canary:</p>
+<p><strong>Authentication</strong>:</p>
+<ul>
+<li><a href="/docs/app/api-reference/functions/forbidden"><code>forbidden</code></a></li>
+<li><a href="/docs/app/api-reference/functions/unauthorized"><code>unauthorized</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/forbidden"><code>forbidden.js</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/unauthorized"><code>unauthorized.js</code></a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/authInterrupts"><code>authInterrupts</code></a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

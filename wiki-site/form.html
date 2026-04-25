@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>form — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-form">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#action-string-props">action (string) Props</a></li><li><a href="#action-function-props">action (function) Props</a></li><li><a href="#caveats">Caveats</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#search-form-that-leads-to-a-search-result-page">Search form that leads to a search result page</a></li><li><a href="#mutations-with-server-actions">Mutations with Server Actions</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">form</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use the `&lt;Form&gt;` component to handle form submissions and search params updates with client-side navigation.</td></tr></table><p>The <code>&lt;Form&gt;</code> component extends the HTML <code>&lt;form&gt;</code> element to provide <AppOnly><a href="/docs/app/getting-started/linking-and-navigating#prefetching"><strong>prefetching</strong></a> of <a href="/docs/app/api-reference/file-conventions/loading">loading UI</a>,</AppOnly> <strong>client-side navigation</strong> on submission, and <strong>progressive enhancement</strong>.</p>
+<p>It’s useful for forms that update URL search params as it reduces the boilerplate code needed to achieve the above.</p>
+<p>Basic usage:</p>
+<AppOnly>
+<pre><code class="language-tsx">import Form from 'next/form'
+
+export default function Page() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      {/* On submission, the input value will be appended to
+          the URL, e.g. /search?query=abc */}
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Form from 'next/form'
+
+export default function Search() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      {/* On submission, the input value will be appended to
+          the URL, e.g. /search?query=abc */}
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import Form from 'next/form'
+
+export default function Page() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      {/* On submission, the input value will be appended to
+          the URL, e.g. /search?query=abc */}
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Form from 'next/form'
+
+export default function Search() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      {/* On submission, the input value will be appended to
+          the URL, e.g. /search?query=abc */}
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h2 id="reference">Reference</h2>
+<p>The behavior of the <code>&lt;Form&gt;</code> component depends on whether the <code>action</code> prop is passed a <code>string</code> or <code>function</code>.</p>
+<AppOnly>
+<ul>
+<li>When <code>action</code> is a <strong>string</strong>, the <code>&lt;Form&gt;</code> behaves like a native HTML form that uses a <strong><code>GET</code></strong> method. The form data is encoded into the URL as search params, and when the form is submitted, it navigates to the specified URL. In addition, Next.js:
+<ul>
+<li><a href="/docs/app/getting-started/linking-and-navigating#prefetching">Prefetches</a> the path when the form becomes visible, this preloads shared UI (e.g. <code>layout.js</code> and <code>loading.js</code>), resulting in faster navigation.</li>
+<li>Performs a <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">client-side navigation</a> instead of a full page reload when the form is submitted. This retains shared UI and client-side state.</li>
+</ul>
+</li>
+<li>When <code>action</code> is a <strong>function</strong> (Server Action), <code>&lt;Form&gt;</code> behaves like a <a href="https://react.dev/reference/react-dom/components/form" target="_blank" rel="noopener">React form</a>, executing the action when the form is submitted.</li>
+</ul>
+</AppOnly>
+<PagesOnly>
+<ul>
+<li>When <code>action</code> is a <strong>string</strong>, the <code>&lt;Form&gt;</code> behaves like a native HTML form that uses a <strong><code>GET</code></strong> method. The form data is encoded into the URL as search params, and when the form is submitted, it navigates to the specified URL. In addition, Next.js:
+<ul>
+<li>Performs a <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">client-side navigation</a> instead of a full page reload when the form is submitted. This retains shared UI and client-side state.</li>
+</ul>
+</li>
+</ul>
+</PagesOnly>
+<h3 id="action-string-props"><code>action</code> (string) Props</h3>
+<PagesOnly>
+<p>When <code>action</code> is a string, the <code>&lt;Form&gt;</code> component supports the following props:</p>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Example</th>
+<th>Type</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>action</code></td>
+<td><code>action=&quot;/search&quot;</code></td>
+<td><code>string</code> (URL or relative path)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>replace</code></td>
+<td><code>replace={false}</code></td>
+<td><code>boolean</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>scroll</code></td>
+<td><code>scroll={true}</code></td>
+<td><code>boolean</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>action</code></strong>: The URL or path to navigate to when the form is submitted.
+<ul>
+<li>An empty string <code>&quot;&quot;</code> will navigate to the same route with updated search params.</li>
+</ul>
+</li>
+<li><strong><code>replace</code></strong>: Replaces the current history state instead of pushing a new one to the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API" target="_blank" rel="noopener">browser’s history</a> stack. Default is <code>false</code>.</li>
+<li><strong><code>scroll</code></strong>: Controls the scroll behavior during navigation. Defaults to <code>true</code>, this means it will scroll to the top of the new route, and maintain the scroll position for backwards and forwards navigation.</li>
+</ul>
+</PagesOnly>
+<AppOnly>
+<p>When <code>action</code> is a string, the <code>&lt;Form&gt;</code> component supports the following props:</p>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Example</th>
+<th>Type</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>action</code></td>
+<td><code>action=&quot;/search&quot;</code></td>
+<td><code>string</code> (URL or relative path)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>replace</code></td>
+<td><code>replace={false}</code></td>
+<td><code>boolean</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>scroll</code></td>
+<td><code>scroll={true}</code></td>
+<td><code>boolean</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>prefetch</code></td>
+<td><code>prefetch={true}</code></td>
+<td><code>boolean</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>action</code></strong>: The URL or path to navigate to when the form is submitted.
+<ul>
+<li>An empty string <code>&quot;&quot;</code> will navigate to the same route with updated search params.</li>
+</ul>
+</li>
+<li><strong><code>replace</code></strong>: Replaces the current history state instead of pushing a new one to the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API" target="_blank" rel="noopener">browser’s history</a> stack. Default is <code>false</code>.</li>
+<li><strong><code>scroll</code></strong>: Controls the scroll behavior during navigation. Defaults to <code>true</code>, this means it will scroll to the top of the new route, and maintain the scroll position for backwards and forwards navigation.</li>
+<li><strong><code>prefetch</code></strong>: Controls whether the path should be prefetched when the form becomes visible in the user’s viewport. Defaults to <code>true</code>.</li>
+</ul>
+<h3 id="action-function-props"><code>action</code> (function) Props</h3>
+<p>When <code>action</code> is a function, the <code>&lt;Form&gt;</code> component supports the following prop:</p>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Example</th>
+<th>Type</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>action</code></td>
+<td><code>action={myAction}</code></td>
+<td><code>function</code> (Server Action)</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>action</code></strong>: The Server Action to be called when the form is submitted. See the <a href="https://react.dev/reference/react-dom/components/form#props" target="_blank" rel="noopener">React docs</a> for more.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>: When <code>action</code> is a function, the <code>replace</code> and <code>scroll</code> props are ignored.</p>
+</blockquote>
+</AppOnly>
+<h3 id="caveats">Caveats</h3>
+<AppOnly>
+<ul>
+<li><strong><code>formAction</code></strong>: Can be used in a <code>&lt;button&gt;</code> or <code>&lt;input type=&quot;submit&quot;&gt;</code> fields to override the <code>action</code> prop. Next.js will perform a client-side navigation, however, this approach doesn’t support prefetching.
+<ul>
+<li>When using <a href="/docs/app/api-reference/config/next-config-js/basePath"><code>basePath</code></a>, you must also include it in the <code>formAction</code> path. e.g. <code>formAction=&quot;/base-path/search&quot;</code>.</li>
+</ul>
+</li>
+<li><strong><code>key</code></strong>: Passing a <code>key</code> prop to a string <code>action</code> is not supported. If you’d like to trigger a re-render or perform a mutation, consider using a function <code>action</code> instead.</li>
+</ul>
+</AppOnly>
+<ul>
+<li><strong><code>onSubmit</code></strong>: Can be used to handle form submission logic. However, calling <code>event.preventDefault()</code> will override <code>&lt;Form&gt;</code> behavior such as navigating to the specified URL.</li>
+<li><strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#method" target="_blank" rel="noopener"><code>method</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#enctype" target="_blank" rel="noopener"><code>encType</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#target" target="_blank" rel="noopener"><code>target</code></a></strong>: Are not supported as they override <code>&lt;Form&gt;</code> behavior.
+<ul>
+<li>Similarly, <code>formMethod</code>, <code>formEncType</code>, and <code>formTarget</code> can be used to override the <code>method</code>, <code>encType</code>, and <code>target</code> props respectively, and using them will fallback to native browser behavior.</li>
+<li>If you need to use these props, use the HTML <code>&lt;form&gt;</code> element instead.</li>
+</ul>
+</li>
+<li><strong><code>&lt;input type=&quot;file&quot;&gt;</code></strong>: Using this input type when the <code>action</code> is a string will match browser behavior by submitting the filename instead of the file object.</li>
+</ul>
+<AppOnly>
+<h2 id="examples">Examples</h2>
+<h3 id="search-form-that-leads-to-a-search-result-page">Search form that leads to a search result page</h3>
+<p>You can create a search form that navigates to a search results page by passing the path as an <code>action</code>:</p>
+<pre><code class="language-tsx">import Form from 'next/form'
+
+export default function Page() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Form from 'next/form'
+
+export default function Page() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<p>When the user updates the query input field and submits the form, the form data will be encoded into the URL as search params, e.g. <code>/search?query=abc</code>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If you pass an empty string <code>&quot;&quot;</code> to <code>action</code>, the form will navigate to the same route with updated search params.</p>
+</blockquote>
+<p>On the results page, you can access the query using the <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code></a> <code>page.js</code> prop and use it to fetch data from an external source.</p>
+<pre><code class="language-tsx">import { getSearchResults } from '@/lib/search'
+
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const results = await getSearchResults((await searchParams).query)
+
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { getSearchResults } from '@/lib/search'
+
+export default async function SearchPage({ searchParams }) {
+  const results = await getSearchResults((await searchParams).query)
+
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<p>When the <code>&lt;Form&gt;</code> becomes visible in the user’s viewport, shared UI (such as <code>layout.js</code> and <code>loading.js</code>) on the <code>/search</code> page will be prefetched. On submission, the form will immediately navigate to the new route and show loading UI while the results are being fetched. You can design the fallback UI using <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.js</code></a>:</p>
+<pre><code class="language-tsx">export default function Loading() {
+  return &lt;div&gt;Loading...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Loading() {
+  return &lt;div&gt;Loading...&lt;/div&gt;
+}
+</code></pre>
+<p>To cover cases when shared UI hasn’t yet loaded, you can show instant feedback to the user using <a href="https://react.dev/reference/react-dom/hooks/useFormStatus" target="_blank" rel="noopener"><code>useFormStatus</code></a>.</p>
+<p>First, create a component that displays a loading state when the form is pending:</p>
+<pre><code class="language-tsx">'use client'
+import { useFormStatus } from 'react-dom'
+
+export default function SearchButton() {
+  const status = useFormStatus()
+  return (
+    &lt;button type=&quot;submit&quot;&gt;{status.pending ? 'Searching...' : 'Search'}&lt;/button&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+import { useFormStatus } from 'react-dom'
+
+export default function SearchButton() {
+  const status = useFormStatus()
+  return (
+    &lt;button type=&quot;submit&quot;&gt;{status.pending ? 'Searching...' : 'Search'}&lt;/button&gt;
+  )
+}
+</code></pre>
+<p>Then, update the search form page to use the <code>SearchButton</code> component:</p>
+<pre><code class="language-tsx">import Form from 'next/form'
+import { SearchButton } from '@/ui/search-button'
+
+export default function Page() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;SearchButton /&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Form from 'next/form'
+import { SearchButton } from '@/ui/search-button'
+
+export default function Page() {
+  return (
+    &lt;Form action=&quot;/search&quot;&gt;
+      &lt;input name=&quot;query&quot; /&gt;
+      &lt;SearchButton /&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<h3 id="mutations-with-server-actions">Mutations with Server Actions</h3>
+<p>You can perform mutations by passing a function to the <code>action</code> prop.</p>
+<pre><code class="language-tsx">import Form from 'next/form'
+import { createPost } from '@/posts/actions'
+
+export default function Page() {
+  return (
+    &lt;Form action={createPost}&gt;
+      &lt;input name=&quot;title&quot; /&gt;
+      {/* ... */}
+      &lt;button type=&quot;submit&quot;&gt;Create Post&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Form from 'next/form'
+import { createPost } from '@/posts/actions'
+
+export default function Page() {
+  return (
+    &lt;Form action={createPost}&gt;
+      &lt;input name=&quot;title&quot; /&gt;
+      {/* ... */}
+      &lt;button type=&quot;submit&quot;&gt;Create Post&lt;/button&gt;
+    &lt;/Form&gt;
+  )
+}
+</code></pre>
+<p>After a mutation, it’s common to redirect to the new resource. You can use the <a href="/docs/app/guides/redirecting"><code>redirect</code></a> function from <code>next/navigation</code> to navigate to the new post page.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Since the “destination” of the form submission is not known until the action is executed, <code>&lt;Form&gt;</code> cannot automatically prefetch shared UI.</p>
+</blockquote>
+<pre><code class="language-tsx">'use server'
+import { redirect } from 'next/navigation'
+
+export async function createPost(formData: FormData) {
+  // Create a new post
+  // ...
+
+  // Redirect to the new post
+  redirect(`/posts/${data.id}`)
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+import { redirect } from 'next/navigation'
+
+export async function createPost(formData) {
+  // Create a new post
+  // ...
+
+  // Redirect to the new post
+  redirect(`/posts/${data.id}`)
+}
+</code></pre>
+<p>Then, in the new page, you can fetch data using the <code>params</code> prop:</p>
+<pre><code class="language-tsx">import { getPost } from '@/posts/data'
+
+export default async function PostPage({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const { id } = await params
+  const data = await getPost(id)
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{data.title}&lt;/h1&gt;
+      {/* ... */}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { getPost } from '@/posts/data'
+
+export default async function PostPage({ params }) {
+  const { id } = await params
+  const data = await getPost(id)
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{data.title}&lt;/h1&gt;
+      {/* ... */}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>See the <a href="/docs/app/getting-started/mutating-data">Server Actions</a> docs for more examples.</p>
+</AppOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Welcome to my MDX page! — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-mdx">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#install-dependencies">Install dependencies</a></li><li><a href="#configure-nextconfigmjs">Configure next.config.mjs</a></li><ul><li><a href="#handling-md-files">Handling .md files</a></li></ul><li><a href="#add-an-mdx-componentstsx-file">Add an mdx-components.tsx file</a></li><li><a href="#rendering-mdx">Rendering MDX</a></li><ul><li><a href="#using-file-based-routing">Using file based routing</a></li><li><a href="#using-imports">Using imports</a></li><li><a href="#using-dynamic-imports">Using dynamic imports</a></li></ul><li><a href="#using-custom-styles-and-components">Using custom styles and components</a></li><ul><li><a href="#global-styles-and-components">Global styles and components</a></li><li><a href="#local-styles-and-components">Local styles and components</a></li><li><a href="#shared-layouts">Shared layouts</a></li><li><a href="#using-tailwind-typography-plugin">Using Tailwind typography plugin</a></li></ul><li><a href="#frontmatter">Frontmatter</a></li><li><a href="#remark-and-rehype-plugins">remark and rehype Plugins</a></li><ul><li><a href="#using-plugins-with-turbopack">Using Plugins with Turbopack</a></li></ul><li><a href="#deep-dive-how-do-you-transform-markdown-into-html">Deep Dive: How do you transform markdown into HTML?</a></li><li><a href="#using-the-rust-based-mdx-compiler-experimental">Using the Rust-based MDX compiler (experimental)</a></li><li><a href="#helpful-links">Helpful Links</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Welcome to my MDX page!</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>MDX</td></tr><tr><th>description</th><td>Learn how to configure MDX and use it in your Next.js apps.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p><a href="https://daringfireball.net/projects/markdown/syntax" target="_blank" rel="noopener">Markdown</a> is a lightweight markup language used to format text. It allows you to write using plain text syntax and convert it to structurally valid HTML. It’s commonly used for writing content on websites and blogs.</p>
+<p>You write…</p>
+<pre><code class="language-md">I **love** using [Next.js](https://nextjs.org/)
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-html">&lt;p&gt;I &lt;strong&gt;love&lt;/strong&gt; using &lt;a href=&quot;https://nextjs.org/&quot;&gt;Next.js&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+<p><a href="https://mdxjs.com/" target="_blank" rel="noopener">MDX</a> is a superset of markdown that lets you write <a href="https://react.dev/learn/writing-markup-with-jsx" target="_blank" rel="noopener">JSX</a> directly in your markdown files. It is a powerful way to add dynamic interactivity and embed React components within your content.</p>
+<p>Next.js can support both local MDX content inside your application, as well as remote MDX files fetched dynamically on the server. The Next.js plugin handles transforming markdown and React components into HTML, including support for usage in Server Components (the default in App Router).</p>
+<blockquote>
+<p><strong>Good to know</strong>: View the <a href="https://vercel.com/templates/next.js/portfolio-starter-kit" target="_blank" rel="noopener">Portfolio Starter Kit</a> template for a complete working example.</p>
+</blockquote>
+<h2 id="install-dependencies">Install dependencies</h2>
+<p>The <code>@next/mdx</code> package, and related packages, are used to configure Next.js so it can process markdown and MDX. <strong>It sources data from local files</strong>, allowing you to create pages with a <code>.md</code> or <code>.mdx</code> extension, directly in your <code>/pages</code> or <code>/app</code> directory.</p>
+<p>Install these packages to render MDX with Next.js:</p>
+<pre><code class="language-bash">pnpm add @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+</code></pre>
+<pre><code class="language-bash">npm install @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+</code></pre>
+<pre><code class="language-bash">yarn add @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+</code></pre>
+<pre><code class="language-bash">bun add @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+</code></pre>
+<h2 id="configure-nextconfigmjs">Configure <code>next.config.mjs</code></h2>
+<p>Update the <code>next.config.mjs</code> file at your project’s root to configure it to use MDX:</p>
+<pre><code class="language-js">import createMDX from '@next/mdx'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Configure `pageExtensions` to include markdown and MDX files
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  // Optionally, add any other Next.js config below
+}
+
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+})
+
+// Merge MDX config with Next.js config
+export default withMDX(nextConfig)
+</code></pre>
+<p>This allows <code>.mdx</code> files to act as pages, routes, or imports in your application.</p>
+<h3 id="handling-md-files">Handling <code>.md</code> files</h3>
+<p>By default, <code>next/mdx</code> only compiles files with the <code>.mdx</code> extension. To handle <code>.md</code> files with webpack, update the <code>extension</code> option:</p>
+<pre><code class="language-js">const withMDX = createMDX({
+  extension: /\.(md|mdx)$/,
+})
+</code></pre>
+<h2 id="add-an-mdx-componentstsx-file">Add an <code>mdx-components.tsx</code> file</h2>
+<p>Create an <code>mdx-components.tsx</code> (or <code>.js</code>) file in the root of your project to define global MDX Components. For example, at the same level as <code>pages</code> or <code>app</code>, or inside <code>src</code> if applicable.</p>
+<pre><code class="language-tsx">import type { MDXComponents } from 'mdx/types'
+
+const components: MDXComponents = {}
+
+export function useMDXComponents(): MDXComponents {
+  return components
+}
+</code></pre>
+<pre><code class="language-js">const components = {}
+
+export function useMDXComponents() {
+  return components
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>mdx-components.tsx</code> is <strong>required</strong> to use <code>@next/mdx</code> with App Router and will not work without it.</li>
+<li>Learn more about the <a href="/docs/app/api-reference/file-conventions/mdx-components"><code>mdx-components.tsx</code> file convention</a>.</li>
+<li>Learn how to <a href="#using-custom-styles-and-components">use custom styles and components</a>.</li>
+</ul>
+</blockquote>
+<h2 id="rendering-mdx">Rendering MDX</h2>
+<p>You can render MDX using Next.js’s file based routing or by importing MDX files into other pages.</p>
+<h3 id="using-file-based-routing">Using file based routing</h3>
+<p>When using file based routing, you can use MDX pages like any other page.</p>
+<AppOnly>
+<p>In App Router apps, that includes being able to use <a href="/docs/app/getting-started/metadata-and-og-images">metadata</a>.</p>
+<p>Create a new MDX page within the <code>/app</code> directory:</p>
+<pre><code class="language-txt">  my-project
+  ├── app
+  │   └── mdx-page
+  │       └── page.(mdx/md)
+  |── mdx-components.(tsx/js)
+  └── package.json
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>Create a new MDX page within the <code>/pages</code> directory:</p>
+<pre><code class="language-txt">  my-project
+  |── mdx-components.(tsx/js)
+  ├── pages
+  │   └── mdx-page.(mdx/md)
+  └── package.json
+</code></pre>
+</PagesOnly>
+<p>You can use MDX in these files, and even import React components, directly inside your MDX page:</p>
+<pre><code class="language-mdx">import { MyComponent } from 'my-component'
+
+# Welcome to my MDX page!
+
+This is some **bold** and _italics_ text.
+
+This is a list in markdown:
+
+- One
+- Two
+- Three
+
+Checkout my React component:
+
+&lt;MyComponent /&gt;
+</code></pre>
+<p>Navigating to the <code>/mdx-page</code> route should display your rendered MDX page.</p>
+<h3 id="using-imports">Using imports</h3>
+<AppOnly>
+<p>Create a new page within the <code>/app</code> directory and an MDX file wherever you’d like:</p>
+<pre><code class="language-txt">  .
+  ├── app/
+  │   └── mdx-page/
+  │       └── page.(tsx/js)
+  ├── markdown/
+  │   └── welcome.(mdx/md)
+  ├── mdx-components.(tsx/js)
+  └── package.json
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>Create a new page within the <code>/pages</code> directory and an MDX file wherever you’d like:</p>
+<pre><code class="language-txt">  .
+  ├── markdown/
+  │   └── welcome.(mdx/md)
+  ├── pages/
+  │   └── mdx-page.(tsx/js)
+  ├── mdx-components.(tsx/js)
+  └── package.json
+</code></pre>
+</PagesOnly>
+<p>You can use MDX in these files, and even import React components, directly inside your MDX page:</p>
+<pre><code class="language-mdx">import { MyComponent } from 'my-component'
+
+# Welcome to my MDX page!
+
+This is some **bold** and _italics_ text.
+
+This is a list in markdown:
+
+- One
+- Two
+- Three
+
+Checkout my React component:
+
+&lt;MyComponent /&gt;
+</code></pre>
+<p>Import the MDX file inside the page to display the content:</p>
+<AppOnly>
+<pre><code class="language-tsx">import Welcome from '@/markdown/welcome.mdx'
+
+export default function Page() {
+  return &lt;Welcome /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Welcome from '@/markdown/welcome.mdx'
+
+export default function Page() {
+  return &lt;Welcome /&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import Welcome from '@/markdown/welcome.mdx'
+
+export default function Page() {
+  return &lt;Welcome /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Welcome from '@/markdown/welcome.mdx'
+
+export default function Page() {
+  return &lt;Welcome /&gt;
+}
+</code></pre>
+</PagesOnly>
+<p>Navigating to the <code>/mdx-page</code> route should display your rendered MDX page.</p>
+<AppOnly>
+<h3 id="using-dynamic-imports">Using dynamic imports</h3>
+<p>You can import dynamic MDX components instead of using filesystem routing for MDX files.</p>
+<p>For example, you can have a dynamic route segment which loads MDX components from a separate directory:</p>
+<p><Image
+  alt="Route segments for dynamic MDX components"
+  srcLight="/docs/light/mdx-files.png"
+  srcDark="/docs/dark/mdx-files.png"
+  width="1600"
+  height="849"
+/></p>
+<p><a href="/docs/app/api-reference/functions/generate-static-params"><code>generateStaticParams</code></a> can be used to prerender the provided routes. By marking <code>dynamicParams</code> as <code>false</code>, accessing a route not defined in <code>generateStaticParams</code> will 404.</p>
+<pre><code class="language-tsx">export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  const { default: Post } = await import(`@/content/${slug}.mdx`)
+
+  return &lt;Post /&gt;
+}
+
+export function generateStaticParams() {
+  return [{ slug: 'welcome' }, { slug: 'about' }]
+}
+
+export const dynamicParams = false
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ params }) {
+  const { slug } = await params
+  const { default: Post } = await import(`@/content/${slug}.mdx`)
+
+  return &lt;Post /&gt;
+}
+
+export function generateStaticParams() {
+  return [{ slug: 'welcome' }, { slug: 'about' }]
+}
+
+export const dynamicParams = false
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Ensure you specify the <code>.mdx</code> file extension in your import. While it is not required to use <a href="/docs/app/getting-started/installation#set-up-absolute-imports-and-module-path-aliases">module path aliases</a> (e.g., <code>@/content</code>), it does simplify your import path.</p>
+</blockquote>
+</AppOnly>
+<h2 id="using-custom-styles-and-components">Using custom styles and components</h2>
+<p>Markdown, when rendered, maps to native HTML elements. For example, writing the following markdown:</p>
+<pre><code class="language-md">## This is a heading
+
+This is a list in markdown:
+
+- One
+- Two
+- Three
+</code></pre>
+<p>Generates the following HTML:</p>
+<pre><code class="language-html">&lt;h2&gt;This is a heading&lt;/h2&gt;
+
+&lt;p&gt;This is a list in markdown:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;One&lt;/li&gt;
+  &lt;li&gt;Two&lt;/li&gt;
+  &lt;li&gt;Three&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<p>To style your markdown, you can provide custom components that map to the generated HTML elements. Styles and components can be implemented globally, locally, and with shared layouts.</p>
+<h3 id="global-styles-and-components">Global styles and components</h3>
+<p>Adding styles and components in <code>mdx-components.tsx</code> will affect <em>all</em> MDX files in your application.</p>
+<pre><code class="language-tsx">import type { MDXComponents } from 'mdx/types'
+import Image, { ImageProps } from 'next/image'
+
+// This file allows you to provide custom React components
+// to be used in MDX files. You can import and use any
+// React component you want, including inline styles,
+// components from other libraries, and more.
+
+const components = {
+  // Allows customizing built-in components, e.g. to add styling.
+  h1: ({ children }) =&gt; (
+    &lt;h1 style={{ color: 'red', fontSize: '48px' }}&gt;{children}&lt;/h1&gt;
+  ),
+  img: (props) =&gt; (
+    &lt;Image
+      sizes=&quot;100vw&quot;
+      style={{ width: '100%', height: 'auto' }}
+      {...(props as ImageProps)}
+    /&gt;
+  ),
+} satisfies MDXComponents
+
+export function useMDXComponents(): MDXComponents {
+  return components
+}
+</code></pre>
+<pre><code class="language-js">import Image from 'next/image'
+
+// This file allows you to provide custom React components
+// to be used in MDX files. You can import and use any
+// React component you want, including inline styles,
+// components from other libraries, and more.
+
+const components = {
+  // Allows customizing built-in components, e.g. to add styling.
+  h1: ({ children }) =&gt; (
+    &lt;h1 style={{ color: 'red', fontSize: '48px' }}&gt;{children}&lt;/h1&gt;
+  ),
+  img: (props) =&gt; (
+    &lt;Image sizes=&quot;100vw&quot; style={{ width: '100%', height: 'auto' }} {...props} /&gt;
+  ),
+}
+
+export function useMDXComponents() {
+  return components
+}
+</code></pre>
+<h3 id="local-styles-and-components">Local styles and components</h3>
+<p>You can apply local styles and components to specific pages by passing them into imported MDX components. These will merge with and override <a href="#global-styles-and-components">global styles and components</a>.</p>
+<AppOnly>
+<pre><code class="language-tsx">import Welcome from '@/markdown/welcome.mdx'
+
+function CustomH1({ children }) {
+  return &lt;h1 style={{ color: 'blue', fontSize: '100px' }}&gt;{children}&lt;/h1&gt;
+}
+
+const overrideComponents = {
+  h1: CustomH1,
+}
+
+export default function Page() {
+  return &lt;Welcome components={overrideComponents} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Welcome from '@/markdown/welcome.mdx'
+
+function CustomH1({ children }) {
+  return &lt;h1 style={{ color: 'blue', fontSize: '100px' }}&gt;{children}&lt;/h1&gt;
+}
+
+const overrideComponents = {
+  h1: CustomH1,
+}
+
+export default function Page() {
+  return &lt;Welcome components={overrideComponents} /&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import Welcome from '@/markdown/welcome.mdx'
+
+function CustomH1({ children }) {
+  return &lt;h1 style={{ color: 'blue', fontSize: '100px' }}&gt;{children}&lt;/h1&gt;
+}
+
+const overrideComponents = {
+  h1: CustomH1,
+}
+
+export default function Page() {
+  return &lt;Welcome components={overrideComponents} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Welcome from '@/markdown/welcome.mdx'
+
+function CustomH1({ children }) {
+  return &lt;h1 style={{ color: 'blue', fontSize: '100px' }}&gt;{children}&lt;/h1&gt;
+}
+
+const overrideComponents = {
+  h1: CustomH1,
+}
+
+export default function Page() {
+  return &lt;Welcome components={overrideComponents} /&gt;
+}
+</code></pre>
+</PagesOnly>
+<h3 id="shared-layouts">Shared layouts</h3>
+<AppOnly>
+<p>To share a layout across MDX pages, you can use the <a href="/docs/app/api-reference/file-conventions/layout">built-in layouts support</a> with the App Router.</p>
+<pre><code class="language-tsx">export default function MdxLayout({ children }: { children: React.ReactNode }) {
+  // Create any shared layout or styles here
+  return &lt;div style={{ color: 'blue' }}&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MdxLayout({ children }) {
+  // Create any shared layout or styles here
+  return &lt;div style={{ color: 'blue' }}&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To share a layout around MDX pages, create a layout component:</p>
+<pre><code class="language-tsx">export default function MdxLayout({ children }: { children: React.ReactNode }) {
+  // Create any shared layout or styles here
+  return &lt;div style={{ color: 'blue' }}&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MdxLayout({ children }) {
+  // Create any shared layout or styles here
+  return &lt;div style={{ color: 'blue' }}&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<p>Then, import the layout component into the MDX page, wrap the MDX content in the layout, and export it:</p>
+<pre><code class="language-mdx">import MdxLayout from '../components/mdx-layout'
+
+# Welcome to my MDX page!
+
+export default function MDXPage({ children }) {
+  return &lt;MdxLayout&gt;{children}&lt;/MdxLayout&gt;
+
+}
+</code></pre>
+</PagesOnly>
+<h3 id="using-tailwind-typography-plugin">Using Tailwind typography plugin</h3>
+<p>If you are using <a href="https://tailwindcss.com" target="_blank" rel="noopener">Tailwind</a> to style your application, using the <a href="https://tailwindcss.com/docs/plugins#typography" target="_blank" rel="noopener"><code>@tailwindcss/typography</code> plugin</a> will allow you to reuse your Tailwind configuration and styles in your markdown files.</p>
+<p>The plugin adds a set of <code>prose</code> classes that can be used to add typographic styles to content blocks that come from sources, like markdown.</p>
+<p><a href="https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#installation" target="_blank" rel="noopener">Install Tailwind typography</a> and use with <a href="#shared-layouts">shared layouts</a> to add the <code>prose</code> you want.</p>
+<AppOnly>
+<pre><code class="language-tsx">export default function MdxLayout({ children }: { children: React.ReactNode }) {
+  // Create any shared layout or styles here
+  return (
+    &lt;div className=&quot;prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-white&quot;&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MdxLayout({ children }) {
+  // Create any shared layout or styles here
+  return (
+    &lt;div className=&quot;prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-white&quot;&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To share a layout around MDX pages, create a layout component:</p>
+<pre><code class="language-tsx">export default function MdxLayout({ children }: { children: React.ReactNode }) {
+  // Create any shared layout or styles here
+  return (
+    &lt;div className=&quot;prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-white&quot;&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MdxLayout({ children }) {
+  // Create any shared layout or styles here
+  return (
+    &lt;div className=&quot;prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-white&quot;&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Then, import the layout component into the MDX page, wrap the MDX content in the layout, and export it:</p>
+<pre><code class="language-mdx">import MdxLayout from '../components/mdx-layout'
+
+# Welcome to my MDX page!
+
+export default function MDXPage({ children }) {
+  return &lt;MdxLayout&gt;{children}&lt;/MdxLayout&gt;
+
+}
+</code></pre>
+</PagesOnly >
+<h2 id="frontmatter">Frontmatter</h2>
+<p>Frontmatter is a YAML like key/value pairing that can be used to store data about a page. <code>@next/mdx</code> does <strong>not</strong> support frontmatter by default, though there are many solutions for adding frontmatter to your MDX content, such as:</p>
+<ul>
+<li><a href="https://github.com/remarkjs/remark-frontmatter" target="_blank" rel="noopener">remark-frontmatter</a></li>
+<li><a href="https://github.com/remcohaszing/remark-mdx-frontmatter" target="_blank" rel="noopener">remark-mdx-frontmatter</a></li>
+<li><a href="https://github.com/jonschlinkert/gray-matter" target="_blank" rel="noopener">gray-matter</a></li>
+</ul>
+<p><code>@next/mdx</code> <strong>does</strong> allow you to use exports like any other JavaScript component:</p>
+<pre><code class="language-mdx">export const metadata = {
+  author: 'John Doe',
+}
+
+# Blog post
+</code></pre>
+<p>Metadata can now be referenced outside of the MDX file:</p>
+<AppOnly>
+<pre><code class="language-tsx">import BlogPost, { metadata } from '@/content/blog-post.mdx'
+
+export default function Page() {
+  console.log('metadata: ', metadata)
+  //=&gt; { author: 'John Doe' }
+  return &lt;BlogPost /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import BlogPost, { metadata } from '@/content/blog-post.mdx'
+
+export default function Page() {
+  console.log('metadata: ', metadata)
+  //=&gt; { author: 'John Doe' }
+  return &lt;BlogPost /&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import BlogPost, { metadata } from '@/content/blog-post.mdx'
+
+export default function Page() {
+  console.log('metadata: ', metadata)
+  //=&gt; { author: 'John Doe' }
+  return &lt;BlogPost /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import BlogPost, { metadata } from '@/content/blog-post.mdx'
+
+export default function Page() {
+  console.log('metadata: ', metadata)
+  //=&gt; { author: 'John Doe' }
+  return &lt;BlogPost /&gt;
+}
+</code></pre>
+</PagesOnly>
+<p>A common use case for this is when you want to iterate over a collection of MDX and extract data. For example, creating a blog index page from all blog posts. You can use packages like <a href="https://nodejs.org/api/fs.html" target="_blank" rel="noopener">Node’s <code>fs</code> module</a> or <a href="https://www.npmjs.com/package/globby" target="_blank" rel="noopener">globby</a> to read a directory of posts and extract the metadata.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Using <code>fs</code>, <code>globby</code>, etc. can only be used server-side.</li>
+<li>View the <a href="https://vercel.com/templates/next.js/portfolio-starter-kit" target="_blank" rel="noopener">Portfolio Starter Kit</a> template for a complete working example.</li>
+</ul>
+</blockquote>
+<h2 id="remark-and-rehype-plugins">remark and rehype Plugins</h2>
+<p>You can optionally provide remark and rehype plugins to transform the MDX content.</p>
+<p>For example, you can use <a href="https://github.com/remarkjs/remark-gfm" target="_blank" rel="noopener"><code>remark-gfm</code></a> to support GitHub Flavored Markdown.</p>
+<p>Since the remark and rehype ecosystem is ESM only, you’ll need to use <code>next.config.mjs</code> or <code>next.config.ts</code> as the configuration file.</p>
+<pre><code class="language-js">import remarkGfm from 'remark-gfm'
+import createMDX from '@next/mdx'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Allow .mdx extensions for files
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  // Optionally, add any other Next.js config below
+}
+
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+  options: {
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [],
+  },
+})
+
+// Combine MDX and Next.js config
+export default withMDX(nextConfig)
+</code></pre>
+<h3 id="using-plugins-with-turbopack">Using Plugins with Turbopack</h3>
+<p>To use plugins with <a href="/docs/app/api-reference/turbopack">Turbopack</a>, upgrade to the latest <code>@next/mdx</code> and specify plugin names using a string:</p>
+<pre><code class="language-js">import createMDX from '@next/mdx'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+}
+
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [
+      // Without options
+      'remark-gfm',
+      // With options
+      ['remark-toc', { heading: 'The Table' }],
+    ],
+    rehypePlugins: [
+      // Without options
+      'rehype-slug',
+      // With options
+      ['rehype-katex', { strict: true, throwOnError: true }],
+    ],
+  },
+})
+
+export default withMDX(nextConfig)
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<p>remark and rehype plugins without serializable options cannot be used yet with <a href="/docs/app/api-reference/turbopack">Turbopack</a>, because JavaScript functions can’t be passed to Rust.</p>
+</blockquote>
+<h2 id="deep-dive-how-do-you-transform-markdown-into-html">Deep Dive: How do you transform markdown into HTML?</h2>
+<p>React does not natively understand markdown. The markdown plaintext needs to first be transformed into HTML. This can be accomplished with <code>remark</code> and <code>rehype</code>.</p>
+<p><code>remark</code> is an ecosystem of tools around markdown. <code>rehype</code> is the same, but for HTML. For example, the following code snippet transforms markdown into HTML:</p>
+<pre><code class="language-js">import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+
+main()
+
+async function main() {
+  const file = await unified()
+    .use(remarkParse) // Convert into markdown AST
+    .use(remarkRehype) // Transform to HTML AST
+    .use(rehypeSanitize) // Sanitize HTML input
+    .use(rehypeStringify) // Convert AST into serialized HTML
+    .process('Hello, Next.js!')
+
+  console.log(String(file)) // &lt;p&gt;Hello, Next.js!&lt;/p&gt;
+}
+</code></pre>
+<p>The <code>remark</code> and <code>rehype</code> ecosystem contains plugins for <a href="https://github.com/atomiks/rehype-pretty-code" target="_blank" rel="noopener">syntax highlighting</a>, <a href="https://github.com/rehypejs/rehype-autolink-headings" target="_blank" rel="noopener">linking headings</a>, <a href="https://github.com/remarkjs/remark-toc" target="_blank" rel="noopener">generating a table of contents</a>, and more.</p>
+<p>When using <code>@next/mdx</code> as shown above, you <strong>do not</strong> need to use <code>remark</code> or <code>rehype</code> directly, as it is handled for you. We’re describing it here for a deeper understanding of what the <code>@next/mdx</code> package is doing underneath.</p>
+<h2 id="using-the-rust-based-mdx-compiler-experimental">Using the Rust-based MDX compiler (experimental)</h2>
+<p>Next.js supports a new MDX compiler written in Rust. This compiler is still experimental and is not recommended for production use. To use the new compiler, you need to configure <code>next.config.js</code> when you pass it to <code>withMDX</code>:</p>
+<pre><code class="language-js">module.exports = withMDX({
+  experimental: {
+    mdxRs: true,
+  },
+})
+</code></pre>
+<p><code>mdxRs</code> also accepts an object to configure how to transform mdx files.</p>
+<pre><code class="language-js">module.exports = withMDX({
+  experimental: {
+    mdxRs: {
+      jsxRuntime?: string            // Custom jsx runtime
+      jsxImportSource?: string       // Custom jsx import source,
+      mdxType?: 'gfm' | 'commonmark' // Configure what kind of mdx syntax will be used to parse &amp; transform
+    },
+  },
+})
+</code></pre>
+<h2 id="helpful-links">Helpful Links</h2>
+<ul>
+<li><a href="https://mdxjs.com" target="_blank" rel="noopener">MDX</a></li>
+<li><a href="https://www.npmjs.com/package/@next/mdx" target="_blank" rel="noopener"><code>@next/mdx</code></a></li>
+<li><a href="https://github.com/remarkjs/remark" target="_blank" rel="noopener">remark</a></li>
+<li><a href="https://github.com/rehypejs/rehype" target="_blank" rel="noopener">rehype</a></li>
+<li><a href="https://markdoc.dev/docs/nextjs" target="_blank" rel="noopener">Markdoc</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

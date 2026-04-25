@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>caching-without-cache-components — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-caching-without-cache-components">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#caching-fetch-requests">Caching fetch requests</a></li><ul><li><a href="#unstable_cache-for-non-fetch-functions">unstable_cache for non-fetch functions</a></li><li><a href="#route-segment-config">Route segment config</a></li></ul><li><a href="#time-based-revalidation">Time-based revalidation</a></li><ul><li><a href="#route-segment-config-revalidate">Route segment config revalidate</a></li></ul><li><a href="#on-demand-revalidation">On-demand revalidation</a></li><ul><li><a href="#tagging-cached-data">Tagging cached data</a></li><li><a href="#revalidatetag">revalidateTag</a></li><li><a href="#revalidatepath">revalidatePath</a></li></ul><li><a href="#deduplicating-requests">Deduplicating requests</a></li><li><a href="#preloading-data">Preloading data</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">caching-without-cache-components</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Caching (Previous Model)</td></tr><tr><th>description</th><td>Learn how to cache and revalidate data using fetch options, unstable_cache, and route segment configs for projects not using Cache Components.</td></tr></table><blockquote>
+<p>This guide assumes you are <strong>not</strong> using <a href="/docs/app/getting-started/caching">Cache Components</a> which was introduced in version 16 under the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code> flag</a>.</p>
+</blockquote>
+<h2 id="caching-fetch-requests">Caching <code>fetch</code> requests</h2>
+<p>By default, <a href="/docs/app/api-reference/functions/fetch"><code>fetch</code></a> requests are not cached. You can cache individual requests by setting the <code>cache</code> option to <code>'force-cache'</code>.</p>
+<pre><code class="language-tsx">export default async function Page() {
+  const data = await fetch('https://...', { cache: 'force-cache' })
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page() {
+  const data = await fetch('https://...', { cache: 'force-cache' })
+}
+</code></pre>
+<p>See the <a href="/docs/app/api-reference/functions/fetch"><code>fetch</code> API reference</a> to learn more.</p>
+<h3 id="unstable_cache-for-non-fetch-functions"><code>unstable_cache</code> for non-<code>fetch</code> functions</h3>
+<p><code>unstable_cache</code> allows you to cache the result of database queries and other async functions that don’t use <code>fetch</code>. Wrap <code>unstable_cache</code> around the function:</p>
+<pre><code class="language-ts">import { unstable_cache } from 'next/cache'
+import { db } from '@/lib/db'
+
+export const getCachedUser = unstable_cache(
+  async (id: string) =&gt; {
+    return db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .then((res) =&gt; res[0])
+  },
+  ['user'], // cache key prefix
+  {
+    tags: ['user'],
+    revalidate: 3600,
+  }
+)
+</code></pre>
+<pre><code class="language-js">import { unstable_cache } from 'next/cache'
+import { db } from '@/lib/db'
+
+export const getCachedUser = unstable_cache(
+  async (id) =&gt; {
+    return db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .then((res) =&gt; res[0])
+  },
+  ['user'], // cache key prefix
+  {
+    tags: ['user'],
+    revalidate: 3600,
+  }
+)
+</code></pre>
+<p>The third argument accepts:</p>
+<ul>
+<li><code>tags</code>: an array of tags for on-demand revalidation with <code>revalidateTag</code>.</li>
+<li><code>revalidate</code>: the number of seconds before the cache is revalidated.</li>
+</ul>
+<p>See the <a href="/docs/app/api-reference/functions/unstable_cache"><code>unstable_cache</code> API reference</a> to learn more.</p>
+<h3 id="route-segment-config">Route segment config</h3>
+<p>You can configure caching behavior at the route level by exporting config options from a <a href="/docs/app/api-reference/file-conventions/page">Page</a>, <a href="/docs/app/api-reference/file-conventions/layout">Layout</a>, or <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a>.</p>
+<h4><code>dynamic</code></h4>
+<p>Change the dynamic behavior of a layout or page to fully static or fully dynamic.</p>
+<pre><code class="language-tsx">export const dynamic = 'auto'
+// 'auto' | 'force-dynamic' | 'error' | 'force-static'
+</code></pre>
+<pre><code class="language-jsx">export const dynamic = 'auto'
+// 'auto' | 'force-dynamic' | 'error' | 'force-static'
+</code></pre>
+<ul>
+<li><strong><code>'auto'</code></strong> (default): The default option to cache as much as possible without preventing any components from opting into dynamic behavior.</li>
+<li><strong><code>'force-dynamic'</code></strong>: Force <a href="/docs/app/glossary#dynamic-rendering">dynamic rendering</a>, which will result in routes being rendered for each user at request time. This option is equivalent to:
+<ul>
+<li>Setting the option of every <code>fetch()</code> request in a layout or page to <code>{ cache: 'no-store', next: { revalidate: 0 } }</code>.</li>
+<li>Setting the segment config to <code>export const fetchCache = 'force-no-store'</code></li>
+</ul>
+</li>
+<li><strong><code>'error'</code></strong>: Force prerendering and cache the data of a layout or page by causing an error if any components use Request-time APIs or uncached data. This option is equivalent to:
+<ul>
+<li><code>getStaticProps()</code> in the <code>pages</code> directory.</li>
+<li>Setting the option of every <code>fetch()</code> request in a layout or page to <code>{ cache: 'force-cache' }</code>.</li>
+<li>Setting the segment config to <code>fetchCache = 'only-cache'</code>.</li>
+</ul>
+</li>
+<li><strong><code>'force-static'</code></strong>: Force prerendering and cache the data of a layout or page by forcing <a href="/docs/app/api-reference/functions/cookies"><code>cookies</code></a>, <a href="/docs/app/api-reference/functions/headers"><code>headers()</code></a> and <a href="/docs/app/api-reference/functions/use-search-params"><code>useSearchParams()</code></a> to return empty values. It is possible to <a href="#route-segment-config-revalidate"><code>revalidate</code></a>, <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a>, or <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a>, in pages or layouts rendered with <code>force-static</code>.</li>
+</ul>
+<h4><code>fetchCache</code></h4>
+<details>
+  <summary>This is an advanced option that should only be used if you specifically need to override the default behavior.</summary>
+<p>By default, Next.js <strong>will cache</strong> any <code>fetch()</code> requests that are reachable <strong>before</strong> any Request-time APIs are used and <strong>will not cache</strong> <code>fetch</code> requests that are discovered <strong>after</strong> Request-time APIs are used.</p>
+<p><code>fetchCache</code> allows you to override the default <code>cache</code> option of all <code>fetch</code> requests in a layout or page.</p>
+<pre><code class="language-tsx">export const fetchCache = 'auto'
+// 'auto' | 'default-cache' | 'only-cache'
+// 'force-cache' | 'force-no-store' | 'default-no-store' | 'only-no-store'
+</code></pre>
+<pre><code class="language-jsx">export const fetchCache = 'auto'
+// 'auto' | 'default-cache' | 'only-cache'
+// 'force-cache' | 'force-no-store' | 'default-no-store' | 'only-no-store'
+</code></pre>
+<ul>
+<li><strong><code>'auto'</code></strong> (default): The default option to cache <code>fetch</code> requests before Request-time APIs with the <code>cache</code> option they provide and not cache <code>fetch</code> requests after Request-time APIs.</li>
+<li><strong><code>'default-cache'</code></strong>: Allow any <code>cache</code> option to be passed to <code>fetch</code> but if no option is provided then set the <code>cache</code> option to <code>'force-cache'</code>. This means that even <code>fetch</code> requests after Request-time APIs are considered static.</li>
+<li><strong><code>'only-cache'</code></strong>: Ensure all <code>fetch</code> requests opt into caching by changing the default to <code>cache: 'force-cache'</code> if no option is provided and causing an error if any <code>fetch</code> requests use <code>cache: 'no-store'</code>.</li>
+<li><strong><code>'force-cache'</code></strong>: Ensure all <code>fetch</code> requests opt into caching by setting the <code>cache</code> option of all <code>fetch</code> requests to <code>'force-cache'</code>.</li>
+<li><strong><code>'default-no-store'</code></strong>: Allow any <code>cache</code> option to be passed to <code>fetch</code> but if no option is provided then set the <code>cache</code> option to <code>'no-store'</code>. This means that even <code>fetch</code> requests before Request-time APIs are considered dynamic.</li>
+<li><strong><code>'only-no-store'</code></strong>: Ensure all <code>fetch</code> requests opt out of caching by changing the default to <code>cache: 'no-store'</code> if no option is provided and causing an error if any <code>fetch</code> requests use <code>cache: 'force-cache'</code></li>
+<li><strong><code>'force-no-store'</code></strong>: Ensure all <code>fetch</code> requests opt out of caching by setting the <code>cache</code> option of all <code>fetch</code> requests to <code>'no-store'</code>. This forces all <code>fetch</code> requests to be re-fetched every request even if they provide a <code>'force-cache'</code> option.</li>
+</ul>
+<h5>Cross-route segment behavior</h5>
+<ul>
+<li>Any options set across each layout and page of a single route need to be compatible with each other.
+<ul>
+<li>If both the <code>'only-cache'</code> and <code>'force-cache'</code> are provided, then <code>'force-cache'</code> wins. If both <code>'only-no-store'</code> and <code>'force-no-store'</code> are provided, then <code>'force-no-store'</code> wins. The force option changes the behavior across the route so a single segment with <code>'force-*'</code> would prevent any errors caused by <code>'only-*'</code>.</li>
+<li>The intention of the <code>'only-*'</code> and <code>'force-*'</code> options is to guarantee the whole route is either fully static or fully dynamic. This means:
+<ul>
+<li>A combination of <code>'only-cache'</code> and <code>'only-no-store'</code> in a single route is not allowed.</li>
+<li>A combination of <code>'force-cache'</code> and <code>'force-no-store'</code> in a single route is not allowed.</li>
+</ul>
+</li>
+<li>A parent cannot provide <code>'default-no-store'</code> if a child provides <code>'auto'</code> or <code>'*-cache'</code> since that could make the same fetch have different behavior.</li>
+</ul>
+</li>
+<li>It is generally recommended to leave shared parent layouts as <code>'auto'</code> and customize the options where child segments diverge.</li>
+</ul>
+</details>
+<h2 id="time-based-revalidation">Time-based revalidation</h2>
+<p>Use the <code>next.revalidate</code> option on <code>fetch</code> to revalidate data after a specified number of seconds:</p>
+<pre><code class="language-tsx">export default async function Page() {
+  const data = await fetch('https://...', { next: { revalidate: 3600 } })
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page() {
+  const data = await fetch('https://...', { next: { revalidate: 3600 } })
+}
+</code></pre>
+<p>For non-<code>fetch</code> functions, <code>unstable_cache</code> accepts a <code>revalidate</code> option in its configuration (see <a href="#unstable_cache-for-non-fetch-functions">example above</a>).</p>
+<h3 id="route-segment-config-revalidate">Route segment config <code>revalidate</code></h3>
+<p>Set the default revalidation time for a layout or page. This option does not override the <code>revalidate</code> value set by individual <code>fetch</code> requests.</p>
+<pre><code class="language-tsx">export const revalidate = false
+// false | 0 | number
+</code></pre>
+<pre><code class="language-jsx">export const revalidate = false
+// false | 0 | number
+</code></pre>
+<ul>
+<li><strong><code>false</code></strong> (default): The default heuristic to cache any <code>fetch</code> requests that set their <code>cache</code> option to <code>'force-cache'</code> or are discovered before a Request-time API is used. Semantically equivalent to <code>revalidate: Infinity</code> which effectively means the resource should be cached indefinitely. It is still possible for individual <code>fetch</code> requests to use <code>cache: 'no-store'</code> or <code>revalidate: 0</code> to avoid being cached and make the route dynamically rendered. Or set <code>revalidate</code> to a positive number lower than the route default to increase the revalidation frequency of a route.</li>
+<li><strong><code>0</code></strong>: Ensure a layout or page is always dynamically rendered even if no Request-time APIs or uncached data fetches are discovered. This option changes the default of <code>fetch</code> requests that do not set a <code>cache</code> option to <code>'no-store'</code> but leaves <code>fetch</code> requests that opt into <code>'force-cache'</code> or use a positive <code>revalidate</code> as is.</li>
+<li><strong><code>number</code></strong>: (in seconds) Set the default revalidation frequency of a layout or page to <code>n</code> seconds.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The revalidate value needs to be statically analyzable. For example <code>revalidate = 600</code> is valid, but <code>revalidate = 60 * 10</code> is not.</li>
+<li>The revalidate value is not available when using <code>runtime = 'edge'</code>.</li>
+<li>In Development, Pages are <em>always</em> rendered on-demand and are never cached. This allows you to see changes immediately without waiting for a revalidation period to pass.</li>
+</ul>
+</blockquote>
+<h4>Revalidation frequency</h4>
+<ul>
+<li>The lowest <code>revalidate</code> across each layout and page of a single route will determine the revalidation frequency of the <em>entire</em> route. This ensures that child pages are revalidated as frequently as their parent layouts.</li>
+<li>Individual <code>fetch</code> requests can set a lower <code>revalidate</code> than the route’s default <code>revalidate</code> to increase the revalidation frequency of the entire route. This allows you to dynamically opt-in to more frequent revalidation for certain routes based on some criteria.</li>
+</ul>
+<h2 id="on-demand-revalidation">On-demand revalidation</h2>
+<p>To revalidate cached data after an event, use <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> or <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a> in a <a href="/docs/app/getting-started/mutating-data">Server Action</a> or <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a>.</p>
+<h3 id="tagging-cached-data">Tagging cached data</h3>
+<p>Tag <code>fetch</code> requests with <code>next.tags</code> to enable on-demand cache invalidation:</p>
+<pre><code class="language-tsx">export async function getUserById(id: string) {
+  const data = await fetch(`https://...`, {
+    next: { tags: ['user'] },
+  })
+}
+</code></pre>
+<pre><code class="language-jsx">export async function getUserById(id) {
+  const data = await fetch(`https://...`, {
+    next: { tags: ['user'] },
+  })
+}
+</code></pre>
+<p>For non-<code>fetch</code> functions, <code>unstable_cache</code> also accepts a <code>tags</code> option (see <a href="#unstable_cache-for-non-fetch-functions">example above</a>).</p>
+<h3 id="revalidatetag"><code>revalidateTag</code></h3>
+<p>Invalidate cached data by tag using <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a>:</p>
+<pre><code class="language-tsx">import { revalidateTag } from 'next/cache'
+
+export async function updateUser(id: string) {
+  // Mutate data
+  revalidateTag('user')
+}
+</code></pre>
+<pre><code class="language-jsx">import { revalidateTag } from 'next/cache'
+
+export async function updateUser(id) {
+  // Mutate data
+  revalidateTag('user')
+}
+</code></pre>
+<h3 id="revalidatepath"><code>revalidatePath</code></h3>
+<p>Invalidate all cached data for a specific route path using <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a>:</p>
+<pre><code class="language-tsx">import { revalidatePath } from 'next/cache'
+
+export async function updateUser(id: string) {
+  // Mutate data
+  revalidatePath('/profile')
+}
+</code></pre>
+<pre><code class="language-jsx">import { revalidatePath } from 'next/cache'
+
+export async function updateUser(id) {
+  // Mutate data
+  revalidatePath('/profile')
+}
+</code></pre>
+<h2 id="deduplicating-requests">Deduplicating requests</h2>
+<p>If you are not using <code>fetch</code> (which is <a href="/docs/app/api-reference/functions/fetch#memoization">automatically memoized</a>), and instead using an ORM or database directly, you can wrap your data access with the <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener">React <code>cache</code></a> function to deduplicate requests within a single render pass:</p>
+<pre><code class="language-tsx">import { cache } from 'react'
+import { db, posts, eq } from '@/lib/db'
+
+export const getPost = cache(async (id: string) =&gt; {
+  const post = await db.query.posts.findFirst({
+    where: eq(posts.id, parseInt(id)),
+  })
+})
+</code></pre>
+<pre><code class="language-jsx">import { cache } from 'react'
+import { db, posts, eq } from '@/lib/db'
+
+export const getPost = cache(async (id) =&gt; {
+  const post = await db.query.posts.findFirst({
+    where: eq(posts.id, parseInt(id)),
+  })
+})
+</code></pre>
+<h2 id="preloading-data">Preloading data</h2>
+<p>You can preload data by creating a utility function that you eagerly call above blocking requests. This lets you initiate data fetching early, so the data is already available by the time the component renders.</p>
+<p>Combine the <a href="https://www.npmjs.com/package/server-only" target="_blank" rel="noopener"><code>server-only</code> package</a> with React’s <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>cache</code></a> to create a reusable preload utility:</p>
+<pre><code class="language-ts">import { cache } from 'react'
+import 'server-only'
+
+export const getItem = cache(async (id: string) =&gt; {
+  // ...
+})
+
+export const preload = (id: string) =&gt; {
+  void getItem(id)
+}
+</code></pre>
+<pre><code class="language-js">import { cache } from 'react'
+import 'server-only'
+
+export const getItem = cache(async (id) =&gt; {
+  // ...
+})
+
+export const preload = (id) =&gt; {
+  void getItem(id)
+}
+</code></pre>
+<p>Then call <code>preload()</code> before any blocking work so the data starts loading immediately:</p>
+<pre><code class="language-tsx">import { getItem, preload, checkIsAvailable } from '@/lib/data'
+
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const { id } = await params
+  // Start loading item data
+  preload(id)
+  // Perform another asynchronous task
+  const isAvailable = await checkIsAvailable()
+
+  return isAvailable ? &lt;Item id={id} /&gt; : null
+}
+
+async function Item({ id }: { id: string }) {
+  const result = await getItem(id)
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">import { getItem, preload, checkIsAvailable } from '@/lib/data'
+
+export default async function Page({ params }) {
+  const { id } = await params
+  // Start loading item data
+  preload(id)
+  // Perform another asynchronous task
+  const isAvailable = await checkIsAvailable()
+
+  return isAvailable ? &lt;Item id={id} /&gt; : null
+}
+
+async function Item({ id }) {
+  const result = await getItem(id)
+  // ...
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

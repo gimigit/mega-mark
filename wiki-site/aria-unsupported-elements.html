@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/aria-unsupported-elements — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-aria-unsupported-elements">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule details</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/aria-unsupported-elements</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Certain reserved DOM elements do not support ARIA roles, states and properties. This is often because they are not visible, for example <code>meta</code>, <code>html</code>, <code>script</code>, <code>style</code>. This rule enforces that these DOM elements do not contain the <code>role</code> and/or <code>aria-*</code> props.</p>
+<h2 id="rule-details">Rule details</h2>
+<p>This rule takes no arguments.</p>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;!-- Good: the meta element should not be given any ARIA attributes --&gt;
+&lt;meta charset=&quot;UTF-8&quot; /&gt;
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;!-- Bad: the meta element should not be given any ARIA attributes --&gt;
+&lt;meta charset=&quot;UTF-8&quot; aria-hidden=&quot;false&quot; /&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/name-role-value" target="_blank" rel="noopener">WCAG 4.1.2</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_12" target="_blank" rel="noopener">Chrome Audit Rules, AX_ARIA_12</a></li>
+<li><a href="https://www.w3.org/TR/dpub-aria-1.0/" target="_blank" rel="noopener">DPUB-ARIA roles</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

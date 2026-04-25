@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>layout — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-layout">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#props">Props</a></li><li><a href="#layout-props-helper">Layout Props Helper</a></li><li><a href="#root-layout">Root Layout</a></li></ul><li><a href="#caveats">Caveats</a></li><ul><li><a href="#request-object">Request Object</a></li><li><a href="#query-params">Query params</a></li><li><a href="#pathname">Pathname</a></li><li><a href="#interaction-with-loadingjs">Interaction with loading.js</a></li><li><a href="#fetching-data">Fetching Data</a></li><li><a href="#accessing-child-segments">Accessing child segments</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#metadata">Metadata</a></li><li><a href="#active-nav-links">Active Nav Links</a></li><li><a href="#displaying-content-based-on-params">Displaying content based on params</a></li><li><a href="#reading-params-in-client-components">Reading params in Client Components</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">layout</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the layout.js file.</td></tr></table><p>The <code>layout</code> file is used to define a layout in your Next.js application.</p>
+<pre><code class="language-tsx">export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return &lt;section&gt;{children}&lt;/section&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function DashboardLayout({ children }) {
+  return &lt;section&gt;{children}&lt;/section&gt;
+}
+</code></pre>
+<p>In the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, <code>layout.js</code> is the outermost component in a route segment. It wraps <code>template.js</code>, <code>error.js</code>, <code>loading.js</code>, <code>not-found.js</code>, and <code>page.js</code>.</p>
+<p>A <strong>root layout</strong> is the top-most layout in the root <code>app</code> directory. It is used to define the <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags and other globally shared UI.</p>
+<pre><code class="language-tsx">export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="props">Props</h3>
+<h4><code>children</code> (required)</h4>
+<p>Layout components should accept and use a <code>children</code> prop. During rendering, <code>children</code> will be populated with the route segments the layout is wrapping. These will primarily be the component of a child <a href="/docs/app/api-reference/file-conventions/page">Layout</a> (if it exists) or <a href="/docs/app/api-reference/file-conventions/page">Page</a>, but could also be other special files like <a href="/docs/app/api-reference/file-conventions/loading">Loading</a> or <a href="/docs/app/getting-started/error-handling">Error</a> when applicable.</p>
+<h4><code>params</code> (optional)</h4>
+<p>A promise that resolves to an object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> object from the root segment down to that layout.</p>
+<pre><code class="language-tsx">export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise&lt;{ team: string }&gt;
+}) {
+  const { team } = await params
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Layout({ children, params }) {
+  const { team } = await params
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Example Route</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/dashboard/[team]/layout.js</code></td>
+<td><code>/dashboard/1</code></td>
+<td><code>Promise&lt;{ team: '1' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[tag]/[item]/layout.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>Promise&lt;{ tag: '1', item: '2' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/blog/[...slug]/layout.js</code></td>
+<td><code>/blog/1/2</code></td>
+<td><code>Promise&lt;{ slug: ['1', '2'] }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Since the <code>params</code> prop is a promise. You must use <code>async/await</code> or React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function to access the values.
+<ul>
+<li>In version 14 and earlier, <code>params</code> was a synchronous prop. To help with backwards compatibility, you can still access it synchronously in Next.js 15, but this behavior will be deprecated in the future.</li>
+</ul>
+</li>
+</ul>
+<h3 id="layout-props-helper">Layout Props Helper</h3>
+<p>You can type layouts with <code>LayoutProps</code> to get a strongly typed <code>params</code> and named slots inferred from your directory structure. <code>LayoutProps</code> is a globally available helper.</p>
+<pre><code class="language-tsx">export default function Layout(props: LayoutProps&lt;'/dashboard'&gt;) {
+  return (
+    &lt;section&gt;
+      {props.children}
+      {/* If you have app/dashboard/@analytics, it appears as a typed slot: */}
+      {/* {props.analytics} */}
+    &lt;/section&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Types are generated during <code>next dev</code>, <code>next build</code> or <code>next typegen</code>.</li>
+<li>After type generation, the <code>LayoutProps</code> helper is globally available. It doesn’t need to be imported.</li>
+</ul>
+</blockquote>
+<h3 id="root-layout">Root Layout</h3>
+<p>The <code>app</code> directory <strong>must</strong> include a <strong>root layout</strong>, which is the top-most layout in the root <code>app</code> directory. Typically, the root layout is <code>app/layout.js</code>.</p>
+<pre><code class="language-tsx">export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function RootLayout({ children }) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<ul>
+<li>The root layout <strong>must</strong> define <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags.
+<ul>
+<li>You should <strong>not</strong> manually add <code>&lt;head&gt;</code> tags such as <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> to root layouts. Instead, you should use the <a href="/docs/app/getting-started/metadata-and-og-images">Metadata API</a> which automatically handles advanced requirements such as streaming and de-duplicating <code>&lt;head&gt;</code> elements.</li>
+</ul>
+</li>
+<li>You can create <strong>multiple root layouts</strong>. Any layout without a <code>layout.js</code> above it is a root layout. Two common approaches:
+<ul>
+<li>Using <a href="/docs/app/api-reference/file-conventions/route-groups">route groups</a> like <code>app/(shop)/layout.js</code> and <code>app/(marketing)/layout.js</code></li>
+<li>Omitting <code>app/layout.js</code> so layouts in subdirectories like <code>app/dashboard/layout.js</code> and <code>app/blog/layout.js</code> each become root layouts for their respective directories.</li>
+<li>Navigating <strong>across multiple root layouts</strong> will cause a <strong>full page load</strong> (as opposed to a client-side navigation).</li>
+</ul>
+</li>
+<li>The root layout can be under a <strong>dynamic segment</strong>, for example when implementing <a href="/docs/app/guides/internationalization">internationalization</a> with <code>app/[lang]/layout.js</code>.</li>
+</ul>
+<h2 id="caveats">Caveats</h2>
+<h3 id="request-object">Request Object</h3>
+<p>Layouts are cached in the client during navigation to avoid unnecessary server requests.</p>
+<p><a href="/docs/app/api-reference/file-conventions/layout">Layouts</a> do not rerender. They can be cached and reused to avoid unnecessary computation when navigating between pages. By restricting layouts from accessing the raw request, Next.js can prevent the execution of potentially slow or expensive user code within the layout, which could negatively impact performance.</p>
+<p>To access the request object, you can use <a href="/docs/app/api-reference/functions/headers"><code>headers</code></a> and <a href="/docs/app/api-reference/functions/cookies"><code>cookies</code></a> APIs in <a href="/docs/app/getting-started/server-and-client-components">Server Components</a> and Functions.</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+
+export default async function Layout({ children }) {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">import { cookies } from 'next/headers'
+
+export default async function Layout({ children }) {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')
+  return '...'
+}
+</code></pre>
+<h3 id="query-params">Query params</h3>
+<p>Layouts do not rerender on navigation, so they cannot access search params which would otherwise become stale.</p>
+<p>To access updated query parameters, you can use the Page <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code></a> prop, or read them inside a Client Component using the <a href="/docs/app/api-reference/functions/use-search-params"><code>useSearchParams</code></a> hook. Since Client Components re-render on navigation, they have access to the latest query parameters.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function Search() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function Search() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  return '...'
+}
+</code></pre>
+<pre><code class="language-tsx">import Search from '@/app/ui/search'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Search /&gt;
+      {children}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Search from '@/app/ui/search'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Search /&gt;
+      {children}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h3 id="pathname">Pathname</h3>
+<p>Layouts do not re-render on navigation, so they do not access pathname which would otherwise become stale.</p>
+<p>To access the current pathname, you can read it inside a Client Component using the <a href="/docs/app/api-reference/functions/use-pathname"><code>usePathname</code></a> hook. Since Client Components re-render during navigation, they have access to the latest pathname.</p>
+<pre><code class="language-tsx">'use client'
+
+import { usePathname } from 'next/navigation'
+
+// Simplified breadcrumbs logic
+export default function Breadcrumbs() {
+  const pathname = usePathname()
+  const segments = pathname.split('/')
+
+  return (
+    &lt;nav&gt;
+      {segments.map((segment, index) =&gt; (
+        &lt;span key={index}&gt;
+          {' &gt; '}
+          {segment}
+        &lt;/span&gt;
+      ))}
+    &lt;/nav&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { usePathname } from 'next/navigation'
+
+// Simplified breadcrumbs logic
+export default function Breadcrumbs() {
+  const pathname = usePathname()
+  const segments = pathname.split('/')
+
+  return (
+    &lt;nav&gt;
+      {segments.map((segment, index) =&gt; (
+        &lt;span key={index}&gt;
+          {' &gt; '}
+          {segment}
+        &lt;/span&gt;
+      ))}
+    &lt;/nav&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { Breadcrumbs } from '@/app/ui/Breadcrumbs'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Breadcrumbs /&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Breadcrumbs } from '@/app/ui/Breadcrumbs'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Breadcrumbs /&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h3 id="interaction-with-loadingjs">Interaction with <code>loading.js</code></h3>
+<p>Because <code>loading.js</code> sits below <code>layout.js</code> in the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, it cannot show a fallback for uncached or runtime data access in the layout itself, such as calling <a href="/docs/app/api-reference/functions/cookies"><code>cookies()</code></a>, <a href="/docs/app/api-reference/functions/headers"><code>headers()</code></a>, or making uncached fetches.</p>
+<p>The behavior depends on whether <a href="/docs/app/getting-started/caching">Cache Components</a> is enabled:</p>
+<ul>
+<li><strong>Without Cache Components:</strong> The navigation will block until the layout finishes rendering, and the <code>loading.js</code> fallback will not be shown.</li>
+<li><strong>With Cache Components:</strong> <code>loading.js</code> is treated as a regular <code>&lt;Suspense&gt;</code> boundary rather than a special prefetch marker. Uncached or runtime data access in the layout must be explicitly wrapped in its own <code>&lt;Suspense&gt;</code> boundary, otherwise Next.js guides you with a build-time error. The static shell streams immediately, and the uncached content swaps in as it resolves.</li>
+</ul>
+<p>In both cases, to ensure instant navigation, either:</p>
+<ul>
+<li>Wrap runtime data access in your layout in its own <code>&lt;Suspense&gt;</code> boundary with a fallback.</li>
+<li>Move uncached data fetching from <code>layout.js</code> into <code>page.js</code> where <code>loading.js</code> can show a fallback.</li>
+</ul>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { NavSkeleton } from './nav-skeleton'
+import { DashboardNav } from './dashboard-nav'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;&gt;
+      &lt;Suspense fallback={&lt;NavSkeleton /&gt;}&gt;
+        &lt;DashboardNav /&gt;
+      &lt;/Suspense&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { NavSkeleton } from './nav-skeleton'
+import { DashboardNav } from './dashboard-nav'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Suspense fallback={&lt;NavSkeleton /&gt;}&gt;
+        &lt;DashboardNav /&gt;
+      &lt;/Suspense&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h3 id="fetching-data">Fetching Data</h3>
+<p>Layouts cannot pass data to their <code>children</code>. However, you can fetch the same data in a route more than once, and use React <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>cache</code></a> to dedupe the requests without affecting performance.</p>
+<p>Alternatively, when using <a href="/docs/app/api-reference/functions/fetch"><code>fetch</code></a>in Next.js, requests are automatically deduped.</p>
+<pre><code class="language-tsx">export async function getUser(id: string) {
+  const res = await fetch(`https://.../users/${id}`)
+  return res.json()
+}
+</code></pre>
+<pre><code class="language-tsx">import { getUser } from '@/app/lib/data'
+import { UserName } from '@/app/ui/user-name'
+
+export default async function Layout({ children }) {
+  const user = await getUser('1')
+
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        {/* ... */}
+        &lt;UserName user={user.name} /&gt;
+      &lt;/nav&gt;
+      {children}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { getUser } from '@/app/lib/data'
+import { UserName } from '@/app/ui/user-name'
+
+export default async function Layout({ children }) {
+  const user = await getUser('1')
+
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        {/* ... */}
+        &lt;UserName user={user.name} /&gt;
+      &lt;/nav&gt;
+      {children}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { getUser } from '@/app/lib/data'
+import { UserName } from '@/app/ui/user-name'
+
+export default async function Page() {
+  const user = await getUser('1')
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Welcome {user.name}&lt;/h1&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { getUser } from '@/app/lib/data'
+import { UserName } from '@/app/ui/user-name'
+
+export default async function Page() {
+  const user = await getUser('1')
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Welcome {user.name}&lt;/h1&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h3 id="accessing-child-segments">Accessing child segments</h3>
+<p>Layouts do not have access to the route segments below itself. To access all route segments, you can use <a href="/docs/app/api-reference/functions/use-selected-layout-segment"><code>useSelectedLayoutSegment</code></a> or <a href="/docs/app/api-reference/functions/use-selected-layout-segments"><code>useSelectedLayoutSegments</code></a> in a Client Component.</p>
+<pre><code class="language-tsx">'use client'
+
+import Link from 'next/link'
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+export default function NavLink({
+  slug,
+  children,
+}: {
+  slug: string
+  children: React.ReactNode
+}) {
+  const segment = useSelectedLayoutSegment()
+  const isActive = slug === segment
+
+  return (
+    &lt;Link
+      href={`/blog/${slug}`}
+      // Change style depending on whether the link is active
+      style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+    &gt;
+      {children}
+    &lt;/Link&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import Link from 'next/link'
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+export default function NavLinks({ slug, children }) {
+  const segment = useSelectedLayoutSegment()
+  const isActive = slug === segment
+
+  return (
+    &lt;Link
+      href={`/blog/${slug}`}
+      style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+    &gt;
+      {children}
+    &lt;/Link&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { NavLink } from './nav-link'
+import getPosts from './get-posts'
+
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const featuredPosts = await getPosts()
+  return (
+    &lt;div&gt;
+      {featuredPosts.map((post) =&gt; (
+        &lt;div key={post.id}&gt;
+          &lt;NavLink slug={post.slug}&gt;{post.title}&lt;/NavLink&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { NavLink } from './nav-link'
+import getPosts from './get-posts'
+
+export default async function Layout({ children }) {
+  const featuredPosts = await getPosts()
+  return (
+    &lt;div&gt;
+      {featuredPosts.map((post) =&gt; (
+        &lt;div key={post.id}&gt;
+          &lt;NavLink slug={post.slug}&gt;{post.title}&lt;/NavLink&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="examples">Examples</h2>
+<h3 id="metadata">Metadata</h3>
+<p>You can modify the <code>&lt;head&gt;</code> HTML elements such as <code>title</code> and <code>meta</code> using the <a href="/docs/app/api-reference/functions/generate-metadata#the-metadata-object"><code>metadata</code> object</a> or <a href="/docs/app/api-reference/functions/generate-metadata#generatemetadata-function"><code>generateMetadata</code> function</a>.</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Next.js',
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'Next.js',
+}
+
+export default function Layout({ children }) {
+  return '...'
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: You should <strong>not</strong> manually add <code>&lt;head&gt;</code> tags such as <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> to root layouts. Instead, use the <a href="/docs/app/api-reference/functions/generate-metadata">Metadata APIs</a> which automatically handles advanced requirements such as streaming and de-duplicating <code>&lt;head&gt;</code> elements.</p>
+</blockquote>
+<h3 id="active-nav-links">Active Nav Links</h3>
+<p>You can use the <a href="/docs/app/api-reference/functions/use-pathname"><code>usePathname</code></a> hook to determine if a nav link is active.</p>
+<p>Since <code>usePathname</code> is a client hook, you need to extract the nav links into a Client Component, which can be imported into your layout:</p>
+<pre><code class="language-tsx">'use client'
+
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+
+export function NavLinks() {
+  const pathname = usePathname()
+
+  return (
+    &lt;nav&gt;
+      &lt;Link className={`link ${pathname === '/' ? 'active' : ''}`} href=&quot;/&quot;&gt;
+        Home
+      &lt;/Link&gt;
+
+      &lt;Link
+        className={`link ${pathname === '/about' ? 'active' : ''}`}
+        href=&quot;/about&quot;
+      &gt;
+        About
+      &lt;/Link&gt;
+    &lt;/nav&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+
+export function Links() {
+  const pathname = usePathname()
+
+  return (
+    &lt;nav&gt;
+      &lt;Link className={`link ${pathname === '/' ? 'active' : ''}`} href=&quot;/&quot;&gt;
+        Home
+      &lt;/Link&gt;
+
+      &lt;Link
+        className={`link ${pathname === '/about' ? 'active' : ''}`}
+        href=&quot;/about&quot;
+      &gt;
+        About
+      &lt;/Link&gt;
+    &lt;/nav&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { NavLinks } from '@/app/ui/nav-links'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        &lt;NavLinks /&gt;
+        &lt;main&gt;{children}&lt;/main&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { NavLinks } from '@/app/ui/nav-links'
+
+export default function Layout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        &lt;NavLinks /&gt;
+        &lt;main&gt;{children}&lt;/main&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h3 id="displaying-content-based-on-params">Displaying content based on <code>params</code></h3>
+<p>Using <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route segments</a>, you can display or fetch specific content based on the <code>params</code> prop.</p>
+<pre><code class="language-tsx">export default async function DashboardLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise&lt;{ team: string }&gt;
+}) {
+  const { team } = await params
+
+  return (
+    &lt;section&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Welcome to {team}'s Dashboard&lt;/h1&gt;
+      &lt;/header&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/section&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function DashboardLayout({ children, params }) {
+  const { team } = await params
+
+  return (
+    &lt;section&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Welcome to {team}'s Dashboard&lt;/h1&gt;
+      &lt;/header&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+    &lt;/section&gt;
+  )
+}
+</code></pre>
+<h3 id="reading-params-in-client-components">Reading <code>params</code> in Client Components</h3>
+<p>To use <code>params</code> in a Client Component (which cannot be <code>async</code>), you can use React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function to read the promise:</p>
+<pre><code class="language-tsx">'use client'
+
+import { use } from 'react'
+
+export default function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = use(params)
+}
+</code></pre>
+<pre><code class="language-js">'use client'
+
+import { use } from 'react'
+
+export default function Page({ params }) {
+  const { slug } = use(params)
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td><code>params</code> is now a promise. A <a href="/docs/app/guides/upgrading/codemods#150">codemod</a> is available.</td>
+</tr>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>layout</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>error — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-error">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#props">Props</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#global-error">Global Error</a></li><li><a href="#graceful-error-recovery-with-a-custom-error-boundary">Graceful error recovery with a custom error boundary</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">error</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the error.js special file.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>An <strong>error</strong> file allows you to handle unexpected runtime errors and display fallback UI.</p>
+<p><Image
+  alt="error.js special file"
+  srcLight="/docs/light/error-special-file.png"
+  srcDark="/docs/dark/error-special-file.png"
+  width="1600"
+  height="606"
+/></p>
+<pre><code class="language-tsx">'use client' // Error boundaries must be Client Components
+
+import { useEffect } from 'react'
+
+export default function Error({
+  error,
+  unstable_retry,
+}: {
+  error: Error &amp; { digest?: string }
+  unstable_retry: () =&gt; void
+}) {
+  useEffect(() =&gt; {
+    // Log the error to an error reporting service
+    console.error(error)
+  }, [error])
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+      &lt;button
+        onClick={
+          // Attempt to recover by re-fetching and re-rendering the segment
+          () =&gt; unstable_retry()
+        }
+      &gt;
+        Try again
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client' // Error boundaries must be Client Components
+
+import { useEffect } from 'react'
+
+export default function Error({ error, unstable_retry }) {
+  useEffect(() =&gt; {
+    // Log the error to an error reporting service
+    console.error(error)
+  }, [error])
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+      &lt;button
+        onClick={
+          // Attempt to recover by re-fetching and re-rendering the segment
+          () =&gt; unstable_retry()
+        }
+      &gt;
+        Try again
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p><code>error.js</code> wraps a route segment and its nested children in a <a href="https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary" target="_blank" rel="noopener">React Error Boundary</a>. When an error throws within the boundary, the <code>error</code> component shows as the fallback UI.</p>
+<p><Image
+  alt="How error.js works"
+  srcLight="/docs/light/error-overview.png"
+  srcDark="/docs/dark/error-overview.png"
+  width="1600"
+  height="903"
+/></p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The <a href="https://react.dev/learn/react-developer-tools" target="_blank" rel="noopener">React DevTools</a> allow you to toggle error boundaries to test error states.</li>
+<li>If you want errors to bubble up to the parent error boundary, you can <code>throw</code> when rendering the <code>error</code> component.</li>
+<li>For component-level error recovery that aren’t tied to route segments like <a href="/docs/app/api-reference/file-conventions/error"><code>error.js</code></a>, use the <a href="/docs/app/api-reference/functions/catchError"><code>unstable_catchError</code></a> function.</li>
+</ul>
+</blockquote>
+<p>In the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, <code>error.js</code> wraps <code>loading.js</code>, <code>not-found.js</code>, <code>page.js</code>, and nested <code>layout.js</code> files in a React error boundary. It does <strong>not</strong> wrap the <code>layout.js</code> or <code>template.js</code> above it in the same segment. To handle errors in the root layout, use <a href="/docs/app/api-reference/file-conventions/error#global-error"><code>global-error.js</code></a>.</p>
+<h2 id="reference">Reference</h2>
+<h3 id="props">Props</h3>
+<h4><code>error</code></h4>
+<p>An instance of an <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error" target="_blank" rel="noopener"><code>Error</code></a> object forwarded to the <code>error.js</code> Client Component.</p>
+<blockquote>
+<p><strong>Good to know:</strong> During development, the <code>Error</code> object forwarded to the client will be serialized and include the <code>message</code> of the original error for easier debugging. However, <strong>this behavior is different in production</strong> to avoid leaking potentially sensitive details included in the error to the client.</p>
+</blockquote>
+<h4><code>error.message</code></h4>
+<ul>
+<li>Errors forwarded from Client Components show the original <code>Error</code> message.</li>
+<li>Errors forwarded from Server Components show a generic message with an identifier. This is to prevent leaking sensitive details. You can use the identifier, under <code>errors.digest</code>, to match the corresponding server-side logs.</li>
+</ul>
+<h4><code>error.digest</code></h4>
+<p>An automatically generated hash of the error thrown. It can be used to match the corresponding error in server-side logs.</p>
+<h4><code>unstable_retry</code></h4>
+<p>The cause of an error can sometimes be temporary. In these cases, trying again might resolve the issue.</p>
+<p>An error component can use the <code>unstable_retry()</code> function to prompt the user to attempt to recover from the error. When executed, the function will try to re-fetch and re-render the error boundary’s children. If successful, the fallback error component is replaced with the result of the re-render.</p>
+<pre><code class="language-tsx">'use client' // Error boundaries must be Client Components
+
+export default function Error({
+  error,
+  unstable_retry,
+}: {
+  error: Error &amp; { digest?: string }
+  unstable_retry: () =&gt; void
+}) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client' // Error boundaries must be Client Components
+
+export default function Error({ error, unstable_retry }) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h4><code>reset</code></h4>
+<p>In most cases, you should use <a href="#unstable_retry"><code>unstable_retry()</code></a> instead. However, if you have a specific reason to clear the error state and re-render the error boundary’s children without re-fetching the contents, you can use the <code>reset()</code> function.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="global-error">Global Error</h3>
+<p>While less common, you can handle errors in the root layout or template using <code>global-error.jsx</code>, located in the root app directory, even when leveraging <a href="/docs/app/guides/internationalization">internationalization</a>. Global error UI must define its own <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags, global styles, fonts, or other dependencies that your error page requires. This file replaces the root layout or template when active.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Error boundaries must be <a href="/docs/app/getting-started/server-and-client-components#using-client-components">Client Components</a>, which means that <a href="/docs/app/getting-started/metadata-and-og-images"><code>metadata</code> and <code>generateMetadata</code></a> exports are not supported in <code>global-error.jsx</code>. As an alternative, you can use the React <a href="https://react.dev/reference/react-dom/components/title" target="_blank" rel="noopener"><code>&lt;title&gt;</code></a> component.</p>
+</blockquote>
+<pre><code class="language-tsx">'use client' // Error boundaries must be Client Components
+
+export default function GlobalError({
+  error,
+  unstable_retry,
+}: {
+  error: Error &amp; { digest?: string }
+  unstable_retry: () =&gt; void
+}) {
+  return (
+    // global-error must include html and body tags
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+        &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client' // Error boundaries must be Client Components
+
+export default function GlobalError({ error, unstable_retry }) {
+  return (
+    // global-error must include html and body tags
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+        &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h3 id="graceful-error-recovery-with-a-custom-error-boundary">Graceful error recovery with a custom error boundary</h3>
+<p>When rendering fails on the client, it can be useful to show the last known server rendered UI for a better user experience.</p>
+<p>The <code>GracefullyDegradingErrorBoundary</code> is an example of a custom error boundary that captures and preserves the current HTML before an error occurs. If a rendering error happens, it re-renders the captured HTML and displays a persistent notification bar to inform the user.</p>
+<pre><code class="language-tsx">'use client'
+
+import React, { Component, ErrorInfo, ReactNode } from 'react'
+
+interface ErrorBoundaryProps {
+  children: ReactNode
+  onError?: (error: Error, errorInfo: ErrorInfo) =&gt; void
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean
+}
+
+export class GracefullyDegradingErrorBoundary extends Component&lt;
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+&gt; {
+  private contentRef: React.RefObject&lt;HTMLDivElement | null&gt;
+
+  constructor(props: ErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false }
+    this.contentRef = React.createRef()
+  }
+
+  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo)
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // Render the current HTML content without hydration
+      return (
+        &lt;&gt;
+          &lt;div
+            ref={this.contentRef}
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: this.contentRef.current?.innerHTML || '',
+            }}
+          /&gt;
+          &lt;div className=&quot;fixed bottom-0 left-0 right-0 bg-red-600 text-white py-4 px-6 text-center&quot;&gt;
+            &lt;p className=&quot;font-semibold&quot;&gt;
+              An error occurred during page rendering
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )
+    }
+
+    return &lt;div ref={this.contentRef}&gt;{this.props.children}&lt;/div&gt;
+  }
+}
+
+export default GracefullyDegradingErrorBoundary
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import React, { Component, createRef } from 'react'
+
+class GracefullyDegradingErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+    this.contentRef = createRef()
+  }
+
+  static getDerivedStateFromError(_) {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo)
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // Render the current HTML content without hydration
+      return (
+        &lt;&gt;
+          &lt;div
+            ref={this.contentRef}
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: this.contentRef.current?.innerHTML || '',
+            }}
+          /&gt;
+          &lt;div className=&quot;fixed bottom-0 left-0 right-0 bg-red-600 text-white py-4 px-6 text-center&quot;&gt;
+            &lt;p className=&quot;font-semibold&quot;&gt;
+              An error occurred during page rendering
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )
+    }
+
+    return &lt;div ref={this.contentRef}&gt;{this.props.children}&lt;/div&gt;
+  }
+}
+
+export default GracefullyDegradingErrorBoundary
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.2.0</code></td>
+<td><code>unstable_retry</code> prop added.</td>
+</tr>
+<tr>
+<td><code>v15.2.0</code></td>
+<td>Also display <code>global-error</code> in development.</td>
+</tr>
+<tr>
+<td><code>v13.1.0</code></td>
+<td><code>global-error</code> introduced.</td>
+</tr>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>error</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

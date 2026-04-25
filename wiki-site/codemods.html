@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Upgrade to the latest patch (e.g. 16.0.7 -&gt; 16.0.8) — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-codemods">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#upgrade">Upgrade</a></li><ul><li><a href="#options">Options</a></li></ul><li><a href="#codemods">Codemods</a></li><ul><li><a href="#160">16.0</a></li><li><a href="#150">15.0</a></li><li><a href="#140">14.0</a></li><li><a href="#132">13.2</a></li><li><a href="#130">13.0</a></li><li><a href="#11">11</a></li><li><a href="#10">10</a></li><li><a href="#9">9</a></li><li><a href="#8">8</a></li><li><a href="#6">6</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Upgrade to the latest patch (e.g. 16.0.7 -&gt; 16.0.8)</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Use codemods to upgrade your Next.js codebase when new features are released.</td></tr></table><p>Codemods are transformations that run on your codebase programmatically. This allows a large number of changes to be programmatically applied without having to manually go through every file.</p>
+<p>Next.js provides Codemod transformations to help upgrade your Next.js codebase when an API is updated or deprecated.</p>
+<h2 id="usage">Usage</h2>
+<p>In your terminal, navigate (<code>cd</code>) into your project’s folder, then run:</p>
+<pre><code class="language-bash">npx @next/codemod &lt;transform&gt; &lt;path&gt;
+</code></pre>
+<p>Replacing <code>&lt;transform&gt;</code> and <code>&lt;path&gt;</code> with appropriate values.</p>
+<ul>
+<li><code>transform</code> - name of transform</li>
+<li><code>path</code> - files or directory to transform</li>
+<li><code>--dry</code> Do a dry-run, no code will be edited</li>
+<li><code>--print</code> Prints the changed output for comparison</li>
+</ul>
+<h2 id="upgrade">Upgrade</h2>
+<p>Upgrades your Next.js application, automatically running codemods and updating Next.js, React, and React DOM.</p>
+<pre><code class="language-bash">npx @next/codemod upgrade [revision]
+</code></pre>
+<h3 id="options">Options</h3>
+<ul>
+<li><code>revision</code> (optional): Specify the upgrade type (<code>patch</code>, <code>minor</code>, <code>major</code>), an NPM dist tag (e.g. <code>latest</code>, <code>canary</code>, <code>rc</code>), or an exact version (e.g. <code>15.0.0</code>). Defaults to <code>minor</code> for stable versions.</li>
+<li><code>--verbose</code>: Show more detailed output during the upgrade process.</li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-bash"># Upgrade to the latest patch (e.g. 16.0.7 -&gt; 16.0.8)
+npx @next/codemod upgrade patch
+
+# Upgrade to the latest minor (e.g. 15.3.7 -&gt; 15.4.8). This is the default.
+npx @next/codemod upgrade minor
+
+# Upgrade to the latest major (e.g. 15.5.7 -&gt; 16.0.7)
+npx @next/codemod upgrade major
+
+# Upgrade to a specific version
+npx @next/codemod upgrade 16
+
+# Upgrade to the canary release
+npx @next/codemod upgrade canary
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If the target version is the same as or lower than your current version, the command exits without making changes.</li>
+<li>During the upgrade, you may be prompted to choose which Next.js codemods to apply and run React 19 codemods if upgrading React.</li>
+</ul>
+</blockquote>
+<h2 id="codemods">Codemods</h2>
+<h3 id="160">16.0</h3>
+<h4>Remove <code>experimental_ppr</code> Route Segment Config from App Router pages and layouts</h4>
+<h5><code>remove-experimental-ppr</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest remove-experimental-ppr .
+</code></pre>
+<p>This codemod removes the <code>experimental_ppr</code> Route Segment Config from App Router pages and layouts.</p>
+<pre><code class="language-diff">- export const experimental_ppr = true;
+</code></pre>
+<h4>Remove <code>unstable_</code> prefix from stabilized API</h4>
+<h5><code>remove-unstable-prefix</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest remove-unstable-prefix .
+</code></pre>
+<p>This codemod removes the <code>unstable_</code> prefix from stabilized API.</p>
+<p>For example:</p>
+<pre><code class="language-ts">import { unstable_cacheTag as cacheTag } from 'next/cache'
+
+cacheTag()
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-ts">import { cacheTag } from 'next/cache'
+
+cacheTag()
+</code></pre>
+<h4>Migrate from deprecated <code>middleware</code> convention to <code>proxy</code></h4>
+<h5><code>middleware-to-proxy</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest middleware-to-proxy .
+</code></pre>
+<p>This codemod migrates projects from using the deprecated <code>middleware</code> convention to using the <code>proxy</code> convention. It:</p>
+<ul>
+<li>Renames <code>middleware.&lt;extension&gt;</code> to <code>proxy.&lt;extension&gt;</code> (e.g. <code>middleware.ts</code> to <code>proxy.ts</code>)</li>
+<li>Renames named export <code>middleware</code> to <code>proxy</code></li>
+<li>Renames Next.js config property <code>experimental.middlewarePrefetch</code> to <code>experimental.proxyPrefetch</code></li>
+<li>Renames Next.js config property <code>experimental.middlewareClientMaxBodySize</code> to <code>experimental.proxyClientMaxBodySize</code></li>
+<li>Renames Next.js config property <code>experimental.externalMiddlewareRewritesResolve</code> to <code>experimental.externalProxyRewritesResolve</code></li>
+<li>Renames Next.js config property <code>skipMiddlewareUrlNormalize</code> to <code>skipProxyUrlNormalize</code></li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-ts">import { NextResponse } from 'next/server'
+
+export function middleware() {
+  return NextResponse.next()
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-ts">import { NextResponse } from 'next/server'
+
+export function proxy() {
+  return NextResponse.next()
+}
+</code></pre>
+<h4>Migrate from <code>next lint</code> to ESLint CLI</h4>
+<h5><code>next-lint-to-eslint-cli</code></h5>
+<pre><code class="language-bash">npx @next/codemod@canary next-lint-to-eslint-cli .
+</code></pre>
+<p>This codemod migrates projects from using <code>next lint</code> to using the ESLint CLI with your local ESLint config. It:</p>
+<ul>
+<li>Creates an <code>eslint.config.mjs</code> file with Next.js recommended configurations</li>
+<li>Updates <code>package.json</code> scripts to use <code>eslint .</code> instead of <code>next lint</code></li>
+<li>Adds necessary ESLint dependencies to <code>package.json</code></li>
+<li>Preserves existing ESLint configurations when found</li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;lint&quot;: &quot;next lint&quot;
+  }
+}
+</code></pre>
+<p>Becomes:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;lint&quot;: &quot;eslint .&quot;
+  }
+}
+</code></pre>
+<p>And creates:</p>
+<pre><code class="language-js">import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { FlatCompat } from '@eslint/eslintrc'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+})
+
+const eslintConfig = [
+  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  {
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+    ],
+  },
+]
+
+export default eslintConfig
+</code></pre>
+<h3 id="150">15.0</h3>
+<h4>Transform App Router Route Segment Config <code>runtime</code> value from <code>experimental-edge</code> to <code>edge</code></h4>
+<h5><code>app-dir-runtime-config-experimental-edge</code></h5>
+<blockquote>
+<p><strong>Note</strong>: This codemod is App Router specific.</p>
+</blockquote>
+<pre><code class="language-bash">npx @next/codemod@latest app-dir-runtime-config-experimental-edge .
+</code></pre>
+<p>This codemod transforms <a href="https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/runtime" target="_blank" rel="noopener">Route Segment Config <code>runtime</code></a> value <code>experimental-edge</code> to <code>edge</code>.</p>
+<p>For example:</p>
+<pre><code class="language-ts">export const runtime = 'experimental-edge'
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-ts">export const runtime = 'edge'
+</code></pre>
+<h4>Migrate to async Dynamic APIs</h4>
+<p>APIs that opted into dynamic rendering that previously supported synchronous access are now asynchronous. You can read more about this breaking change in the <a href="/docs/app/guides/upgrading/version-15">upgrade guide</a>.</p>
+<h5><code>next-async-request-api</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest next-async-request-api .
+</code></pre>
+<p>This codemod will transform dynamic APIs (<code>cookies()</code>, <code>headers()</code> and <code>draftMode()</code> from <code>next/headers</code>) that are now asynchronous to be properly awaited or wrapped with <code>React.use()</code> if applicable.
+When an automatic migration isn’t possible, the codemod will either add a typecast (if a TypeScript file) or a comment to inform the user that it needs to be manually reviewed &amp; updated.</p>
+<p>For example:</p>
+<pre><code class="language-tsx">import { cookies, headers } from 'next/headers'
+const token = cookies().get('token')
+
+function useToken() {
+  const token = cookies().get('token')
+  return token
+}
+
+export default function Page() {
+  const name = cookies().get('name')
+}
+
+function getHeader() {
+  return headers().get('x-foo')
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-tsx">import { use } from 'react'
+import {
+  cookies,
+  headers,
+  type UnsafeUnwrappedCookies,
+  type UnsafeUnwrappedHeaders,
+} from 'next/headers'
+const token = (cookies() as unknown as UnsafeUnwrappedCookies).get('token')
+
+function useToken() {
+  const token = use(cookies()).get('token')
+  return token
+}
+
+export default async function Page() {
+  const name = (await cookies()).get('name')
+}
+
+function getHeader() {
+  return (headers() as unknown as UnsafeUnwrappedHeaders).get('x-foo')
+}
+</code></pre>
+<p>When we detect property access on the <code>params</code> or <code>searchParams</code> props in the page / route entries (<code>page.js</code>, <code>layout.js</code>, <code>route.js</code>, or <code>default.js</code>) or the <code>generateMetadata</code> / <code>generateViewport</code> APIs,
+it will attempt to transform the callsite from a sync to an async function, and await the property access. If it can’t be made async (such as with a Client Component), it will use <code>React.use</code> to unwrap the promise .</p>
+<p>For example:</p>
+<pre><code class="language-tsx">// page.tsx
+export default function Page({
+  params,
+  searchParams,
+}: {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const { value } = searchParams
+  if (value === 'foo') {
+    // ...
+  }
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const { slug } = params
+  return {
+    title: `My Page - ${slug}`,
+  }
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-tsx">// page.tsx
+export default async function Page(props: {
+  params: Promise&lt;{ slug: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const searchParams = await props.searchParams
+  const { value } = searchParams
+  if (value === 'foo') {
+    // ...
+  }
+}
+
+export async function generateMetadata(props: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const params = await props.params
+  const { slug } = params
+  return {
+    title: `My Page - ${slug}`,
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> When this codemod identifies a spot that might require manual intervention, but we aren’t able to determine the exact fix, it will add a comment or typecast to the code to inform the user that it needs to be manually updated. These comments are prefixed with <strong>@next/codemod</strong>, and typecasts are prefixed with <code>UnsafeUnwrapped</code>.
+Your build will error until these comments are explicitly removed. <a href="/docs/messages/sync-dynamic-apis">Read more</a>.</p>
+</blockquote>
+<h4>Replace <code>geo</code> and <code>ip</code> properties of <code>NextRequest</code> with <code>@vercel/functions</code></h4>
+<h5><code>next-request-geo-ip</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest next-request-geo-ip .
+</code></pre>
+<p>This codemod installs <code>@vercel/functions</code> and transforms <code>geo</code> and <code>ip</code> properties of <code>NextRequest</code> with corresponding <code>@vercel/functions</code> features.</p>
+<p>For example:</p>
+<pre><code class="language-ts">import type { NextRequest } from 'next/server'
+
+export function GET(req: NextRequest) {
+  const { geo, ip } = req
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-ts">import type { NextRequest } from 'next/server'
+import { geolocation, ipAddress } from '@vercel/functions'
+
+export function GET(req: NextRequest) {
+  const geo = geolocation(req)
+  const ip = ipAddress(req)
+}
+</code></pre>
+<h3 id="140">14.0</h3>
+<h4>Migrate <code>ImageResponse</code> imports</h4>
+<h5><code>next-og-import</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest next-og-import .
+</code></pre>
+<p>This codemod moves transforms imports from <code>next/server</code> to <code>next/og</code> for usage of <a href="/docs/app/getting-started/metadata-and-og-images#generated-open-graph-images">Dynamic OG Image Generation</a>.</p>
+<p>For example:</p>
+<pre><code class="language-js">import { ImageResponse } from 'next/server'
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-js">import { ImageResponse } from 'next/og'
+</code></pre>
+<h4>Use <code>viewport</code> export</h4>
+<h5><code>metadata-to-viewport-export</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest metadata-to-viewport-export .
+</code></pre>
+<p>This codemod migrates certain viewport metadata to <code>viewport</code> export.</p>
+<p>For example:</p>
+<pre><code class="language-js">export const metadata = {
+  title: 'My App',
+  themeColor: 'dark',
+  viewport: {
+    width: 1,
+  },
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-js">export const metadata = {
+  title: 'My App',
+}
+
+export const viewport = {
+  width: 1,
+  themeColor: 'dark',
+}
+</code></pre>
+<h3 id="132">13.2</h3>
+<h4>Use Built-in Font</h4>
+<h5><code>built-in-next-font</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest built-in-next-font .
+</code></pre>
+<p>This codemod uninstalls the <code>@next/font</code> package and transforms <code>@next/font</code> imports into the built-in <code>next/font</code>.</p>
+<p>For example:</p>
+<pre><code class="language-js">import { Inter } from '@next/font/google'
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-js">import { Inter } from 'next/font/google'
+</code></pre>
+<h3 id="130">13.0</h3>
+<h4>Rename Next Image Imports</h4>
+<h5><code>next-image-to-legacy-image</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest next-image-to-legacy-image .
+</code></pre>
+<p>Safely renames <code>next/image</code> imports in existing Next.js 10, 11, or 12 applications to <code>next/legacy/image</code> in Next.js 13. Also renames <code>next/future/image</code> to <code>next/image</code>.</p>
+<p>For example:</p>
+<pre><code class="language-jsx">import Image1 from 'next/image'
+import Image2 from 'next/future/image'
+
+export default function Home() {
+  return (
+    &lt;div&gt;
+      &lt;Image1 src=&quot;/test.jpg&quot; width=&quot;200&quot; height=&quot;300&quot; /&gt;
+      &lt;Image2 src=&quot;/test.png&quot; width=&quot;500&quot; height=&quot;400&quot; /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-jsx">// 'next/image' becomes 'next/legacy/image'
+import Image1 from 'next/legacy/image'
+// 'next/future/image' becomes 'next/image'
+import Image2 from 'next/image'
+
+export default function Home() {
+  return (
+    &lt;div&gt;
+      &lt;Image1 src=&quot;/test.jpg&quot; width=&quot;200&quot; height=&quot;300&quot; /&gt;
+      &lt;Image2 src=&quot;/test.png&quot; width=&quot;500&quot; height=&quot;400&quot; /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h4>Migrate to the New Image Component</h4>
+<h5><code>next-image-experimental</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest next-image-experimental .
+</code></pre>
+<p>Dangerously migrates from <code>next/legacy/image</code> to the new <code>next/image</code> by adding inline styles and removing unused props.</p>
+<ul>
+<li>Removes <code>layout</code> prop and adds <code>style</code>.</li>
+<li>Removes <code>objectFit</code> prop and adds <code>style</code>.</li>
+<li>Removes <code>objectPosition</code> prop and adds <code>style</code>.</li>
+<li>Removes <code>lazyBoundary</code> prop.</li>
+<li>Removes <code>lazyRoot</code> prop.</li>
+</ul>
+<h4>Remove <code>&lt;a&gt;</code> Tags From Link Components</h4>
+<h5><code>new-link</code></h5>
+<pre><code class="language-bash">npx @next/codemod@latest new-link .
+</code></pre>
+<AppOnly>
+<p>Remove <code>&lt;a&gt;</code> tags inside <a href="/docs/app/api-reference/components/link">Link Components</a>.</p>
+</AppOnly>
+<PagesOnly>
+<p>Remove <code>&lt;a&gt;</code> tags inside <a href="/docs/pages/api-reference/components/link">Link Components</a>.</p>
+</PagesOnly>
+<p>For example:</p>
+<pre><code class="language-jsx">&lt;Link href=&quot;/about&quot;&gt;
+  &lt;a&gt;About&lt;/a&gt;
+&lt;/Link&gt;
+// transforms into
+&lt;Link href=&quot;/about&quot;&gt;
+  About
+&lt;/Link&gt;
+
+&lt;Link href=&quot;/about&quot;&gt;
+  &lt;a onClick={() =&gt; console.log('clicked')}&gt;About&lt;/a&gt;
+&lt;/Link&gt;
+// transforms into
+&lt;Link href=&quot;/about&quot; onClick={() =&gt; console.log('clicked')}&gt;
+  About
+&lt;/Link&gt;
+</code></pre>
+<h3 id="11">11</h3>
+<h4>Migrate from CRA</h4>
+<h5><code>cra-to-next</code></h5>
+<pre><code class="language-bash">npx @next/codemod cra-to-next
+</code></pre>
+<p>Migrates a Create React App project to Next.js; creating a Pages Router and necessary config to match behavior. Client-side only rendering is leveraged initially to prevent breaking compatibility due to <code>window</code> usage during SSR and can be enabled seamlessly to allow the gradual adoption of Next.js specific features.</p>
+<p>Please share any feedback related to this transform <a href="https://github.com/vercel/next.js/discussions/25858" target="_blank" rel="noopener">in this discussion</a>.</p>
+<h3 id="10">10</h3>
+<h4>Add React imports</h4>
+<h5><code>add-missing-react-import</code></h5>
+<pre><code class="language-bash">npx @next/codemod add-missing-react-import
+</code></pre>
+<p>Transforms files that do not import <code>React</code> to include the import in order for the new <a href="https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html" target="_blank" rel="noopener">React JSX transform</a> to work.</p>
+<p>For example:</p>
+<pre><code class="language-jsx">export default class Home extends React.Component {
+  render() {
+    return &lt;div&gt;Hello World&lt;/div&gt;
+  }
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-jsx">import React from 'react'
+export default class Home extends React.Component {
+  render() {
+    return &lt;div&gt;Hello World&lt;/div&gt;
+  }
+}
+</code></pre>
+<h3 id="9">9</h3>
+<h4>Transform Anonymous Components into Named Components</h4>
+<h5><code>name-default-component</code></h5>
+<pre><code class="language-bash">npx @next/codemod name-default-component
+</code></pre>
+<p><strong>Versions 9 and above.</strong></p>
+<p>Transforms anonymous components into named components to make sure they work with <a href="https://nextjs.org/blog/next-9-4#fast-refresh" target="_blank" rel="noopener">Fast Refresh</a>.</p>
+<p>For example:</p>
+<pre><code class="language-jsx">export default function () {
+  return &lt;div&gt;Hello World&lt;/div&gt;
+}
+</code></pre>
+<p>Transforms into:</p>
+<pre><code class="language-jsx">export default function MyComponent() {
+  return &lt;div&gt;Hello World&lt;/div&gt;
+}
+</code></pre>
+<p>The component will have a camel-cased name based on the name of the file, and it also works with arrow functions.</p>
+<h3 id="8">8</h3>
+<blockquote>
+<p><strong>Note</strong>: Built-in AMP support and this codemod have been removed in Next.js 16.</p>
+</blockquote>
+<h4>Transform AMP HOC into page config</h4>
+<h5><code>withamp-to-config</code></h5>
+<pre><code class="language-bash">npx @next/codemod withamp-to-config
+</code></pre>
+<p>Transforms the <code>withAmp</code> HOC into Next.js 9 page configuration.</p>
+<p>For example:</p>
+<pre><code class="language-js">// Before
+import { withAmp } from 'next/amp'
+
+function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export default withAmp(Home)
+</code></pre>
+<pre><code class="language-js">// After
+export default function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export const config = {
+  amp: true,
+}
+</code></pre>
+<h3 id="6">6</h3>
+<h4>Use <code>withRouter</code></h4>
+<h5><code>url-to-withrouter</code></h5>
+<pre><code class="language-bash">npx @next/codemod url-to-withrouter
+</code></pre>
+<p>Transforms the deprecated automatically injected <code>url</code> property on top level pages to using <code>withRouter</code> and the <code>router</code> property it injects. Read more here: <a href="/docs/messages/url-deprecated">https://nextjs.org/docs/messages/url-deprecated</a></p>
+<p>For example:</p>
+<pre><code class="language-js">import React from 'react'
+export default class extends React.Component {
+  render() {
+    const { pathname } = this.props.url
+    return &lt;div&gt;Current pathname: {pathname}&lt;/div&gt;
+  }
+}
+</code></pre>
+<pre><code class="language-js">import React from 'react'
+import { withRouter } from 'next/router'
+export default withRouter(
+  class extends React.Component {
+    render() {
+      const { pathname } = this.props.router
+      return &lt;div&gt;Current pathname: {pathname}&lt;/div&gt;
+    }
+  }
+)
+</code></pre>
+<p>This is one case. All the cases that are transformed (and tested) can be found in the <a href="https://github.com/vercel/next.js/tree/canary/packages/next-codemod/transforms/__testfixtures__/url-to-withrouter" target="_blank" rel="noopener"><code>__testfixtures__</code> directory</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

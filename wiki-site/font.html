@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>font — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-font">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#src">src</a></li><li><a href="#weight">weight</a></li><li><a href="#style">style</a></li><li><a href="#subsets">subsets</a></li><li><a href="#axes">axes</a></li><li><a href="#display">display</a></li><li><a href="#preload">preload</a></li><li><a href="#fallback">fallback</a></li><li><a href="#adjustfontfallback">adjustFontFallback</a></li><li><a href="#variable">variable</a></li><li><a href="#declarations">declarations</a></li></ul><li><a href="#examples">Examples</a></li><li><a href="#google-fonts">Google Fonts</a></li><ul><li><a href="#apply-the-font-in-ltheadgt">Apply the font in &amp;lt;head&amp;gt;</a></li><li><a href="#single-page-usage">Single page usage</a></li><li><a href="#specifying-a-subset">Specifying a subset</a></li></ul><li><a href="#using-multiple-fonts">Using Multiple Fonts</a></li><ul><li><a href="#local-fonts">Local Fonts</a></li><li><a href="#with-tailwind-css">With Tailwind CSS</a></li><li><a href="#tailwind-css-v3">Tailwind CSS v3</a></li><li><a href="#applying-styles">Applying Styles</a></li><li><a href="#using-a-font-definitions-file">Using a font definitions file</a></li><li><a href="#preloading">Preloading</a></li></ul><li><a href="#version-changes">Version Changes</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">font</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Font</td></tr><tr><th>description</th><td>Optimizing loading web fonts with the built-in `next/font` loaders.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p><a href="/docs/app/api-reference/components/font"><code>next/font</code></a> automatically optimizes your fonts (including custom fonts) and removes external network requests for improved privacy and performance.</p>
+<p>It includes <strong>built-in automatic self-hosting</strong> for any font file. This means you can optimally load web fonts with no <a href="https://web.dev/articles/cls" target="_blank" rel="noopener">layout shift</a>.</p>
+<p>You can also conveniently use all <a href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a>. CSS and font files are downloaded at build time and self-hosted with the rest of your static assets. <strong>No requests are sent to Google by the browser.</strong></p>
+<AppOnly>
+<pre><code class="language-tsx">import { Inter } from 'next/font/google'
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To use the font in all your pages, add it to <a href="/docs/pages/building-your-application/routing/custom-app"><code>_app.js</code> file</a> under <code>/pages</code> as shown below:</p>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({ subsets: ['latin'] })
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={inter.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<blockquote>
+<p><strong>🎥 Watch:</strong> Learn more about using <code>next/font</code> → <a href="https://www.youtube.com/watch?v=L8_98i_bMMA" target="_blank" rel="noopener">YouTube (6 minutes)</a>.</p>
+</blockquote>
+<h2 id="reference">Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th><code>font/google</code></th>
+<th><code>font/local</code></th>
+<th>Type</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#src"><code>src</code></a></td>
+<td><Cross size={18} /></td>
+<td><Check size={18} /></td>
+<td>String or Array of Objects</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="#weight"><code>weight</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>String or Array</td>
+<td>Required/Optional</td>
+</tr>
+<tr>
+<td><a href="#style"><code>style</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>String or Array</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#subsets"><code>subsets</code></a></td>
+<td><Check size={18} /></td>
+<td><Cross size={18} /></td>
+<td>Array of Strings</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#axes"><code>axes</code></a></td>
+<td><Check size={18} /></td>
+<td><Cross size={18} /></td>
+<td>Array of Strings</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#display"><code>display</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>String</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#preload"><code>preload</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>Boolean</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#fallback"><code>fallback</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>Array of Strings</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#adjustfontfallback"><code>adjustFontFallback</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>Boolean or String</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#variable"><code>variable</code></a></td>
+<td><Check size={18} /></td>
+<td><Check size={18} /></td>
+<td>String</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#declarations"><code>declarations</code></a></td>
+<td><Cross size={18} /></td>
+<td><Check size={18} /></td>
+<td>Array of Objects</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="src"><code>src</code></h3>
+<p>The path of the font file as a string or an array of objects (with type <code>Array&lt;{path: string, weight?: string, style?: string}&gt;</code>) relative to the directory where the font loader function is called.</p>
+<p>Used in <code>next/font/local</code></p>
+<ul>
+<li>Required</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>src:'./fonts/my-font.woff2'</code> where <code>my-font.woff2</code> is placed in a directory named <code>fonts</code> inside the <code>app</code> directory</li>
+<li><code>src:[{path: './inter/Inter-Thin.ttf', weight: '100',},{path: './inter/Inter-Regular.ttf',weight: '400',},{path: './inter/Inter-Bold-Italic.ttf', weight: '700',style: 'italic',},]</code></li>
+<li>if the font loader function is called in <code>app/page.tsx</code> using <code>src:'../styles/fonts/my-font.ttf'</code>, then <code>my-font.ttf</code> is placed in <code>styles/fonts</code> at the root of the project</li>
+</ul>
+<h3 id="weight"><code>weight</code></h3>
+<p>The font <a href="https://fonts.google.com/knowledge/glossary/weight" target="_blank" rel="noopener"><code>weight</code></a> with the following possibilities:</p>
+<ul>
+<li>A string with possible values of the weights available for the specific font or a range of values if it’s a <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable</a> font</li>
+<li>An array of weight values if the font is not a <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable google font</a>. It applies to <code>next/font/google</code> only.</li>
+</ul>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<ul>
+<li>Required if the font being used is <strong>not</strong> <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable</a></li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>weight: '400'</code>: A string for a single weight value - for the font <a href="https://fonts.google.com/specimen/Inter?query=inter" target="_blank" rel="noopener"><code>Inter</code></a>, the possible values are <code>'100'</code>, <code>'200'</code>, <code>'300'</code>, <code>'400'</code>, <code>'500'</code>, <code>'600'</code>, <code>'700'</code>, <code>'800'</code>, <code>'900'</code> or <code>'variable'</code> where <code>'variable'</code> is the default)</li>
+<li><code>weight: '100 900'</code>: A string for the range between <code>100</code> and <code>900</code> for a variable font</li>
+<li><code>weight: ['100','400','900']</code>: An array of 3 possible values for a non variable font</li>
+</ul>
+<h3 id="style"><code>style</code></h3>
+<p>The font <a href="https://developer.mozilla.org/docs/Web/CSS/font-style" target="_blank" rel="noopener"><code>style</code></a> with the following possibilities:</p>
+<ul>
+<li>A string <a href="https://developer.mozilla.org/docs/Web/CSS/font-style#values" target="_blank" rel="noopener">value</a> with default value of <code>'normal'</code></li>
+<li>An array of style values if the font is not a <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable google font</a>. It applies to <code>next/font/google</code> only.</li>
+</ul>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>style: 'italic'</code>: A string - it can be <code>normal</code> or <code>italic</code> for <code>next/font/google</code></li>
+<li><code>style: 'oblique'</code>: A string - it can take any value for <code>next/font/local</code> but is expected to come from <a href="https://developer.mozilla.org/docs/Web/CSS/font-style" target="_blank" rel="noopener">standard font styles</a></li>
+<li><code>style: ['italic','normal']</code>: An array of 2 values for <code>next/font/google</code> - the values are from <code>normal</code> and <code>italic</code></li>
+</ul>
+<h3 id="subsets"><code>subsets</code></h3>
+<p>The font <a href="https://fonts.google.com/knowledge/glossary/subsetting" target="_blank" rel="noopener"><code>subsets</code></a> defined by an array of string values with the names of each subset you would like to be <a href="/docs/app/api-reference/components/font#specifying-a-subset">preloaded</a>. Fonts specified via <code>subsets</code> will have a link preload tag injected into the head when the <a href="#preload"><code>preload</code></a> option is true, which is the default.</p>
+<p>Used in <code>next/font/google</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>subsets: ['latin']</code>: An array with the subset <code>latin</code></li>
+</ul>
+<p>You can find a list of all subsets on the Google Fonts page for your font.</p>
+<h3 id="axes"><code>axes</code></h3>
+<p>Some variable fonts have extra <code>axes</code> that can be included. By default, only the font weight is included to keep the file size down. The possible values of <code>axes</code> depend on the specific font.</p>
+<p>Used in <code>next/font/google</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>axes: ['slnt']</code>: An array with value <code>slnt</code> for the <code>Inter</code> variable font which has <code>slnt</code> as additional <code>axes</code> as shown <a href="https://fonts.google.com/variablefonts?vfquery=inter#font-families" target="_blank" rel="noopener">here</a>. You can find the possible <code>axes</code> values for your font by using the filter on the <a href="https://fonts.google.com/variablefonts#font-families" target="_blank" rel="noopener">Google variable fonts page</a> and looking for axes other than <code>wght</code></li>
+</ul>
+<h3 id="display"><code>display</code></h3>
+<p>The font <a href="https://developer.mozilla.org/docs/Web/CSS/@font-face/font-display" target="_blank" rel="noopener"><code>display</code></a> with possible string <a href="https://developer.mozilla.org/docs/Web/CSS/@font-face/font-display#values" target="_blank" rel="noopener">values</a> of <code>'auto'</code>, <code>'block'</code>, <code>'swap'</code>, <code>'fallback'</code> or <code>'optional'</code> with default value of <code>'swap'</code>.</p>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>display: 'optional'</code>: A string assigned to the <code>optional</code> value</li>
+</ul>
+<h3 id="preload"><code>preload</code></h3>
+<p>A boolean value that specifies whether the font should be <a href="/docs/app/api-reference/components/font#preloading">preloaded</a> or not. The default is <code>true</code>.</p>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>preload: false</code></li>
+</ul>
+<h3 id="fallback"><code>fallback</code></h3>
+<p>The fallback font to use if the font cannot be loaded. An array of strings of fallback fonts with no default.</p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<p>Examples:</p>
+<ul>
+<li><code>fallback: ['system-ui', 'arial']</code>: An array setting the fallback fonts to <code>system-ui</code> or <code>arial</code></li>
+</ul>
+<h3 id="adjustfontfallback"><code>adjustFontFallback</code></h3>
+<ul>
+<li>For <code>next/font/google</code>: A boolean value that sets whether an automatic fallback font should be used to reduce <a href="https://web.dev/cls/" target="_blank" rel="noopener">Cumulative Layout Shift</a>. The default is <code>true</code>.</li>
+<li>For <code>next/font/local</code>: A string or boolean <code>false</code> value that sets whether an automatic fallback font should be used to reduce <a href="https://web.dev/cls/" target="_blank" rel="noopener">Cumulative Layout Shift</a>. The possible values are <code>'Arial'</code>, <code>'Times New Roman'</code> or <code>false</code>. The default is <code>'Arial'</code>.</li>
+</ul>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>adjustFontFallback: false</code>: for <code>next/font/google</code></li>
+<li><code>adjustFontFallback: 'Times New Roman'</code>: for <code>next/font/local</code></li>
+</ul>
+<h3 id="variable"><code>variable</code></h3>
+<p>A string value to define the CSS variable name to be used if the style is applied with the <a href="#css-variables">CSS variable method</a>.</p>
+<p>Used in <code>next/font/google</code> and <code>next/font/local</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>variable: '--my-font'</code>: The CSS variable <code>--my-font</code> is declared</li>
+</ul>
+<h3 id="declarations"><code>declarations</code></h3>
+<p>An array of font face <a href="https://developer.mozilla.org/docs/Web/CSS/@font-face#descriptors" target="_blank" rel="noopener">descriptor</a> key-value pairs that define the generated <code>@font-face</code> further.</p>
+<p>Used in <code>next/font/local</code></p>
+<ul>
+<li>Optional</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>declarations: [{ prop: 'ascent-override', value: '90%' }]</code></li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h2 id="google-fonts">Google Fonts</h2>
+<p>To use a Google font, import it from <code>next/font/google</code> as a function. We recommend using <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable fonts</a> for the best performance and flexibility.</p>
+<AppOnly>
+<pre><code class="language-tsx">import { Inter } from 'next/font/google'
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>If you can’t use a variable font, you will <strong>need to specify a weight</strong>:</p>
+<pre><code class="language-tsx">import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={roboto.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={roboto.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To use the font in all your pages, add it to <a href="/docs/pages/building-your-application/routing/custom-app"><code>_app.js</code> file</a> under <code>/pages</code> as shown below:</p>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({ subsets: ['latin'] })
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={inter.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<p>If you can’t use a variable font, you will <strong>need to specify a weight</strong>:</p>
+<pre><code class="language-jsx">import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={roboto.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>You can specify multiple weights and/or styles by using an array:</p>
+<pre><code class="language-jsx">const roboto = Roboto({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  display: 'swap',
+})
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Use an underscore (_) for font names with multiple words. E.g. <code>Roboto Mono</code> should be imported as <code>Roboto_Mono</code>.</p>
+</blockquote>
+<PagesOnly>
+<h3 id="apply-the-font-in-ltheadgt">Apply the font in <code>&lt;head&gt;</code></h3>
+<p>You can also use the font without a wrapper and <code>className</code> by injecting it inside the <code>&lt;head&gt;</code> as follows:</p>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;&gt;
+      &lt;style jsx global&gt;{`
+        html {
+          font-family: ${inter.style.fontFamily};
+        }
+      `}&lt;/style&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h3 id="single-page-usage">Single page usage</h3>
+<p>To use the font on a single page, add it to the specific page as shown below:</p>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export default function Home() {
+  return (
+    &lt;div className={inter.className}&gt;
+      &lt;p&gt;Hello World&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h3 id="specifying-a-subset">Specifying a subset</h3>
+<p>Google Fonts are automatically <a href="https://fonts.google.com/knowledge/glossary/subsetting" target="_blank" rel="noopener">subset</a>. This reduces the size of the font file and improves performance. You’ll need to define which of these subsets you want to preload. Failing to specify any subsets while <a href="/docs/app/api-reference/components/font#preload"><code>preload</code></a> is <code>true</code> will result in a warning.</p>
+<p>This can be done by adding it to the function call:</p>
+<AppOnly>
+<pre><code class="language-tsx">const inter = Inter({ subsets: ['latin'] })
+</code></pre>
+<pre><code class="language-jsx">const inter = Inter({ subsets: ['latin'] })
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">const inter = Inter({ subsets: ['latin'] })
+</code></pre>
+</PagesOnly>
+<p>View the <a href="/docs/app/api-reference/components/font">Font API Reference</a> for more information.</p>
+<h2 id="using-multiple-fonts">Using Multiple Fonts</h2>
+<p>You can import and use multiple fonts in your application. There are two approaches you can take.</p>
+<p>The first approach is to create a utility function that exports a font, imports it, and applies its <code>className</code> where needed. This ensures the font is preloaded only when it’s rendered:</p>
+<pre><code class="language-ts">import { Inter, Roboto_Mono } from 'next/font/google'
+
+export const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+})
+</code></pre>
+<pre><code class="language-js">import { Inter, Roboto_Mono } from 'next/font/google'
+
+export const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+export const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+})
+</code></pre>
+<AppOnly>
+<pre><code class="language-tsx">import { inter } from './fonts'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;
+        &lt;div&gt;{children}&lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { inter } from './fonts'
+
+export default function Layout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;
+        &lt;div&gt;{children}&lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { roboto_mono } from './fonts'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1 className={roboto_mono.className}&gt;My page&lt;/h1&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { roboto_mono } from './fonts'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1 className={roboto_mono.className}&gt;My page&lt;/h1&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<p>In the example above, <code>Inter</code> will be applied globally, and <code>Roboto Mono</code> can be imported and applied as needed.</p>
+<p>Alternatively, you can create a <a href="/docs/app/api-reference/components/font#variable">CSS variable</a> and use it with your preferred CSS solution:</p>
+<AppOnly>
+<pre><code class="language-tsx">import { Inter, Roboto_Mono } from 'next/font/google'
+import styles from './global.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  variable: '--font-roboto-mono',
+  display: 'swap',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={`${inter.variable} ${roboto_mono.variable}`}&gt;
+      &lt;body&gt;
+        &lt;h1&gt;My App&lt;/h1&gt;
+        &lt;div&gt;{children}&lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Inter, Roboto_Mono } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  variable: '--font-roboto-mono',
+  display: 'swap',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={`${inter.variable} ${roboto_mono.variable}`}&gt;
+      &lt;body&gt;
+        &lt;h1&gt;My App&lt;/h1&gt;
+        &lt;div&gt;{children}&lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<pre><code class="language-css">html {
+  font-family: var(--font-inter);
+}
+
+h1 {
+  font-family: var(--font-roboto-mono);
+}
+</code></pre>
+<p>In the example above, <code>Inter</code> will be applied globally, and any <code>&lt;h1&gt;</code> tags will be styled with <code>Roboto Mono</code>.</p>
+<blockquote>
+<p><strong>Recommendation</strong>: Use multiple fonts conservatively since each new font is an additional resource the client has to download.</p>
+</blockquote>
+<h3 id="local-fonts">Local Fonts</h3>
+<p>Import <code>next/font/local</code> and specify the <code>src</code> of your local font file. We recommend using <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable fonts</a> for the best performance and flexibility.</p>
+<AppOnly>
+<pre><code class="language-tsx">import localFont from 'next/font/local'
+
+// Font files can be colocated inside of `app`
+const myFont = localFont({
+  src: './my-font.woff2',
+  display: 'swap',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={myFont.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import localFont from 'next/font/local'
+
+// Font files can be colocated inside of `app`
+const myFont = localFont({
+  src: './my-font.woff2',
+  display: 'swap',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={myFont.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import localFont from 'next/font/local'
+
+// Font files can be colocated inside of `pages`
+const myFont = localFont({ src: './my-font.woff2' })
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={myFont.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>If you want to use multiple files for a single font family, <code>src</code> can be an array:</p>
+<pre><code class="language-js">const roboto = localFont({
+  src: [
+    {
+      path: './Roboto-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './Roboto-Italic.woff2',
+      weight: '400',
+      style: 'italic',
+    },
+    {
+      path: './Roboto-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: './Roboto-BoldItalic.woff2',
+      weight: '700',
+      style: 'italic',
+    },
+  ],
+})
+</code></pre>
+<p>View the <a href="/docs/app/api-reference/components/font">Font API Reference</a> for more information.</p>
+<h3 id="with-tailwind-css">With Tailwind CSS</h3>
+<p><code>next/font</code> integrates seamlessly with <a href="https://tailwindcss.com/" target="_blank" rel="noopener">Tailwind CSS</a> using <a href="/docs/app/api-reference/components/font#css-variables">CSS variables</a>.</p>
+<p>In the example below, we use the <code>Inter</code> and <code>Roboto_Mono</code> fonts from <code>next/font/google</code> (you can use any Google Font or Local Font). Use the <code>variable</code> option to define a CSS variable name, such as <code>inter</code> and <code>roboto_mono</code> for these fonts, respectively. Then, apply <code>inter.variable</code> and <code>roboto_mono.variable</code> to include the CSS variables in your HTML document.</p>
+<blockquote>
+<p><strong>Good to know</strong>: You can add these variables to the <code>&lt;html&gt;</code> or <code>&lt;body&gt;</code> tag, depending on your preference, styling needs or project requirements.</p>
+</blockquote>
+<AppOnly>
+<pre><code class="language-tsx">import { Inter, Roboto_Mono } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html
+      lang=&quot;en&quot;
+      className={`${inter.variable} ${roboto_mono.variable} antialiased`}
+    &gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Inter, Roboto_Mono } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html
+      lang=&quot;en&quot;
+      className={`${inter.variable} ${roboto_mono.variable} antialiased`}
+    &gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
+
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+})
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={`${inter.variable} ${roboto_mono.variable} font-sans`}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>Finally, add the CSS variable to your <a href="/docs/app/getting-started/css#tailwind-css">Tailwind CSS config</a>:</p>
+<pre><code class="language-css">@import 'tailwindcss';
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-roboto-mono);
+}
+</code></pre>
+<h3 id="tailwind-css-v3">Tailwind CSS v3</h3>
+<pre><code class="language-js">/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './app/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)'],
+        mono: ['var(--font-roboto-mono)'],
+      },
+    },
+  },
+  plugins: [],
+}
+</code></pre>
+<p>You can now use the <code>font-sans</code> and <code>font-mono</code> utility classes to apply the font to your elements.</p>
+<pre><code class="language-html">&lt;p class=&quot;font-sans ...&quot;&gt;The quick brown fox ...&lt;/p&gt;
+&lt;p class=&quot;font-mono ...&quot;&gt;The quick brown fox ...&lt;/p&gt;
+</code></pre>
+<h3 id="applying-styles">Applying Styles</h3>
+<p>You can apply the font styles in three ways:</p>
+<ul>
+<li><a href="#classname"><code>className</code></a></li>
+<li><a href="#style-1"><code>style</code></a></li>
+<li><a href="#css-variables">CSS Variables</a></li>
+</ul>
+<h4><code>className</code></h4>
+<p>Returns a read-only CSS <code>className</code> for the loaded font to be passed to an HTML element.</p>
+<pre><code class="language-tsx">&lt;p className={inter.className}&gt;Hello, Next.js!&lt;/p&gt;
+</code></pre>
+<h4><code>style</code></h4>
+<p>Returns a read-only CSS <code>style</code> object for the loaded font to be passed to an HTML element, including <code>style.fontFamily</code> to access the font family name and fallback fonts.</p>
+<pre><code class="language-tsx">&lt;p style={inter.style}&gt;Hello World&lt;/p&gt;
+</code></pre>
+<h4>CSS Variables</h4>
+<p>If you would like to set your styles in an external style sheet and specify additional options there, use the CSS variable method.</p>
+<p>In addition to importing the font, also import the CSS file where the CSS variable is defined and set the variable option of the font loader object as follows:</p>
+<pre><code class="language-tsx">import { Inter } from 'next/font/google'
+import styles from '../styles/component.module.css'
+
+const inter = Inter({
+  variable: '--font-inter',
+})
+</code></pre>
+<pre><code class="language-jsx">import { Inter } from 'next/font/google'
+import styles from '../styles/component.module.css'
+
+const inter = Inter({
+  variable: '--font-inter',
+})
+</code></pre>
+<p>To use the font, set the <code>className</code> of the parent container of the text you would like to style to the font loader’s <code>variable</code> value and the <code>className</code> of the text to the <code>styles</code> property from the external CSS file.</p>
+<pre><code class="language-tsx">&lt;main className={inter.variable}&gt;
+  &lt;p className={styles.text}&gt;Hello World&lt;/p&gt;
+&lt;/main&gt;
+</code></pre>
+<pre><code class="language-jsx">&lt;main className={inter.variable}&gt;
+  &lt;p className={styles.text}&gt;Hello World&lt;/p&gt;
+&lt;/main&gt;
+</code></pre>
+<p>Define the <code>text</code> selector class in the <code>component.module.css</code> CSS file as follows:</p>
+<pre><code class="language-css">.text {
+  font-family: var(--font-inter);
+  font-weight: 200;
+  font-style: italic;
+}
+</code></pre>
+<p>In the example above, the text <code>Hello World</code> is styled using the <code>Inter</code> font and the generated font fallback with <code>font-weight: 200</code> and <code>font-style: italic</code>.</p>
+<h3 id="using-a-font-definitions-file">Using a font definitions file</h3>
+<p>Every time you call the <code>localFont</code> or Google font function, that font will be hosted as one instance in your application. Therefore, if you need to use the same font in multiple places, you should load it in one place and import the related font object where you need it. This is done using a font definitions file.</p>
+<p>For example, create a <code>fonts.ts</code> file in a <code>styles</code> folder at the root of your app directory.</p>
+<p>Then, specify your font definitions as follows:</p>
+<pre><code class="language-ts">import { Inter, Lora, Source_Sans_3 } from 'next/font/google'
+import localFont from 'next/font/local'
+
+// define your variable fonts
+const inter = Inter()
+const lora = Lora()
+// define 2 weights of a non-variable font
+const sourceCodePro400 = Source_Sans_3({ weight: '400' })
+const sourceCodePro700 = Source_Sans_3({ weight: '700' })
+// define a custom local font where GreatVibes-Regular.ttf is stored in the styles folder
+const greatVibes = localFont({ src: './GreatVibes-Regular.ttf' })
+
+export { inter, lora, sourceCodePro400, sourceCodePro700, greatVibes }
+</code></pre>
+<pre><code class="language-js">import { Inter, Lora, Source_Sans_3 } from 'next/font/google'
+import localFont from 'next/font/local'
+
+// define your variable fonts
+const inter = Inter()
+const lora = Lora()
+// define 2 weights of a non-variable font
+const sourceCodePro400 = Source_Sans_3({ weight: '400' })
+const sourceCodePro700 = Source_Sans_3({ weight: '700' })
+// define a custom local font where GreatVibes-Regular.ttf is stored in the styles folder
+const greatVibes = localFont({ src: './GreatVibes-Regular.ttf' })
+
+export { inter, lora, sourceCodePro400, sourceCodePro700, greatVibes }
+</code></pre>
+<p>You can now use these definitions in your code as follows:</p>
+<pre><code class="language-tsx">import { inter, lora, sourceCodePro700, greatVibes } from '../styles/fonts'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;p className={inter.className}&gt;Hello world using Inter font&lt;/p&gt;
+      &lt;p style={lora.style}&gt;Hello world using Lora font&lt;/p&gt;
+      &lt;p className={sourceCodePro700.className}&gt;
+        Hello world using Source_Sans_3 font with weight 700
+      &lt;/p&gt;
+      &lt;p className={greatVibes.className}&gt;My title in Great Vibes font&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { inter, lora, sourceCodePro700, greatVibes } from '../styles/fonts'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;p className={inter.className}&gt;Hello world using Inter font&lt;/p&gt;
+      &lt;p style={lora.style}&gt;Hello world using Lora font&lt;/p&gt;
+      &lt;p className={sourceCodePro700.className}&gt;
+        Hello world using Source_Sans_3 font with weight 700
+      &lt;/p&gt;
+      &lt;p className={greatVibes.className}&gt;My title in Great Vibes font&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>To make it easier to access the font definitions in your code, you can define a path alias in your <code>tsconfig.json</code> or <code>jsconfig.json</code> files as follows:</p>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    &quot;paths&quot;: {
+      &quot;@/fonts&quot;: [&quot;./styles/fonts&quot;]
+    }
+  }
+}
+</code></pre>
+<p>You can now import any font definition as follows:</p>
+<pre><code class="language-tsx">import { greatVibes, sourceCodePro400 } from '@/fonts'
+</code></pre>
+<pre><code class="language-jsx">import { greatVibes, sourceCodePro400 } from '@/fonts'
+</code></pre>
+<h3 id="preloading">Preloading</h3>
+<AppOnly>
+<p>When a font function is called on a page of your site, it is not globally available and preloaded on all routes. Rather, the font is only preloaded on the related routes based on the type of file where it is used:</p>
+<ul>
+<li>If it’s a <a href="/docs/app/api-reference/file-conventions/page">unique page</a>, it is preloaded on the unique route for that page.</li>
+<li>If it’s a <a href="/docs/app/api-reference/file-conventions/layout">layout</a>, it is preloaded on all the routes wrapped by the layout.</li>
+<li>If it’s the <a href="/docs/app/api-reference/file-conventions/layout#root-layout">root layout</a>, it is preloaded on all routes.</li>
+</ul>
+</AppOnly>
+<PagesOnly>
+<p>When a font function is called on a page of your site, it is not globally available and preloaded on all routes. Rather, the font is only preloaded on the related route/s based on the type of file where it is used:</p>
+<ul>
+<li>if it’s a <a href="/docs/pages/building-your-application/routing/pages-and-layouts">unique page</a>, it is preloaded on the unique route for that page</li>
+<li>if it’s in the <a href="/docs/pages/building-your-application/routing/custom-app">custom App</a>, it is preloaded on all the routes of the site under <code>/pages</code></li>
+</ul>
+</PagesOnly>
+<h2 id="version-changes">Version Changes</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.2.0</code></td>
+<td><code>@next/font</code> renamed to <code>next/font</code>. Installation no longer required.</td>
+</tr>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>@next/font</code> was added.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

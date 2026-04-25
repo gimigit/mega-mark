@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>multi-zones — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-multi-zones">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-to-define-a-zone">How to define a zone</a></li><li><a href="#how-to-route-requests-to-the-right-zone">How to route requests to the right zone</a></li><ul><li><a href="#routing-requests-using-proxy">Routing requests using proxy</a></li></ul><li><a href="#linking-between-zones">Linking between zones</a></li><li><a href="#sharing-code">Sharing code</a></li><li><a href="#server-actions">Server Actions</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">multi-zones</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Multi-zones</td></tr><tr><th>description</th><td>Learn how to build micro-frontends using Next.js Multi-Zones to deploy multiple Next.js apps under a single domain.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<details open>
+  <summary>Examples</summary>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-zones" target="_blank" rel="noopener">With Zones</a></li>
+</ul>
+</details>
+<p>Multi-Zones are an approach to micro-frontends that separate a large application on a domain into smaller Next.js applications that each serve a set of paths. This is useful when there are collections of pages unrelated to the other pages in the application. By moving those pages to a separate zone (i.e., a separate application), you can reduce the size of each application which improves build times and removes code that is only necessary for one of the zones. Since applications are decoupled, Multi-Zones also allows other applications on the domain to use their own choice of framework.</p>
+<p>For example, let’s say you have the following set of pages that you would like to split up:</p>
+<ul>
+<li><code>/blog/*</code> for all blog posts</li>
+<li><code>/dashboard/*</code> for all pages when the user is logged-in to the dashboard</li>
+<li><code>/*</code> for the rest of your website not covered by other zones</li>
+</ul>
+<p>With Multi-Zones support, you can create three applications that all are served on the same domain and look the same to the user, but you can develop and deploy each of the applications independently.</p>
+<p><Image
+  alt="Three zones: A, B, C. Showing a hard navigation between routes from different zones, and soft navigations between routes within the same zone."
+  srcLight="/docs/light/multi-zones.png"
+  srcDark="/docs/dark/multi-zones.png"
+  width="1600"
+  height="750"
+/></p>
+<p>Navigating between pages in the same zone will perform soft navigations, a navigation that does not require reloading the page. For example, in this diagram, navigating from <code>/</code> to <code>/products</code> will be a soft navigation.</p>
+<p>Navigating from a page in one zone to a page in another zone, such as from <code>/</code> to <code>/dashboard</code>, will perform a hard navigation, unloading the resources of the current page and loading the resources of the new page. Pages that are frequently visited together should live in the same zone to avoid hard navigations.</p>
+<h2 id="how-to-define-a-zone">How to define a zone</h2>
+<p>A zone is a normal Next.js application where you also configure an <a href="/docs/app/api-reference/config/next-config-js/assetPrefix">assetPrefix</a> to avoid conflicts with pages and static files in other zones.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  assetPrefix: '/blog-static',
+}
+</code></pre>
+<p>Next.js assets, such as JavaScript and CSS, will be prefixed with <code>assetPrefix</code> to make sure that they don’t conflict with assets from other zones. These assets will be served under <code>/assetPrefix/_next/...</code> for each of the zones.</p>
+<p>The default application handling all paths not routed to another more specific zone does not need an <code>assetPrefix</code>.</p>
+<p>In versions older than Next.js 15, you may also need an additional rewrite to handle the static assets. This is no longer necessary in Next.js 15.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  assetPrefix: '/blog-static',
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/blog-static/_next/:path+',
+          destination: '/_next/:path+',
+        },
+      ],
+    }
+  },
+}
+</code></pre>
+<h2 id="how-to-route-requests-to-the-right-zone">How to route requests to the right zone</h2>
+<p>With the Multi Zones set-up, you need to route the paths to the correct zone since they are served by different applications. You can use any HTTP proxy to do this, but one of the Next.js applications can also be used to route requests for the entire domain.</p>
+<p>To route to the correct zone using a Next.js application, you can use <a href="/docs/app/api-reference/config/next-config-js/rewrites"><code>rewrites</code></a>. For each path served by a different zone, you would add a rewrite rule to send that path to the domain of the other zone, and you also need to rewrite the requests for the static assets. For example:</p>
+<pre><code class="language-js">async rewrites() {
+    return [
+        {
+            source: '/blog',
+            destination: `${process.env.BLOG_DOMAIN}/blog`,
+        },
+        {
+            source: '/blog/:path+',
+            destination: `${process.env.BLOG_DOMAIN}/blog/:path+`,
+        },
+        {
+            source: '/blog-static/:path+',
+            destination: `${process.env.BLOG_DOMAIN}/blog-static/:path+`,
+        }
+    ];
+}
+</code></pre>
+<p><code>destination</code> should be a URL that is served by the zone, including scheme and domain. This should point to the zone’s production domain, but it can also be used to route requests to <code>localhost</code> in local development.</p>
+<blockquote>
+<p><strong>Good to know</strong>: URL paths should be unique to a zone. For example, two zones trying to serve <code>/blog</code> would create a routing conflict.</p>
+</blockquote>
+<h3 id="routing-requests-using-proxy">Routing requests using proxy</h3>
+<p>Routing requests through <a href="/docs/app/api-reference/config/next-config-js/rewrites"><code>rewrites</code></a> is recommended to minimize latency overhead for the requests, but proxy can also be used when there is a need for a dynamic decision when routing. For example, if you are using a feature flag to decide where a path should be routed such as during a migration, you can use proxy.</p>
+<pre><code class="language-js">export async function proxy(request) {
+  const { pathname, search } = request.nextUrl
+  if (pathname === '/your-path' &amp;&amp; myFeatureFlag.isEnabled()) {
+    return NextResponse.rewrite(`${rewriteDomain}${pathname}${search}`)
+  }
+}
+</code></pre>
+<h2 id="linking-between-zones">Linking between zones</h2>
+<p>Links to paths in a different zone should use an <code>a</code> tag instead of the Next.js <a href="/docs/pages/api-reference/components/link"><code>&lt;Link&gt;</code></a> component. This is because Next.js will try to prefetch and soft navigate to any relative path in <code>&lt;Link&gt;</code> component, which will not work across zones.</p>
+<h2 id="sharing-code">Sharing code</h2>
+<p>The Next.js applications that make up the different zones can live in any repository. However, it is often convenient to put these zones in a <a href="https://en.wikipedia.org/wiki/Monorepo" target="_blank" rel="noopener">monorepo</a> to more easily share code. For zones that live in different repositories, code can also be shared using public or private NPM packages.</p>
+<p>Since the pages in different zones may be released at different times, feature flags can be useful for enabling or disabling features in unison across the different zones.</p>
+<AppOnly>
+<h2 id="server-actions">Server Actions</h2>
+<p>When using <a href="/docs/app/getting-started/mutating-data">Server Actions</a> with Multi-Zones, you must explicitly allow the user-facing origin since your user facing domain may serve multiple applications. In your <code>next.config.js</code> file, add the following lines:</p>
+<pre><code class="language-js">const nextConfig = {
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['your-production-domain.com'],
+    },
+  },
+}
+</code></pre>
+<p>See <a href="/docs/app/api-reference/config/next-config-js/serverActions#allowedorigins"><code>serverActions.allowedOrigins</code></a> for more information.</p>
+</AppOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

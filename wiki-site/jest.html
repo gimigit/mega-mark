@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jest — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-jest">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#quickstart">Quickstart</a></li><li><a href="#manual-setup">Manual setup</a></li><li><a href="#setting-up-jest-with-babel">Setting up Jest (with Babel)</a></li><ul><li><a href="#handling-stylesheets-and-image-imports">Handling stylesheets and image imports</a></li></ul><li><a href="#handling-fonts">Handling Fonts</a></li><li><a href="#optional-handling-absolute-imports-and-module-path-aliases">Optional: Handling Absolute Imports and Module Path Aliases</a></li><li><a href="#optional-extend-jest-with-custom-matchers">Optional: Extend Jest with custom matchers</a></li><li><a href="#add-a-test-script-to-packagejson">Add a test script to package.json</a></li><ul><li><a href="#creating-your-first-test">Creating your first test</a></li></ul><li><a href="#running-your-tests">Running your tests</a></li><li><a href="#additional-resources">Additional Resources</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jest</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Jest</td></tr><tr><th>description</th><td>Learn how to set up Jest with Next.js for Unit Testing and Snapshot Testing.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>Jest and React Testing Library are frequently used together for <strong>Unit Testing</strong> and <strong>Snapshot Testing</strong>. This guide will show you how to set up Jest with Next.js and write your first tests.</p>
+<blockquote>
+<p><strong>Good to know:</strong> Since <code>async</code> Server Components are new to the React ecosystem, Jest currently does not support them. While you can still run <strong>unit tests</strong> for synchronous Server and Client Components, we recommend using an <strong>E2E tests</strong> for <code>async</code> components.</p>
+</blockquote>
+<h2 id="quickstart">Quickstart</h2>
+<p>You can use <code>create-next-app</code> with the Next.js <a href="https://github.com/vercel/next.js/tree/canary/examples/with-jest" target="_blank" rel="noopener">with-jest</a> example to quickly get started:</p>
+<pre><code class="language-bash">pnpm create next-app --example with-jest with-jest-app
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest --example with-jest with-jest-app
+</code></pre>
+<pre><code class="language-bash">yarn create next-app --example with-jest with-jest-app
+</code></pre>
+<pre><code class="language-bash">bun create next-app --example with-jest with-jest-app
+</code></pre>
+<h2 id="manual-setup">Manual setup</h2>
+<p>Since the release of <a href="https://nextjs.org/blog/next-12" target="_blank" rel="noopener">Next.js 12</a>, Next.js now has built-in configuration for Jest.</p>
+<p>To set up Jest, install <code>jest</code> and the following packages as dev dependencies:</p>
+<pre><code class="language-bash">pnpm add -D jest jest-environment-jsdom @testing-library/react @testing-library/dom @testing-library/jest-dom ts-node @types/jest
+</code></pre>
+<pre><code class="language-bash">npm install -D jest jest-environment-jsdom @testing-library/react @testing-library/dom @testing-library/jest-dom ts-node @types/jest
+</code></pre>
+<pre><code class="language-bash">yarn add -D jest jest-environment-jsdom @testing-library/react @testing-library/dom @testing-library/jest-dom ts-node @types/jest
+</code></pre>
+<pre><code class="language-bash">bun add -D jest jest-environment-jsdom @testing-library/react @testing-library/dom @testing-library/jest-dom ts-node @types/jest
+</code></pre>
+<p>Generate a basic Jest configuration file by running the following command:</p>
+<pre><code class="language-bash">pnpm create jest@latest
+</code></pre>
+<pre><code class="language-bash">npm init jest@latest
+</code></pre>
+<pre><code class="language-bash">yarn create jest@latest
+</code></pre>
+<pre><code class="language-bash">bun create jest@latest
+</code></pre>
+<p>This will take you through a series of prompts to setup Jest for your project, including automatically creating a <code>jest.config.ts|js</code> file.</p>
+<p>Update your config file to use <code>next/jest</code>. This transformer has all the necessary configuration options for Jest to work with Next.js:</p>
+<pre><code class="language-ts">import type { Config } from 'jest'
+import nextJest from 'next/jest.js'
+
+const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
+  dir: './',
+})
+
+// Add any custom config to be passed to Jest
+const config: Config = {
+  coverageProvider: 'v8',
+  testEnvironment: 'jsdom',
+  // Add more setup options before each test is run
+  // setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.ts'],
+}
+
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
+export default createJestConfig(config)
+</code></pre>
+<pre><code class="language-js">const nextJest = require('next/jest')
+
+/** @type {import('jest').Config} */
+const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
+  dir: './',
+})
+
+// Add any custom config to be passed to Jest
+const config = {
+  coverageProvider: 'v8',
+  testEnvironment: 'jsdom',
+  // Add more setup options before each test is run
+  // setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.ts'],
+}
+
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
+module.exports = createJestConfig(config)
+</code></pre>
+<p>Under the hood, <code>next/jest</code> is automatically configuring Jest for you, including:</p>
+<ul>
+<li>Setting up <code>transform</code> using the <a href="/docs/architecture/nextjs-compiler">Next.js Compiler</a>.</li>
+<li>Auto mocking stylesheets (<code>.css</code>, <code>.module.css</code>, and their scss variants), image imports and <a href="/docs/app/api-reference/components/font"><code>next/font</code></a>.</li>
+<li>Loading <code>.env</code> (and all variants) into <code>process.env</code>.</li>
+<li>Ignoring <code>node_modules</code> from test resolving and transforms.</li>
+<li>Ignoring <code>.next</code> from test resolving.</li>
+<li>Loading <code>next.config.js</code> for flags that enable SWC transforms.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>: To test environment variables directly, load them manually in a separate setup script or in your <code>jest.config.ts</code> file. For more information, please see <a href="/docs/app/guides/environment-variables#test-environment-variables">Test Environment Variables</a>.</p>
+</blockquote>
+<PagesOnly>
+<h2 id="setting-up-jest-with-babel">Setting up Jest (with Babel)</h2>
+<p>If you opt out of the <a href="/docs/architecture/nextjs-compiler">Next.js Compiler</a> and use Babel instead, you will need to manually configure Jest and install <code>babel-jest</code> and <code>identity-obj-proxy</code> in addition to the packages above.</p>
+<p>Here are the recommended options to configure Jest for Next.js:</p>
+<pre><code class="language-js">module.exports = {
+  collectCoverage: true,
+  // on node 14.x coverage provider v8 offers good speed and more or less good report
+  coverageProvider: 'v8',
+  collectCoverageFrom: [
+    '**/*.{js,jsx,ts,tsx}',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!&lt;rootDir&gt;/out/**',
+    '!&lt;rootDir&gt;/.next/**',
+    '!&lt;rootDir&gt;/*.config.js',
+    '!&lt;rootDir&gt;/coverage/**',
+  ],
+  moduleNameMapper: {
+    // Handle CSS imports (with CSS modules)
+    // https://jestjs.io/docs/webpack#mocking-css-modules
+    '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
+
+    // Handle CSS imports (without CSS modules)
+    '^.+\\.(css|sass|scss)$': '&lt;rootDir&gt;/__mocks__/styleMock.js',
+
+    // Handle image imports
+    // https://jestjs.io/docs/webpack#handling-static-assets
+    '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$': `&lt;rootDir&gt;/__mocks__/fileMock.js`,
+
+    // Handle module aliases
+    '^@/components/(.*)$': '&lt;rootDir&gt;/components/$1',
+
+    // Handle @next/font
+    '@next/font/(.*)': `&lt;rootDir&gt;/__mocks__/nextFontMock.js`,
+    // Handle next/font
+    'next/font/(.*)': `&lt;rootDir&gt;/__mocks__/nextFontMock.js`,
+    // Disable server-only
+    'server-only': `&lt;rootDir&gt;/__mocks__/empty.js`,
+  },
+  // Add more setup options before each test is run
+  // setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.js'],
+  testPathIgnorePatterns: ['&lt;rootDir&gt;/node_modules/', '&lt;rootDir&gt;/.next/'],
+  testEnvironment: 'jsdom',
+  transform: {
+    // Use babel-jest to transpile tests with the next/babel preset
+    // https://jestjs.io/docs/configuration#transform-objectstring-pathtotransformer--pathtotransformer-object
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+  },
+  transformIgnorePatterns: [
+    '/node_modules/',
+    '^.+\\.module\\.(css|sass|scss)$',
+  ],
+}
+</code></pre>
+<p>You can learn more about each configuration option in the <a href="https://jestjs.io/docs/configuration" target="_blank" rel="noopener">Jest docs</a>. We also recommend reviewing <a href="https://github.com/vercel/next.js/blob/e02fe314dcd0ae614c65b505c6daafbdeebb920e/packages/next/src/build/jest/jest.ts" target="_blank" rel="noopener"><code>next/jest</code> configuration</a> to see how Next.js configures Jest.</p>
+<h3 id="handling-stylesheets-and-image-imports">Handling stylesheets and image imports</h3>
+<p>Stylesheets and images aren’t used in the tests but importing them may cause errors, so they will need to be mocked.</p>
+<p>Create the mock files referenced in the configuration above - <code>fileMock.js</code> and <code>styleMock.js</code> - inside a <code>__mocks__</code> directory:</p>
+<pre><code class="language-js">module.exports = 'test-file-stub'
+</code></pre>
+<pre><code class="language-js">module.exports = {}
+</code></pre>
+<p>For more information on handling static assets, please refer to the <a href="https://jestjs.io/docs/webpack#handling-static-assets" target="_blank" rel="noopener">Jest Docs</a>.</p>
+<h2 id="handling-fonts">Handling Fonts</h2>
+<p>To handle fonts, create the <code>nextFontMock.js</code> file inside the <code>__mocks__</code> directory, and add the following configuration:</p>
+<pre><code class="language-js">module.exports = new Proxy(
+  {},
+  {
+    get: function getter() {
+      return () =&gt; ({
+        className: 'className',
+        variable: 'variable',
+        style: { fontFamily: 'fontFamily' },
+      })
+    },
+  }
+)
+</code></pre>
+</PagesOnly>
+<h2 id="optional-handling-absolute-imports-and-module-path-aliases">Optional: Handling Absolute Imports and Module Path Aliases</h2>
+<p>If your project is using <a href="/docs/app/getting-started/installation#set-up-absolute-imports-and-module-path-aliases">Module Path Aliases</a>, you will need to configure Jest to resolve the imports by matching the paths option in the <code>jsconfig.json</code> file with the <code>moduleNameMapper</code> option in the <code>jest.config.js</code> file. For example:</p>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    &quot;module&quot;: &quot;esnext&quot;,
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    &quot;baseUrl&quot;: &quot;./&quot;,
+    &quot;paths&quot;: {
+      &quot;@/components/*&quot;: [&quot;components/*&quot;]
+    }
+  }
+}
+</code></pre>
+<pre><code class="language-js">moduleNameMapper: {
+  // ...
+  '^@/components/(.*)$': '&lt;rootDir&gt;/components/$1',
+}
+</code></pre>
+<h2 id="optional-extend-jest-with-custom-matchers">Optional: Extend Jest with custom matchers</h2>
+<p><code>@testing-library/jest-dom</code> includes a set of convenient <a href="https://github.com/testing-library/jest-dom#custom-matchers" target="_blank" rel="noopener">custom matchers</a> such as <code>.toBeInTheDocument()</code> making it easier to write tests. You can import the custom matchers for every test by adding the following option to the Jest configuration file:</p>
+<pre><code class="language-ts">setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.ts']
+</code></pre>
+<pre><code class="language-js">setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.js']
+</code></pre>
+<p>Then, inside <code>jest.setup</code>, add the following import:</p>
+<pre><code class="language-ts">import '@testing-library/jest-dom'
+</code></pre>
+<pre><code class="language-js">import '@testing-library/jest-dom'
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> <a href="https://github.com/testing-library/jest-dom/releases/tag/v6.0.0" target="_blank" rel="noopener"><code>extend-expect</code> was removed in <code>v6.0</code></a>, so if you are using <code>@testing-library/jest-dom</code> before version 6, you will need to import <code>@testing-library/jest-dom/extend-expect</code> instead.</p>
+</blockquote>
+<p>If you need to add more setup options before each test, you can add them to the <code>jest.setup</code> file above.</p>
+<h2 id="add-a-test-script-to-packagejson">Add a test script to <code>package.json</code></h2>
+<p>Finally, add a Jest <code>test</code> script to your <code>package.json</code> file:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;,
+    &quot;test&quot;: &quot;jest&quot;,
+    &quot;test:watch&quot;: &quot;jest --watch&quot;
+  }
+}
+</code></pre>
+<p><code>jest --watch</code> will re-run tests when a file is changed. For more Jest CLI options, please refer to the <a href="https://jestjs.io/docs/cli#reference" target="_blank" rel="noopener">Jest Docs</a>.</p>
+<h3 id="creating-your-first-test">Creating your first test</h3>
+<p>Your project is now ready to run tests. Create a folder called <code>__tests__</code> in your project’s root directory.</p>
+<PagesOnly>
+<p>For example, we can add a test to check if the <code>&lt;Home /&gt;</code> component successfully renders a heading:</p>
+<pre><code class="language-jsx">export default function Home() {
+  return &lt;h1&gt;Home&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import Home from '../pages/index'
+
+describe('Home', () =&gt; {
+  it('renders a heading', () =&gt; {
+    render(&lt;Home /&gt;)
+
+    const heading = screen.getByRole('heading', { level: 1 })
+
+    expect(heading).toBeInTheDocument()
+  })
+})
+</code></pre>
+</PagesOnly>
+<AppOnly>
+<p>For example, we can add a test to check if the <code>&lt;Page /&gt;</code> component successfully renders a heading:</p>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import Page from '../app/page'
+
+describe('Page', () =&gt; {
+  it('renders a heading', () =&gt; {
+    render(&lt;Page /&gt;)
+
+    const heading = screen.getByRole('heading', { level: 1 })
+
+    expect(heading).toBeInTheDocument()
+  })
+})
+</code></pre>
+</AppOnly>
+<p>Optionally, add a <a href="https://jestjs.io/docs/snapshot-testing" target="_blank" rel="noopener">snapshot test</a> to keep track of any unexpected changes in your component:</p>
+<PagesOnly>
+<pre><code class="language-jsx">import { render } from '@testing-library/react'
+import Home from '../pages/index'
+
+it('renders homepage unchanged', () =&gt; {
+  const { container } = render(&lt;Home /&gt;)
+  expect(container).toMatchSnapshot()
+})
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Test files should not be included inside the Pages Router because any files inside the Pages Router are considered routes.</p>
+</blockquote>
+</PagesOnly>
+<AppOnly>
+<pre><code class="language-jsx">import { render } from '@testing-library/react'
+import Page from '../app/page'
+
+it('renders homepage unchanged', () =&gt; {
+  const { container } = render(&lt;Page /&gt;)
+  expect(container).toMatchSnapshot()
+})
+</code></pre>
+</AppOnly>
+<h2 id="running-your-tests">Running your tests</h2>
+<p>Then, run the following command to run your tests:</p>
+<pre><code class="language-bash">pnpm test
+</code></pre>
+<pre><code class="language-bash">npm run test
+</code></pre>
+<pre><code class="language-bash">yarn test
+</code></pre>
+<pre><code class="language-bash">bun run test
+</code></pre>
+<h2 id="additional-resources">Additional Resources</h2>
+<p>For further reading, you may find these resources helpful:</p>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-jest" target="_blank" rel="noopener">Next.js with Jest example</a></li>
+<li><a href="https://jestjs.io/docs/getting-started" target="_blank" rel="noopener">Jest Docs</a></li>
+<li><a href="https://testing-library.com/docs/react-testing-library/intro/" target="_blank" rel="noopener">React Testing Library Docs</a></li>
+<li><a href="https://testing-playground.com/" target="_blank" rel="noopener">Testing Playground</a> - use good testing practices to match elements.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>catcherror — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-catcherror">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#client-component">Client Component</a></li><li><a href="#recovering-from-errors">Recovering from errors</a></li><li><a href="#server-rendered-error-fallback">Server-rendered error fallback</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">catcherror</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the unstable_catchError function.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>unstable_catchError</code> function creates a component that wraps its children in an error boundary. It provides a programmatic alternative to the <a href="/docs/app/api-reference/file-conventions/error"><code>error.js</code></a> file convention, enabling component-level error recovery anywhere in your component tree.</p>
+<p>Compared to a custom React error boundary, <code>unstable_catchError</code> is designed to work with Next.js out of the box:</p>
+<ul>
+<li><strong>Built-in error recovery</strong> — <a href="/docs/app/api-reference/file-conventions/error#unstable_retry"><code>unstable_retry()</code></a> re-fetches and re-renders the error boundary’s children, including Server Components.</li>
+<li><strong>Framework-aware integration</strong> — APIs like <code>redirect()</code> and <code>notFound()</code> work by throwing special errors under the hood. <code>unstable_catchError</code> handles these seamlessly, so they’re not accidentally caught by your error boundary.</li>
+<li><strong>Client navigation handling</strong> — The error state automatically clears when you do a client navigation to a different route.</li>
+</ul>
+<p><code>unstable_catchError</code> can be called from <a href="/docs/app/getting-started/server-and-client-components">Client Components</a>.</p>
+<pre><code class="language-tsx">'use client'
+
+import { unstable_catchError, type ErrorInfo } from 'next/error'
+
+function ErrorFallback(
+  props: { title: string },
+  { error, unstable_retry }: ErrorInfo
+) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{props.title}&lt;/h2&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default unstable_catchError(ErrorFallback)
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { unstable_catchError } from 'next/error'
+
+function ErrorFallback(props, { error, unstable_retry }) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{props.title}&lt;/h2&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default unstable_catchError(ErrorFallback)
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="parameters">Parameters</h3>
+<p><code>unstable_catchError</code> accepts a single argument:</p>
+<pre><code class="language-ts">const ErrorWrapper = unstable_catchError(fallback)
+</code></pre>
+<h4><code>fallback</code></h4>
+<p>A function that renders the error UI when an error is caught. It receives two arguments:</p>
+<ul>
+<li><code>props</code> — The props passed to the wrapper component (excluding <code>children</code>).</li>
+<li><code>errorInfo</code> — An object containing information about the error:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error</code></td>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error" target="_blank" rel="noopener"><code>Error</code></a></td>
+<td>The error instance that was caught.</td>
+</tr>
+<tr>
+<td><code>unstable_retry</code></td>
+<td><code>() =&gt; void</code></td>
+<td>Re-fetches and re-renders the error boundary’s children. If successful, the fallback is replaced with the re-rendered result.</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td><code>() =&gt; void</code></td>
+<td>Resets the error state and re-renders without re-fetching. Use <a href="/docs/app/api-reference/file-conventions/error#unstable_retry"><code>unstable_retry()</code></a> in most cases.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>fallback</code> function must be a Client Component (or defined in a <code>'use client'</code> module).</p>
+<h3 id="returns">Returns</h3>
+<p><code>unstable_catchError</code> returns a React component that:</p>
+<ul>
+<li>Accepts the same props as your fallback’s first argument, plus <code>children</code>.</li>
+<li>Wraps <code>children</code> in an error boundary.</li>
+<li>Renders the <code>fallback</code> when an error is caught in <code>children</code>.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="client-component">Client Component</h3>
+<p>Define a fallback and use the returned component to wrap parts of your UI:</p>
+<pre><code class="language-tsx">import ErrorWrapper from '../custom-error-boundary'
+
+export default function Component({ children }: { children: React.ReactNode }) {
+  return &lt;ErrorWrapper title=&quot;Dashboard Error&quot;&gt;{children}&lt;/ErrorWrapper&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import ErrorWrapper from '../custom-error-boundary'
+
+export default function Component({ children }) {
+  return &lt;ErrorWrapper title=&quot;Dashboard Error&quot;&gt;{children}&lt;/ErrorWrapper&gt;
+}
+</code></pre>
+<h3 id="recovering-from-errors">Recovering from errors</h3>
+<p>Use <code>unstable_retry()</code> to prompt the user to recover from the error. When called, the function re-fetches and re-renders the error boundary’s children. If successful, the fallback is replaced with the re-rendered result.</p>
+<p>In most cases, use <code>unstable_retry()</code> instead of <code>reset()</code>. The <code>reset()</code> function only clears the error state and re-renders without re-fetching, which means it won’t recover from Server Component errors.</p>
+<pre><code class="language-tsx">'use client'
+
+import { unstable_catchError, type ErrorInfo } from 'next/error'
+
+function ErrorFallback(props: {}, { error, unstable_retry, reset }: ErrorInfo) {
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+      &lt;button onClick={() =&gt; reset()}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default unstable_catchError(ErrorFallback)
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { unstable_catchError } from 'next/error'
+
+function ErrorFallback(props, { error, unstable_retry, reset }) {
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+      &lt;button onClick={() =&gt; reset()}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default unstable_catchError(ErrorFallback)
+</code></pre>
+<h3 id="server-rendered-error-fallback">Server-rendered error fallback</h3>
+<p>You can pass server-rendered content as a prop to display data-driven fallback UI. This works by rendering a Server Component as a <code>React.ReactNode</code> prop that the fallback displays when an error is caught.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This pattern eagerly renders the fallback on every page render, even when no error occurs. For most use cases, a simpler client-side fallback is sufficient.</p>
+</blockquote>
+<pre><code class="language-tsx">'use client'
+
+import { unstable_catchError, type ErrorInfo } from 'next/error'
+
+function ErrorFallback(
+  props: { fallback: React.ReactNode },
+  errorInfo: ErrorInfo
+) {
+  return props.fallback
+}
+
+export default unstable_catchError(ErrorFallback)
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { unstable_catchError } from 'next/error'
+
+function ErrorFallback(props, errorInfo) {
+  return props.fallback
+}
+
+export default unstable_catchError(ErrorFallback)
+</code></pre>
+<pre><code class="language-tsx">import ErrorBoundary from '../error-boundary'
+
+async function ErrorFallback() {
+  const data = await getData()
+  return &lt;div&gt;{data.message}&lt;/div&gt;
+}
+
+export default function Component({ children }: { children: React.ReactNode }) {
+  return &lt;ErrorBoundary fallback={&lt;ErrorFallback /&gt;}&gt;{children}&lt;/ErrorBoundary&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import ErrorBoundary from '../error-boundary'
+
+async function ErrorFallback() {
+  const data = await getData()
+  return &lt;div&gt;{data.message}&lt;/div&gt;
+}
+
+export default function Component({ children }) {
+  return &lt;ErrorBoundary fallback={&lt;ErrorFallback /&gt;}&gt;{children}&lt;/ErrorBoundary&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Unlike the <code>error.js</code> file convention which is scoped to route segments, <code>unstable_catchError</code> can be used to wrap any part of your component tree for component-level error recovery.</li>
+<li>Props passed to the wrapper component are forwarded to the fallback function, making it easy to create reusable error UIs with different configurations.</li>
+<li>You don’t need to wrap <code>error.js</code> default exports with <code>unstable_catchError</code>. The <a href="/docs/app/api-reference/file-conventions/error"><code>error.js</code></a> file convention already renders inside a built-in error boundary provided by Next.js.</li>
+</ul>
+</blockquote>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.2.0</code></td>
+<td><code>unstable_catchError</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>17-deploying — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-17-deploying">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#nodejs-server">Node.js server</a></li><ul><li><a href="#templates">Templates</a></li></ul><li><a href="#docker">Docker</a></li><ul><li><a href="#templates-1">Templates</a></li></ul><li><a href="#static-export">Static export</a></li><ul><li><a href="#templates-2">Templates</a></li></ul><li><a href="#adapters">Adapters</a></li><ul><li><a href="#verified-adapters">Verified Adapters</a></li><li><a href="#other-platforms">Other Platforms</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">17-deploying</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to deploy your Next.js application.</td></tr></table><p>Next.js can be deployed as a Node.js server, Docker container, static export, or adapted to run on different platforms.</p>
+<table>
+<thead>
+<tr>
+<th>Deployment Option</th>
+<th>Feature Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#nodejs-server">Node.js server</a></td>
+<td>All</td>
+</tr>
+<tr>
+<td><a href="#docker">Docker container</a></td>
+<td>All</td>
+</tr>
+<tr>
+<td><a href="#static-export">Static export</a></td>
+<td>Limited</td>
+</tr>
+<tr>
+<td><a href="#adapters">Adapters</a></td>
+<td>Varies (<a href="#verified-adapters">verified</a> adapters run the test suite)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="nodejs-server">Node.js server</h2>
+<p>Next.js can be deployed to any provider that supports Node.js. Ensure your <code>package.json</code> has the <code>&quot;build&quot;</code> and <code>&quot;start&quot;</code> scripts:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;
+  }
+}
+</code></pre>
+<p>Then, run <code>npm run build</code> to build your application and <code>npm run start</code> to start the Node.js server. This server supports all Next.js features. If needed, you can also eject to a <a href="/docs/app/guides/custom-server">custom server</a>.</p>
+<p>Node.js deployments support all Next.js features. Learn how to <a href="/docs/app/guides/self-hosting">configure them</a> for your infrastructure.</p>
+<h3 id="templates">Templates</h3>
+<ul>
+<li><a href="https://github.com/nextjs/deploy-flightcontrol" target="_blank" rel="noopener">Flightcontrol</a></li>
+<li><a href="https://github.com/nextjs/deploy-railway" target="_blank" rel="noopener">Railway</a></li>
+<li><a href="https://github.com/nextjs/deploy-replit" target="_blank" rel="noopener">Replit</a></li>
+<li><a href="https://github.com/hostinger/deploy-nextjs" target="_blank" rel="noopener">Hostinger</a></li>
+</ul>
+<h2 id="docker">Docker</h2>
+<p>Next.js can be deployed to any provider that supports <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> containers. This includes container orchestrators like Kubernetes or a cloud provider that runs Docker. For containerization best practices, see the <a href="https://docs.docker.com/guides/reactjs/" target="_blank" rel="noopener">Docker guide for React.js</a>.</p>
+<p>Docker deployments support all Next.js features. Learn how to <a href="/docs/app/guides/self-hosting">configure them</a> for your infrastructure.</p>
+<blockquote>
+<p><strong>Note for development:</strong> While Docker is excellent for production deployments, consider using local development (<code>npm run dev</code>) instead of Docker during development on Mac and Windows for better performance. <a href="/docs/app/guides/local-development">Learn more about optimizing local development</a>.</p>
+</blockquote>
+<h3 id="templates-1">Templates</h3>
+<p>The following examples demonstrate best practices for containerizing Next.js applications:</p>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-docker" target="_blank" rel="noopener">Docker Standalone Output</a> - Deploy a Next.js application using <code>output: &quot;standalone&quot;</code> to generate a minimal, production-ready Docker image with only the required runtime files and dependencies.</li>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-docker-export-output" target="_blank" rel="noopener">Docker Export Output</a> - Deploy a fully static Next.js application using <code>output: &quot;export&quot;</code> to generate optimized HTML files that can be served from a lightweight container or any static hosting environment.</li>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-docker-multi-env" target="_blank" rel="noopener">Docker Multi-Environment</a> - Manage separate Docker configurations for development, staging, and production environments with different environment variables.</li>
+</ul>
+<p>Additionally, hosting providers offer guidance on deploying Next.js:</p>
+<ul>
+<li><a href="https://github.com/nextjs/deploy-digitalocean" target="_blank" rel="noopener">DigitalOcean</a></li>
+<li><a href="https://github.com/nextjs/deploy-fly" target="_blank" rel="noopener">Fly.io</a></li>
+<li><a href="https://github.com/nextjs/deploy-google-cloud-run" target="_blank" rel="noopener">Google Cloud Run</a></li>
+<li><a href="https://github.com/nextjs/deploy-render" target="_blank" rel="noopener">Render</a></li>
+<li><a href="https://github.com/nextjs/deploy-sst" target="_blank" rel="noopener">SST</a></li>
+</ul>
+<h2 id="static-export">Static export</h2>
+<p>Next.js enables starting as a static site or <a href="/docs/app/guides/single-page-applications">Single-Page Application (SPA)</a>, then later optionally upgrading to use features that require a server.</p>
+<p>Since Next.js supports <a href="/docs/app/guides/static-exports">static exports</a>, it can be deployed and hosted on any web server that can serve HTML/CSS/JS static assets. This includes tools like AWS S3, Nginx, or Apache.</p>
+<p>Running as a <a href="/docs/app/guides/static-exports">static export</a> <strong>does not</strong> support Next.js features that require a server. <a href="/docs/app/guides/static-exports#unsupported-features">Learn more</a>.</p>
+<h3 id="templates-2">Templates</h3>
+<ul>
+<li><a href="https://github.com/nextjs/deploy-github-pages" target="_blank" rel="noopener">GitHub Pages</a></li>
+</ul>
+<h2 id="adapters">Adapters</h2>
+<p>Next.js can be adapted to run on different platforms to support their infrastructure capabilities. The <a href="/docs/app/api-reference/config/next-config-js/adapterPath">Deployment Adapter API</a> lets platforms customize how Next.js applications are built and deployed.</p>
+<h3 id="verified-adapters">Verified Adapters</h3>
+<p>Verified adapters are open source, run the full <a href="/docs/app/api-reference/adapters/testing-adapters">Next.js compatibility test suite</a>, and are hosted under the <a href="https://github.com/nextjs" target="_blank" rel="noopener">Next.js GitHub organization</a>. The Next.js team coordinates testing with these platforms before major releases. Publicly visible test results for each adapter are coming soon. <a href="/docs/app/guides/deploying-to-platforms#verified-adapters">Learn more about verified adapters</a>.</p>
+<ul>
+<li><a href="https://vercel.com/docs/frameworks/nextjs" target="_blank" rel="noopener">Vercel</a></li>
+<li><a href="https://bun.sh/docs/frameworks/nextjs" target="_blank" rel="noopener">Bun</a></li>
+</ul>
+<p>Cloudflare and Netlify are working on verified adapters built on the Adapter API. In the meantime, they offer their own Next.js integrations (see below).</p>
+<h3 id="other-platforms">Other Platforms</h3>
+<p>The following platforms offer their own Next.js integrations. These are not built on the public <a href="/docs/app/api-reference/config/next-config-js/adapterPath">Adapter API</a> and are not verified by the Next.js team, so feature support and compatibility may vary. Refer to each provider’s documentation for details:</p>
+<ul>
+<li><a href="https://appwrite.io/docs/products/sites/quick-start/nextjs" target="_blank" rel="noopener">Appwrite Sites</a></li>
+<li><a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components" target="_blank" rel="noopener">AWS Amplify Hosting</a></li>
+<li><a href="https://developers.cloudflare.com/workers/frameworks/framework-guides/nextjs" target="_blank" rel="noopener">Cloudflare</a></li>
+<li><a href="https://docs.deno.com/examples/next_tutorial" target="_blank" rel="noopener">Deno Deploy</a></li>
+<li><a href="https://firebase.google.com/docs/app-hosting/get-started" target="_blank" rel="noopener">Firebase App Hosting</a></li>
+<li><a href="https://docs.netlify.com/frameworks/next-js/overview/#next-js-support-on-netlify" target="_blank" rel="noopener">Netlify</a></li>
+</ul>
+<p>For details on which Next.js features require specific platform capabilities, see <a href="/docs/app/guides/deploying-to-platforms">Deploying to Platforms</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

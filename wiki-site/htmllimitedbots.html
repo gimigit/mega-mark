@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>htmllimitedbots — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-htmllimitedbots">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#default-list">Default list</a></li><li><a href="#disabling">Disabling</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">htmllimitedbots</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Specify a list of user agents that should receive blocking metadata.</td></tr></table><p>The <code>htmlLimitedBots</code> config allows you to specify a list of user agents that should receive blocking metadata instead of <a href="/docs/app/api-reference/functions/generate-metadata#streaming-metadata">streaming metadata</a>.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const config: NextConfig = {
+  htmlLimitedBots: /MySpecialBot|MyAnotherSpecialBot|SimpleCrawler/,
+}
+
+export default config
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  htmlLimitedBots: /MySpecialBot|MyAnotherSpecialBot|SimpleCrawler/,
+}
+</code></pre>
+<h2 id="default-list">Default list</h2>
+<p>Next.js includes a default list of HTML limited bots, including:</p>
+<ul>
+<li>Google crawlers (e.g. Mediapartners-Google, AdsBot-Google, Google-PageRenderer)</li>
+<li>Bingbot</li>
+<li>Twitterbot</li>
+<li>Slackbot</li>
+</ul>
+<p>See the full list <a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/shared/lib/router/utils/html-bots.ts" target="_blank" rel="noopener">here</a>.</p>
+<p>Specifying a <code>htmlLimitedBots</code> config will override the Next.js’ default list. However, this is advanced behavior, and the default should be sufficient for most cases.</p>
+<pre><code class="language-ts">const config: NextConfig = {
+  htmlLimitedBots: /MySpecialBot|MyAnotherSpecialBot|SimpleCrawler/,
+}
+
+export default config
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  htmlLimitedBots: /MySpecialBot|MyAnotherSpecialBot|SimpleCrawler/,
+}
+</code></pre>
+<h2 id="disabling">Disabling</h2>
+<p>To fully disable streaming metadata:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const config: NextConfig = {
+  htmlLimitedBots: /.*/,
+}
+
+export default config
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  htmlLimitedBots: /.*/,
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15.2.0</td>
+<td><code>htmlLimitedBots</code> option introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

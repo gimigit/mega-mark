@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-link-status — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-link-status">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#you-might-not-need-uselinkstatus">You might not need useLinkStatus</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#example">Example</a></li><ul><li><a href="#inline-link-hint">Inline link hint</a></li></ul><li><a href="#gracefully-handling-fast-navigation">Gracefully handling fast navigation</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-link-status</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about the features mentioned in this page by reading the API Reference.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>useLinkStatus</code> hook lets you track the <strong>pending</strong> state of a <code>&lt;Link&gt;</code>. Use it for subtle, inline feedback, for example a shimmer effect over the clicked link, while navigation completes. Prefer route-level fallbacks with <code>loading.js</code>, and prefetching for instant transitions.</p>
+<p><code>useLinkStatus</code> is useful when:</p>
+<ul>
+<li><a href="/docs/app/getting-started/linking-and-navigating#prefetching">Prefetching</a> is disabled or in progress meaning navigation is blocked.</li>
+<li>The destination route is dynamic <strong>and</strong> doesn’t include a <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.js</code></a> file that would allow an instant navigation.</li>
+</ul>
+<pre><code class="language-tsx">'use client'
+
+import Link from 'next/link'
+import { useLinkStatus } from 'next/link'
+
+function Hint() {
+  const { pending } = useLinkStatus()
+  return (
+    &lt;span aria-hidden className={`link-hint ${pending ? 'is-pending' : ''}`} /&gt;
+  )
+}
+
+export default function Header() {
+  return (
+    &lt;header&gt;
+      &lt;Link href=&quot;/dashboard&quot; prefetch={false}&gt;
+        &lt;span className=&quot;label&quot;&gt;Dashboard&lt;/span&gt; &lt;Hint /&gt;
+      &lt;/Link&gt;
+    &lt;/header&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import Link from 'next/link'
+import { useLinkStatus } from 'next/link'
+
+function Hint() {
+  const { pending } = useLinkStatus()
+  return (
+    &lt;span aria-hidden className={`link-hint ${pending ? 'is-pending' : ''}`} /&gt;
+  )
+}
+
+export default function Header() {
+  return (
+    &lt;header&gt;
+      &lt;Link href=&quot;/dashboard&quot; prefetch={false}&gt;
+        &lt;span className=&quot;label&quot;&gt;Dashboard&lt;/span&gt; &lt;Hint /&gt;
+      &lt;/Link&gt;
+    &lt;/header&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>useLinkStatus</code> must be used within a descendant component of a <code>Link</code> component</li>
+<li>The hook is most useful when <code>prefetch={false}</code> is set on the <code>Link</code> component</li>
+<li>If the linked route has been prefetched, the pending state will be skipped</li>
+<li>When clicking multiple links in quick succession, only the last link’s pending state is shown</li>
+<li>This hook is not supported in the Pages Router and always returns <code>{ pending: false }</code></li>
+<li>Inline indicators can easily introduce layout shifts. Prefer a fixed-size, always-rendered hint element and toggle its opacity, or use an animation.</li>
+</ul>
+</blockquote>
+<h2 id="you-might-not-need-uselinkstatus">You might not need <code>useLinkStatus</code></h2>
+<p>Before adding inline feedback, consider if:</p>
+<ul>
+<li>The destination is static and prefetched in production, so the pending phase may be skipped.</li>
+<li>The route has a <code>loading.js</code> file, enabling instant transitions with a route-level fallback.</li>
+</ul>
+<p>Navigation is typically fast. Use <code>useLinkStatus</code> as a quick patch when you identify a slow transition, then iterate to fix the root cause with prefetching or a <code>loading.js</code> fallback.</p>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">const { pending } = useLinkStatus()
+</code></pre>
+<p><code>useLinkStatus</code> does not take any parameters.</p>
+<h2 id="returns">Returns</h2>
+<p><code>useLinkStatus</code> returns an object with a single property:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pending</td>
+<td>boolean</td>
+<td><code>true</code> before history updates, <code>false</code> after</td>
+</tr>
+</tbody>
+</table>
+<h2 id="example">Example</h2>
+<h3 id="inline-link-hint">Inline link hint</h3>
+<p>Add a subtle, fixed-size hint that doesn’t affect layout to confirm a click when prefetching hasn’t completed.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useLinkStatus } from 'next/link'
+
+export default function LoadingIndicator() {
+  const { pending } = useLinkStatus()
+  return (
+    &lt;span aria-hidden className={`link-hint ${pending ? 'is-pending' : ''}`} /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useLinkStatus } from 'next/link'
+
+export default function LoadingIndicator() {
+  const { pending } = useLinkStatus()
+  return (
+    &lt;span aria-hidden className={`link-hint ${pending ? 'is-pending' : ''}`} /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import Link from 'next/link'
+import LoadingIndicator from './components/loading-indicator'
+
+const links = [
+  { href: '/shop/electronics', label: 'Electronics' },
+  { href: '/shop/clothing', label: 'Clothing' },
+  { href: '/shop/books', label: 'Books' },
+]
+
+function Menubar() {
+  return (
+    &lt;div&gt;
+      {links.map((link) =&gt; (
+        &lt;Link key={link.label} href={link.href}&gt;
+          &lt;span className=&quot;label&quot;&gt;{link.label}&lt;/span&gt; &lt;LoadingIndicator /&gt;
+        &lt;/Link&gt;
+      ))}
+    &lt;/div&gt;
+  )
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;div&gt;
+      &lt;Menubar /&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+import LoadingIndicator from './components/loading-indicator'
+
+const links = [
+  { href: '/shop/electronics', label: 'Electronics' },
+  { href: '/shop/clothing', label: 'Clothing' },
+  { href: '/shop/books', label: 'Books' },
+]
+
+function Menubar() {
+  return (
+    &lt;div&gt;
+      {links.map((link) =&gt; (
+        &lt;Link key={link.label} href={link.href}&gt;
+          &lt;span className=&quot;label&quot;&gt;{link.label}&lt;/span&gt; &lt;LoadingIndicator /&gt;
+        &lt;/Link&gt;
+      ))}
+    &lt;/div&gt;
+  )
+}
+
+export default function Layout({ children }) {
+  return (
+    &lt;div&gt;
+      &lt;Menubar /&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="gracefully-handling-fast-navigation">Gracefully handling fast navigation</h2>
+<p>If the navigation to a new route is fast, users may see an unnecessary flash of the hint. One way to improve the user experience and only show the hint when the navigation takes time to complete is to add an initial animation delay (e.g. 100ms) and start the animation as invisible (e.g. <code>opacity: 0</code>).</p>
+<pre><code class="language-css">.link-hint {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-left: 0.25rem;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0;
+  visibility: hidden; /* reserve space without showing the hint */
+}
+
+.link-hint.is-pending {
+  /* Animation 1: fade in after 100ms and keep final opacity */
+  /* Animation 2: subtle pulsing while pending */
+  visibility: visible;
+  animation-name: fadeIn, pulse;
+  animation-duration: 200ms, 1s;
+  /* Appear only if navigation actually takes time */
+  animation-delay: 100ms, 100ms;
+  animation-timing-function: ease, ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: forwards, none;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 0.35;
+  }
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.15;
+  }
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.3.0</code></td>
+<td><code>useLinkStatus</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

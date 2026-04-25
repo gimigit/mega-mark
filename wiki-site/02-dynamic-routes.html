@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02-dynamic-routes — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-02-dynamic-routes">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#convention">Convention</a></li><li><a href="#example">Example</a></li><li><a href="#catch-all-segments">Catch-all Segments</a></li><li><a href="#optional-catch-all-segments">Optional Catch-all Segments</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">02-dynamic-routes</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>For more information on what to do next, we recommend the following sections</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>When you don’t know the exact segment names ahead of time and want to create routes from dynamic data, you can use Dynamic Segments that are filled in at request time or <a href="/docs/pages/building-your-application/data-fetching/get-static-paths">prerendered</a> at build time.</p>
+<h2 id="convention">Convention</h2>
+<p>A Dynamic Segment can be created by wrapping a file or folder name in square brackets: <code>[segmentName]</code>. For example, <code>[id]</code> or <code>[slug]</code>.</p>
+<p>Dynamic Segments can be accessed from <a href="/docs/pages/api-reference/functions/use-router"><code>useRouter</code></a>.</p>
+<h2 id="example">Example</h2>
+<p>For example, a blog could include the following route <code>pages/blog/[slug].js</code> where <code>[slug]</code> is the Dynamic Segment for blog posts.</p>
+<pre><code class="language-jsx">import { useRouter } from 'next/router'
+
+export default function Page() {
+  const router = useRouter()
+  return &lt;p&gt;Post: {router.query.slug}&lt;/p&gt;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pages/blog/[slug].js</code></td>
+<td><code>/blog/a</code></td>
+<td><code>{ slug: 'a' }</code></td>
+</tr>
+<tr>
+<td><code>pages/blog/[slug].js</code></td>
+<td><code>/blog/b</code></td>
+<td><code>{ slug: 'b' }</code></td>
+</tr>
+<tr>
+<td><code>pages/blog/[slug].js</code></td>
+<td><code>/blog/c</code></td>
+<td><code>{ slug: 'c' }</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="catch-all-segments">Catch-all Segments</h2>
+<p>Dynamic Segments can be extended to <strong>catch-all</strong> subsequent segments by adding an ellipsis inside the brackets <code>[...segmentName]</code>.</p>
+<p>For example, <code>pages/shop/[...slug].js</code> will match <code>/shop/clothes</code>, but also <code>/shop/clothes/tops</code>, <code>/shop/clothes/tops/t-shirts</code>, and so on.</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pages/shop/[...slug].js</code></td>
+<td><code>/shop/a</code></td>
+<td><code>{ slug: ['a'] }</code></td>
+</tr>
+<tr>
+<td><code>pages/shop/[...slug].js</code></td>
+<td><code>/shop/a/b</code></td>
+<td><code>{ slug: ['a', 'b'] }</code></td>
+</tr>
+<tr>
+<td><code>pages/shop/[...slug].js</code></td>
+<td><code>/shop/a/b/c</code></td>
+<td><code>{ slug: ['a', 'b', 'c'] }</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="optional-catch-all-segments">Optional Catch-all Segments</h2>
+<p>Catch-all Segments can be made <strong>optional</strong> by including the parameter in double square brackets: <code><a class="wikilink missing" data-slug="...segmentname" href="...segmentname.html">...segmentName</a></code>.</p>
+<p>For example, <code>pages/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>.js</code> will <strong>also</strong> match <code>/shop</code>, in addition to <code>/shop/clothes</code>, <code>/shop/clothes/tops</code>, <code>/shop/clothes/tops/t-shirts</code>.</p>
+<p>The difference between <strong>catch-all</strong> and <strong>optional catch-all</strong> segments is that with optional, the route without the parameter is also matched (<code>/shop</code> in the example above).</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pages/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>.js</code></td>
+<td><code>/shop</code></td>
+<td><code>{ slug: undefined }</code></td>
+</tr>
+<tr>
+<td><code>pages/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>.js</code></td>
+<td><code>/shop/a</code></td>
+<td><code>{ slug: ['a'] }</code></td>
+</tr>
+<tr>
+<td><code>pages/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>.js</code></td>
+<td><code>/shop/a/b</code></td>
+<td><code>{ slug: ['a', 'b'] }</code></td>
+</tr>
+<tr>
+<td><code>pages/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>.js</code></td>
+<td><code>/shop/a/b/c</code></td>
+<td><code>{ slug: ['a', 'b', 'c'] }</code></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

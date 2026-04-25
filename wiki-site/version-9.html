@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>version-9 — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-version-9">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#check-your-custom-app-file-pages_appjs">Check your Custom App File (pages/_app.js)</a></li><li><a href="#breaking-changes">Breaking Changes</a></li><ul><li><a href="#zeitnext-typescript-is-no-longer-necessary">@zeit/next-typescript is no longer necessary</a></li><li><a href="#the-config-key-is-now-an-export-on-a-page">The config key is now an export on a page</a></li><li><a href="#nextdynamic-no-longer-renders-loading-by-default-while-loading">next/dynamic no longer renders “loading…” by default while loading</a></li><li><a href="#withamp-has-been-removed-in-favor-of-an-exported-configuration-object">withAmp has been removed in favor of an exported configuration object</a></li><li><a href="#next-export-no-longer-exports-pages-as-indexhtml">next export no longer exports pages as index.html</a></li><li><a href="#pagesapi-is-treated-differently">pages/api/ is treated differently</a></li></ul><li><a href="#deprecated-features">Deprecated Features</a></li><ul><li><a href="#nextdynamic-has-deprecated-loading-multiple-modules-at-once">next/dynamic has deprecated loading multiple modules at once</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">version-9</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Version 9</td></tr><tr><th>description</th><td>Upgrade your Next.js Application from Version 8 to Version 9.</td></tr></table><p>To upgrade to version 9, run the following command:</p>
+<pre><code class="language-bash">npm i next@9
+</code></pre>
+<pre><code class="language-bash">yarn add next@9
+</code></pre>
+<pre><code class="language-bash">pnpm up next@9
+</code></pre>
+<pre><code class="language-bash">bun add next@9
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> If you are using TypeScript, ensure you also upgrade <code>@types/react</code> and <code>@types/react-dom</code> to their corresponding versions.</p>
+</blockquote>
+<h2 id="check-your-custom-app-file-pages_appjs">Check your Custom App File (<code>pages/_app.js</code>)</h2>
+<p>If you previously copied the <a href="/docs/pages/building-your-application/routing/custom-app">Custom <code>&lt;App&gt;</code></a> example, you may be able to remove your <code>getInitialProps</code>.</p>
+<p>Removing <code>getInitialProps</code> from <code>pages/_app.js</code> (when possible) is important to leverage new Next.js features!</p>
+<p>The following <code>getInitialProps</code> does nothing and may be removed:</p>
+<pre><code class="language-js">class MyApp extends App {
+  // Remove me, I do nothing!
+  static async getInitialProps({ Component, ctx }) {
+    let pageProps = {}
+
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps(ctx)
+    }
+
+    return { pageProps }
+  }
+
+  render() {
+    // ... etc
+  }
+}
+</code></pre>
+<h2 id="breaking-changes">Breaking Changes</h2>
+<h3 id="zeitnext-typescript-is-no-longer-necessary"><code>@zeit/next-typescript</code> is no longer necessary</h3>
+<p>Next.js will now ignore usage <code>@zeit/next-typescript</code> and warn you to remove it. Please remove this plugin from your <code>next.config.js</code>.</p>
+<p>Remove references to <code>@zeit/next-typescript/babel</code> from your custom <code>.babelrc</code> (if present).</p>
+<p>The usage of <a href="https://github.com/Realytics/fork-ts-checker-webpack-plugin/issues" target="_blank" rel="noopener"><code>fork-ts-checker-webpack-plugin</code></a> should also be removed from your <code>next.config.js</code>.</p>
+<p>TypeScript Definitions are published with the <code>next</code> package, so you need to uninstall <code>@types/next</code> as they would conflict.</p>
+<p>The following types are different:</p>
+<blockquote>
+<p>This list was created by the community to help you upgrade, if you find other differences please send a pull-request to this list to help other users.</p>
+</blockquote>
+<p>From:</p>
+<pre><code class="language-tsx">import { NextContext } from 'next'
+import { NextAppContext, DefaultAppIProps } from 'next/app'
+import { NextDocumentContext, DefaultDocumentIProps } from 'next/document'
+</code></pre>
+<p>to</p>
+<pre><code class="language-tsx">import { NextPageContext } from 'next'
+import { AppContext, AppInitialProps } from 'next/app'
+import { DocumentContext, DocumentInitialProps } from 'next/document'
+</code></pre>
+<h3 id="the-config-key-is-now-an-export-on-a-page">The <code>config</code> key is now an export on a page</h3>
+<p>You may no longer export a custom variable named <code>config</code> from a page (i.e. <code>export { config }</code> / <code>export const config ...</code>).
+This exported variable is now used to specify page-level Next.js configuration like Opt-in AMP and API Route features.</p>
+<p>You must rename a non-Next.js-purposed <code>config</code> export to something different.</p>
+<h3 id="nextdynamic-no-longer-renders-loading-by-default-while-loading"><code>next/dynamic</code> no longer renders “loading…” by default while loading</h3>
+<p>Dynamic components will not render anything by default while loading. You can still customize this behavior by setting the <code>loading</code> property:</p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const DynamicComponentWithCustomLoading = dynamic(
+  () =&gt; import('../components/hello2'),
+  {
+    loading: () =&gt; &lt;p&gt;Loading&lt;/p&gt;,
+  }
+)
+</code></pre>
+<h3 id="withamp-has-been-removed-in-favor-of-an-exported-configuration-object"><code>withAmp</code> has been removed in favor of an exported configuration object</h3>
+<p>Next.js now has the concept of page-level configuration, so the <code>withAmp</code> higher-order component has been removed for consistency.</p>
+<p>This change can be <strong>automatically migrated by running the following commands in the root of your Next.js project:</strong></p>
+<pre><code class="language-bash">curl -L https://github.com/vercel/next-codemod/archive/master.tar.gz | tar -xz --strip=2 next-codemod-master/transforms/withamp-to-config.js npx jscodeshift -t ./withamp-to-config.js pages/**/*.js
+</code></pre>
+<p>To perform this migration by hand, or view what the codemod will produce, see below:</p>
+<p><strong>Before</strong></p>
+<pre><code class="language-jsx">import { withAmp } from 'next/amp'
+
+function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export default withAmp(Home)
+// or
+export default withAmp(Home, { hybrid: true })
+</code></pre>
+<p><strong>After</strong></p>
+<pre><code class="language-jsx">export default function Home() {
+  return &lt;h1&gt;My AMP Page&lt;/h1&gt;
+}
+
+export const config = {
+  amp: true,
+  // or
+  amp: 'hybrid',
+}
+</code></pre>
+<h3 id="next-export-no-longer-exports-pages-as-indexhtml"><code>next export</code> no longer exports pages as <code>index.html</code></h3>
+<p>Previously, exporting <code>pages/about.js</code> would result in <code>out/about/index.html</code>. This behavior has been changed to result in <code>out/about.html</code>.</p>
+<p>You can revert to the previous behavior by creating a <code>next.config.js</code> with the following content:</p>
+<pre><code class="language-js">module.exports = {
+  trailingSlash: true,
+}
+</code></pre>
+<h3 id="pagesapi-is-treated-differently"><code>pages/api/</code> is treated differently</h3>
+<p>Pages in <code>pages/api/</code> are now considered <a href="https://nextjs.org/blog/next-9#api-routes" target="_blank" rel="noopener">API Routes</a>.
+Pages in this directory will no longer contain a client-side bundle.</p>
+<h2 id="deprecated-features">Deprecated Features</h2>
+<h3 id="nextdynamic-has-deprecated-loading-multiple-modules-at-once"><code>next/dynamic</code> has deprecated loading multiple modules at once</h3>
+<p>The ability to load multiple modules at once has been deprecated in <code>next/dynamic</code> to be closer to React’s implementation (<code>React.lazy</code> and <code>Suspense</code>).</p>
+<p>Updating code that relies on this behavior is relatively straightforward! We’ve provided an example of a before/after to help you migrate your application:</p>
+<p><strong>Before</strong></p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const HelloBundle = dynamic({
+  modules: () =&gt; {
+    const components = {
+      Hello1: () =&gt; import('../components/hello1').then((m) =&gt; m.default),
+      Hello2: () =&gt; import('../components/hello2').then((m) =&gt; m.default),
+    }
+
+    return components
+  },
+  render: (props, { Hello1, Hello2 }) =&gt; (
+    &lt;div&gt;
+      &lt;h1&gt;{props.title}&lt;/h1&gt;
+      &lt;Hello1 /&gt;
+      &lt;Hello2 /&gt;
+    &lt;/div&gt;
+  ),
+})
+
+function DynamicBundle() {
+  return &lt;HelloBundle title=&quot;Dynamic Bundle&quot; /&gt;
+}
+
+export default DynamicBundle
+</code></pre>
+<p><strong>After</strong></p>
+<pre><code class="language-jsx">import dynamic from 'next/dynamic'
+
+const Hello1 = dynamic(() =&gt; import('../components/hello1'))
+const Hello2 = dynamic(() =&gt; import('../components/hello2'))
+
+function HelloBundle({ title }) {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{title}&lt;/h1&gt;
+      &lt;Hello1 /&gt;
+      &lt;Hello2 /&gt;
+    &lt;/div&gt;
+  )
+}
+
+function DynamicBundle() {
+  return &lt;HelloBundle title=&quot;Dynamic Bundle&quot; /&gt;
+}
+
+export default DynamicBundle
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>06-implementing-ppr-in-an-adapter — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-06-implementing-ppr-in-an-adapter">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#1-seed-shell-postponed-state-at-build-time">1. Seed shell + postponed state at build time</a></li><li><a href="#2-runtime-flow-serve-cached-shell-and-resume-in-background">2. Runtime flow: serve cached shell and resume in background</a></li><li><a href="#3-update-cache-with-requestmetaoncacheentryv2">3. Update cache with requestMeta.onCacheEntryV2</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">06-implementing-ppr-in-an-adapter</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Implement Partial Prerendering support in an adapter using fallback output and cache hooks.</td></tr></table><p>For partially prerendered app routes, <code>onBuildComplete</code> gives you the data needed to seed and resume PPR:</p>
+<ul>
+<li><code>outputs.prerenders[].fallback.filePath</code>: path to the generated fallback shell (for example HTML)</li>
+<li><code>outputs.prerenders[].fallback.postponedState</code>: serialized postponed state used to resume rendering</li>
+</ul>
+<h2 id="1-seed-shell-postponed-state-at-build-time">1. Seed shell + postponed state at build time</h2>
+<pre><code class="language-ts">import { readFile } from 'node:fs/promises'
+
+async function seedPprEntries(outputs: AdapterOutputs) {
+  for (const prerender of outputs.prerenders) {
+    const fallback = prerender.fallback
+    if (!fallback?.filePath || !fallback.postponedState) continue
+
+    const shell = await readFile(fallback.filePath, 'utf8')
+    await platformCache.set(prerender.pathname, {
+      shell,
+      postponedState: fallback.postponedState,
+      initialHeaders: fallback.initialHeaders,
+      initialStatus: fallback.initialStatus,
+      initialRevalidate: fallback.initialRevalidate,
+      initialExpiration: fallback.initialExpiration,
+    })
+  }
+}
+</code></pre>
+<h2 id="2-runtime-flow-serve-cached-shell-and-resume-in-background">2. Runtime flow: serve cached shell and resume in background</h2>
+<p>At request time, you can stream a single response that is the concatenation of:</p>
+<ol>
+<li>cached HTML shell stream</li>
+<li>resumed render stream (generated after invoking <code>handler</code> with postponed state)</li>
+</ol>
+<pre><code class="language-text">Client
+  | GET /ppr-route
+  v
+Adapter Router
+  |
+  |-- read cached shell + postponedState ---&gt; Platform Cache
+  |&lt;------------- cache hit -----------------|
+  |
+  |-- create responseStream = concat(shellStream, resumedStream)
+  |
+  |-- start piping shellStream ------------&gt; Client (first bytes)
+  |
+  |-- invoke handler(req, res, { requestMeta: { postponed } })
+  |   -------------------------------------&gt; Entrypoint (handler)
+  |   &lt;------------------------------------- resumed chunks/cache entry
+  |
+  |-- append resumed chunks to resumedStream
+  |
+  '-- client receives one HTTP response:
+      [shell bytes........][resumed bytes........]
+</code></pre>
+<h2 id="3-update-cache-with-requestmetaoncacheentryv2">3. Update cache with <code>requestMeta.onCacheEntryV2</code></h2>
+<p><code>requestMeta.onCacheEntryV2</code> is called when a response cache entry is looked up or generated. Use it to persist updated shell/postponed data.</p>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><ul>
+<li><code>requestMeta.onCacheEntry</code> still works, but is deprecated.</li>
+<li>Prefer <code>requestMeta.onCacheEntryV2</code>.</li>
+<li>If your adapter uses an internal <code>onCacheCallback</code> abstraction, wire it to <code>requestMeta.onCacheEntryV2</code>.</li>
+</ul>
+</aside>
+<pre><code class="language-ts">await handler(req, res, {
+  waitUntil,
+  requestMeta: {
+    postponed: cachedPprEntry?.postponedState,
+    onCacheEntryV2: async (cacheEntry, meta) =&gt; {
+      if (cacheEntry.value?.kind === 'APP_PAGE') {
+        const html =
+          cacheEntry.value.html &amp;&amp;
+          typeof cacheEntry.value.html.toUnchunkedString === 'function'
+            ? cacheEntry.value.html.toUnchunkedString()
+            : null
+
+        await platformCache.set(meta.url || req.url || '/', {
+          shell: html,
+          postponedState: cacheEntry.value.postponed,
+          headers: cacheEntry.value.headers,
+          status: cacheEntry.value.status,
+          cacheControl: cacheEntry.cacheControl,
+        })
+      }
+
+      // Return true only if your adapter already wrote the response itself.
+      return false
+    },
+  },
+})
+</code></pre>
+<pre><code class="language-text">Entrypoint (handler)
+  | onCacheEntryV2(cacheEntry, { url })
+  v
+requestMeta.onCacheEntryV2 callback
+  |
+  |-- if APP_PAGE ---&gt; persist html + postponedState + headers ---&gt; Platform Cache
+  |
+  '-- return false: continue normal Next.js response flow
+      return true:  adapter already handled response (short-circuit)
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unicode Tokens — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-unicodetokens">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Unicode Tokens</h1>
+
+</div>
+<div class="article-body">
+<p>Starting with v2, <code>format</code> and <code>parse</code> use <a href="https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table" target="_blank" rel="noopener">Unicode tokens</a>.</p>
+<p>The tokens are different from Moment.js and other libraries that opted to use
+custom formatting rules. While usage of a standard ensures compatibility and
+the future of the library, it causes confusion that this document intends
+to resolve.</p>
+<h2 id="popular-mistakes">Popular mistakes</h2>
+<p>There are 4 tokens that cause most of the confusion:</p>
+<ul>
+<li>
+<p><code>D</code> and <code>DD</code> that represent the day of a year (1, 2, …, 365, 366)
+are often confused with <code>d</code> and <code>dd</code> that represent the day of a month
+(1, 2, …, 31).</p>
+</li>
+<li>
+<p><code>YY</code> and <code>YYYY</code> that represent the local week-numbering year (44, 01, 00, 17)
+are often confused with <code>yy</code> and <code>yyyy</code> that represent the calendar year.</p>
+</li>
+</ul>
+<pre><code class="language-js">// ❌ Wrong!
+format(new Date(), &quot;YYYY-MM-DD&quot;);
+//=&gt; 2018-10-283
+
+// ✅ Correct
+format(new Date(), &quot;yyyy-MM-dd&quot;);
+//=&gt; 2018-10-10
+
+// ❌ Wrong!
+parse(&quot;11.02.87&quot;, &quot;D.MM.YY&quot;, new Date()).toString();
+//=&gt; 'Sat Jan 11 1986 00:00:00 GMT+0200 (EET)'
+
+// ✅ Correct
+parse(&quot;11.02.87&quot;, &quot;d.MM.yy&quot;, new Date()).toString();
+//=&gt; 'Wed Feb 11 1987 00:00:00 GMT+0200 (EET)'
+</code></pre>
+<p>To help with the issue, <code>format</code> and <code>parse</code> functions won’t accept
+these tokens without <code>useAdditionalDayOfYearTokens</code> option for <code>D</code> and <code>DD</code> and
+<code>useAdditionalWeekYearTokens</code> options for <code>YY</code> and <code>YYYY</code>:</p>
+<pre><code class="language-js">format(new Date(), &quot;D&quot;, { useAdditionalDayOfYearTokens: true });
+//=&gt; '283'
+
+parse(&quot;365+1987&quot;, &quot;DD+YYYY&quot;, new Date(), {
+  useAdditionalDayOfYearTokens: true,
+  useAdditionalWeekYearTokens: true,
+}).toString();
+//=&gt; 'Wed Dec 31 1986 00:00:00 GMT+0200 (EET)'
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

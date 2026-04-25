@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02-project-structure — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-02-project-structure">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#folder-and-file-conventions">Folder and file conventions</a></li><ul><li><a href="#top-level-folders">Top-level folders</a></li><li><a href="#top-level-files">Top-level files</a></li><li><a href="#routing-files">Routing Files</a></li><li><a href="#nested-routes">Nested routes</a></li><li><a href="#dynamic-routes">Dynamic routes</a></li><li><a href="#route-groups-and-private-folders">Route groups and private folders</a></li><li><a href="#parallel-and-intercepted-routes">Parallel and Intercepted Routes</a></li><li><a href="#metadata-file-conventions">Metadata file conventions</a></li><li><a href="#file-conventions">File conventions</a></li><li><a href="#routes">Routes</a></li><li><a href="#dynamic-routes-1">Dynamic routes</a></li></ul><li><a href="#organizing-your-project">Organizing your project</a></li><ul><li><a href="#component-hierarchy">Component hierarchy</a></li><li><a href="#colocation">Colocation</a></li><li><a href="#private-folders">Private folders</a></li><li><a href="#route-groups">Route groups</a></li><li><a href="#src-folder">src folder</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#store-project-files-outside-of-app">Store project files outside of app</a></li><li><a href="#store-project-files-in-top-level-folders-inside-of-app">Store project files in top-level folders inside of app</a></li><li><a href="#split-project-files-by-feature-or-route">Split project files by feature or route</a></li><li><a href="#organize-routes-without-affecting-the-url-path">Organize routes without affecting the URL path</a></li><li><a href="#opting-specific-segments-into-a-layout">Opting specific segments into a layout</a></li><li><a href="#opting-for-loading-skeletons-on-a-specific-route">Opting for loading skeletons on a specific route</a></li><li><a href="#creating-multiple-root-layouts">Creating multiple root layouts</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">02-project-structure</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Project Structure</td></tr><tr><th>description</th><td>Learn the folder and file conventions in Next.js, and how to organize your project.</td></tr></table><p>This page provides an overview of <strong>all</strong> the folder and file conventions in Next.js, and recommendations for organizing your project.</p>
+<h2 id="folder-and-file-conventions">Folder and file conventions</h2>
+<h3 id="top-level-folders">Top-level folders</h3>
+<p>Top-level folders are used to organize your application’s code and static assets.</p>
+<p><Image
+  alt="Route segments to path segments"
+  srcLight="/docs/light/top-level-folders.png"
+  srcDark="/docs/dark/top-level-folders.png"
+  width="1600"
+  height="525"
+/></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app"><code>app</code></a></td>
+<td>App Router</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing"><code>pages</code></a></td>
+<td>Pages Router</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/public-folder"><code>public</code></a></td>
+<td>Static assets to be served</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/src-folder"><code>src</code></a></td>
+<td>Optional application source folder</td>
+</tr>
+</tbody>
+</table>
+<h3 id="top-level-files">Top-level files</h3>
+<p>Top-level files are used to configure your application, manage dependencies, run proxy, integrate monitoring tools, and define environment variables.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Next.js</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/config/next-config-js"><code>next.config.js</code></a></td>
+<td>Configuration file for Next.js</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/installation#manual-installation"><code>package.json</code></a></td>
+<td>Project dependencies and scripts</td>
+</tr>
+<tr>
+<td><a href="/docs/app/guides/instrumentation"><code>instrumentation.ts</code></a></td>
+<td>OpenTelemetry and Instrumentation file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy.ts</code></a></td>
+<td>Next.js request proxy</td>
+</tr>
+<tr>
+<td><a href="/docs/app/guides/environment-variables"><code>.env</code></a></td>
+<td>Environment variables (should not be tracked by version control)</td>
+</tr>
+<tr>
+<td><a href="/docs/app/guides/environment-variables"><code>.env.local</code></a></td>
+<td>Local environment variables (should not be tracked by version control)</td>
+</tr>
+<tr>
+<td><a href="/docs/app/guides/environment-variables"><code>.env.production</code></a></td>
+<td>Production environment variables (should not be tracked by version control)</td>
+</tr>
+<tr>
+<td><a href="/docs/app/guides/environment-variables"><code>.env.development</code></a></td>
+<td>Development environment variables (should not be tracked by version control)</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/config/eslint"><code>eslint.config.mjs</code></a></td>
+<td>Configuration file for ESLint</td>
+</tr>
+<tr>
+<td><code>.gitignore</code></td>
+<td>Git files and folders to ignore</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/config/typescript#next-envdts"><code>next-env.d.ts</code></a></td>
+<td>TypeScript declaration file for Next.js (should not be tracked by version control)</td>
+</tr>
+<tr>
+<td><code>tsconfig.json</code></td>
+<td>Configuration file for TypeScript</td>
+</tr>
+<tr>
+<td><code>jsconfig.json</code></td>
+<td>Configuration file for JavaScript</td>
+</tr>
+</tbody>
+</table>
+<AppOnly>
+<h3 id="routing-files">Routing Files</h3>
+<p>Add <code>page</code> to expose a route, <code>layout</code> for shared UI such as header, nav, or footer, <code>loading</code> for skeletons, <code>error</code> for error boundaries, and <code>route</code> for APIs.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/layout"><code>layout</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Layout</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/page"><code>page</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Page</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/loading"><code>loading</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Loading UI</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/not-found"><code>not-found</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Not found UI</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/error"><code>error</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Error UI</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/error#global-error"><code>global-error</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Global error UI</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/route"><code>route</code></a></td>
+<td><code>.js</code> <code>.ts</code></td>
+<td>API endpoint</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/template"><code>template</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Re-rendered layout</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/default"><code>default</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Parallel route fallback page</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nested-routes">Nested routes</h3>
+<p>Folders define URL segments. Nesting folders nests segments. Layouts at any level wrap their child segments. A route becomes public when a <code>page</code> or <code>route</code> file exists.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>URL pattern</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/layout.tsx</code></td>
+<td>—</td>
+<td>Root layout wraps all routes</td>
+</tr>
+<tr>
+<td><code>app/blog/layout.tsx</code></td>
+<td>—</td>
+<td>Wraps <code>/blog</code> and descendants</td>
+</tr>
+<tr>
+<td><code>app/page.tsx</code></td>
+<td><code>/</code></td>
+<td>Public route</td>
+</tr>
+<tr>
+<td><code>app/blog/page.tsx</code></td>
+<td><code>/blog</code></td>
+<td>Public route</td>
+</tr>
+<tr>
+<td><code>app/blog/authors/page.tsx</code></td>
+<td><code>/blog/authors</code></td>
+<td>Public route</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dynamic-routes">Dynamic routes</h3>
+<p>Parameterize segments with square brackets. Use <code>[segment]</code> for a single param, <code>[...segment]</code> for catch‑all, and <code><a class="wikilink missing" data-slug="...segment" href="...segment.html">...segment</a></code> for optional catch‑all. Access values via the <a href="/docs/app/api-reference/file-conventions/page#params-optional"><code>params</code></a> prop.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>URL pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/blog/[slug]/page.tsx</code></td>
+<td><code>/blog/my-first-post</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[...slug]/page.tsx</code></td>
+<td><code>/shop/clothing</code>, <code>/shop/clothing/shirts</code></td>
+</tr>
+<tr>
+<td><code>app/docs/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.tsx</code></td>
+<td><code>/docs</code>, <code>/docs/layouts-and-pages</code>, <code>/docs/api-reference/use-router</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="route-groups-and-private-folders">Route groups and private folders</h3>
+<p>Organize code without changing URLs with route groups <a href="/docs/app/api-reference/file-conventions/route-groups#convention"><code>(group)</code></a>, and colocate non-routable files with private folders <a href="#private-folders"><code>_folder</code></a>.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>URL pattern</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/(marketing)/page.tsx</code></td>
+<td><code>/</code></td>
+<td>Group omitted from URL</td>
+</tr>
+<tr>
+<td><code>app/(shop)/cart/page.tsx</code></td>
+<td><code>/cart</code></td>
+<td>Share layouts within <code>(shop)</code></td>
+</tr>
+<tr>
+<td><code>app/blog/_components/Post.tsx</code></td>
+<td>—</td>
+<td>Not routable; safe place for UI utilities</td>
+</tr>
+<tr>
+<td><code>app/blog/_lib/data.ts</code></td>
+<td>—</td>
+<td>Not routable; safe place for utils</td>
+</tr>
+</tbody>
+</table>
+<h3 id="parallel-and-intercepted-routes">Parallel and Intercepted Routes</h3>
+<p>These features fit specific UI patterns, such as slot-based layouts or modal routing.</p>
+<p>Use <code>@slot</code> for named slots rendered by a parent layout. Use intercept patterns to render another route inside the current layout without changing the URL, for example, to show a details view as a modal over a list.</p>
+<table>
+<thead>
+<tr>
+<th>Pattern (docs)</th>
+<th>Meaning</th>
+<th>Typical use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/parallel-routes#slots"><code>@folder</code></a></td>
+<td>Named slot</td>
+<td>Sidebar + main content</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/intercepting-routes#convention"><code>(.)folder</code></a></td>
+<td>Intercept same level</td>
+<td>Preview sibling route in a modal</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/intercepting-routes#convention"><code>(..)folder</code></a></td>
+<td>Intercept parent</td>
+<td>Open a child of the parent as an overlay</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/intercepting-routes#convention"><code>(..)(..)folder</code></a></td>
+<td>Intercept two levels</td>
+<td>Deeply nested overlay</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/intercepting-routes#convention"><code>(...)folder</code></a></td>
+<td>Intercept from root</td>
+<td>Show arbitrary route in current view</td>
+</tr>
+</tbody>
+</table>
+<h3 id="metadata-file-conventions">Metadata file conventions</h3>
+<h4>App icons</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/app-icons#favicon"><code>favicon</code></a></td>
+<td><code>.ico</code></td>
+<td>Favicon file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/app-icons#icon"><code>icon</code></a></td>
+<td><code>.ico</code> <code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.svg</code></td>
+<td>App Icon file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/app-icons#generate-icons-using-code-js-ts-tsx"><code>icon</code></a></td>
+<td><code>.js</code> <code>.ts</code> <code>.tsx</code></td>
+<td>Generated App Icon</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/app-icons#apple-icon"><code>apple-icon</code></a></td>
+<td><code>.jpg</code> <code>.jpeg</code>, <code>.png</code></td>
+<td>Apple App Icon file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/app-icons#generate-icons-using-code-js-ts-tsx"><code>apple-icon</code></a></td>
+<td><code>.js</code> <code>.ts</code> <code>.tsx</code></td>
+<td>Generated Apple App Icon</td>
+</tr>
+</tbody>
+</table>
+<h4>Open Graph and Twitter images</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#opengraph-image"><code>opengraph-image</code></a></td>
+<td><code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.gif</code></td>
+<td>Open Graph image file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#generate-images-using-code-js-ts-tsx"><code>opengraph-image</code></a></td>
+<td><code>.js</code> <code>.ts</code> <code>.tsx</code></td>
+<td>Generated Open Graph image</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#twitter-image"><code>twitter-image</code></a></td>
+<td><code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.gif</code></td>
+<td>Twitter image file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#generate-images-using-code-js-ts-tsx"><code>twitter-image</code></a></td>
+<td><code>.js</code> <code>.ts</code> <code>.tsx</code></td>
+<td>Generated Twitter image</td>
+</tr>
+</tbody>
+</table>
+<h4>SEO</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/sitemap#sitemap-files-xml"><code>sitemap</code></a></td>
+<td><code>.xml</code></td>
+<td>Sitemap file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/sitemap#generating-a-sitemap-using-code-js-ts"><code>sitemap</code></a></td>
+<td><code>.js</code> <code>.ts</code></td>
+<td>Generated Sitemap</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/robots#static-robotstxt"><code>robots</code></a></td>
+<td><code>.txt</code></td>
+<td>Robots file</td>
+</tr>
+<tr>
+<td><a href="/docs/app/api-reference/file-conventions/metadata/robots#generate-a-robots-file"><code>robots</code></a></td>
+<td><code>.js</code> <code>.ts</code></td>
+<td>Generated Robots file</td>
+</tr>
+</tbody>
+</table>
+</AppOnly>
+<PagesOnly>
+<h3 id="file-conventions">File conventions</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/custom-app"><code>_app</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Custom App</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/custom-document"><code>_document</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Custom Document</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/custom-error#more-advanced-error-page-customizing"><code>_error</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Custom Error Page</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/custom-error#404-page"><code>404</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>404 Error Page</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/custom-error#500-page"><code>500</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>500 Error Page</td>
+</tr>
+</tbody>
+</table>
+<h3 id="routes">Routes</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Folder convention</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/pages-and-layouts#index-routes"><code>index</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Home page</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/pages-and-layouts#index-routes"><code>folder/index</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Nested page</td>
+</tr>
+<tr>
+<td><strong>File convention</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/pages-and-layouts#index-routes"><code>index</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Home page</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/pages-and-layouts"><code>file</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Nested page</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dynamic-routes-1">Dynamic routes</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Folder convention</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/dynamic-routes"><code>[folder]/index</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Dynamic route segment</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/dynamic-routes#catch-all-segments"><code>[...folder]/index</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Catch-all route segment</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/dynamic-routes#optional-catch-all-segments"><code><a class="wikilink missing" data-slug="...folder" href="...folder.html">...folder</a>/index</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Optional catch-all route segment</td>
+</tr>
+<tr>
+<td><strong>File convention</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/dynamic-routes"><code>[file]</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Dynamic route segment</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/dynamic-routes#catch-all-segments"><code>[...file]</code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Catch-all route segment</td>
+</tr>
+<tr>
+<td><a href="/docs/pages/building-your-application/routing/dynamic-routes#optional-catch-all-segments"><code><a class="wikilink missing" data-slug="...file" href="...file.html">...file</a></code></a></td>
+<td><code>.js</code> <code>.jsx</code> <code>.tsx</code></td>
+<td>Optional catch-all route segment</td>
+</tr>
+</tbody>
+</table>
+</PagesOnly>
+<AppOnly>
+<h2 id="organizing-your-project">Organizing your project</h2>
+<p>Next.js is <strong>unopinionated</strong> about how you organize and colocate your project files. But it does provide several features to help you organize your project.</p>
+<h3 id="component-hierarchy">Component hierarchy</h3>
+<p>The components defined in special files are rendered in a specific hierarchy:</p>
+<ul>
+<li><code>layout.js</code></li>
+<li><code>template.js</code></li>
+<li><code>error.js</code> (React error boundary)</li>
+<li><code>loading.js</code> (React suspense boundary)</li>
+<li><code>not-found.js</code> (React error boundary for “not found” UI)</li>
+<li><code>page.js</code> or nested <code>layout.js</code></li>
+</ul>
+<p><Image
+  alt="Component Hierarchy for File Conventions"
+  srcLight="/docs/light/file-conventions-component-hierarchy.png"
+  srcDark="/docs/dark/file-conventions-component-hierarchy.png"
+  width="1600"
+  height="643"
+/></p>
+<p>The components are rendered recursively in nested routes, meaning the components of a route segment will be nested <strong>inside</strong> the components of its parent segment.</p>
+<p><Image
+  alt="Nested File Conventions Component Hierarchy"
+  srcLight="/docs/light/nested-file-conventions-component-hierarchy.png"
+  srcDark="/docs/dark/nested-file-conventions-component-hierarchy.png"
+  width="1600"
+  height="863"
+/></p>
+<h3 id="colocation">Colocation</h3>
+<p>In the <code>app</code> directory, nested folders define route structure. Each folder represents a route segment that is mapped to a corresponding segment in a URL path.</p>
+<p>However, even though route structure is defined through folders, a route is <strong>not publicly accessible</strong> until a <code>page.js</code> or <code>route.js</code> file is added to a route segment.</p>
+<p><Image
+  alt="A diagram showing how a route is not publicly accessible until a page.js or route.js file is added to a route segment."
+  srcLight="/docs/light/project-organization-not-routable.png"
+  srcDark="/docs/dark/project-organization-not-routable.png"
+  width="1600"
+  height="444"
+/></p>
+<p>And, even when a route is made publicly accessible, only the <strong>content returned</strong> by <code>page.js</code> or <code>route.js</code> is sent to the client.</p>
+<p><Image
+  alt="A diagram showing how page.js and route.js files make routes publicly accessible."
+  srcLight="/docs/light/project-organization-routable.png"
+  srcDark="/docs/dark/project-organization-routable.png"
+  width="1600"
+  height="687"
+/></p>
+<p>This means that <strong>project files</strong> can be <strong>safely colocated</strong> inside route segments in the <code>app</code> directory without accidentally being routable.</p>
+<p><Image
+  alt="A diagram showing colocated project files are not routable even when a segment contains a page.js or route.js file."
+  srcLight="/docs/light/project-organization-colocation.png"
+  srcDark="/docs/dark/project-organization-colocation.png"
+  width="1600"
+  height="1011"
+/></p>
+<blockquote>
+<p><strong>Good to know</strong>: While you <strong>can</strong> colocate your project files in <code>app</code> you don’t <strong>have</strong> to. If you prefer, you can <a href="#store-project-files-outside-of-app">keep them outside the <code>app</code> directory</a>.</p>
+</blockquote>
+<h3 id="private-folders">Private folders</h3>
+<p>Private folders can be created by prefixing a folder with an underscore: <code>_folderName</code></p>
+<p>This indicates the folder is a private implementation detail and should not be considered by the routing system, thereby <strong>opting the folder and all its subfolders</strong> out of routing.</p>
+<p><Image
+  alt="An example folder structure using private folders"
+  srcLight="/docs/light/project-organization-private-folders.png"
+  srcDark="/docs/dark/project-organization-private-folders.png"
+  width="1600"
+  height="849"
+/></p>
+<p>Since files in the <code>app</code> directory can be <a href="#colocation">safely colocated by default</a>, private folders are not required for colocation. However, they can be useful for:</p>
+<ul>
+<li>Separating UI logic from routing logic.</li>
+<li>Consistently organizing internal files across a project and the Next.js ecosystem.</li>
+<li>Sorting and grouping files in code editors.</li>
+<li>Avoiding potential naming conflicts with future Next.js file conventions.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>While not a framework convention, you might also consider marking files outside private folders as “private” using the same underscore pattern.</li>
+<li>You can create URL segments that start with an underscore by prefixing the folder name with <code>%5F</code> (the URL-encoded form of an underscore): <code>%5FfolderName</code>.</li>
+<li>If you don’t use private folders, it would be helpful to know Next.js <a href="/docs/app/getting-started/project-structure#routing-files">special file conventions</a> to prevent unexpected naming conflicts.</li>
+</ul>
+</blockquote>
+<h3 id="route-groups">Route groups</h3>
+<p>Route groups can be created by wrapping a folder in parenthesis: <code>(folderName)</code></p>
+<p>This indicates the folder is for organizational purposes and should <strong>not be included</strong> in the route’s URL path.</p>
+<p><Image
+  alt="An example folder structure using route groups"
+  srcLight="/docs/light/project-organization-route-groups.png"
+  srcDark="/docs/dark/project-organization-route-groups.png"
+  width="1600"
+  height="849"
+/></p>
+<p>Route groups are useful for:</p>
+<ul>
+<li>Organizing routes by site section, intent, or team. e.g. marketing pages, admin pages, etc.</li>
+<li>Enabling nested layouts in the same route segment level:
+<ul>
+<li><a href="#creating-multiple-root-layouts">Creating multiple nested layouts in the same segment, including multiple root layouts</a></li>
+<li><a href="#opting-specific-segments-into-a-layout">Adding a layout to a subset of routes in a common segment</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="src-folder"><code>src</code> folder</h3>
+<p>Next.js supports storing application code (including <code>app</code>) inside an optional <a href="/docs/app/api-reference/file-conventions/src-folder"><code>src</code> folder</a>. This separates application code from project configuration files which mostly live in the root of a project.</p>
+<p><Image
+  alt="An example folder structure with the `src` folder"
+  srcLight="/docs/light/project-organization-src-directory.png"
+  srcDark="/docs/dark/project-organization-src-directory.png"
+  width="1600"
+  height="687"
+/></p>
+<h2 id="examples">Examples</h2>
+<p>The following section lists a very high-level overview of common strategies. The simplest takeaway is to choose a strategy that works for you and your team and be consistent across the project.</p>
+<blockquote>
+<p><strong>Good to know</strong>: In our examples below, we’re using <code>components</code> and <code>lib</code> folders as generalized placeholders, their naming has no special framework significance and your projects might use other folders like <code>ui</code>, <code>utils</code>, <code>hooks</code>, <code>styles</code>, etc.</p>
+</blockquote>
+<h3 id="store-project-files-outside-of-app">Store project files outside of <code>app</code></h3>
+<p>This strategy stores all application code in shared folders in the <strong>root of your project</strong> and keeps the <code>app</code> directory purely for routing purposes.</p>
+<p><Image
+  alt="An example folder structure with project files outside of app"
+  srcLight="/docs/light/project-organization-project-root.png"
+  srcDark="/docs/dark/project-organization-project-root.png"
+  width="1600"
+  height="849"
+/></p>
+<h3 id="store-project-files-in-top-level-folders-inside-of-app">Store project files in top-level folders inside of <code>app</code></h3>
+<p>This strategy stores all application code in shared folders in the <strong>root of the <code>app</code> directory</strong>.</p>
+<p><Image
+  alt="An example folder structure with project files inside app"
+  srcLight="/docs/light/project-organization-app-root.png"
+  srcDark="/docs/dark/project-organization-app-root.png"
+  width="1600"
+  height="849"
+/></p>
+<h3 id="split-project-files-by-feature-or-route">Split project files by feature or route</h3>
+<p>This strategy stores globally shared application code in the root <code>app</code> directory and <strong>splits</strong> more specific application code into the route segments that use them.</p>
+<p><Image
+  alt="An example folder structure with project files split by feature or route"
+  srcLight="/docs/light/project-organization-app-root-split.png"
+  srcDark="/docs/dark/project-organization-app-root-split.png"
+  width="1600"
+  height="1011"
+/></p>
+<h3 id="organize-routes-without-affecting-the-url-path">Organize routes without affecting the URL path</h3>
+<p>To organize routes without affecting the URL, create a group to keep related routes together. The folders in parenthesis will be omitted from the URL (e.g. <code>(marketing)</code> or <code>(shop)</code>).</p>
+<p><Image
+  alt="Organizing Routes with Route Groups"
+  srcLight="/docs/light/route-group-organisation.png"
+  srcDark="/docs/dark/route-group-organisation.png"
+  width="1600"
+  height="930"
+/></p>
+<p>Even though routes inside <code>(marketing)</code> and <code>(shop)</code> share the same URL hierarchy, you can create a different layout for each group by adding a <code>layout.js</code> file inside their folders.</p>
+<p><Image
+  alt="Route Groups with Multiple Layouts"
+  srcLight="/docs/light/route-group-multiple-layouts.png"
+  srcDark="/docs/dark/route-group-multiple-layouts.png"
+  width="1600"
+  height="768"
+/></p>
+<h3 id="opting-specific-segments-into-a-layout">Opting specific segments into a layout</h3>
+<p>To opt specific routes into a layout, create a new route group (e.g. <code>(shop)</code>) and move the routes that share the same layout into the group (e.g. <code>account</code> and <code>cart</code>). The routes outside of the group will not share the layout (e.g. <code>checkout</code>).</p>
+<p><Image
+  alt="Route Groups with Opt-in Layouts"
+  srcLight="/docs/light/route-group-opt-in-layouts.png"
+  srcDark="/docs/dark/route-group-opt-in-layouts.png"
+  width="1600"
+  height="930"
+/></p>
+<h3 id="opting-for-loading-skeletons-on-a-specific-route">Opting for loading skeletons on a specific route</h3>
+<p>To apply a <a href="/docs/app/api-reference/file-conventions/loading">loading skeleton</a> via a <code>loading.js</code> file to a specific route, create a new route group (e.g., <code>/(overview)</code>) and then move your <code>loading.tsx</code> inside that route group.</p>
+<p><Image
+  alt="Folder structure showing a loading.tsx and a page.tsx inside the route group"
+  srcLight="/docs/light/route-group-loading.png"
+  srcDark="/docs/dark/route-group-loading.png"
+  width="1600"
+  height="444"
+/></p>
+<p>Now, the <code>loading.tsx</code> file will only apply to your dashboard → overview page instead of all your dashboard pages without affecting the URL path structure.</p>
+<h3 id="creating-multiple-root-layouts">Creating multiple root layouts</h3>
+<p>To create multiple <a href="/docs/app/api-reference/file-conventions/layout#root-layout">root layouts</a>, remove the top-level <code>layout.js</code> file, and add a <code>layout.js</code> file inside each route group. This is useful for partitioning an application into sections that have a completely different UI or experience. The <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags need to be added to each root layout.</p>
+<p><Image
+  alt="Route Groups with Multiple Root Layouts"
+  srcLight="/docs/light/route-group-multiple-root-layouts.png"
+  srcDark="/docs/dark/route-group-multiple-root-layouts.png"
+  width="1600"
+  height="687"
+/></p>
+<p>In the example above, both <code>(marketing)</code> and <code>(shop)</code> have their own root layout.</p>
+</AppOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

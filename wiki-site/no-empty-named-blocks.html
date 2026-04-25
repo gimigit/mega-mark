@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-empty-named-blocks — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-empty-named-blocks">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#valid">Valid</a></li><li><a href="#invalid">Invalid</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-empty-named-blocks</h1>
+
+</div>
+<div class="article-body">
+<p>🔧💡 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a> and manually fixable by <a href="https://eslint.org/docs/latest/use/core-concepts#rule-suggestions" target="_blank" rel="noopener">editor suggestions</a>.</p>
+<!-- end auto-generated rule header -->
+<p>Reports the use of empty named import blocks.</p>
+<h2 id="rule-details">Rule Details</h2>
+<h3 id="valid">Valid</h3>
+<pre><code class="language-js">import { mod } from 'mod'
+import Default, { mod } from 'mod'
+</code></pre>
+<p>When using typescript</p>
+<pre><code class="language-js">import type { mod } from 'mod'
+</code></pre>
+<p>When using flow</p>
+<pre><code class="language-js">import typeof { mod } from 'mod'
+</code></pre>
+<h3 id="invalid">Invalid</h3>
+<pre><code class="language-js">import {} from 'mod'
+import Default, {} from 'mod'
+</code></pre>
+<p>When using typescript</p>
+<pre><code class="language-js">import type Default, {} from 'mod'
+import type {} from 'mod'
+</code></pre>
+<p>When using flow</p>
+<pre><code class="language-js">import typeof {} from 'mod'
+import typeof Default, {} from 'mod'
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

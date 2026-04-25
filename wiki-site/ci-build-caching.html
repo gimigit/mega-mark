@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ci-build-caching — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-ci-build-caching">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#vercel">Vercel</a></li><li><a href="#circleci">CircleCI</a></li><li><a href="#travis-ci">Travis CI</a></li><li><a href="#gitlab-ci">GitLab CI</a></li><li><a href="#netlify-ci">Netlify CI</a></li><li><a href="#aws-codebuild">AWS CodeBuild</a></li><li><a href="#github-actions">GitHub Actions</a></li><li><a href="#bitbucket-pipelines">Bitbucket Pipelines</a></li><li><a href="#heroku">Heroku</a></li><li><a href="#azure-pipelines">Azure Pipelines</a></li><li><a href="#jenkins-pipeline">Jenkins (Pipeline)</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">ci-build-caching</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>CI Build Caching</td></tr><tr><th>description</th><td>Learn how to configure CI to cache Next.js builds</td></tr></table><p>To improve build performance, Next.js saves a cache to <code>.next/cache</code> that is shared between builds.</p>
+<p>To take advantage of this cache in Continuous Integration (CI) environments, your CI workflow will need to be configured to correctly persist the cache between builds.</p>
+<blockquote>
+<p>If your CI is not configured to persist <code>.next/cache</code> between builds, you may see a <a href="/docs/messages/no-cache">No Cache Detected</a> error.</p>
+</blockquote>
+<p>Here are some example cache configurations for common CI providers:</p>
+<h2 id="vercel">Vercel</h2>
+<p>Next.js caching is automatically configured for you. There’s no action required on your part. If you are using Turborepo on Vercel, <a href="https://vercel.com/docs/monorepos/turborepo" target="_blank" rel="noopener">learn more here</a>.</p>
+<h2 id="circleci">CircleCI</h2>
+<p>Edit your <code>save_cache</code> step in <code>.circleci/config.yml</code> to include <code>.next/cache</code>:</p>
+<pre><code class="language-yaml">steps:
+  - save_cache:
+      key: dependency-cache-{{ checksum &quot;yarn.lock&quot; }}
+      paths:
+        - ./node_modules
+        - ./.next/cache
+</code></pre>
+<p>If you do not have a <code>save_cache</code> key, please follow CircleCI’s <a href="https://circleci.com/docs/2.0/caching/" target="_blank" rel="noopener">documentation on setting up build caching</a>.</p>
+<h2 id="travis-ci">Travis CI</h2>
+<p>Add or merge the following into your <code>.travis.yml</code>:</p>
+<pre><code class="language-yaml">cache:
+  directories:
+    - $HOME/.cache/yarn
+    - node_modules
+    - .next/cache
+</code></pre>
+<h2 id="gitlab-ci">GitLab CI</h2>
+<p>Add or merge the following into your <code>.gitlab-ci.yml</code>:</p>
+<pre><code class="language-yaml">cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .next/cache/
+</code></pre>
+<h2 id="netlify-ci">Netlify CI</h2>
+<p>Use <a href="https://www.netlify.com/products/build/plugins/" target="_blank" rel="noopener">Netlify Plugins</a> with <a href="https://www.npmjs.com/package/@netlify/plugin-nextjs" target="_blank" rel="noopener"><code>@netlify/plugin-nextjs</code></a>.</p>
+<h2 id="aws-codebuild">AWS CodeBuild</h2>
+<p>Add (or merge in) the following to your <code>buildspec.yml</code>:</p>
+<pre><code class="language-yaml">cache:
+  paths:
+    - 'node_modules/**/*' # Cache `node_modules` for faster `yarn` or `npm i`
+    - '.next/cache/**/*' # Cache Next.js for faster application rebuilds
+</code></pre>
+<h2 id="github-actions">GitHub Actions</h2>
+<p>Using GitHub’s <a href="https://github.com/actions/cache" target="_blank" rel="noopener">actions/cache</a>, add the following step in your workflow file:</p>
+<pre><code class="language-yaml">uses: actions/cache@v4
+with:
+  # See here for caching with `yarn`, `bun` or other package managers https://github.com/actions/cache/blob/main/examples.md or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
+  path: |
+    ~/.npm
+    ${{ github.workspace }}/.next/cache
+  # Generate a new cache whenever packages or source files change.
+  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+  # If source files changed but packages didn't, rebuild from a prior cache.
+  restore-keys: |
+    ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+</code></pre>
+<h2 id="bitbucket-pipelines">Bitbucket Pipelines</h2>
+<p>Add or merge the following into your <code>bitbucket-pipelines.yml</code> at the top level (same level as <code>pipelines</code>):</p>
+<pre><code class="language-yaml">definitions:
+  caches:
+    nextcache: .next/cache
+</code></pre>
+<p>Then reference it in the <code>caches</code> section of your pipeline’s <code>step</code>:</p>
+<pre><code class="language-yaml">- step:
+    name: your_step_name
+    caches:
+      - node
+      - nextcache
+</code></pre>
+<h2 id="heroku">Heroku</h2>
+<p>Using Heroku’s <a href="https://devcenter.heroku.com/articles/nodejs-support#custom-caching" target="_blank" rel="noopener">custom cache</a>, add a <code>cacheDirectories</code> array in your top-level package.json:</p>
+<pre><code class="language-javascript">&quot;cacheDirectories&quot;: [&quot;.next/cache&quot;]
+</code></pre>
+<h2 id="azure-pipelines">Azure Pipelines</h2>
+<p>Using Azure Pipelines’ <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/cache" target="_blank" rel="noopener">Cache task</a>, add the following task to your pipeline yaml file somewhere prior to the task that executes <code>next build</code>:</p>
+<pre><code class="language-yaml">- task: Cache@2
+  displayName: 'Cache .next/cache'
+  inputs:
+    key: next | $(Agent.OS) | yarn.lock
+    path: '$(System.DefaultWorkingDirectory)/.next/cache'
+</code></pre>
+<h2 id="jenkins-pipeline">Jenkins (Pipeline)</h2>
+<p>Using Jenkins’ <a href="https://www.jenkins.io/doc/pipeline/steps/jobcacher/" target="_blank" rel="noopener">Job Cacher</a> plugin, add the following build step to your <code>Jenkinsfile</code> where you would normally run <code>next build</code> or <code>npm install</code>:</p>
+<pre><code class="language-yaml">stage(&quot;Restore npm packages&quot;) {
+    steps {
+        // Writes lock-file to cache based on the GIT_COMMIT hash
+        writeFile file: &quot;next-lock.cache&quot;, text: &quot;$GIT_COMMIT&quot;
+
+        cache(caches: [
+            arbitraryFileCache(
+                path: &quot;node_modules&quot;,
+                includes: &quot;**/*&quot;,
+                cacheValidityDecidingFile: &quot;package-lock.json&quot;
+            )
+        ]) {
+            sh &quot;npm install&quot;
+        }
+    }
+}
+stage(&quot;Build&quot;) {
+    steps {
+        // Writes lock-file to cache based on the GIT_COMMIT hash
+        writeFile file: &quot;next-lock.cache&quot;, text: &quot;$GIT_COMMIT&quot;
+
+        cache(caches: [
+            arbitraryFileCache(
+                path: &quot;.next/cache&quot;,
+                includes: &quot;**/*&quot;,
+                cacheValidityDecidingFile: &quot;next-lock.cache&quot;
+            )
+        ]) {
+            // aka `next build`
+            sh &quot;npm run build&quot;
+        }
+    }
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-unused-modules — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-unused-modules">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#usage">Usage</a></li><li><a href="#options">Options</a></li><li><a href="#example-for-missing-exports">Example for missing exports</a></li><li><a href="#example-for-unused-exports">Example for unused exports</a></li><li><a href="#unused-exports-with-ignoreunusedtypeexports-set-to-true">Unused exports with ignoreUnusedTypeExports set to true</a></li></ul><li><a href="#when-not-to-use">When not to use</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-unused-modules</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Reports:</p>
+<ul>
+<li>modules without any exports</li>
+<li>individual exports not being statically <code>import</code>ed or <code>require</code>ed from other modules in the same project</li>
+<li>dynamic imports are supported if argument is a literal string</li>
+</ul>
+<h2 id="rule-details">Rule Details</h2>
+<h3 id="usage">Usage</h3>
+<p>In order for this plugin to work, at least one of the options <code>missingExports</code> or <code>unusedExports</code> must be enabled (see “Options” section below). In the future, these options will be enabled by default (see <a href="https://github.com/import-js/eslint-plugin-import/issues/1324" target="_blank" rel="noopener">https://github.com/import-js/eslint-plugin-import/issues/1324</a>)</p>
+<p>Example:</p>
+<pre><code class="language-json">&quot;rules&quot;: {
+  ...otherRules,
+  &quot;import/no-unused-modules&quot;: [1, {&quot;unusedExports&quot;: true}]
+}
+</code></pre>
+<h3 id="options">Options</h3>
+<p>This rule takes the following option:</p>
+<ul>
+<li><strong><code>missingExports</code></strong>: if <code>true</code>, files without any exports are reported (defaults to <code>false</code>)</li>
+<li><strong><code>unusedExports</code></strong>: if <code>true</code>, exports without any static usage within other modules are reported (defaults to <code>false</code>)</li>
+<li><strong><code>ignoreUnusedTypeExports</code></strong>: if <code>true</code>, TypeScript type exports without any static usage within other modules are reported (defaults to <code>false</code> and has no effect unless <code>unusedExports</code> is <code>true</code>)</li>
+<li><strong><code>src</code></strong>: an array with files/paths to be analyzed. It only applies to unused exports. Defaults to <code>process.cwd()</code>, if not provided</li>
+<li><strong><code>ignoreExports</code></strong>: an array with files/paths for which unused exports will not be reported (e.g module entry points in a published package)</li>
+</ul>
+<h3 id="example-for-missing-exports">Example for missing exports</h3>
+<h4>The following will be reported</h4>
+<pre><code class="language-js">const class MyClass { /*...*/ }
+
+function makeClass() { return new MyClass(...arguments) }
+</code></pre>
+<h4>The following will not be reported</h4>
+<pre><code class="language-js">export default function () { /*...*/ }
+</code></pre>
+<pre><code class="language-js">export const foo = function () { /*...*/ }
+</code></pre>
+<pre><code class="language-js">export { foo, bar }
+</code></pre>
+<pre><code class="language-js">export { foo as bar }
+</code></pre>
+<h3 id="example-for-unused-exports">Example for unused exports</h3>
+<p>given file-f:</p>
+<pre><code class="language-js">import { e } from 'file-a'
+import { f } from 'file-b'
+import * as fileC from  'file-c'
+export { default, i0 } from 'file-d' // both will be reported
+
+export const j = 99 // will be reported
+</code></pre>
+<p>and file-d:</p>
+<pre><code class="language-js">export const i0 = 9 // will not be reported
+export const i1 = 9 // will be reported
+export default () =&gt; {} // will not be reported
+</code></pre>
+<p>and file-c:</p>
+<pre><code class="language-js">export const h = 8 // will not be reported
+export default () =&gt; {} // will be reported, as export * only considers named exports and ignores default exports
+</code></pre>
+<p>and file-b:</p>
+<pre><code class="language-js">import two, { b, c, doAnything } from 'file-a'
+
+export const f = 6 // will not be reported
+</code></pre>
+<p>and file-a:</p>
+<pre><code class="language-js">const b = 2
+const c = 3
+const d = 4
+
+export const a = 1 // will be reported
+
+export { b, c } // will not be reported
+
+export { d as e } // will not be reported
+
+export function doAnything() {
+  // some code
+}  // will not be reported
+
+export default 5 // will not be reported
+</code></pre>
+<h3 id="unused-exports-with-ignoreunusedtypeexports-set-to-true">Unused exports with <code>ignoreUnusedTypeExports</code> set to <code>true</code></h3>
+<p>The following will not be reported:</p>
+<pre><code class="language-ts">export type Foo = {}; // will not be reported
+export interface Foo = {}; // will not be reported
+export enum Foo {}; // will not be reported
+</code></pre>
+<h4>Important Note</h4>
+<p>Exports from files listed as a main file (<code>main</code>, <code>browser</code>, or <code>bin</code> fields in <code>package.json</code>) will be ignored by default. This only applies if the <code>package.json</code> is not set to <code>private: true</code></p>
+<h2 id="when-not-to-use">When not to use</h2>
+<p>If you don’t mind having unused files or dead code within your codebase, you can disable this rule</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

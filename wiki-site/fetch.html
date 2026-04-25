@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fetch — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-fetch">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#fetchurl-options">fetch(url, options)</a></li><ul><li><a href="#optionscache">options.cache</a></li><li><a href="#optionsnextrevalidate">options.next.revalidate</a></li><li><a href="#optionsnexttags">options.next.tags</a></li></ul><li><a href="#memoization">Memoization</a></li><li><a href="#troubleshooting">Troubleshooting</a></li><ul><li><a href="#fetch-default-auto-no-store-and-cache-no-store-not-showing-fresh-data-in-development">Fetch default auto no store and cache: 'no-store' not showing fresh data in development</a></li><li><a href="#hard-refresh-and-caching-in-development">Hard refresh and caching in development</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">fetch</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the extended fetch function.</td></tr></table><p>Next.js extends the <a href="https://developer.mozilla.org/docs/Web/API/Fetch_API" target="_blank" rel="noopener">Web <code>fetch()</code> API</a> to allow each request on the server to set its own persistent caching and revalidation semantics.</p>
+<p>In the browser, the <code>cache</code> option indicates how a fetch request will interact with the <em>browser’s</em> HTTP cache. With this extension, <code>cache</code> indicates how a <em>server-side</em> fetch request will interact with the framework’s persistent cache.</p>
+<p>You can call <code>fetch</code> with <code>async</code> and <code>await</code> directly within Server Components.</p>
+<pre><code class="language-tsx">export default async function Page() {
+  let data = await fetch('https://api.vercel.app/blog')
+  let posts = await data.json()
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page() {
+  let data = await fetch('https://api.vercel.app/blog')
+  let posts = await data.json()
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<h2 id="fetchurl-options"><code>fetch(url, options)</code></h2>
+<p>Since Next.js extends the <a href="https://developer.mozilla.org/docs/Web/API/Fetch_API" target="_blank" rel="noopener">Web <code>fetch()</code> API</a>, you can use any of the <a href="https://developer.mozilla.org/docs/Web/API/fetch#parameters" target="_blank" rel="noopener">native options available</a>.</p>
+<h3 id="optionscache"><code>options.cache</code></h3>
+<p>Configure how the request should interact with Next.js <a href="/docs/app/getting-started/caching">caching</a>.</p>
+<pre><code class="language-ts">fetch(`https://...`, { cache: 'force-cache' | 'no-store' })
+</code></pre>
+<ul>
+<li><strong><code>auto no cache</code></strong> (default): Next.js fetches the resource from the remote server on every request in development, but will fetch once during <code>next build</code> because the route will be statically prerendered. If <a href="/docs/app/glossary#request-time-apis">Request-time APIs</a> are detected on the route, Next.js will fetch the resource on every request.</li>
+<li><strong><code>no-store</code></strong>: Next.js fetches the resource from the remote server on every request, even if Request-time APIs are not detected on the route.</li>
+<li><strong><code>force-cache</code></strong>: Next.js looks for a matching request in its server-side cache.
+<ul>
+<li>If there is a match and it is fresh, it will be returned from the cache.</li>
+<li>If there is no match or a stale match, Next.js will fetch the resource from the remote server and update the cache with the downloaded resource.</li>
+</ul>
+</li>
+</ul>
+<h3 id="optionsnextrevalidate"><code>options.next.revalidate</code></h3>
+<pre><code class="language-ts">fetch(`https://...`, { next: { revalidate: false | 0 | number } })
+</code></pre>
+<p>Set the cache lifetime of a resource (in seconds).</p>
+<ul>
+<li><strong><code>false</code></strong> - Cache the resource indefinitely. Semantically equivalent to <code>revalidate: Infinity</code>. The HTTP cache may evict older resources over time.</li>
+<li><strong><code>0</code></strong> - Prevent the resource from being cached.</li>
+<li><strong><code>number</code></strong> - (in seconds) Specify the resource should have a cache lifetime of at most <code>n</code> seconds.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If an individual <code>fetch()</code> request sets a <code>revalidate</code> number lower than the <a href="/docs/app/guides/caching-without-cache-components#route-segment-config-revalidate">default <code>revalidate</code></a> of a route, the whole route revalidation interval will be decreased.</li>
+<li>If two fetch requests with the same URL in the same route have different <code>revalidate</code> values, the lower value will be used.</li>
+<li>Conflicting options such as <code>{ revalidate: 3600, cache: 'no-store' }</code> are not allowed, both will be ignored, and in development mode a warning will be printed to the terminal.</li>
+</ul>
+</blockquote>
+<h3 id="optionsnexttags"><code>options.next.tags</code></h3>
+<pre><code class="language-ts">fetch(`https://...`, { next: { tags: ['collection'] } })
+</code></pre>
+<p>Set the cache tags of a resource. Data can then be revalidated on-demand using <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a>. The max length for a custom tag is 256 characters and the max tag items is 128.</p>
+<h2 id="memoization">Memoization</h2>
+<p><code>fetch</code> requests using <code>GET</code> with the same URL and options are automatically <a href="/docs/app/glossary#memoization">memoized</a> during a server render pass. If you call the same <code>fetch</code> in multiple Server Components, layouts, pages, <code>generateStaticParams</code> and <code>generateViewport</code>, Next.js executes it only once and shares the result.</p>
+<p>To opt out, pass an <a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" target="_blank" rel="noopener"><code>AbortController</code></a> signal to <code>fetch</code>:</p>
+<pre><code class="language-js">const { signal } = new AbortController()
+fetch(url, { signal })
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Memoization does not apply in <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>, since they are not part of the React component tree.</p>
+</blockquote>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="fetch-default-auto-no-store-and-cache-no-store-not-showing-fresh-data-in-development">Fetch default <code>auto no store</code> and <code>cache: 'no-store'</code> not showing fresh data in development</h3>
+<p>Next.js caches <code>fetch</code> responses in Server Components across Hot Module Replacement (HMR) in local development for faster responses and to reduce costs for billed API calls.</p>
+<p>By default, the <a href="/docs/app/api-reference/config/next-config-js/serverComponentsHmrCache">HMR cache</a> applies to all fetch requests, including those with the default <code>auto no cache</code> and <code>cache: 'no-store'</code> option. This means uncached requests will not show fresh data between HMR refreshes. However, the cache will be cleared on navigation or full-page reloads.</p>
+<p>See the <a href="/docs/app/api-reference/config/next-config-js/serverComponentsHmrCache"><code>serverComponentsHmrCache</code></a> docs for more information.</p>
+<h3 id="hard-refresh-and-caching-in-development">Hard refresh and caching in development</h3>
+<p>In development mode, if the request includes the <code>cache-control: no-cache</code> header, <code>options.cache</code>, <code>options.next.revalidate</code>, and <code>options.next.tags</code> are ignored, and the <code>fetch</code> request is served from the source.</p>
+<p>Browsers typically include <code>cache-control: no-cache</code> when the cache is disabled in developer tools or during a hard refresh.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>fetch</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

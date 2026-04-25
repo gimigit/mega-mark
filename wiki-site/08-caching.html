@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>08-caching — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-08-caching">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#enabling-cache-components">Enabling Cache Components</a></li><li><a href="#usage">Usage</a></li><ul><li><a href="#data-level-caching">Data-level caching</a></li><li><a href="#ui-level-caching">UI-level caching</a></li><li><a href="#streaming-uncached-data">Streaming uncached data</a></li></ul><li><a href="#working-with-runtime-apis">Working with runtime APIs</a></li><ul><li><a href="#passing-runtime-values-to-cached-functions">Passing runtime values to cached functions</a></li></ul><li><a href="#working-with-non-deterministic-operations">Working with non-deterministic operations</a></li><li><a href="#working-with-deterministic-operations">Working with deterministic operations</a></li><li><a href="#how-rendering-works">How rendering works</a></li><ul><li><a href="#opting-out-of-the-static-shell">Opting out of the static shell</a></li><li><a href="#putting-it-all-together">Putting it all together</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">08-caching</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about revalidation and the APIs mentioned on this page.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>{/* AI agent hint: To ensure client-side navigations are instant with Cache Components, export <code>unstable_instant</code> from the route. See docs/01-app/02-guides/instant-navigation.mdx */}</p>
+<blockquote>
+<p>This page covers caching with <a href="/docs/app/api-reference/config/next-config-js/cacheComponents">Cache Components</a>, enabled by setting <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents: true</code></a> in your <code>next.config.ts</code> file. If you’re not using Cache Components, see the <a href="/docs/app/guides/caching-without-cache-components">Caching and Revalidating (Previous Model)</a> guide.</p>
+</blockquote>
+<p>Caching is a technique for storing the result of data fetching and other computations so that future requests for the same data can be served faster, without doing the work again.</p>
+<h2 id="enabling-cache-components">Enabling Cache Components</h2>
+<p>You can enable Cache Components by adding the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> option to your Next config file:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  cacheComponents: true,
+}
+
+module.exports = nextConfig
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> When Cache Components is enabled, <code>GET</code> Route Handlers follow the same prerendering model as pages. See <a href="/docs/app/getting-started/route-handlers#with-cache-components">Route Handlers with Cache Components</a> for details.</p>
+</blockquote>
+<h2 id="usage">Usage</h2>
+<p>The <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> directive caches the return value of async functions and components. You can apply it at two levels:</p>
+<ul>
+<li><strong>Data-level</strong>: Cache a function that fetches or computes data (e.g., <code>getProducts()</code>, <code>getUser(id)</code>)</li>
+<li><strong>UI-level</strong>: Cache an entire component or page (e.g., <code>async function BlogPosts()</code>)</li>
+</ul>
+<blockquote>
+<p>Arguments and any closed-over values from parent scopes automatically become part of the <a href="/docs/app/api-reference/directives/use-cache#cache-keys">cache key</a>, which means different inputs will produce separate cache entries. This enables personalized or parameterized cached content. See <a href="/docs/app/api-reference/directives/use-cache#constraints">serialization requirements and constraints</a> for details on what can be cached and how arguments work.</p>
+</blockquote>
+<h3 id="data-level-caching">Data-level caching</h3>
+<p>To cache an asynchronous function that fetches data, add the <code>use cache</code> directive at the top of the function body:</p>
+<pre><code class="language-tsx">import { cacheLife } from 'next/cache'
+
+export async function getUsers() {
+  'use cache'
+  cacheLife('hours')
+  return db.query('SELECT * FROM users')
+}
+</code></pre>
+<p>Data-level caching is useful when the same data is used across multiple components, or when you want to cache the data independently from the UI.</p>
+<h3 id="ui-level-caching">UI-level caching</h3>
+<p>To cache an entire component, page, or layout, add the <code>use cache</code> directive at the top of the component or page body:</p>
+<pre><code class="language-tsx">import { cacheLife } from 'next/cache'
+
+export default async function Page() {
+  'use cache'
+  cacheLife('hours')
+
+  const users = await db.query('SELECT * FROM users')
+
+  return (
+    &lt;ul&gt;
+      {users.map((user) =&gt; (
+        &lt;li key={user.id}&gt;{user.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p>If you add “<code>use cache</code>” at the top of a file, all exported functions in the file will be cached.</p>
+</blockquote>
+<h3 id="streaming-uncached-data">Streaming uncached data</h3>
+<p>For components that fetch data from an asynchronous source such as an API, a database, or any other async operation, and require fresh data on every request, do not use <code>&quot;use cache&quot;</code>.</p>
+<p>Instead, wrap the component in <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener"><code>&lt;Suspense&gt;</code></a> and provide a fallback UI. At request time, React renders the fallback first, then streams in the resolved content once the async work completes.</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+
+async function LatestPosts() {
+  const data = await fetch('https://api.example.com/posts')
+  const posts = await data.json()
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;My Blog&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading posts...&lt;/p&gt;}&gt;
+        &lt;LatestPosts /&gt;
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>The fallback (<code>&lt;p&gt;Loading posts...&lt;/p&gt;</code>) is included in the static shell, while the component’s content streams in at request time.</p>
+<h2 id="working-with-runtime-apis">Working with runtime APIs</h2>
+<p>Request-time APIs require information that is only available when a user makes a request. These include:</p>
+<ul>
+<li><a href="/docs/app/api-reference/functions/cookies"><code>cookies</code></a> - User’s cookie data</li>
+<li><a href="/docs/app/api-reference/functions/headers"><code>headers</code></a> - Request headers</li>
+<li><a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code></a> - URL query parameters</li>
+<li><a href="/docs/app/api-reference/file-conventions/page#params-optional"><code>params</code></a> - Dynamic route parameters (unless at least one sample is provided via <a href="/docs/app/api-reference/functions/generate-static-params"><code>generateStaticParams</code></a>).</li>
+</ul>
+<p>Components that access runtime APIs should be wrapped in <code>&lt;Suspense&gt;</code>:</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+import { Suspense } from 'react'
+
+async function UserGreeting() {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')?.value || 'light'
+  return &lt;p&gt;Your theme: {theme}&lt;/p&gt;
+}
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+        &lt;UserGreeting /&gt;
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h3 id="passing-runtime-values-to-cached-functions">Passing runtime values to cached functions</h3>
+<p>You can extract values from runtime APIs and pass them as arguments to cached functions:</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+import { Suspense } from 'react'
+
+export default function Page() {
+  return (
+    &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+      &lt;ProfileContent /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+
+// Component (not cached) reads runtime data
+async function ProfileContent() {
+  const session = (await cookies()).get('session')?.value
+  return &lt;CachedContent sessionId={session} /&gt;
+}
+
+// Cached component receives extracted value as a prop
+async function CachedContent({ sessionId }: { sessionId: string }) {
+  'use cache'
+  // sessionId becomes part of the cache key
+  const data = await fetchUserData(sessionId)
+  return &lt;div&gt;{data}&lt;/div&gt;
+}
+</code></pre>
+<p>At request time, <code>CachedContent</code> executes if no matching cache entry is found, and stores the result for future requests with the same <code>sessionId</code>.</p>
+<h2 id="working-with-non-deterministic-operations">Working with non-deterministic operations</h2>
+<p>Operations like <code>Math.random()</code>, <code>Date.now()</code>, or <code>crypto.randomUUID()</code> produce different values each time they execute. Cache Components requires you to explicitly handle these.</p>
+<p><strong>To generate unique values per request</strong>, defer to request time by calling <a href="/docs/app/api-reference/functions/connection"><code>connection()</code></a> before these operations, and wrap the component in <code>&lt;Suspense&gt;</code>:</p>
+<pre><code class="language-tsx">import { connection } from 'next/server'
+import { Suspense } from 'react'
+
+async function UniqueContent() {
+  await connection()
+  const uuid = crypto.randomUUID()
+  return &lt;p&gt;Request ID: {uuid}&lt;/p&gt;
+}
+
+export default function Page() {
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+      &lt;UniqueContent /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<p>Alternatively, you can <strong>cache the result</strong> so all users see the same value until revalidation:</p>
+<pre><code class="language-tsx">export default async function Page() {
+  'use cache'
+  const buildId = crypto.randomUUID()
+  return &lt;p&gt;Build ID: {buildId}&lt;/p&gt;
+}
+</code></pre>
+<h2 id="working-with-deterministic-operations">Working with deterministic operations</h2>
+<p>Operations like synchronous I/O, module imports, and pure computations can complete during prerendering. Components using only these operations have their rendered output automatically included in the static HTML shell.</p>
+<pre><code class="language-tsx">import fs from 'node:fs'
+
+export default async function Page() {
+  const content = fs.readFileSync('./config.json', 'utf-8')
+  const constants = await import('./constants.json')
+  const processed = JSON.parse(content).items.map((item) =&gt; item.value * 2)
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{constants.appName}&lt;/h1&gt;
+      &lt;ul&gt;
+        {processed.map((value, i) =&gt; (
+          &lt;li key={i}&gt;{value}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="how-rendering-works">How rendering works</h2>
+<p>At build time, Next.js renders your route’s component tree. How each component is handled depends on the APIs it uses:</p>
+<ul>
+<li><a href="#usage"><code>use cache</code></a>: the result is cached and included in the static shell</li>
+<li><a href="#streaming-uncached-data"><code>&lt;Suspense&gt;</code></a>: fallback UI is included in the static shell while the content streams at request time</li>
+<li><a href="#working-with-deterministic-operations">Deterministic operations</a>: like pure computations and module imports are automatically included in the static shell</li>
+</ul>
+<p>This generates a static shell consisting of HTML for initial page loads and a serialized <a href="/docs/app/getting-started/server-and-client-components#on-the-server">RSC Payload</a> for client-side navigation, ensuring the browser receives fully rendered content instantly whether users navigate directly to the URL or transition from another page.</p>
+<p><Image
+  alt="Partially re-rendered Product Page showing static nav and product information, and dynamic cart and recommended products"
+  srcLight="/learn/light/thinking-in-ppr.png"
+  srcDark="/learn/dark/thinking-in-ppr.png"
+  width="1600"
+  height="632"
+/></p>
+<p>This rendering approach is called <strong>Partial Prerendering (PPR)</strong>, and it’s the default behavior with Cache Components.</p>
+<blockquote>
+<p>You can verify that a route was fully prerendered by checking the <a href="/docs/app/api-reference/cli/next#next-build-options">build output summary</a>. Alternatively, see what content was added to the static shell of any page by viewing the page source in your browser.</p>
+</blockquote>
+<p><Image
+  alt="Diagram showing partially rendered page on the client, with loading UI for chunks that are being streamed."
+  srcLight="/docs/light/server-rendering-with-streaming.png"
+  srcDark="/docs/dark/server-rendering-with-streaming.png"
+  width="1600"
+  height="785"
+/></p>
+<p>Next.js requires you to explicitly handle components that can’t complete during prerendering. If they aren’t wrapped in <code>&lt;Suspense&gt;</code> or marked with <code>use cache</code>, you’ll see an <a href="https://nextjs.org/docs/messages/blocking-route" target="_blank" rel="noopener"><code>Uncached data was accessed outside of &lt;Suspense&gt;</code></a> error during development and build time.</p>
+<blockquote>
+<p><strong>🎥 Watch:</strong> Why Partial Prerendering and how it works → <a href="https://www.youtube.com/watch?v=MTcPrTIBkpA" target="_blank" rel="noopener">YouTube (10 minutes)</a>.</p>
+</blockquote>
+<h3 id="opting-out-of-the-static-shell">Opting out of the static shell</h3>
+<p>Placing a <code>&lt;Suspense&gt;</code> boundary with an empty fallback above the document body in your Root Layout causes the entire app to defer to request time. Because the fallback is empty, there is no static shell to send immediately, so every request blocks until the page is fully rendered. To limit this to specific routes, use <a href="/docs/app/api-reference/file-conventions/layout#root-layout">multiple root layouts</a>.</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html&gt;
+      &lt;Suspense fallback={null}&gt;
+        &lt;body&gt;{children}&lt;/body&gt;
+      &lt;/Suspense&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: This same pattern applies when <code>generateViewport</code> accesses uncached dynamic data. See <a href="/docs/app/api-reference/functions/generate-viewport#with-cache-components">Viewport with Cache Components</a> for a detailed example.</p>
+</blockquote>
+<h3 id="putting-it-all-together">Putting it all together</h3>
+<p>Here’s a complete example showing static content, cached dynamic content, and streaming dynamic content working together on a single page:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { cookies } from 'next/headers'
+import { cacheLife, cacheTag, updateTag } from 'next/cache'
+import Link from 'next/link'
+
+export default function BlogPage() {
+  return (
+    &lt;&gt;
+      {/* Static content - prerendered automatically */}
+      &lt;header&gt;
+        &lt;h1&gt;Our Blog&lt;/h1&gt;
+        &lt;nav&gt;
+          &lt;Link href=&quot;/&quot;&gt;Home&lt;/Link&gt; | &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+        &lt;/nav&gt;
+      &lt;/header&gt;
+
+      {/* Cached dynamic content - included in the static shell */}
+      &lt;BlogPosts /&gt;
+
+      {/* Runtime dynamic content - streams at request time */}
+      &lt;Suspense fallback={&lt;p&gt;Loading your preferences...&lt;/p&gt;}&gt;
+        &lt;UserPreferences /&gt;
+      &lt;/Suspense&gt;
+
+      {/* Mutation - server action that revalidates the cache */}
+      &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+        &lt;CreatePost /&gt;
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  )
+}
+
+// Everyone sees the same blog posts (revalidated every hour)
+async function BlogPosts() {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('posts')
+
+  const res = await fetch('https://api.vercel.app/blog')
+  const posts = await res.json()
+
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;Latest Posts&lt;/h2&gt;
+      &lt;ul&gt;
+        {posts.slice(0, 5).map((post: any) =&gt; (
+          &lt;li key={post.id}&gt;
+            &lt;h3&gt;{post.title}&lt;/h3&gt;
+            &lt;p&gt;
+              By {post.author} on {post.date}
+            &lt;/p&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/section&gt;
+  )
+}
+
+// Personalized per user based on their cookie
+async function UserPreferences() {
+  const theme = (await cookies()).get('theme')?.value || 'light'
+  const favoriteCategory = (await cookies()).get('category')?.value
+
+  return (
+    &lt;aside&gt;
+      &lt;p&gt;Your theme: {theme}&lt;/p&gt;
+      {favoriteCategory &amp;&amp; &lt;p&gt;Favorite category: {favoriteCategory}&lt;/p&gt;}
+    &lt;/aside&gt;
+  )
+}
+
+// Admin-only form that creates a post and revalidates the cache
+async function CreatePost() {
+  const isAdmin = (await cookies()).get('role')?.value === 'admin'
+  if (!isAdmin) return null
+
+  async function createPost(formData: FormData) {
+    'use server'
+    await db.post.create({ data: { title: formData.get('title') } })
+    updateTag('posts')
+  }
+
+  return (
+    &lt;form action={createPost}&gt;
+      &lt;input name=&quot;title&quot; placeholder=&quot;Post title&quot; required /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Publish&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<p>During prerendering, the header (static) and blog posts (cached with <code>use cache</code>) become part of the static shell along with the fallback UI for user preferences. Only the personalized preferences stream in at request time. When an admin publishes a new post, the <a href="/docs/app/getting-started/revalidating#updatetag"><code>updateTag</code></a> call immediately expires the blog posts cache so the next visitor sees it.</p>
+<blockquote>
+<p><strong>Good to know:</strong> <code>generateMetadata</code> and <code>generateViewport</code> track runtime data access separately from the page. See <a href="/docs/app/api-reference/functions/generate-metadata#with-cache-components">Metadata with Cache Components</a> and <a href="/docs/app/api-reference/functions/generate-viewport#with-cache-components">Viewport with Cache Components</a> for how to handle this.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

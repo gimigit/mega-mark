@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deploymentid — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-deploymentid">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-it-works">How it works</a></li><li><a href="#use-cases">Use cases</a></li><ul><li><a href="#rolling-deployments">Rolling deployments</a></li><li><a href="#multi-server-environments">Multi-server environments</a></li></ul><li><a href="#version-history">Version History</a></li><li><a href="#related">Related</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">deploymentid</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Configure a deployment identifier used for version skew protection and cache busting.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>The <code>deploymentId</code> option allows you to set an identifier for your deployment. This identifier is used for <a href="/docs/app/guides/self-hosting#version-skew">version skew</a> protection and cache busting during rolling deployments.</p>
+<pre><code class="language-js">module.exports = {
+  deploymentId: 'my-deployment-id',
+}
+</code></pre>
+<p>You can also set the deployment ID using the <code>NEXT_DEPLOYMENT_ID</code> environment variable:</p>
+<pre><code class="language-bash">NEXT_DEPLOYMENT_ID=my-deployment-id next build
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> If both are set, the <code>deploymentId</code> value in <code>next.config.js</code> takes precedence over the <code>NEXT_DEPLOYMENT_ID</code> environment variable.</p>
+</blockquote>
+<h2 id="how-it-works">How it works</h2>
+<p>When a <code>deploymentId</code> is configured, Next.js:</p>
+<ol>
+<li>Appends <code>?dpl=&lt;deploymentId&gt;</code> to static asset URLs (JavaScript, CSS, images)</li>
+<li>Adds an <code>x-deployment-id</code> header to client-side navigation requests</li>
+<li>Adds an <code>x-nextjs-deployment-id</code> header to navigation responses</li>
+<li>Injects a <code>data-dpl-id</code> attribute on the <code>&lt;html&gt;</code> element</li>
+</ol>
+<p>When the client detects a mismatch between its deployment ID and the server’s (via the response header), it triggers a hard navigation (full page reload) instead of a client-side navigation. This ensures users always receive assets <AppOnly>and Server Functions</AppOnly> from a consistent deployment version.</p>
+<blockquote>
+<p><strong>Good to know:</strong> Next.js does not read the <code>?dpl=</code> query parameter on incoming requests. The query parameter is for cache busting (ensuring browsers and CDNs fetch fresh assets), not for routing. If you need version-aware routing, consult your hosting provider or CDN’s documentation for implementing deployment-based routing.</p>
+</blockquote>
+<h2 id="use-cases">Use cases</h2>
+<h3 id="rolling-deployments">Rolling deployments</h3>
+<p>During a rolling deployment, some server instances may be running the new version while others are still running the old version. Without a deployment ID, users might receive a mix of old and new assets, causing errors.</p>
+<p>Setting a consistent <code>deploymentId</code> per deployment ensures:</p>
+<AppOnly>
+<ul>
+<li>Clients always request assets from a matching deployment version</li>
+<li>Mismatches trigger a full reload to fetch the correct assets</li>
+<li>Server Functions work correctly across deployment boundaries</li>
+</ul>
+</AppOnly>
+<PagesOnly>
+<ul>
+<li>Clients always request assets from a matching deployment version</li>
+<li>Mismatches trigger a full reload to fetch the correct assets</li>
+</ul>
+</PagesOnly>
+<h3 id="multi-server-environments">Multi-server environments</h3>
+<p>When running multiple instances of your Next.js application behind a load balancer, all instances for the same deployment should use the same <code>deploymentId</code>.</p>
+<pre><code class="language-js">module.exports = {
+  deploymentId: process.env.DEPLOYMENT_VERSION || process.env.GIT_SHA,
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v14.1.4</code></td>
+<td><code>deploymentId</code> stabilized as top-level config option.</td>
+</tr>
+<tr>
+<td><code>v13.4.10</code></td>
+<td><code>experimental.deploymentId</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="/docs/app/guides/self-hosting#version-skew">Self-Hosting - Version Skew</a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/generateBuildId">generateBuildId</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

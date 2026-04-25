@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-selected-layout-segment — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-selected-layout-segment">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#creating-an-active-link-component">Creating an active link component</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-selected-layout-segment</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the useSelectedLayoutSegment hook.</td></tr></table><p><code>useSelectedLayoutSegment</code> is a <strong>Client Component</strong> hook that lets you read the active route segment <strong>one level below</strong> the Layout it is called from.</p>
+<p>It is useful for navigation UI, such as tabs inside a parent layout that change style depending on the active child segment.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+export default function ExampleClientComponent() {
+  const segment = useSelectedLayoutSegment()
+
+  return &lt;p&gt;Active segment: {segment}&lt;/p&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+export default function ExampleClientComponent() {
+  const segment = useSelectedLayoutSegment()
+
+  return &lt;p&gt;Active segment: {segment}&lt;/p&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Since <code>useSelectedLayoutSegment</code> is a <a href="/docs/app/getting-started/server-and-client-components">Client Component</a> hook, and Layouts are <a href="/docs/app/getting-started/server-and-client-components">Server Components</a> by default, <code>useSelectedLayoutSegment</code> is usually called via a Client Component that is imported into a Layout.</li>
+<li><code>useSelectedLayoutSegment</code> only returns the segment one level down. To return all active segments, see <a href="/docs/app/api-reference/functions/use-selected-layout-segments"><code>useSelectedLayoutSegments</code></a></li>
+<li>For <a href="/docs/app/api-reference/file-conventions/dynamic-routes#catch-all-segments">catch-all</a> routes, the matched segments are returned as a single joined string. For example, given <code>app/blog/[...slug]/page.js</code>, calling from <code>app/blog/layout.js</code> when visiting <code>/blog/a/b/c</code> returns <code>'a/b/c'</code>.</li>
+</ul>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">const segment = useSelectedLayoutSegment(parallelRoutesKey?: string)
+</code></pre>
+<p><code>useSelectedLayoutSegment</code> <em>optionally</em> accepts a <a href="/docs/app/api-reference/file-conventions/parallel-routes#with-useselectedlayoutsegments"><code>parallelRoutesKey</code></a>, which allows you to read the active route segment within that slot.</p>
+<h2 id="returns">Returns</h2>
+<p><code>useSelectedLayoutSegment</code> returns a string of the active segment or <code>null</code> if one doesn’t exist.</p>
+<p>For example, given the Layouts and URLs below, the returned segment would be:</p>
+<table>
+<thead>
+<tr>
+<th>Layout</th>
+<th>Visited URL</th>
+<th>Returned Segment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/layout.js</code></td>
+<td><code>/</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>app/layout.js</code></td>
+<td><code>/dashboard</code></td>
+<td><code>'dashboard'</code></td>
+</tr>
+<tr>
+<td><code>app/dashboard/layout.js</code></td>
+<td><code>/dashboard</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>app/dashboard/layout.js</code></td>
+<td><code>/dashboard/settings</code></td>
+<td><code>'settings'</code></td>
+</tr>
+<tr>
+<td><code>app/dashboard/layout.js</code></td>
+<td><code>/dashboard/analytics</code></td>
+<td><code>'analytics'</code></td>
+</tr>
+<tr>
+<td><code>app/dashboard/layout.js</code></td>
+<td><code>/dashboard/analytics/monthly</code></td>
+<td><code>'analytics'</code></td>
+</tr>
+</tbody>
+</table>
+<p>For catch-all routes (<code>[...slug]</code>), the returned segment contains all matched path segments joined as a single string:</p>
+<table>
+<thead>
+<tr>
+<th>Layout</th>
+<th>Visited URL</th>
+<th>Returned Segment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/blog/layout.js</code></td>
+<td><code>/blog/a/b/c</code></td>
+<td><code>'a/b/c'</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples</h2>
+<h3 id="creating-an-active-link-component">Creating an active link component</h3>
+<p>You can use <code>useSelectedLayoutSegment</code> to create an active link component that changes style depending on the active segment. For example, a featured posts list in the sidebar of a blog:</p>
+<pre><code class="language-tsx">'use client'
+
+import Link from 'next/link'
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+// This *client* component will be imported into a blog layout
+export default function BlogNavLink({
+  slug,
+  children,
+}: {
+  slug: string
+  children: React.ReactNode
+}) {
+  // Navigating to `/blog/hello-world` will return 'hello-world'
+  // for the selected layout segment
+  const segment = useSelectedLayoutSegment()
+  const isActive = slug === segment
+
+  return (
+    &lt;Link
+      href={`/blog/${slug}`}
+      // Change style depending on whether the link is active
+      style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+    &gt;
+      {children}
+    &lt;/Link&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import Link from 'next/link'
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+// This *client* component will be imported into a blog layout
+export default function BlogNavLink({ slug, children }) {
+  // Navigating to `/blog/hello-world` will return 'hello-world'
+  // for the selected layout segment
+  const segment = useSelectedLayoutSegment()
+  const isActive = slug === segment
+
+  return (
+    &lt;Link
+      href={`/blog/${slug}`}
+      // Change style depending on whether the link is active
+      style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+    &gt;
+      {children}
+    &lt;/Link&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">// Import the Client Component into a parent Layout (Server Component)
+import { BlogNavLink } from './blog-nav-link'
+import getFeaturedPosts from './get-featured-posts'
+
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const featuredPosts = await getFeaturedPosts()
+  return (
+    &lt;div&gt;
+      {featuredPosts.map((post) =&gt; (
+        &lt;div key={post.id}&gt;
+          &lt;BlogNavLink slug={post.slug}&gt;{post.title}&lt;/BlogNavLink&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">// Import the Client Component into a parent Layout (Server Component)
+import { BlogNavLink } from './blog-nav-link'
+import getFeaturedPosts from './get-featured-posts'
+
+export default async function Layout({ children }) {
+  const featuredPosts = await getFeaturedPosts()
+  return (
+    &lt;div&gt;
+      {featuredPosts.map((post) =&gt; (
+        &lt;div key={post.id}&gt;
+          &lt;BlogNavLink slug={post.slug}&gt;{post.title}&lt;/BlogNavLink&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>useSelectedLayoutSegment</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

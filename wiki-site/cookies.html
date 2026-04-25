@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cookies — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-cookies">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#methods">Methods</a></li><li><a href="#options">Options</a></li></ul><li><a href="#good-to-know">Good to know</a></li><li><a href="#understanding-cookie-behavior-in-server-components">Understanding Cookie Behavior in Server Components</a></li><li><a href="#understanding-cookie-behavior-in-server-functions">Understanding Cookie Behavior in Server Functions</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#getting-a-cookie">Getting a cookie</a></li><li><a href="#getting-all-cookies">Getting all cookies</a></li><li><a href="#setting-a-cookie">Setting a cookie</a></li><li><a href="#checking-if-a-cookie-exists">Checking if a cookie exists</a></li><li><a href="#deleting-cookies">Deleting cookies</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">cookies</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the cookies function.</td></tr></table><p><code>cookies</code> is an <strong>async</strong> function that allows you to read the HTTP incoming request cookies in <a href="/docs/app/getting-started/server-and-client-components">Server Components</a>, and read/write outgoing request cookies in <a href="/docs/app/getting-started/mutating-data">Server Functions</a> or <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>.</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')
+  return '...'
+}
+</code></pre>
+<pre><code class="language-js">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')
+  return '...'
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="methods">Methods</h3>
+<p>The following methods are available:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get('name')</code></td>
+<td>Object</td>
+<td>Accepts a cookie name and returns an object with the name and value.</td>
+</tr>
+<tr>
+<td><code>getAll()</code></td>
+<td>Array of objects</td>
+<td>Returns a list of all the cookies with a matching name.</td>
+</tr>
+<tr>
+<td><code>has('name')</code></td>
+<td>Boolean</td>
+<td>Accepts a cookie name and returns a boolean based on if the cookie exists.</td>
+</tr>
+<tr>
+<td><code>set(name, value, options)</code></td>
+<td>-</td>
+<td>Accepts a cookie name, value, and options and sets the outgoing request cookie.</td>
+</tr>
+<tr>
+<td><code>delete(name)</code></td>
+<td>-</td>
+<td>Accepts a cookie name and deletes the cookie.</td>
+</tr>
+<tr>
+<td><code>toString()</code></td>
+<td>String</td>
+<td>Returns a string representation of the cookies.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="options">Options</h3>
+<p>When setting a cookie, the following properties from the <code>options</code> object are supported:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>String</td>
+<td>Specifies the name of the cookie.</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>String</td>
+<td>Specifies the value to be stored in the cookie.</td>
+</tr>
+<tr>
+<td><code>expires</code></td>
+<td>Date</td>
+<td>Defines the exact date when the cookie will expire.</td>
+</tr>
+<tr>
+<td><code>maxAge</code></td>
+<td>Number</td>
+<td>Sets the cookie’s lifespan in seconds.</td>
+</tr>
+<tr>
+<td><code>domain</code></td>
+<td>String</td>
+<td>Specifies the domain where the cookie is available.</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>String, default: <code>'/'</code></td>
+<td>Limits the cookie’s scope to a specific path within the domain.</td>
+</tr>
+<tr>
+<td><code>secure</code></td>
+<td>Boolean</td>
+<td>Ensures the cookie is sent only over HTTPS connections for added security.</td>
+</tr>
+<tr>
+<td><code>httpOnly</code></td>
+<td>Boolean</td>
+<td>Restricts the cookie to HTTP requests, preventing client-side access.</td>
+</tr>
+<tr>
+<td><code>sameSite</code></td>
+<td>Boolean, <code>'lax'</code>, <code>'strict'</code>, <code>'none'</code></td>
+<td>Controls the cookie’s cross-site request behavior.</td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>String (<code>&quot;low&quot;</code>, <code>&quot;medium&quot;</code>, <code>&quot;high&quot;</code>)</td>
+<td>Specifies the cookie’s priority</td>
+</tr>
+<tr>
+<td><code>partitioned</code></td>
+<td>Boolean</td>
+<td>Indicates whether the cookie is <a href="https://github.com/privacycg/CHIPS" target="_blank" rel="noopener">partitioned</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>The only option with a default value is <code>path</code>.</p>
+<p>To learn more about these options, see the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies" target="_blank" rel="noopener">MDN docs</a>.</p>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li><code>cookies</code> is an <strong>asynchronous</strong> function that returns a promise. You must use <code>async/await</code> or React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function to access cookies.
+<ul>
+<li>In version 14 and earlier, <code>cookies</code> was a synchronous function. To help with backwards compatibility, you can still access it synchronously in Next.js 15, but this behavior will be deprecated in the future.</li>
+</ul>
+</li>
+<li><code>cookies</code> is a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> whose returned values cannot be known ahead of time. Using it in a layout or page will opt a route into <a href="/docs/app/glossary#dynamic-rendering">dynamic rendering</a>.</li>
+<li>The <code>.delete</code> method can only be called:
+<ul>
+<li>In a <a href="/docs/app/getting-started/mutating-data">Server Function</a> or <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a>.</li>
+<li>If it belongs to the same domain from which <code>.set</code> is called. For wildcard domains, the specific subdomain must be an exact match. Additionally, the code must be executed on the same protocol (HTTP or HTTPS) as the cookie you want to delete.</li>
+</ul>
+</li>
+<li>HTTP does not allow setting cookies after streaming starts, so you must use <code>.set</code> in a <a href="/docs/app/getting-started/mutating-data">Server Function</a> or <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a>.</li>
+</ul>
+<h2 id="understanding-cookie-behavior-in-server-components">Understanding Cookie Behavior in Server Components</h2>
+<p>When working with cookies in Server Components, it’s important to understand that cookies are fundamentally a client-side storage mechanism:</p>
+<ul>
+<li><strong>Reading cookies</strong> works in Server Components because you’re accessing the cookie data that the client’s browser sends to the server in the HTTP request headers.</li>
+<li><strong>Setting cookies</strong> is not supported during Server Component rendering. To modify cookies, invoke a Server Function from the client or use a Route Handler.</li>
+</ul>
+<p>The server can only send instructions (via <code>Set-Cookie</code> headers) to tell the browser to store cookies - the actual storage happens on the client side. This is why cookie operations that modify state (<code>.set</code>, <code>.delete</code>) must be performed in a Server Function or Route Handler where the response headers can be properly set.</p>
+<h2 id="understanding-cookie-behavior-in-server-functions">Understanding Cookie Behavior in Server Functions</h2>
+<p>After you set or delete a cookie in a Server Function, Next.js can return both the updated UI and new data in a single server roundtrip when the function is used as a <a href="/docs/app/getting-started/mutating-data#what-are-server-functions">Server Action</a> (e.g., passed to a form’s <code>action</code> prop). See <a href="/docs/app/getting-started/caching">Caching and Revalidating</a>.</p>
+<p>The UI is not unmounted, but effects that depend on data coming from the server will re-run.</p>
+<p>To refresh cached data too, call <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a> or <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> inside the function.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="getting-a-cookie">Getting a cookie</h3>
+<p>You can use the <code>(await cookies()).get('name')</code> method to get a single cookie:</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')
+  return '...'
+}
+</code></pre>
+<h3 id="getting-all-cookies">Getting all cookies</h3>
+<p>You can use the <code>(await cookies()).getAll()</code> method to get all cookies with a matching name. If <code>name</code> is unspecified, it returns all the available cookies.</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  return cookieStore.getAll().map((cookie) =&gt; (
+    &lt;div key={cookie.name}&gt;
+      &lt;p&gt;Name: {cookie.name}&lt;/p&gt;
+      &lt;p&gt;Value: {cookie.value}&lt;/p&gt;
+    &lt;/div&gt;
+  ))
+}
+</code></pre>
+<pre><code class="language-jsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  return cookieStore.getAll().map((cookie) =&gt; (
+    &lt;div key={cookie.name}&gt;
+      &lt;p&gt;Name: {cookie.name}&lt;/p&gt;
+      &lt;p&gt;Value: {cookie.value}&lt;/p&gt;
+    &lt;/div&gt;
+  ))
+}
+</code></pre>
+<h3 id="setting-a-cookie">Setting a cookie</h3>
+<p>You can use the <code>(await cookies()).set(name, value, options)</code> method in a <a href="/docs/app/getting-started/mutating-data">Server Function</a> or <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a> to set a cookie. The <a href="#options"><code>options</code> object</a> is optional.</p>
+<pre><code class="language-tsx">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function create(data) {
+  const cookieStore = await cookies()
+
+  cookieStore.set('name', 'lee')
+  // or
+  cookieStore.set('name', 'lee', { secure: true })
+  // or
+  cookieStore.set({
+    name: 'name',
+    value: 'lee',
+    httpOnly: true,
+    path: '/',
+  })
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function create(data) {
+  const cookieStore = await cookies()
+
+  cookieStore.set('name', 'lee')
+  // or
+  cookieStore.set('name', 'lee', { secure: true })
+  // or
+  cookieStore.set({
+    name: 'name',
+    value: 'lee',
+    httpOnly: true,
+    path: '/',
+  })
+}
+</code></pre>
+<h3 id="checking-if-a-cookie-exists">Checking if a cookie exists</h3>
+<p>You can use the <code>(await cookies()).has(name)</code> method to check if a cookie exists:</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const hasCookie = cookieStore.has('theme')
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">import { cookies } from 'next/headers'
+
+export default async function Page() {
+  const cookieStore = await cookies()
+  const hasCookie = cookieStore.has('theme')
+  return '...'
+}
+</code></pre>
+<h3 id="deleting-cookies">Deleting cookies</h3>
+<p>There are three ways you can delete a cookie.</p>
+<p>Using the <code>delete()</code> method:</p>
+<pre><code class="language-tsx">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function deleteCookie(data) {
+  const cookieStore = await cookies()
+  cookieStore.delete('name')
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function deleteCookie(data) {
+  const cookieStore = await cookies()
+  cookieStore.delete('name')
+}
+</code></pre>
+<p>Setting a new cookie with the same name and an empty value:</p>
+<pre><code class="language-tsx">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function deleteCookie(data) {
+  const cookieStore = await cookies()
+  cookieStore.set('name', '')
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function deleteCookie(data) {
+  const cookieStore = await cookies()
+  cookieStore.set('name', '')
+}
+</code></pre>
+<p>Setting the <code>maxAge</code> to 0 will immediately expire a cookie. <code>maxAge</code> accepts a value in seconds.</p>
+<pre><code class="language-tsx">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function deleteCookie(data) {
+  const cookieStore = await cookies()
+  cookieStore.set('name', 'value', { maxAge: 0 })
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { cookies } from 'next/headers'
+
+export async function deleteCookie(data) {
+  const cookieStore = await cookies()
+  cookieStore.set('name', 'value', { maxAge: 0 })
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td><code>cookies</code> is now an async function. A <a href="/docs/app/guides/upgrading/codemods#150">codemod</a> is available.</td>
+</tr>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>cookies</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

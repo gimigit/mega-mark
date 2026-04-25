@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ppr-platform-guide — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-ppr-platform-guide">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-ppr-works">How PPR Works</a></li><ul><li><a href="#build-time">Build time</a></li><li><a href="#request-time">Request time</a></li></ul><li><a href="#storing-ppr-artifacts">Storing PPR Artifacts</a></li><li><a href="#origin-only-implementation">Origin-Only Implementation</a></li><li><a href="#cdn-shell-origin-compute">CDN Shell + Origin Compute</a></li><li><a href="#the-resume-protocol">The Resume Protocol</a></li><ul><li><a href="#cdn-to-origin">CDN-to-origin</a></li><li><a href="#adapter-based">Adapter-based</a></li><li><a href="#finding-ppr-routes-in-build-output">Finding PPR routes in build output</a></li></ul><li><a href="#implementation-checklist">Implementation Checklist</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">ppr-platform-guide</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>PPR Platform Guide</td></tr><tr><th>description</th><td>Related guides and references.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Partial Prerendering (PPR) combines static and dynamic rendering in a single route. At build time, Next.js generates a static HTML shell and a <code>postponedState</code> blob for each PPR-enabled route. At request time, the shell is served immediately and dynamic portions are rendered and streamed to the client.</p>
+<p>This page explains how platforms can implement PPR support at different levels of sophistication.</p>
+<h2 id="how-ppr-works">How PPR Works</h2>
+<h3 id="build-time">Build time</h3>
+<p>For each PPR route, Next.js produces:</p>
+<ul>
+<li>A <strong>static HTML shell</strong> containing all the content that can be prerendered, with <a href="/docs/app/guides/streaming#what-is-streaming">Suspense</a> fallbacks where dynamic content will appear.</li>
+<li>A <strong><code>postponedState</code></strong> value: a serialized string. Treat it as opaque: pass it through without parsing or modifying it. Altering <code>postponedState</code> produces incorrect dynamic rendering output.</li>
+<li>An <strong>RSC payload</strong> for the static portions of the page.</li>
+</ul>
+<h3 id="request-time">Request time</h3>
+<p>When a request arrives for a PPR route:</p>
+<ol>
+<li>The server sends the static HTML shell to the client immediately.</li>
+<li>The server resumes rendering the dynamic portions using the postponed state.</li>
+<li>Dynamic content is streamed to the client, allowing React to hydrate the deferred Suspense boundaries.</li>
+</ol>
+<p>The client sees the static shell instantly, then dynamic content appears as it resolves.</p>
+<h2 id="storing-ppr-artifacts">Storing PPR Artifacts</h2>
+<p>Each PPR route requires two artifacts to be stored together:</p>
+<ol>
+<li>The static HTML shell.</li>
+<li>The <code>postponedState</code> blob.</li>
+</ol>
+<p>These must be stored and updated atomically. When a PPR route is revalidated (via <a href="/docs/app/guides/incremental-static-regeneration">time-based</a> or <a href="/docs/app/api-reference/functions/revalidateTag">on-demand revalidation</a>), Next.js regenerates both the shell and the postponed state together. Serving a new shell with an old postponed state, or vice versa, will produce incorrect dynamic content.</p>
+<p>Use <a href="/docs/app/api-reference/adapters/implementing-ppr-in-an-adapter"><code>requestMeta.onCacheEntryV2</code></a> in your adapter to observe cache updates and propagate them to your storage backend.</p>
+<h2 id="origin-only-implementation">Origin-Only Implementation</h2>
+<p><strong>This is the simplest approach and works on every platform that supports streaming HTTP responses.</strong></p>
+<p>All requests go directly to the Next.js server. The server reads the shell from its local cache, sends it, then renders and streams the dynamic content. This is what <code>next start</code> does by default.</p>
+<p>No additional infrastructure is needed. If your platform supports streaming HTTP responses, it supports PPR.</p>
+<h2 id="cdn-shell-origin-compute">CDN Shell + Origin Compute</h2>
+<p>For better TTFB, the static HTML shell can be cached at the CDN edge. When a request arrives:</p>
+<ol>
+<li>The CDN serves the cached shell immediately (edge latency).</li>
+<li>The CDN sends a resume request to the origin server (ideally in parallel with streaming the shell).</li>
+<li>The origin server renders only the dynamic portions and streams them back.</li>
+<li>The CDN concatenates the shell and dynamic content into a single streaming response to the client.</li>
+</ol>
+<p>This requires the CDN to support a mechanism for combining cached and dynamic content in a single streaming response. The static shell TTFB drops to edge latency while dynamic content still streams from origin.</p>
+<p>For the lowest possible latency, the shell can be served from edge storage (for example, a KV store populated during <code>onBuildComplete</code>) rather than from a CDN cache. This is a platform architecture decision and does not require any changes to the Next.js application.</p>
+<h2 id="the-resume-protocol">The Resume Protocol</h2>
+<p>The <strong>resume protocol</strong> tells the Next.js handler to skip the shell and render only the dynamic portions. It is used by CDN-to-origin architectures and adapter-based deployments that serve the shell separately.</p>
+<p>In standard <code>next start</code>, the server handles both the shell and dynamic render in a single pass automatically.</p>
+<h3 id="cdn-to-origin">CDN-to-origin</h3>
+<p>When the CDN makes an HTTP request to a separate Next.js origin:</p>
+<ul>
+<li>Send a <strong>POST</strong> request to the route with the header <code>next-resume: 1</code>.</li>
+<li>Include the <code>postponedState</code> blob as the <strong>request body</strong>.</li>
+<li>The server will render only the deferred Suspense boundaries and stream the result.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know:</strong> When a POST request combines a Server Action with a PPR resume, the request body contains the postponed state followed by the action body. The <code>x-next-resume-state-length</code> header carries the byte length of the postponed state prefix so the handler can separate the two. For a pure PPR resume (the common case), the entire request body is the postponed state and this header is not needed.</p>
+</blockquote>
+<h3 id="adapter-based">Adapter-based</h3>
+<p>When the platform invokes the handler function directly:</p>
+<ul>
+<li>Call the entrypoint handler with <code>req.method</code> set to <code>'POST'</code>, the <code>next-resume: 1</code> header on the request, and the <code>postponedState</code> as the request body. (You can also pass <code>requestMeta: { postponed: postponedState }</code> as the third argument to the handler invocation, which is equivalent but bypasses the HTTP layer entirely.)</li>
+<li>The handler renders only the deferred Suspense boundaries and streams the result to <code>res</code>.</li>
+<li>No HTTP round-trip is needed: the handler is invoked in-process.</li>
+</ul>
+<h3 id="finding-ppr-routes-in-build-output">Finding PPR routes in build output</h3>
+<p>In the <a href="/docs/app/api-reference/adapters/output-types">adapter output</a>, PPR routes are identified by <code>renderingMode: 'PARTIALLY_STATIC'</code> in the prerenders array. Iterate <code>outputs.prerenders</code> to find these entries and read <code>fallback.postponedState</code>.</p>
+<p><code>pprChain.headers</code> contains the headers needed for the resume protocol: <code>{ 'next-resume': '1' }</code>.</p>
+<p>For detailed implementation with code examples, see <a href="/docs/app/api-reference/adapters/implementing-ppr-in-an-adapter">Implementing PPR in an Adapter</a>.</p>
+<h2 id="implementation-checklist">Implementation Checklist</h2>
+<ol>
+<li>
+<p><strong>Read PPR outputs at build time.</strong> In your adapter’s <code>onBuildComplete</code>, identify prerenders with <code>renderingMode: 'PARTIALLY_STATIC'</code>. Store the shell HTML and <code>postponedState</code> in your cache.</p>
+</li>
+<li>
+<p><strong>Serve the shell at request time.</strong> For incoming requests to PPR routes, serve the cached shell immediately and begin streaming.</p>
+</li>
+<li>
+<p><strong>Resume dynamic rendering.</strong> For CDN-to-origin: send a POST request to the Next.js handler with the <code>next-resume: 1</code> header and the postponed state as the body. For adapter-based: call the handler directly with POST method and the postponed state in the request body (or pass <code>requestMeta: { postponed: postponedState }</code> to the handler). Stream the response back to the client.</p>
+</li>
+<li>
+<p><strong>Handle cache updates.</strong> Use <code>requestMeta.onCacheEntryV2</code> to capture new shell + postponed state pairs after revalidation, and update your cache atomically.</p>
+</li>
+<li>
+<p><strong>Support graceful degradation.</strong> If the postponed state is unavailable or stale, fall back to a full server render. The user gets a complete page without the shell-first optimization.</p>
+</li>
+</ol>
+<p>For the complete adapter API reference and implementation examples, see the <a href="/docs/app/api-reference/config/next-config-js/adapterPath">Deployment Adapter API</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

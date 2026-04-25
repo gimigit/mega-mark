@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/order — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-order">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#fail">Fail</a></li><li><a href="#pass">Pass</a></li><li><a href="#limitations-of---fix">Limitations of --fix</a></li><li><a href="#options">Options</a></li><ul><li><a href="#groups">groups</a></li><li><a href="#pathgroups">pathGroups</a></li><li><a href="#pathgroupsexcludedimporttypes">pathGroupsExcludedImportTypes</a></li><li><a href="#distinctgroup">distinctGroup</a></li><li><a href="#newlines-between">newlines-between</a></li><li><a href="#alphabetize">alphabetize</a></li><li><a href="#named">named</a></li><li><a href="#warnonunassignedimports">warnOnUnassignedImports</a></li><li><a href="#sorttypesgroup">sortTypesGroup</a></li><li><a href="#newlines-between-types">newlines-between-types</a></li><li><a href="#consolidateislands">consolidateIslands</a></li></ul><li><a href="#related">Related</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/order</h1>
+
+</div>
+<div class="article-body">
+<p>🔧 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a>.</p>
+<!-- end auto-generated rule header -->
+<p>Enforce a convention in the order of <code>require()</code> / <code>import</code> statements.</p>
+<p>With the <a href="#groups"><code>groups</code></a> option set to <code>[&quot;builtin&quot;, &quot;external&quot;, &quot;internal&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;, &quot;object&quot;, &quot;type&quot;]</code> the order is as shown in the following example:</p>
+<pre><code class="language-ts">// 1. node &quot;builtin&quot; modules
+import fs from 'fs';
+import path from 'path';
+// 2. &quot;external&quot; modules
+import _ from 'lodash';
+import chalk from 'chalk';
+// 3. &quot;internal&quot; modules
+// (if you have configured your path or webpack to handle your internal paths differently)
+import foo from 'src/foo';
+// 4. modules from a &quot;parent&quot; directory
+import foo from '../foo';
+import qux from '../../foo/qux';
+// 5. &quot;sibling&quot; modules from the same or a sibling's directory
+import bar from './bar';
+import baz from './bar/baz';
+// 6. &quot;index&quot; of the current directory
+import main from './';
+// 7. &quot;object&quot;-imports (only available in TypeScript)
+import log = console.log;
+// 8. &quot;type&quot; imports (only available in Flow and TypeScript)
+import type { Foo } from 'foo';
+</code></pre>
+<p>See <a href="#how-imports-are-grouped">here</a> for further details on how imports are grouped.</p>
+<h2 id="fail">Fail</h2>
+<pre><code class="language-ts">import _ from 'lodash';
+import path from 'path'; // `path` import should occur before import of `lodash`
+
+// -----
+
+var _ = require('lodash');
+var path = require('path'); // `path` import should occur before import of `lodash`
+
+// -----
+
+var path = require('path');
+import foo from './foo'; // `import` statements must be before `require` statement
+</code></pre>
+<h2 id="pass">Pass</h2>
+<pre><code class="language-ts">import path from 'path';
+import _ from 'lodash';
+
+// -----
+
+var path = require('path');
+var _ = require('lodash');
+
+// -----
+
+// Allowed as ̀`babel-register` is not assigned.
+require('babel-register');
+var path = require('path');
+
+// -----
+
+// Allowed as `import` must be before `require`
+import foo from './foo';
+var path = require('path');
+</code></pre>
+<h2 id="limitations-of---fix">Limitations of <code>--fix</code></h2>
+<p>Unbound imports are assumed to have side effects, and will never be moved/reordered. This can cause other imports to get “stuck” around them, and the fix to fail.</p>
+<pre><code class="language-javascript">import b from 'b'
+import 'format.css';  // This will prevent --fix from working.
+import a from 'a'
+</code></pre>
+<p>As a workaround, move unbound imports to be entirely above or below bound ones.</p>
+<pre><code class="language-javascript">import 'format1.css';  // OK
+import b from 'b'
+import a from 'a'
+import 'format2.css';  // OK
+</code></pre>
+<h2 id="options">Options</h2>
+<p>This rule supports the following options (none of which are required):</p>
+<ul>
+<li><a href="#groups"><code>groups</code></a></li>
+<li><a href="#pathgroups"><code>pathGroups</code></a></li>
+<li><a href="#pathgroupsexcludedimporttypes"><code>pathGroupsExcludedImportTypes</code></a></li>
+<li><a href="#distinctgroup"><code>distinctGroup</code></a></li>
+<li><a href="#newlines-between"><code>newlines-between</code></a></li>
+<li><a href="#alphabetize"><code>alphabetize</code></a></li>
+<li><a href="#named"><code>named</code></a></li>
+<li><a href="#warnonunassignedimports"><code>warnOnUnassignedImports</code></a></li>
+<li><a href="#sorttypesgroup"><code>sortTypesGroup</code></a></li>
+<li><a href="#newlines-between-types"><code>newlines-between-types</code></a></li>
+<li><a href="#consolidateislands"><code>consolidateIslands</code></a></li>
+</ul>
+<hr>
+<h3 id="groups"><code>groups</code></h3>
+<p>Valid values: <code>(&quot;builtin&quot; | &quot;external&quot; | &quot;internal&quot; | &quot;unknown&quot; | &quot;parent&quot; | &quot;sibling&quot; | &quot;index&quot; | &quot;object&quot; | &quot;type&quot;)[]</code> <br>
+Default: <code>[&quot;builtin&quot;, &quot;external&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;]</code></p>
+<p>Determines which imports are subject to ordering, and how to order
+them. The predefined groups are: <code>&quot;builtin&quot;</code>, <code>&quot;external&quot;</code>, <code>&quot;internal&quot;</code>,
+<code>&quot;unknown&quot;</code>, <code>&quot;parent&quot;</code>, <code>&quot;sibling&quot;</code>, <code>&quot;index&quot;</code>, <code>&quot;object&quot;</code>, and <code>&quot;type&quot;</code>.</p>
+<p>The import order enforced by this rule is the same as the order of each group
+in <code>groups</code>. Imports belonging to groups omitted from <code>groups</code> are lumped
+together at the end.</p>
+<h4>Example</h4>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [
+      // Imports of builtins are first
+      &quot;builtin&quot;,
+      // Then sibling and parent imports. They can be mingled together
+      [&quot;sibling&quot;, &quot;parent&quot;],
+      // Then index file imports
+      &quot;index&quot;,
+      // Then any arcane TypeScript imports
+      &quot;object&quot;,
+      // Then the omitted imports: internal, external, type, unknown
+    ],
+  }],
+}
+</code></pre>
+<h4>How Imports Are Grouped</h4>
+<p>An import (a <code>ImportDeclaration</code>, <code>TSImportEqualsDeclaration</code>, or <code>require()</code> <code>CallExpression</code>) is grouped by its type (<code>&quot;require&quot;</code> vs <code>&quot;import&quot;</code>), its <a href="https://nodejs.org/api/esm.html#terminology" target="_blank" rel="noopener">specifier</a>, and any corresponding identifiers.</p>
+<pre><code class="language-ts">import { identifier1, identifier2 } from 'specifier1';
+import type { MyType } from 'specifier2';
+const identifier3 = require('specifier3');
+</code></pre>
+<p>Roughly speaking, the grouping algorithm is as follows:</p>
+<ol>
+<li>If the import has no corresponding identifiers (e.g. <code>import './my/thing.js'</code>), is otherwise “unassigned,” or is an unsupported use of <code>require()</code>, and <a href="#warnonunassignedimports"><code>warnOnUnassignedImports</code></a> is disabled, it will be ignored entirely since the order of these imports may be important for their <a href="https://webpack.js.org/guides/tree-shaking#mark-the-file-as-side-effect-free" target="_blank" rel="noopener">side-effects</a></li>
+<li>If the import is part of an arcane TypeScript declaration (e.g. <code>import log = console.log</code>), it will be considered <strong>object</strong>. However, note that external module references (e.g. <code>import x = require('z')</code>) are treated as normal <code>require()</code>s and import-exports (e.g. <code>export import w = y;</code>) are ignored entirely</li>
+<li>If the import is <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">type-only</a>, <code>&quot;type&quot;</code> is in <code>groups</code>, and <a href="#sorttypesgroup"><code>sortTypesGroup</code></a> is disabled, it will be considered <strong>type</strong> (with additional implications if using <a href="#pathgroups"><code>pathGroups</code></a> and <code>&quot;type&quot;</code> is in <a href="#pathgroupsexcludedimporttypes"><code>pathGroupsExcludedImportTypes</code></a>)</li>
+<li>If the import’s specifier matches <a href="../../README.md#importinternal-regex"><code>import/internal-regex</code></a>, it will be considered <strong>internal</strong></li>
+<li>If the import’s specifier is an absolute path, it will be considered <strong>unknown</strong></li>
+<li>If the import’s specifier has the name of a Node.js core module (using <a href="https://www.npmjs.com/package/is-core-module" target="_blank" rel="noopener">is-core-module</a>), it will be considered <strong>builtin</strong></li>
+<li>If the import’s specifier matches <a href="../../README.md#importcore-modules"><code>import/core-modules</code></a>, it will be considered <strong>builtin</strong></li>
+<li>If the import’s specifier is a path relative to the parent directory of its containing file (e.g. starts with <code>../</code>), it will be considered <strong>parent</strong></li>
+<li>If the import’s specifier is one of <code>['.', './', './index', './index.js']</code>, it will be considered <strong>index</strong></li>
+<li>If the import’s specifier is a path relative to its containing file (e.g. starts with <code>./</code>), it will be considered <strong>sibling</strong></li>
+<li>If the import’s specifier is a path pointing to a file outside the current package’s root directory (determined using <a href="https://www.npmjs.com/package/package-up" target="_blank" rel="noopener">package-up</a>), it will be considered <strong>external</strong></li>
+<li>If the import’s specifier matches <a href="../../README.md#importexternal-module-folders"><code>import/external-module-folders</code></a> (defaults to matching anything pointing to files within the current package’s <code>node_modules</code> directory), it will be considered <strong>external</strong></li>
+<li>If the import’s specifier is a path pointing to a file within the current package’s root directory (determined using <a href="https://www.npmjs.com/package/package-up" target="_blank" rel="noopener">package-up</a>), it will be considered <strong>internal</strong></li>
+<li>If the import’s specifier has a name that looks like a scoped package (e.g. <code>@scoped/package-name</code>), it will be considered <strong>external</strong></li>
+<li>If the import’s specifier has a name that starts with a word character, it will be considered <strong>external</strong></li>
+<li>If this point is reached, the import will be ignored entirely</li>
+</ol>
+<p>At the end of the process, if they co-exist in the same file, all top-level <code>require()</code> statements that haven’t been ignored are shifted (with respect to their order) below any ES6 <code>import</code> or similar declarations. Finally, any type-only declarations are potentially reorganized according to <a href="#sorttypesgroup"><code>sortTypesGroup</code></a>.</p>
+<h3 id="pathgroups"><code>pathGroups</code></h3>
+<p>Valid values: <code>PathGroup[]</code> <br>
+Default: <code>[]</code></p>
+<p>Sometimes <a href="#groups">the predefined groups</a> are not fine-grained enough, especially when using import aliases.
+<code>pathGroups</code> defines one or more <a href="#pathgroup"><code>PathGroup</code></a>s relative to a predefined group.
+Imports are associated with a <a href="#pathgroup"><code>PathGroup</code></a> based on path matching against the import specifier (using <a href="https://www.npmjs.com/package/minimatch" target="_blank" rel="noopener">minimatch</a>).</p>
+<aside class="callout callout-important"><span class="callout-title">IMPORTANT</span><p>Note that, by default, imports grouped as <code>&quot;builtin&quot;</code>, <code>&quot;external&quot;</code>, or <code>&quot;object&quot;</code> will not be considered for further <code>pathGroups</code> matching unless they are removed from [<code>pathGroupsExcludedImportTypes</code>][9].</p>
+</aside>
+<h4><code>PathGroup</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">property</th>
+<th style="text-align:center">required</th>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>pattern</code></td>
+<td style="text-align:center">☑️</td>
+<td style="text-align:center"><code>string</code></td>
+<td><a href="https://www.npmjs.com/package/minimatch#features" target="_blank" rel="noopener">Minimatch pattern</a> for specifier matching</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>patternOptions</code></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"><code>object</code></td>
+<td><a href="https://www.npmjs.com/package/minimatch#options" target="_blank" rel="noopener">Minimatch options</a>; default: <code>{nocomment: true}</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>group</code></td>
+<td style="text-align:center">☑️</td>
+<td style="text-align:center"><a href="#groups">predefined group</a></td>
+<td>One of the <a href="#groups">predefined groups</a> to which matching imports will be positioned relatively</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>position</code></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"><code>&quot;after&quot; | &quot;before&quot;</code></td>
+<td>Where, in relation to <code>group</code>, matching imports will be positioned; default: same position as <code>group</code> (neither before or after)</td>
+</tr>
+</tbody>
+</table>
+<h4>Example</h4>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;pathGroups&quot;: [
+      {
+        // Minimatch pattern used to match against specifiers
+        &quot;pattern&quot;: &quot;~/**&quot;,
+        // The predefined group this PathGroup is defined in relation to
+        &quot;group&quot;: &quot;external&quot;,
+        // How matching imports will be positioned relative to &quot;group&quot;
+        &quot;position&quot;: &quot;after&quot;
+      }
+    ]
+  }]
+}
+</code></pre>
+<h3 id="pathgroupsexcludedimporttypes"><code>pathGroupsExcludedImportTypes</code></h3>
+<p>Valid values: <code>(&quot;builtin&quot; | &quot;external&quot; | &quot;internal&quot; | &quot;unknown&quot; | &quot;parent&quot; | &quot;sibling&quot; | &quot;index&quot; | &quot;object&quot; | &quot;type&quot;)[]</code> <br>
+Default: <code>[&quot;builtin&quot;, &quot;external&quot;, &quot;object&quot;]</code></p>
+<p>By default, imports in certain <a href="#groups">groups</a> are excluded from being matched against <a href="#pathgroups"><code>pathGroups</code></a> to prevent overeager sorting.
+Use <code>pathGroupsExcludedImportTypes</code> to modify which groups are excluded.</p>
+<aside class="callout callout-tip"><span class="callout-title">TIP</span><p>If using imports with custom specifier aliases (e.g.
+you’re using <code>eslint-import-resolver-alias</code>, <code>paths</code> in <code>tsconfig.json</code>, etc) that [end up
+grouped][3] as <code>&quot;builtin&quot;</code> or <code>&quot;external&quot;</code> imports,
+remove them from  <code>pathGroupsExcludedImportTypes</code> to ensure they are ordered
+correctly.</p>
+</aside>
+<h4>Example</h4>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;pathGroups&quot;: [
+      {
+        &quot;pattern&quot;: &quot;@app/**&quot;,
+        &quot;group&quot;: &quot;external&quot;,
+        &quot;position&quot;: &quot;after&quot;
+      }
+    ],
+    &quot;pathGroupsExcludedImportTypes&quot;: [&quot;builtin&quot;]
+  }]
+}
+</code></pre>
+<h3 id="distinctgroup"><code>distinctGroup</code></h3>
+<p>Valid values: <code>boolean</code> <br>
+Default: <code>true</code></p>
+<aside class="callout callout-caution"><span class="callout-title">CAUTION</span><p>Currently, <code>distinctGroup</code> defaults to <code>true</code>. However, in a later update, the
+default will change to <code>false</code>.</p>
+</aside>
+<p>This changes how <a href="#pathgroup"><code>PathGroup.position</code></a> affects grouping, and is most useful when <a href="#newlines-between"><code>newlines-between</code></a> is set to <code>always</code> and at least one <a href="#pathgroup"><code>PathGroup</code></a> has a <code>position</code> property set.</p>
+<p>When <a href="#newlines-between"><code>newlines-between</code></a> is set to <code>always</code> and an import matching a specific <a href="#pathgroup"><code>PathGroup.pattern</code></a> is encountered, that import is added to a sort of “sub-group” associated with that <a href="#pathgroup"><code>PathGroup</code></a>. Thanks to <a href="#newlines-between"><code>newlines-between</code></a>, imports in this “sub-group” will have a new line separating them from the rest of the imports in <a href="#pathgroup"><code>PathGroup.group</code></a>.</p>
+<p>This behavior can be undesirable when using <a href="#pathgroup"><code>PathGroup.position</code></a> to order imports <em>within</em> <a href="#pathgroup"><code>PathGroup.group</code></a> instead of creating a distinct “sub-group”. Set <code>distinctGroup</code> to <code>false</code> to disable the creation of these “sub-groups”.</p>
+<h4>Example</h4>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;distinctGroup&quot;: false,
+    &quot;newlines-between&quot;: &quot;always&quot;,
+    &quot;pathGroups&quot;: [
+      {
+        &quot;pattern&quot;: &quot;@app/**&quot;,
+        &quot;group&quot;: &quot;external&quot;,
+        &quot;position&quot;: &quot;after&quot;
+      }
+    ]
+  }]
+}
+</code></pre>
+<h3 id="newlines-between"><code>newlines-between</code></h3>
+<p>Valid values: <code>&quot;ignore&quot; | &quot;always&quot; | &quot;always-and-inside-groups&quot; | &quot;never&quot;</code> <br>
+Default: <code>&quot;ignore&quot;</code></p>
+<p>Enforces or forbids new lines between import groups.</p>
+<ul>
+<li>
+<p>If set to <code>ignore</code>, no errors related to new lines between import groups will be reported</p>
+</li>
+<li>
+<p>If set to <code>always</code>, at least one new line between each group will be enforced, and new lines inside a group will be forbidden</p>
+</li>
+</ul>
+<blockquote>
+<p>[!TIP]</p>
+<p>To prevent multiple lines between imports, the <a href="https://eslint.org/docs/latest/rules/no-multiple-empty-lines" target="_blank" rel="noopener"><code>no-multiple-empty-lines</code> rule</a>, or a tool like <a href="https://prettier.io" target="_blank" rel="noopener">Prettier</a>, can be used.</p>
+</blockquote>
+<ul>
+<li>
+<p>If set to <code>always-and-inside-groups</code>, it will act like <code>always</code> except new lines are allowed inside import groups</p>
+</li>
+<li>
+<p>If set to <code>never</code>, no new lines are allowed in the entire import section</p>
+</li>
+</ul>
+<h4>Example</h4>
+<p>With the default <a href="#groups"><code>groups</code></a> setting, the following will fail the rule check:</p>
+<pre><code class="language-ts">/* eslint import/order: [&quot;error&quot;, {&quot;newlines-between&quot;: &quot;always&quot;}] */
+import fs from 'fs';
+import path from 'path';
+import sibling from './foo';
+import index from './';
+</code></pre>
+<pre><code class="language-ts">/* eslint import/order: [&quot;error&quot;, {&quot;newlines-between&quot;: &quot;always-and-inside-groups&quot;}] */
+import fs from 'fs';
+
+import path from 'path';
+import sibling from './foo';
+import index from './';
+</code></pre>
+<pre><code class="language-ts">/* eslint import/order: [&quot;error&quot;, {&quot;newlines-between&quot;: &quot;never&quot;}] */
+import fs from 'fs';
+import path from 'path';
+
+import sibling from './foo';
+
+import index from './';
+</code></pre>
+<p>While this will pass:</p>
+<pre><code class="language-ts">/* eslint import/order: [&quot;error&quot;, {&quot;newlines-between&quot;: &quot;always&quot;}] */
+import fs from 'fs';
+import path from 'path';
+
+import sibling from './foo';
+
+import index from './';
+</code></pre>
+<pre><code class="language-ts">/* eslint import/order: [&quot;error&quot;, {&quot;newlines-between&quot;: &quot;always-and-inside-groups&quot;}] */
+import fs from 'fs';
+
+import path from 'path';
+
+import sibling from './foo';
+
+import index from './';
+</code></pre>
+<pre><code class="language-ts">/* eslint import/order: [&quot;error&quot;, {&quot;newlines-between&quot;: &quot;never&quot;}] */
+import fs from 'fs';
+import path from 'path';
+import sibling from './foo';
+import index from './';
+</code></pre>
+<h3 id="alphabetize"><code>alphabetize</code></h3>
+<p>Valid values: <code>{ order?: &quot;asc&quot; | &quot;desc&quot; | &quot;ignore&quot;, orderImportKind?: &quot;asc&quot; | &quot;desc&quot; | &quot;ignore&quot;, caseInsensitive?: boolean }</code> <br>
+Default: <code>{ order: &quot;ignore&quot;, orderImportKind: &quot;ignore&quot;, caseInsensitive: false }</code></p>
+<p>Determine the sort order of imports within each <a href="#groups">predefined group</a> or <a href="#pathgroups"><code>PathGroup</code></a> alphabetically based on specifier.</p>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>Imports will be alphabetized based on their <em>specifiers</em>, not by their
+identifiers. For example, <code>const a = require('z');</code> will come <em>after</em> <code>const z = require('a');</code> when <code>alphabetize</code> is set to <code>{ order: &quot;asc&quot; }</code>.</p>
+</aside>
+<p>Valid properties and their values include:</p>
+<ul>
+<li>
+<p><strong><code>order</code></strong>: use <code>&quot;asc&quot;</code> to sort in ascending order, <code>&quot;desc&quot;</code> to sort in descending order, or “ignore” to prevent sorting</p>
+</li>
+<li>
+<p><strong><code>orderImportKind</code></strong>: use <code>&quot;asc&quot;</code> to sort various <em>import kinds</em>, e.g. <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">type-only and typeof imports</a>, in ascending order, <code>&quot;desc&quot;</code> to sort them in descending order, or “ignore” to prevent sorting</p>
+</li>
+<li>
+<p><strong><code>caseInsensitive</code></strong>: use <code>true</code> to ignore case and <code>false</code> to consider case when sorting</p>
+</li>
+</ul>
+<h4>Example</h4>
+<p>Given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;alphabetize&quot;: {
+      &quot;order&quot;: &quot;asc&quot;,
+      &quot;caseInsensitive&quot;: true
+    }
+  }]
+}
+</code></pre>
+<p>This will fail the rule check:</p>
+<pre><code class="language-ts">import React, { PureComponent } from 'react';
+import aTypes from 'prop-types';
+import { compose, apply } from 'xcompose';
+import * as classnames from 'classnames';
+import blist from 'BList';
+</code></pre>
+<p>While this will pass:</p>
+<pre><code class="language-ts">import blist from 'BList';
+import * as classnames from 'classnames';
+import aTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { compose, apply } from 'xcompose';
+</code></pre>
+<h3 id="named"><code>named</code></h3>
+<p>Valid values: <code>boolean | { enabled: boolean, import?: boolean, export?: boolean, require?: boolean, cjsExports?: boolean, types?: &quot;mixed&quot; | &quot;types-first&quot; | &quot;types-last&quot; }</code> <br>
+Default: <code>false</code></p>
+<p>Enforce ordering of names within imports and exports.</p>
+<p>If set to <code>true</code> or <code>{ enabled: true }</code>, <em>all</em> named imports must be ordered according to <a href="#alphabetize"><code>alphabetize</code></a>.
+If set to <code>false</code> or <code>{ enabled: false }</code>, named imports can occur in any order.</p>
+<p>If set to <code>{ enabled: true, ... }</code>, and any of the properties <code>import</code>, <code>export</code>, <code>require</code>, or <code>cjsExports</code> are set to <code>false</code>, named ordering is disabled with respect to the following kind of expressions:</p>
+<ul>
+<li><code>import</code>:</li>
+</ul>
+<pre><code class="language-ts">import { Readline } from &quot;readline&quot;;
+</code></pre>
+<ul>
+<li><code>export</code>:</li>
+</ul>
+<pre><code class="language-ts">export { Readline };
+// and
+export { Readline } from &quot;readline&quot;;
+</code></pre>
+<ul>
+<li><code>require</code>:</li>
+</ul>
+<pre><code class="language-ts">const { Readline } = require(&quot;readline&quot;);
+</code></pre>
+<ul>
+<li><code>cjsExports</code>:</li>
+</ul>
+<pre><code class="language-ts">module.exports.Readline = Readline;
+// and
+module.exports = { Readline };
+</code></pre>
+<p>Further, the <code>named.types</code> option allows you to specify the order of <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#type-modifiers-on-import-names" target="_blank" rel="noopener">import identifiers with inline type qualifiers</a> (or “type-only” identifiers/names), e.g. <code>import { type TypeIdentifier1, normalIdentifier2 } from 'specifier';</code>.</p>
+<p><code>named.types</code> accepts the following values:</p>
+<ul>
+<li><code>types-first</code>: forces type-only identifiers to occur first</li>
+<li><code>types-last</code>: forces type-only identifiers to occur last</li>
+<li><code>mixed</code>: sorts all identifiers in alphabetical order</li>
+</ul>
+<h4>Example</h4>
+<p>Given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;named&quot;: true,
+    &quot;alphabetize&quot;: {
+      &quot;order&quot;: &quot;asc&quot;
+    }
+  }]
+}
+</code></pre>
+<p>This will fail the rule check:</p>
+<pre><code class="language-ts">import { compose, apply } from 'xcompose';
+</code></pre>
+<p>While this will pass:</p>
+<pre><code class="language-ts">import { apply, compose } from 'xcompose';
+</code></pre>
+<h3 id="warnonunassignedimports"><code>warnOnUnassignedImports</code></h3>
+<p>Valid values: <code>boolean</code> <br>
+Default: <code>false</code></p>
+<p>Warn when “unassigned” imports are out of order.
+Unassigned imports are imports with no corresponding identifiers (e.g. <code>import './my/thing.js'</code> or <code>require('./side-effects.js')</code>).</p>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>These warnings are not fixable with <code>--fix</code> since unassigned imports might be used for their [side-effects][31],
+and changing the order of such imports cannot be done safely.</p>
+</aside>
+<h4>Example</h4>
+<p>Given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;warnOnUnassignedImports&quot;: true
+  }]
+}
+</code></pre>
+<p>This will fail the rule check:</p>
+<pre><code class="language-ts">import fs from 'fs';
+import './styles.css';
+import path from 'path';
+</code></pre>
+<p>While this will pass:</p>
+<pre><code class="language-ts">import fs from 'fs';
+import path from 'path';
+import './styles.css';
+</code></pre>
+<h3 id="sorttypesgroup"><code>sortTypesGroup</code></h3>
+<p>Valid values: <code>boolean</code> <br>
+Default: <code>false</code></p>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>This setting is only meaningful when <code>&quot;type&quot;</code> is included in [<code>groups</code>][18].</p>
+</aside>
+<p>Sort <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">type-only imports</a> separately from normal non-type imports.</p>
+<p>When enabled, the intragroup sort order of <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">type-only imports</a> will mirror the intergroup ordering of normal imports as defined by <a href="#groups"><code>groups</code></a>, <a href="#pathgroups"><code>pathGroups</code></a>, etc.</p>
+<h4>Example</h4>
+<p>Given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [&quot;type&quot;, &quot;builtin&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;],
+    &quot;alphabetize&quot;: { &quot;order&quot;: &quot;asc&quot; }
+  }]
+}
+</code></pre>
+<p>This will fail the rule check even though it’s logically ordered as we expect (builtins come before parents, parents come before siblings, siblings come before indices), the only difference is we separated type-only imports from normal imports:</p>
+<pre><code class="language-ts">import type A from &quot;fs&quot;;
+import type B from &quot;path&quot;;
+import type C from &quot;../foo.js&quot;;
+import type D from &quot;./bar.js&quot;;
+import type E from './';
+
+import a from &quot;fs&quot;;
+import b from &quot;path&quot;;
+import c from &quot;../foo.js&quot;;
+import d from &quot;./bar.js&quot;;
+import e from &quot;./&quot;;
+</code></pre>
+<p>This happens because <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">type-only imports</a> are considered part of one global
+<a href="#how-imports-are-grouped"><code>&quot;type&quot;</code> group</a> by default. However, if we set
+<code>sortTypesGroup</code> to <code>true</code>:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [&quot;type&quot;, &quot;builtin&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;],
+    &quot;alphabetize&quot;: { &quot;order&quot;: &quot;asc&quot; },
+    &quot;sortTypesGroup&quot;: true
+  }]
+}
+</code></pre>
+<p>The same example will pass.</p>
+<h3 id="newlines-between-types"><code>newlines-between-types</code></h3>
+<p>Valid values: <code>&quot;ignore&quot; | &quot;always&quot; | &quot;always-and-inside-groups&quot; | &quot;never&quot;</code> <br>
+Default: the value of <a href="#newlines-between"><code>newlines-between</code></a></p>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>This setting is only meaningful when [<code>sortTypesGroup</code>][7] is enabled.</p>
+</aside>
+<p><code>newlines-between-types</code> is functionally identical to <a href="#newlines-between"><code>newlines-between</code></a> except it only enforces or forbids new lines between <em><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">type-only</a> import groups</em>, which exist only when <a href="#sorttypesgroup"><code>sortTypesGroup</code></a> is enabled.</p>
+<p>In addition, when determining if a new line is enforceable or forbidden between the type-only imports and the normal imports, <code>newlines-between-types</code> takes precedence over <a href="#newlines-between"><code>newlines-between</code></a>.</p>
+<h4>Example</h4>
+<p>Given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [&quot;type&quot;, &quot;builtin&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;],
+    &quot;sortTypesGroup&quot;: true,
+    &quot;newlines-between&quot;: &quot;always&quot;
+  }]
+}
+</code></pre>
+<p>This will fail the rule check:</p>
+<pre><code class="language-ts">import type A from &quot;fs&quot;;
+import type B from &quot;path&quot;;
+import type C from &quot;../foo.js&quot;;
+import type D from &quot;./bar.js&quot;;
+import type E from './';
+
+import a from &quot;fs&quot;;
+import b from &quot;path&quot;;
+
+import c from &quot;../foo.js&quot;;
+
+import d from &quot;./bar.js&quot;;
+
+import e from &quot;./&quot;;
+</code></pre>
+<p>However, if we set <code>newlines-between-types</code> to <code>&quot;ignore&quot;</code>:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [&quot;type&quot;, &quot;builtin&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;],
+    &quot;sortTypesGroup&quot;: true,
+    &quot;newlines-between&quot;: &quot;always&quot;,
+    &quot;newlines-between-types&quot;: &quot;ignore&quot;
+  }]
+}
+</code></pre>
+<p>The same example will pass.</p>
+<p>Note the new line after <code>import type E from './';</code> but before <code>import a from &quot;fs&quot;;</code>. This new line separates the type-only imports from the normal imports. Its existence is governed by <a href="#newlines-between-types"><code>newlines-between-types</code></a> and <em>not <code>newlines-between</code></em>.</p>
+<aside class="callout callout-important"><span class="callout-title">IMPORTANT</span><p>In certain situations, [<code>consolidateIslands: true</code>][25] will take precedence over <code>newlines-between-types: &quot;never&quot;</code>, if used, when it comes to the new line separating type-only imports from normal imports.</p>
+</aside>
+<p>The next example will pass even though there’s a new line preceding the normal import and <a href="#newlines-between"><code>newlines-between</code></a> is set to <code>&quot;never&quot;</code>:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [&quot;type&quot;, &quot;builtin&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;],
+    &quot;sortTypesGroup&quot;: true,
+    &quot;newlines-between&quot;: &quot;never&quot;,
+    &quot;newlines-between-types&quot;: &quot;always&quot;
+  }]
+}
+</code></pre>
+<pre><code class="language-ts">import type A from &quot;fs&quot;;
+
+import type B from &quot;path&quot;;
+
+import type C from &quot;../foo.js&quot;;
+
+import type D from &quot;./bar.js&quot;;
+
+import type E from './';
+
+import a from &quot;fs&quot;;
+import b from &quot;path&quot;;
+import c from &quot;../foo.js&quot;;
+import d from &quot;./bar.js&quot;;
+import e from &quot;./&quot;;
+</code></pre>
+<p>While the following fails due to the new line between the last type import and the first normal import:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;groups&quot;: [&quot;type&quot;, &quot;builtin&quot;, &quot;parent&quot;, &quot;sibling&quot;, &quot;index&quot;],
+    &quot;sortTypesGroup&quot;: true,
+    &quot;newlines-between&quot;: &quot;always&quot;,
+    &quot;newlines-between-types&quot;: &quot;never&quot;
+  }]
+}
+</code></pre>
+<pre><code class="language-ts">import type A from &quot;fs&quot;;
+import type B from &quot;path&quot;;
+import type C from &quot;../foo.js&quot;;
+import type D from &quot;./bar.js&quot;;
+import type E from './';
+
+import a from &quot;fs&quot;;
+
+import b from &quot;path&quot;;
+
+import c from &quot;../foo.js&quot;;
+
+import d from &quot;./bar.js&quot;;
+
+import e from &quot;./&quot;;
+</code></pre>
+<h3 id="consolidateislands"><code>consolidateIslands</code></h3>
+<p>Valid values: <code>&quot;inside-groups&quot; | &quot;never&quot;</code> <br>
+Default: <code>&quot;never&quot;</code></p>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>This setting is only meaningful when [<code>newlines-between</code>][20] and/or [<code>newlines-between-types</code>][27] is set to <code>&quot;always-and-inside-groups&quot;</code>.</p>
+</aside>
+<p>When set to <code>&quot;inside-groups&quot;</code>, this ensures imports spanning multiple lines are separated from other imports with a new line while single-line imports are grouped together (and the space between them consolidated) if they belong to the same <a href="#groups">group</a> or <a href="#pathgroups"><code>pathGroups</code></a>.</p>
+<aside class="callout callout-important"><span class="callout-title">IMPORTANT</span><p>When all of the following are true:</p>
+<ul>
+<li>[<code>sortTypesGroup</code>][7] is set to <code>true</code></li>
+<li><code>consolidateIslands</code> is set to <code>&quot;inside-groups&quot;</code></li>
+<li>[<code>newlines-between</code>][20] is set to <code>&quot;always-and-inside-groups&quot;</code> when [<code>newlines-between-types</code>][27] is set to <code>&quot;never&quot;</code> (or vice-versa)</li>
+</ul>
+<p>Then [<code>newlines-between</code>][20]/[<code>newlines-between-types</code>][27] will yield to
+<code>consolidateIslands</code> and allow new lines to separate multi-line imports
+regardless of the <code>&quot;never&quot;</code> setting.</p>
+<p>This configuration is useful, for instance, to keep single-line type-only
+imports stacked tightly together at the bottom of your import block to
+preserve space while still logically organizing normal imports for quick and
+pleasant reference.</p>
+</aside>
+<h4>Example</h4>
+<p>Given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;newlines-between&quot;: &quot;always-and-inside-groups&quot;,
+    &quot;consolidateIslands&quot;: &quot;inside-groups&quot;
+  }]
+}
+</code></pre>
+<p>This will fail the rule check:</p>
+<pre><code class="language-ts">var fs = require('fs');
+var path = require('path');
+var { util1, util2, util3 } = require('util');
+var async = require('async');
+var relParent1 = require('../foo');
+var {
+  relParent21,
+  relParent22,
+  relParent23,
+  relParent24,
+} = require('../');
+var relParent3 = require('../bar');
+var { sibling1,
+  sibling2, sibling3 } = require('./foo');
+var sibling2 = require('./bar');
+var sibling3 = require('./foobar');
+</code></pre>
+<p>While this will succeed (and is what <code>--fix</code> would yield):</p>
+<pre><code class="language-ts">var fs = require('fs');
+var path = require('path');
+var { util1, util2, util3 } = require('util');
+
+var async = require('async');
+
+var relParent1 = require('../foo');
+
+var {
+  relParent21,
+  relParent22,
+  relParent23,
+  relParent24,
+} = require('../');
+
+var relParent3 = require('../bar');
+
+var { sibling1,
+  sibling2, sibling3 } = require('./foo');
+
+var sibling2 = require('./bar');
+var sibling3 = require('./foobar');
+</code></pre>
+<p>Note the intragroup “islands” of grouped single-line imports, as well as multi-line imports, are surrounded by new lines. At the same time, note the typical new lines separating different groups are still maintained thanks to <a href="#newlines-between"><code>newlines-between</code></a>.</p>
+<p>The same holds true for the next example; when given the following settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;import/order&quot;: [&quot;error&quot;, {
+    &quot;alphabetize&quot;: { &quot;order&quot;: &quot;asc&quot; },
+    &quot;groups&quot;: [&quot;external&quot;, &quot;internal&quot;, &quot;index&quot;, &quot;type&quot;],
+    &quot;pathGroups&quot;: [
+      {
+        &quot;pattern&quot;: &quot;dirA/**&quot;,
+        &quot;group&quot;: &quot;internal&quot;,
+        &quot;position&quot;: &quot;after&quot;
+      },
+      {
+        &quot;pattern&quot;: &quot;dirB/**&quot;,
+        &quot;group&quot;: &quot;internal&quot;,
+        &quot;position&quot;: &quot;before&quot;
+      },
+      {
+        &quot;pattern&quot;: &quot;dirC/**&quot;,
+        &quot;group&quot;: &quot;internal&quot;
+      }
+    ],
+    &quot;newlines-between&quot;: &quot;always-and-inside-groups&quot;,
+    &quot;newlines-between-types&quot;: &quot;never&quot;,
+    &quot;pathGroupsExcludedImportTypes&quot;: [],
+    &quot;sortTypesGroup&quot;: true,
+    &quot;consolidateIslands&quot;: &quot;inside-groups&quot;
+  }]
+}
+</code></pre>
+<aside class="callout callout-important"><span class="callout-title">IMPORTANT</span><p><strong>Pay special attention to the value of [<code>pathGroupsExcludedImportTypes</code>][9]</strong> in this example’s settings.
+Without it, the successful example below would fail.
+This is because the imports with specifiers starting with “dirA/”, “dirB/”, and “dirC/” are all <a href="#how-imports-are-grouped">considered part of the <code>&quot;external&quot;</code> group</a>, and imports in that group are excluded from [<code>pathGroups</code>][8] matching by default.</p>
+<p>The fix is to remove <code>&quot;external&quot;</code> (and, in this example, the others) from [<code>pathGroupsExcludedImportTypes</code>][9].</p>
+</aside>
+<p>This will fail the rule check:</p>
+<pre><code class="language-ts">import c from 'Bar';
+import d from 'bar';
+import {
+  aa,
+  bb,
+  cc,
+  dd,
+  ee,
+  ff,
+  gg
+} from 'baz';
+import {
+  hh,
+  ii,
+  jj,
+  kk,
+  ll,
+  mm,
+  nn
+} from 'fizz';
+import a from 'foo';
+import b from 'dirA/bar';
+import index from './';
+import type { AA,
+  BB, CC } from 'abc';
+import type { Z } from 'fizz';
+import type {
+  A,
+  B
+} from 'foo';
+import type { C2 } from 'dirB/Bar';
+import type {
+  D2,
+  X2,
+  Y2
+} from 'dirB/bar';
+import type { E2 } from 'dirB/baz';
+import type { C3 } from 'dirC/Bar';
+import type {
+  D3,
+  X3,
+  Y3
+} from 'dirC/bar';
+import type { E3 } from 'dirC/baz';
+import type { F3 } from 'dirC/caz';
+import type { C1 } from 'dirA/Bar';
+import type {
+  D1,
+  X1,
+  Y1
+} from 'dirA/bar';
+import type { E1 } from 'dirA/baz';
+import type { F } from './index.js';
+import type { G } from './aaa.js';
+import type { H } from './bbb';
+</code></pre>
+<p>While this will succeed (and is what <code>--fix</code> would yield):</p>
+<pre><code class="language-ts">import c from 'Bar';
+import d from 'bar';
+
+import {
+  aa,
+  bb,
+  cc,
+  dd,
+  ee,
+  ff,
+  gg
+} from 'baz';
+
+import {
+  hh,
+  ii,
+  jj,
+  kk,
+  ll,
+  mm,
+  nn
+} from 'fizz';
+
+import a from 'foo';
+
+import b from 'dirA/bar';
+
+import index from './';
+
+import type { AA,
+  BB, CC } from 'abc';
+
+import type { Z } from 'fizz';
+
+import type {
+  A,
+  B
+} from 'foo';
+
+import type { C2 } from 'dirB/Bar';
+
+import type {
+  D2,
+  X2,
+  Y2
+} from 'dirB/bar';
+
+import type { E2 } from 'dirB/baz';
+import type { C3 } from 'dirC/Bar';
+
+import type {
+  D3,
+  X3,
+  Y3
+} from 'dirC/bar';
+
+import type { E3 } from 'dirC/baz';
+import type { F3 } from 'dirC/caz';
+import type { C1 } from 'dirA/Bar';
+
+import type {
+  D1,
+  X1,
+  Y1
+} from 'dirA/bar';
+
+import type { E1 } from 'dirA/baz';
+import type { F } from './index.js';
+import type { G } from './aaa.js';
+import type { H } from './bbb';
+</code></pre>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="../../README.md#importexternal-module-folders"><code>import/external-module-folders</code></a></li>
+<li><a href="../../README.md#importinternal-regex"><code>import/internal-regex</code></a></li>
+<li><a href="../../README.md#importcore-modules"><code>import/core-modules</code></a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

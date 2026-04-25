@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>instrumentation-client — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-instrumentation-client">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#router-navigation-tracking">Router navigation tracking</a></li><li><a href="#performance-considerations">Performance considerations</a></li><li><a href="#execution-timing">Execution timing</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#error-tracking">Error tracking</a></li><li><a href="#analytics-tracking">Analytics tracking</a></li><li><a href="#performance-monitoring">Performance monitoring</a></li><li><a href="#polyfills">Polyfills</a></li></ul><li><a href="#version-history">Version history</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">instrumentation-client</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to add client-side instrumentation to track and monitor your Next.js application's frontend performance.</td></tr></table><p>The <code>instrumentation-client.js|ts</code> file allows you to add monitoring, analytics code, and other side-effects that run before your application becomes interactive. This is useful for setting up performance tracking, error monitoring, polyfills, or any other client-side observability tools.</p>
+<p>To use it, place the file in the <strong>root</strong> of your application or inside a <code>src</code> folder.</p>
+<h2 id="usage">Usage</h2>
+<p>Unlike <a href="/docs/app/guides/instrumentation">server-side instrumentation</a>, you do not need to export any specific functions. You can write your monitoring code directly in the file:</p>
+<pre><code class="language-ts">// Set up performance monitoring
+performance.mark('app-init')
+
+// Initialize analytics
+console.log('Analytics initialized')
+
+// Set up error tracking
+window.addEventListener('error', (event) =&gt; {
+  // Send to your error tracking service
+  reportError(event.error)
+})
+</code></pre>
+<pre><code class="language-js">// Set up performance monitoring
+performance.mark('app-init')
+
+// Initialize analytics
+console.log('Analytics initialized')
+
+// Set up error tracking
+window.addEventListener('error', (event) =&gt; {
+  // Send to your error tracking service
+  reportError(event.error)
+})
+</code></pre>
+<p><strong>Error handling:</strong> Implement try-catch blocks around your instrumentation code to ensure robust monitoring. This prevents individual tracking failures from affecting other instrumentation features.</p>
+<h2 id="router-navigation-tracking">Router navigation tracking</h2>
+<p>You can export an <code>onRouterTransitionStart</code> function to receive notifications when navigation begins:</p>
+<pre><code class="language-ts">performance.mark('app-init')
+
+export function onRouterTransitionStart(
+  url: string,
+  navigationType: 'push' | 'replace' | 'traverse'
+) {
+  console.log(`Navigation started: ${navigationType} to ${url}`)
+  performance.mark(`nav-start-${Date.now()}`)
+}
+</code></pre>
+<pre><code class="language-js">performance.mark('app-init')
+
+export function onRouterTransitionStart(url, navigationType) {
+  console.log(`Navigation started: ${navigationType} to ${url}`)
+  performance.mark(`nav-start-${Date.now()}`)
+}
+</code></pre>
+<p>The <code>onRouterTransitionStart</code> function receives two parameters:</p>
+<ul>
+<li><code>url: string</code> - The URL being navigated to</li>
+<li><code>navigationType: 'push' | 'replace' | 'traverse'</code> - The type of navigation</li>
+</ul>
+<h2 id="performance-considerations">Performance considerations</h2>
+<p>Keep instrumentation code lightweight.</p>
+<p>Next.js monitors initialization time in development and will log warnings if it takes longer than 16ms, which could impact smooth page loading.</p>
+<h2 id="execution-timing">Execution timing</h2>
+<p>The <code>instrumentation-client.js</code> file executes at a specific point in the application lifecycle:</p>
+<ol>
+<li><strong>After</strong> the HTML document is loaded</li>
+<li><strong>Before</strong> React hydration begins</li>
+<li><strong>Before</strong> user interactions are possible</li>
+</ol>
+<p>This timing makes it ideal for setting up error tracking, analytics, and performance monitoring that needs to capture early application lifecycle events.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="error-tracking">Error tracking</h3>
+<p>Initialize error tracking before React starts and add navigation breadcrumbs for better debugging context.</p>
+<pre><code class="language-ts">import Monitor from './lib/monitoring'
+
+Monitor.initialize()
+
+export function onRouterTransitionStart(url: string) {
+  Monitor.pushEvent({
+    message: `Navigation to ${url}`,
+    category: 'navigation',
+  })
+}
+</code></pre>
+<pre><code class="language-js">import Monitor from './lib/monitoring'
+
+Monitor.initialize()
+
+export function onRouterTransitionStart(url) {
+  Monitor.pushEvent({
+    message: `Navigation to ${url}`,
+    category: 'navigation',
+  })
+}
+</code></pre>
+<h3 id="analytics-tracking">Analytics tracking</h3>
+<p>Initialize analytics and track navigation events with detailed metadata for user behavior analysis.</p>
+<pre><code class="language-ts">import { analytics } from './lib/analytics'
+
+analytics.init()
+
+export function onRouterTransitionStart(url: string, navigationType: string) {
+  analytics.track('page_navigation', {
+    url,
+    type: navigationType,
+    timestamp: Date.now(),
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { analytics } from './lib/analytics'
+
+analytics.init()
+
+export function onRouterTransitionStart(url, navigationType) {
+  analytics.track('page_navigation', {
+    url,
+    type: navigationType,
+    timestamp: Date.now(),
+  })
+}
+</code></pre>
+<h3 id="performance-monitoring">Performance monitoring</h3>
+<p>Track Time to Interactive and navigation performance using the Performance Observer API and performance marks.</p>
+<pre><code class="language-ts">const startTime = performance.now()
+
+const observer = new PerformanceObserver(
+  (list: PerformanceObserverEntryList) =&gt; {
+    for (const entry of list.getEntries()) {
+      if (entry instanceof PerformanceNavigationTiming) {
+        console.log('Time to Interactive:', entry.loadEventEnd - startTime)
+      }
+    }
+  }
+)
+
+observer.observe({ entryTypes: ['navigation'] })
+
+export function onRouterTransitionStart(url: string) {
+  performance.mark(`nav-start-${url}`)
+}
+</code></pre>
+<pre><code class="language-js">const startTime = performance.now()
+
+const observer = new PerformanceObserver((list) =&gt; {
+  for (const entry of list.getEntries()) {
+    if (entry instanceof PerformanceNavigationTiming) {
+      console.log('Time to Interactive:', entry.loadEventEnd - startTime)
+    }
+  }
+})
+
+observer.observe({ entryTypes: ['navigation'] })
+
+export function onRouterTransitionStart(url) {
+  performance.mark(`nav-start-${url}`)
+}
+</code></pre>
+<h3 id="polyfills">Polyfills</h3>
+<p>Load polyfills before application code runs. Use static imports for immediate loading and dynamic imports for conditional loading based on feature detection.</p>
+<pre><code class="language-ts">import './lib/polyfills'
+
+if (!window.ResizeObserver) {
+  import('./lib/polyfills/resize-observer').then((mod) =&gt; {
+    window.ResizeObserver = mod.default
+  })
+}
+</code></pre>
+<pre><code class="language-js">import './lib/polyfills'
+
+if (!window.ResizeObserver) {
+  import('./lib/polyfills/resize-observer').then((mod) =&gt; {
+    window.ResizeObserver = mod.default
+  })
+}
+</code></pre>
+<h2 id="version-history">Version history</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.3</code></td>
+<td><code>instrumentation-client</code> introduced</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

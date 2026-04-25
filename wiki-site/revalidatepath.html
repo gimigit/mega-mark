@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>revalidatepath — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-revalidatepath">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#what-can-be-invalidated">What can be invalidated</a></li><li><a href="#using-revalidatepath-with-rewrites">Using revalidatePath with rewrites</a></li><li><a href="#relationship-with-revalidatetag-and-updatetag">Relationship with revalidateTag and updateTag</a></li><ul><li><a href="#building-revalidation-utilities">Building revalidation utilities</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#revalidating-a-specific-path">Revalidating a specific path</a></li><li><a href="#revalidating-a-page-path">Revalidating a Page path</a></li><li><a href="#revalidating-a-layout-path">Revalidating a Layout path</a></li><li><a href="#revalidating-all-data">Revalidating all data</a></li><li><a href="#server-function">Server Function</a></li><li><a href="#route-handler">Route Handler</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">revalidatepath</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the revalidatePath function.</td></tr></table><p><code>revalidatePath</code> allows you to invalidate <a href="/docs/app/getting-started/caching">cached data</a> on-demand for a specific path.</p>
+<h2 id="usage">Usage</h2>
+<p><code>revalidatePath</code> can be called in Server Functions and Route Handlers.</p>
+<p><code>revalidatePath</code> cannot be called in Client Components or Proxy, as it only works in server environments.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><strong>Server Functions</strong>: Updates the UI immediately (if viewing the affected path). Currently, it also causes all previously visited pages to refresh when navigated to again. This behavior is temporary and will be updated in the future to apply only to the specific path.</li>
+<li><strong>Route Handlers</strong>: Marks the path for revalidation. The revalidation is done on the next visit to the specified path. This means calling <code>revalidatePath</code> with a dynamic route segment will not immediately trigger many revalidations at once. The invalidation only happens when the path is next visited.</li>
+</ul>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">revalidatePath(path: string, type?: 'page' | 'layout'): void;
+</code></pre>
+<ul>
+<li><code>path</code>: Either a string that represents your route file structure. This can be a literal path like <code>/product/123</code>, or a route pattern with dynamic segments like <code>/product/[slug]</code>. Do not append <code>/page</code> or <code>/layout</code>, use the <code>type</code> parameter instead. Must not exceed 1024 characters. This value is case-sensitive. You do not need to include a trailing slash, regardless of your <a href="/docs/app/api-reference/config/next-config-js/trailingSlash"><code>trailingSlash</code></a> config.</li>
+<li><code>type</code>: (optional) <code>'page'</code> or <code>'layout'</code> string to change the type of path to revalidate. If <code>path</code> contains a dynamic segment, for example <code>/product/[slug]</code>, this parameter is required. If <code>path</code> is a literal path like <code>/product/1</code>, omit <code>type</code>.</li>
+</ul>
+<p>Use a literal path when you want to refresh a <a href="#revalidating-a-specific-path">single page</a>. Use a route pattern plus <code>type</code> to refresh <a href="#revalidating-a-page-path">all matching pages</a>.</p>
+<h2 id="returns">Returns</h2>
+<p><code>revalidatePath</code> does not return a value.</p>
+<h2 id="what-can-be-invalidated">What can be invalidated</h2>
+<p>The path parameter can point to pages, layouts, or route handlers:</p>
+<ul>
+<li><strong>Pages</strong>: Invalidates the specific page</li>
+<li><strong>Layouts</strong>: Invalidates the layout (the <code>layout.tsx</code> at that segment), all nested layouts beneath it, and all pages beneath them</li>
+<li><strong>Route Handlers</strong>: Invalidates cached data accessed within route handlers. For example <code>revalidatePath(&quot;/api/data&quot;)</code> invalidates this GET handler:</li>
+</ul>
+<pre><code class="language-ts">export async function GET() {
+  const data = await fetch('https://api.vercel.app/blog', {
+    cache: 'force-cache',
+  })
+
+  return Response.json(await data.json())
+}
+</code></pre>
+<h2 id="using-revalidatepath-with-rewrites">Using <code>revalidatePath</code> with rewrites</h2>
+<p>When using <a href="/docs/app/api-reference/config/next-config-js/rewrites">rewrites</a>, you must pass the <strong>destination</strong> path (the actual route file location), not the source path that appears in the browser’s address bar.</p>
+<p>For example, if you have a rewrite from <code>/blog</code> to <code>/news</code>:</p>
+<pre><code class="language-js">module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/blog',
+        destination: '/news',
+      },
+    ]
+  },
+}
+</code></pre>
+<p>To revalidate this page, use the destination path:</p>
+<pre><code class="language-ts">// Correct: use the destination path
+revalidatePath('/news')
+
+// Incorrect: the source path won't match the cache entry
+revalidatePath('/blog')
+</code></pre>
+<p>This is because <code>revalidatePath</code> operates on the route file structure, not the URL visible to users. Cache entries are tagged based on which route file renders them.</p>
+<h2 id="relationship-with-revalidatetag-and-updatetag">Relationship with <code>revalidateTag</code> and <code>updateTag</code></h2>
+<p><code>revalidatePath</code>, <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> and <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a> serve different purposes:</p>
+<ul>
+<li><strong><code>revalidatePath</code></strong>: Invalidates a specific page or layout path</li>
+<li><strong><code>revalidateTag</code></strong>: Marks data with specific tags as <strong>stale</strong>. Applies across all pages that use those tags</li>
+<li><strong><code>updateTag</code></strong>: Expires data with specific tags. Applies across all pages that use those tags</li>
+</ul>
+<p>When you call <code>revalidatePath</code>, only the specified path gets fresh data on the next visit. Other pages that use the same data tags will continue to serve cached data until those specific tags are also revalidated:</p>
+<pre><code class="language-tsx">// Page A: /blog
+const posts = await fetch('https://api.vercel.app/blog', {
+  next: { tags: ['posts'] },
+})
+
+// Page B: /dashboard
+const recentPosts = await fetch('https://api.vercel.app/blog?limit=5', {
+  next: { tags: ['posts'] },
+})
+</code></pre>
+<p>After calling <code>revalidatePath('/blog')</code>:</p>
+<ul>
+<li><strong>Page A (/blog)</strong>: Shows fresh data (page re-rendered)</li>
+<li><strong>Page B (/dashboard)</strong>: Still shows stale data (cache tag ‘posts’ not invalidated)</li>
+</ul>
+<p>Learn about the difference between <a href="/docs/app/api-reference/functions/updateTag#differences-from-revalidatetag"><code>revalidateTag</code> and <code>updateTag</code></a>.</p>
+<h3 id="building-revalidation-utilities">Building revalidation utilities</h3>
+<p><code>revalidatePath</code> and <code>updateTag</code> are complementary primitives that are often used together in utility functions to ensure comprehensive data consistency across your application:</p>
+<pre><code class="language-ts">'use server'
+
+import { revalidatePath, updateTag } from 'next/cache'
+
+export async function updatePost() {
+  await updatePostInDatabase()
+
+  revalidatePath('/blog') // Refresh the blog page
+  updateTag('posts') // Refresh all pages using 'posts' tag
+}
+</code></pre>
+<p>This pattern ensures that both the specific page and any other pages using the same data remain consistent.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="revalidating-a-specific-path">Revalidating a specific path</h3>
+<pre><code class="language-ts">import { revalidatePath } from 'next/cache'
+revalidatePath('/blog/post-1')
+</code></pre>
+<p>This will invalidate one specific path for revalidation on the next page visit.</p>
+<h3 id="revalidating-a-page-path">Revalidating a Page path</h3>
+<pre><code class="language-ts">import { revalidatePath } from 'next/cache'
+revalidatePath('/blog/[slug]', 'page')
+// or with route groups
+revalidatePath('/(main)/blog/[slug]', 'page')
+</code></pre>
+<p>This will invalidate any path that matches the provided <code>page</code> file for revalidation on the next page visit. This will <em>not</em> invalidate pages beneath the specific page. For example, <code>/blog/[slug]</code> won’t invalidate <code>/blog/[slug]/[author]</code>.</p>
+<h3 id="revalidating-a-layout-path">Revalidating a Layout path</h3>
+<pre><code class="language-ts">import { revalidatePath } from 'next/cache'
+revalidatePath('/blog/[slug]', 'layout')
+// or with route groups
+revalidatePath('/(main)/post/[slug]', 'layout')
+</code></pre>
+<p>This will invalidate any path that matches the provided <code>layout</code> file for revalidation on the next page visit. This will cause pages beneath with the same layout to be invalidated and revalidated on the next visit. For example, in the above case, <code>/blog/[slug]/[another]</code> would also be invalidated and revalidated on the next visit.</p>
+<h3 id="revalidating-all-data">Revalidating all data</h3>
+<pre><code class="language-ts">import { revalidatePath } from 'next/cache'
+
+revalidatePath('/', 'layout')
+</code></pre>
+<p>This will purge the <a href="/docs/app/glossary#client-cache">Client Cache</a>, and invalidate all cached data for revalidation on the next page visit.</p>
+<h3 id="server-function">Server Function</h3>
+<pre><code class="language-ts">'use server'
+
+import { revalidatePath } from 'next/cache'
+
+export default async function submit() {
+  await submitForm()
+  revalidatePath('/')
+}
+</code></pre>
+<h3 id="route-handler">Route Handler</h3>
+<pre><code class="language-ts">import { revalidatePath } from 'next/cache'
+import type { NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const path = request.nextUrl.searchParams.get('path')
+
+  if (path) {
+    revalidatePath(path)
+    return Response.json({ revalidated: true, now: Date.now() })
+  }
+
+  return Response.json({
+    revalidated: false,
+    now: Date.now(),
+    message: 'Missing path to revalidate',
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { revalidatePath } from 'next/cache'
+
+export async function GET(request) {
+  const path = request.nextUrl.searchParams.get('path')
+
+  if (path) {
+    revalidatePath(path)
+    return Response.json({ revalidated: true, now: Date.now() })
+  }
+
+  return Response.json({
+    revalidated: false,
+    now: Date.now(),
+    message: 'Missing path to revalidate',
+  })
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

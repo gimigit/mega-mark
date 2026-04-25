@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/max-dependencies — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-max-dependencies">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#options">Options</a></li><ul><li><a href="#max">max</a></li><li><a href="#fail">Fail</a></li><li><a href="#pass">Pass</a></li><li><a href="#ignoretypeimports">ignoreTypeImports</a></li><li><a href="#fail-1">Fail</a></li><li><a href="#pass-1">Pass</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/max-dependencies</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Forbid modules to have too many dependencies (<code>import</code> or <code>require</code> statements).</p>
+<p>This is a useful rule because a module with too many dependencies is a code smell, and usually indicates the module is doing too much and/or should be broken up into smaller modules.</p>
+<p>Importing multiple named exports from a single module will only count once (e.g. <code>import {x, y, z} from './foo'</code> will only count as a single dependency).</p>
+<h2 id="options">Options</h2>
+<p>This rule has the following options, with these defaults:</p>
+<pre><code class="language-js">&quot;import/max-dependencies&quot;: [&quot;error&quot;, {
+  &quot;max&quot;: 10,
+  &quot;ignoreTypeImports&quot;: false,
+}]
+</code></pre>
+<h3 id="max"><code>max</code></h3>
+<p>This option sets the maximum number of dependencies allowed. Anything over will trigger the rule. <strong>Default is 10</strong> if the rule is enabled and no <code>max</code> is specified.</p>
+<p>Given a max value of <code>{&quot;max&quot;: 2}</code>:</p>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-js">import a from './a'; // 1
+const b = require('./b'); // 2
+import c from './c'; // 3 - exceeds max!
+</code></pre>
+<h3 id="pass">Pass</h3>
+<pre><code class="language-js">import a from './a'; // 1
+const anotherA = require('./a'); // still 1
+import {x, y, z} from './foo'; // 2
+</code></pre>
+<h3 id="ignoretypeimports"><code>ignoreTypeImports</code></h3>
+<p>Ignores <code>type</code> imports. Type imports are a feature released in TypeScript 3.8, you can <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export" target="_blank" rel="noopener">read more here</a>. Defaults to <code>false</code>.</p>
+<p>Given <code>{&quot;max&quot;: 2, &quot;ignoreTypeImports&quot;: true}</code>:</p>
+<!-- markdownlint-disable-next-line MD024 -- duplicate header -->
+<h3 id="fail-1">Fail</h3>
+<pre><code class="language-ts">import a from './a';
+import b from './b';
+import c from './c';
+</code></pre>
+<!-- markdownlint-disable-next-line MD024 -- duplicate header -->
+<h3 id="pass-1">Pass</h3>
+<pre><code class="language-ts">import a from './a';
+import b from './b';
+import type c from './c'; // Doesn't count against max
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you don’t care how many dependencies a module has.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

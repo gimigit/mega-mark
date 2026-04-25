@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03-forms-and-mutations — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-03-forms-and-mutations">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#examples">Examples</a></li><ul><li><a href="#redirecting">Redirecting</a></li><li><a href="#setting-cookies">Setting cookies</a></li><li><a href="#reading-cookies">Reading cookies</a></li><li><a href="#deleting-cookies">Deleting cookies</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">03-forms-and-mutations</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Forms and Mutations</td></tr><tr><th>description</th><td>Learn how to handle form submissions and data mutations with Next.js.</td></tr></table><p>Forms enable you to create and update data in web applications. Next.js provides a powerful way to handle form submissions and data mutations using <strong>API Routes</strong>.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>We will soon recommend <a href="/docs/app/guides/migrating/app-router-migration">incrementally adopting</a> the App Router and using <a href="/docs/app/getting-started/mutating-data">Server Actions</a> for handling form submissions and data mutations. Server Actions allow you to define asynchronous server functions that can be called directly from your components, without needing to manually create an API Route.</li>
+<li>API Routes <a href="https://developer.mozilla.org/docs/Web/HTTP/CORS" target="_blank" rel="noopener">do not specify CORS headers</a>, meaning they are same-origin only by default.</li>
+<li>Since API Routes run on the server, we’re able to use sensitive values (like API keys) through <a href="/docs/pages/guides/environment-variables">Environment Variables</a> without exposing them to the client. This is critical for the security of your application.</li>
+</ul>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<h3 id="redirecting">Redirecting</h3>
+<p>If you would like to redirect the user to a different route after a mutation, you can <a href="/docs/pages/building-your-application/routing/api-routes#response-helpers"><code>redirect</code></a> to any absolute or relative URL:</p>
+<pre><code class="language-ts">import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const id = await addPost()
+  res.redirect(307, `/post/${id}`)
+}
+</code></pre>
+<pre><code class="language-js">export default async function handler(req, res) {
+  const id = await addPost()
+  res.redirect(307, `/post/${id}`)
+}
+</code></pre>
+<h3 id="setting-cookies">Setting cookies</h3>
+<p>You can set cookies inside an API Route using the <code>setHeader</code> method on the response:</p>
+<pre><code class="language-ts">import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  res.setHeader('Set-Cookie', 'username=lee; Path=/; HttpOnly')
+  res.status(200).send('Cookie has been set.')
+}
+</code></pre>
+<pre><code class="language-js">export default async function handler(req, res) {
+  res.setHeader('Set-Cookie', 'username=lee; Path=/; HttpOnly')
+  res.status(200).send('Cookie has been set.')
+}
+</code></pre>
+<h3 id="reading-cookies">Reading cookies</h3>
+<p>You can read cookies inside an API Route using the <a href="/docs/pages/building-your-application/routing/api-routes#request-helpers"><code>cookies</code></a> request helper:</p>
+<pre><code class="language-ts">import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const auth = req.cookies.authorization
+  // ...
+}
+</code></pre>
+<pre><code class="language-js">export default async function handler(req, res) {
+  const auth = req.cookies.authorization
+  // ...
+}
+</code></pre>
+<h3 id="deleting-cookies">Deleting cookies</h3>
+<p>You can delete cookies inside an API Route using the <code>setHeader</code> method on the response:</p>
+<pre><code class="language-ts">import type { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  res.setHeader('Set-Cookie', 'username=; Path=/; HttpOnly; Max-Age=0')
+  res.status(200).send('Cookie has been deleted.')
+}
+</code></pre>
+<pre><code class="language-js">export default async function handler(req, res) {
+  res.setHeader('Set-Cookie', 'username=; Path=/; HttpOnly; Max-Age=0')
+  res.status(200).send('Cookie has been deleted.')
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

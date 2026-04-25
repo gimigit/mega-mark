@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>sass — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-sass">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><ul><li><a href="#customizing-sass-options">Customizing Sass Options</a></li><li><a href="#sass-variables">Sass Variables</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">sass</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Sass</td></tr><tr><th>description</th><td>Style your Next.js application using Sass.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>Next.js has built-in support for integrating with Sass after the package is installed using both the <code>.scss</code> and <code>.sass</code> extensions. You can use component-level Sass via CSS Modules and the <code>.module.scss</code>or <code>.module.sass</code> extension.</p>
+<p>First, install <a href="https://github.com/sass/sass" target="_blank" rel="noopener"><code>sass</code></a>:</p>
+<pre><code class="language-bash">pnpm add -D sass
+</code></pre>
+<pre><code class="language-bash">npm install --save-dev sass
+</code></pre>
+<pre><code class="language-bash">yarn add -D sass
+</code></pre>
+<pre><code class="language-bash">bun add -D sass
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<p>Sass supports <a href="https://sass-lang.com/documentation/syntax" target="_blank" rel="noopener">two different syntaxes</a>, each with their own extension.
+The <code>.scss</code> extension requires you use the <a href="https://sass-lang.com/documentation/syntax#scss" target="_blank" rel="noopener">SCSS syntax</a>,
+while the <code>.sass</code> extension requires you use the <a href="https://sass-lang.com/documentation/syntax#the-indented-syntax" target="_blank" rel="noopener">Indented Syntax (“Sass”)</a>.</p>
+<p>If you’re not sure which to choose, start with the <code>.scss</code> extension which is a superset of CSS, and doesn’t require you learn the
+Indented Syntax (“Sass”).</p>
+</blockquote>
+<h3 id="customizing-sass-options">Customizing Sass Options</h3>
+<p>If you want to configure your Sass options, use <code>sassOptions</code> in <code>next.config</code>.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  sassOptions: {
+    additionalData: `$var: red;`,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+
+const nextConfig = {
+  sassOptions: {
+    additionalData: `$var: red;`,
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h4>Implementation</h4>
+<p>You can use the <code>implementation</code> property to specify the Sass implementation to use. By default, Next.js uses the <a href="https://www.npmjs.com/package/sass" target="_blank" rel="noopener"><code>sass</code></a> package.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  sassOptions: {
+    implementation: 'sass-embedded',
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+
+const nextConfig = {
+  sassOptions: {
+    implementation: 'sass-embedded',
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="sass-variables">Sass Variables</h3>
+<p>Next.js supports Sass variables exported from CSS Module files.</p>
+<p>For example, using the exported <code>primaryColor</code> Sass variable:</p>
+<pre><code class="language-scss">$primary-color: #64ff00;
+
+:export {
+  primaryColor: $primary-color;
+}
+</code></pre>
+<AppOnly>
+<pre><code class="language-jsx">// maps to root `/` URL
+
+import variables from './variables.module.scss'
+
+export default function Page() {
+  return &lt;h1 style={{ color: variables.primaryColor }}&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import variables from '../styles/variables.module.scss'
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;Layout color={variables.primaryColor}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/Layout&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

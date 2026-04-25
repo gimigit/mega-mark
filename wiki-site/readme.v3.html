@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>zod-validation-error — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-readme.v3">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#installation">Installation</a></li><li><a href="#quick-start">Quick start</a></li><li><a href="#motivation">Motivation</a></li><ul><li><a href="#example">Example</a></li></ul><li><a href="#api">API</a></li><ul><li><a href="#validationerror">ValidationError</a></li><li><a href="#createmessagebuilder">createMessageBuilder</a></li><li><a href="#errormap">errorMap</a></li><li><a href="#isvalidationerror">isValidationError</a></li><li><a href="#isvalidationerrorlike">isValidationErrorLike</a></li><li><a href="#iszoderrorlike">isZodErrorLike</a></li><li><a href="#fromerror">fromError</a></li><li><a href="#fromzodissue">fromZodIssue</a></li><li><a href="#fromzoderror">fromZodError</a></li><li><a href="#tovalidationerror">toValidationError</a></li></ul><li><a href="#messagebuilder">MessageBuilder</a></li><li><a href="#faq">FAQ</a></li><ul><li><a href="#how-to-distinguish-between-errors">How to distinguish between errors</a></li><li><a href="#how-to-use-validationerror-outside-zod">How to use ValidationError outside zod</a></li><li><a href="#how-to-use-validationerror-with-custom-error-map">How to use ValidationError with custom “error map”</a></li><li><a href="#how-to-use-zod-validation-error-with-react-hook-form">How to use zod-validation-error with react-hook-form?</a></li><li><a href="#does-zod-validation-error-support-commonjs">Does zod-validation-error support CommonJS</a></li></ul><li><a href="#contribute">Contribute</a></li><li><a href="#license">License</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">zod-validation-error</h1>
+
+</div>
+<div class="article-body">
+<p>Wrap zod validation errors in user-friendly readable messages.</p>
+<p><a href="https://github.com/causaly/zod-validation-error/actions/workflows/ci.yml" target="_blank" rel="noopener"><img src="https://github.com/causaly/zod-validation-error/actions/workflows/ci.yml/badge.svg" alt="Build Status"></a> <a href="https://www.npmjs.com/package/zod-validation-error" target="_blank" rel="noopener"><img src="https://img.shields.io/npm/v/zod-validation-error.svg?color=0c0" alt="npm version"></a></p>
+<h4>Features</h4>
+<ul>
+<li>User-friendly readable messages, configurable via options;</li>
+<li>Maintain original issues under <code>error.details</code>;</li>
+<li>Supports both <code>zod</code> v3 and v4.</li>
+</ul>
+<p><strong><em>Note:</em></strong> This is the v3 version of <code>zod-validation-error</code>. If you are looking for zod v4 support, please click <a href="/README.md">here</a>.</p>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-bash">npm install zod-validation-error
+</code></pre>
+<h4>Requirements</h4>
+<ul>
+<li>Node.js v.18+</li>
+<li>TypeScript v.4.5+</li>
+</ul>
+<h2 id="quick-start">Quick start</h2>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { fromError } from 'zod-validation-error/v3';
+
+// create zod schema
+const zodSchema = zod.object({
+  id: zod.number().int().positive(),
+  email: zod.string().email(),
+});
+
+// parse some invalid value
+try {
+  zodSchema.parse({
+    id: 1,
+    email: 'foobar', // note: invalid email
+  });
+} catch (err) {
+  const validationError = fromError(err);
+  // the error is now readable by the user
+  // you may print it to console
+  console.log(validationError.toString());
+  // or return it as an actual error
+  return validationError;
+}
+</code></pre>
+<h2 id="motivation">Motivation</h2>
+<p>Zod errors are difficult to consume for the end-user. This library wraps Zod validation errors in user-friendly readable messages that can be exposed to the outer world, while maintaining the original errors in an array for <em>dev</em> use.</p>
+<h3 id="example">Example</h3>
+<h4>Input (from Zod)</h4>
+<pre><code class="language-json">[
+  {
+    &quot;code&quot;: &quot;too_small&quot;,
+    &quot;inclusive&quot;: false,
+    &quot;message&quot;: &quot;Number must be greater than 0&quot;,
+    &quot;minimum&quot;: 0,
+    &quot;path&quot;: [&quot;id&quot;],
+    &quot;type&quot;: &quot;number&quot;
+  },
+  {
+    &quot;code&quot;: &quot;invalid_string&quot;,
+    &quot;message&quot;: &quot;Invalid email&quot;,
+    &quot;path&quot;: [&quot;email&quot;],
+    &quot;validation&quot;: &quot;email&quot;
+  }
+]
+</code></pre>
+<h4>Output</h4>
+<pre><code>Validation error: Number must be greater than 0 at &quot;id&quot;; Invalid email at &quot;email&quot;
+</code></pre>
+<h2 id="api">API</h2>
+<ul>
+<li><a href="#validationerror">ValidationError(message[, options])</a></li>
+<li><a href="#createMessageBuilder">createMessageBuilder(props)</a></li>
+<li><a href="#errormap">errorMap</a></li>
+<li><a href="#isvalidationerror">isValidationError(error)</a></li>
+<li><a href="#isvalidationerrorlike">isValidationErrorLike(error)</a></li>
+<li><a href="#iszoderrorlike">isZodErrorLike(error)</a></li>
+<li><a href="#fromerror">fromError(error[, options])</a></li>
+<li><a href="#fromzodissue">fromZodIssue(zodIssue[, options])</a></li>
+<li><a href="#fromzoderror">fromZodError(zodError[, options])</a></li>
+<li><a href="#tovalidationerror">toValidationError([options]) =&gt; (error) =&gt; ValidationError</a></li>
+</ul>
+<h3 id="validationerror">ValidationError</h3>
+<p>Main <code>ValidationError</code> class, extending native JavaScript <code>Error</code>.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>message</code> - <em>string</em>; error message (required)</li>
+<li><code>options</code> - <em>ErrorOptions</em>; error options as per <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#options" target="_blank" rel="noopener">JavaScript definition</a> (optional)
+<ul>
+<li><code>options.cause</code> - <em>any</em>; can be used to hold the original zod error (optional)</li>
+</ul>
+</li>
+</ul>
+<h4>Example 1: construct new ValidationError with <code>message</code></h4>
+<pre><code class="language-typescript">const { ValidationError } = require('zod-validation-error');
+
+const error = new ValidationError('foobar');
+console.log(error instanceof Error); // prints true
+</code></pre>
+<h4>Example 2: construct new ValidationError with <code>message</code> and <code>options.cause</code></h4>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+const { ValidationError } = require('zod-validation-error');
+
+const error = new ValidationError('foobar', {
+  cause: new zod.ZodError([
+    {
+      code: 'invalid_string',
+      message: 'Invalid email',
+      path: ['email'],
+      validation: 'email',
+    },
+  ]),
+});
+
+console.log(error.details); // prints issues from zod error
+</code></pre>
+<h3 id="createmessagebuilder">createMessageBuilder</h3>
+<p>Creates zod-validation-error’s default <code>MessageBuilder</code>, which is used to produce user-friendly error messages.</p>
+<p>Meant to be passed as an option to <a href="#fromerror">fromError</a>, <a href="#fromzodissue">fromZodIssue</a>, <a href="#fromzoderror">fromZodError</a> or <a href="#tovalidationerror">toValidationError</a>.</p>
+<p>You may read more on the concept of the <code>MessageBuilder</code> further <a href="#MessageBuilder">below</a>.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>props</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>maxIssuesInMessage</code> - <em>number</em>; max issues to include in user-friendly message (optional, defaults to 99)</li>
+<li><code>issueSeparator</code> - <em>string</em>; used to concatenate issues in user-friendly message (optional, defaults to “;”)</li>
+<li><code>unionSeparator</code> - <em>string</em>; used to concatenate union-issues in user-friendly message (optional, defaults to “, or”)</li>
+<li><code>prefix</code> - <em>string</em> or <em>null</em>; prefix to use in user-friendly message (optional, defaults to “Validation error”). Pass <code>null</code> to disable prefix completely.</li>
+<li><code>prefixSeparator</code> - <em>string</em>; used to concatenate prefix with rest of the user-friendly message (optional, defaults to &quot;: &quot;). Not used when <code>prefix</code> is <code>null</code>.</li>
+<li><code>includePath</code> - <em>boolean</em>; used to provide control on whether to include the erroneous property name suffix or not (optional, defaults to <code>true</code>).</li>
+</ul>
+</li>
+</ul>
+<h4>Example</h4>
+<pre><code class="language-typescript">import { createMessageBuilder } from 'zod-validation-error/v3';
+
+const messageBuilder = createMessageBuilder({
+  includePath: false,
+  maxIssuesInMessage: 3,
+});
+</code></pre>
+<h3 id="errormap">errorMap</h3>
+<p>A custom error map to use with zod’s <code>setErrorMap</code> method and get user-friendly messages automatically.</p>
+<h4>Example</h4>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { errorMap } from 'zod-validation-error/v3';
+
+zod.setErrorMap(errorMap);
+</code></pre>
+<h3 id="isvalidationerror">isValidationError</h3>
+<p>A <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates" target="_blank" rel="noopener">type guard</a> utility function, based on <code>instanceof</code> comparison.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>error</code> - error instance (required)</li>
+</ul>
+<h4>Example</h4>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { ValidationError, isValidationError } from 'zod-validation-error/v3';
+
+const err = new ValidationError('foobar');
+isValidationError(err); // returns true
+
+const invalidErr = new Error('foobar');
+isValidationError(err); // returns false
+</code></pre>
+<h3 id="isvalidationerrorlike">isValidationErrorLike</h3>
+<p>A <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates" target="_blank" rel="noopener">type guard</a> utility function, based on <em>heuristics</em> comparison.</p>
+<p><em>Why do we need heuristics since we can use a simple <code>instanceof</code> comparison?</em> Because of multi-version inconsistencies. For instance, it’s possible that a dependency is using an older <code>zod-validation-error</code> version internally. In such case, the <code>instanceof</code> comparison will yield invalid results because module deduplication does not apply at npm/yarn level and the prototype is different.</p>
+<p>tl;dr if you are uncertain then it is preferable to use <code>isValidationErrorLike</code> instead of <code>isValidationError</code>.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>error</code> - error instance (required)</li>
+</ul>
+<h4>Example</h4>
+<pre><code class="language-typescript">import {
+  ValidationError,
+  isValidationErrorLike,
+} from 'zod-validation-error/v3';
+
+const err = new ValidationError('foobar');
+isValidationErrorLike(err); // returns true
+
+const invalidErr = new Error('foobar');
+isValidationErrorLike(err); // returns false
+</code></pre>
+<h3 id="iszoderrorlike">isZodErrorLike</h3>
+<p>A <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates" target="_blank" rel="noopener">type guard</a> utility function, based on <em>heuristics</em> comparison.</p>
+<p><em>Why do we need heuristics since we can use a simple <code>instanceof</code> comparison?</em> Because of multi-version inconsistencies. For instance, it’s possible that a dependency is using an older <code>zod</code> version internally. In such case, the <code>instanceof</code> comparison will yield invalid results because module deduplication does not apply at npm/yarn level and the prototype is different.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>error</code> - error instance (required)</li>
+</ul>
+<h4>Example</h4>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { ValidationError, isZodErrorLike } from 'zod-validation-error/v3';
+
+const zodValidationErr = new ValidationError('foobar');
+isZodErrorLike(zodValidationErr); // returns false
+
+const genericErr = new Error('foobar');
+isZodErrorLike(genericErr); // returns false
+
+const zodErr = new zod.ZodError([
+  {
+    code: zod.ZodIssueCode.custom,
+    path: [],
+    message: 'foobar',
+    fatal: true,
+  },
+]);
+isZodErrorLike(zodErr); // returns true
+</code></pre>
+<h3 id="fromerror">fromError</h3>
+<p>Converts an error to <code>ValidationError</code>.</p>
+<p><em>What is the difference between <code>fromError</code> and <code>fromZodError</code>?</em> The <code>fromError</code> function is a less strict version of <code>fromZodError</code>. It can accept an unknown error and attempt to convert it to a <code>ValidationError</code>.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>error</code> - <em>unknown</em>; an error (required)</li>
+<li><code>options</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>messageBuilder</code> - <em>MessageBuilder</em>; a function that accepts an array of <code>zod.ZodIssue</code> objects and returns a user-friendly error message in the form of a <code>string</code> (optional).</li>
+</ul>
+</li>
+</ul>
+<h4>Notes</h4>
+<p>Alternatively, you may pass the following <code>options</code> instead of a <code>messageBuilder</code>.</p>
+<ul>
+<li><code>options</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>maxIssuesInMessage</code> - <em>number</em>; max issues to include in user-friendly message (optional, defaults to 99)</li>
+<li><code>issueSeparator</code> - <em>string</em>; used to concatenate issues in user-friendly message (optional, defaults to “;”)</li>
+<li><code>unionSeparator</code> - <em>string</em>; used to concatenate union-issues in user-friendly message (optional, defaults to “, or”)</li>
+<li><code>prefix</code> - <em>string</em> or <em>null</em>; prefix to use in user-friendly message (optional, defaults to “Validation error”). Pass <code>null</code> to disable prefix completely.</li>
+<li><code>prefixSeparator</code> - <em>string</em>; used to concatenate prefix with rest of the user-friendly message (optional, defaults to &quot;: &quot;). Not used when <code>prefix</code> is <code>null</code>.</li>
+<li><code>includePath</code> - <em>boolean</em>; used to provide control on whether to include the erroneous property name suffix or not (optional, defaults to <code>true</code>).</li>
+</ul>
+</li>
+</ul>
+<p>They will be passed as arguments to the <a href="#createMessageBuilder">createMessageBuilder</a> function. The only reason they exist is to provide backwards-compatibility with older versions of <code>zod-validation-error</code>. They should however be considered deprecated and may be removed in the future.</p>
+<h3 id="fromzodissue">fromZodIssue</h3>
+<p>Converts a single zod issue to <code>ValidationError</code>.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>zodIssue</code> - <em>zod.ZodIssue</em>; a ZodIssue instance (required)</li>
+<li><code>options</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>messageBuilder</code> - <em>MessageBuilder</em>; a function that accepts an array of <code>zod.ZodIssue</code> objects and returns a user-friendly error message in the form of a <code>string</code> (optional).</li>
+</ul>
+</li>
+</ul>
+<h4>Notes</h4>
+<p>Alternatively, you may pass the following <code>options</code> instead of a <code>messageBuilder</code>.</p>
+<ul>
+<li><code>options</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>issueSeparator</code> - <em>string</em>; used to concatenate issues in user-friendly message (optional, defaults to “;”)</li>
+<li><code>unionSeparator</code> - <em>string</em>; used to concatenate union-issues in user-friendly message (optional, defaults to “, or”)</li>
+<li><code>prefix</code> - <em>string</em> or <em>null</em>; prefix to use in user-friendly message (optional, defaults to “Validation error”). Pass <code>null</code> to disable prefix completely.</li>
+<li><code>prefixSeparator</code> - <em>string</em>; used to concatenate prefix with rest of the user-friendly message (optional, defaults to &quot;: &quot;). Not used when <code>prefix</code> is <code>null</code>.</li>
+<li><code>includePath</code> - <em>boolean</em>; used to provide control on whether to include the erroneous property name suffix or not (optional, defaults to <code>true</code>).</li>
+</ul>
+</li>
+</ul>
+<p>They will be passed as arguments to the <a href="#createMessageBuilder">createMessageBuilder</a> function. The only reason they exist is to provide backwards-compatibility with older versions of <code>zod-validation-error</code>. They should however be considered deprecated and may be removed in the future.</p>
+<h3 id="fromzoderror">fromZodError</h3>
+<p>Converts zod error to <code>ValidationError</code>.</p>
+<p><em>Why is the difference between <code>ZodError</code> and <code>ZodIssue</code>?</em> A <code>ZodError</code> is a collection of 1 or more <code>ZodIssue</code> instances. It’s what you get when you call <code>zodSchema.parse()</code>.</p>
+<h4>Arguments</h4>
+<ul>
+<li><code>zodError</code> - <em>zod.ZodError</em>; a ZodError instance (required)</li>
+<li><code>options</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>messageBuilder</code> - <em>MessageBuilder</em>; a function that accepts an array of <code>zod.ZodIssue</code> objects and returns a user-friendly error message in the form of a <code>string</code> (optional).</li>
+</ul>
+</li>
+</ul>
+<h4>Notes</h4>
+<p>Alternatively, you may pass the following <code>options</code> instead of a <code>messageBuilder</code>.</p>
+<ul>
+<li><code>options</code> - <em>Object</em>; formatting options (optional)
+<ul>
+<li><code>maxIssuesInMessage</code> - <em>number</em>; max issues to include in user-friendly message (optional, defaults to 99)</li>
+<li><code>issueSeparator</code> - <em>string</em>; used to concatenate issues in user-friendly message (optional, defaults to “;”)</li>
+<li><code>unionSeparator</code> - <em>string</em>; used to concatenate union-issues in user-friendly message (optional, defaults to “, or”)</li>
+<li><code>prefix</code> - <em>string</em> or <em>null</em>; prefix to use in user-friendly message (optional, defaults to “Validation error”). Pass <code>null</code> to disable prefix completely.</li>
+<li><code>prefixSeparator</code> - <em>string</em>; used to concatenate prefix with rest of the user-friendly message (optional, defaults to &quot;: &quot;). Not used when <code>prefix</code> is <code>null</code>.</li>
+<li><code>includePath</code> - <em>boolean</em>; used to provide control on whether to include the erroneous property name suffix or not (optional, defaults to <code>true</code>).</li>
+</ul>
+</li>
+</ul>
+<p>They will be passed as arguments to the <a href="#createMessageBuilder">createMessageBuilder</a> function. The only reason they exist is to provide backwards-compatibility with older versions of <code>zod-validation-error</code>. They should however be considered deprecated and may be removed in the future.</p>
+<h3 id="tovalidationerror">toValidationError</h3>
+<p>A curried version of <code>fromZodError</code> meant to be used for FP (Functional Programming). Note it first takes the options object if needed and returns a function that converts the <code>zodError</code> to a <code>ValidationError</code> object</p>
+<pre><code class="language-js">toValidationError(options) =&gt; (zodError) =&gt; ValidationError
+</code></pre>
+<h4>Example using fp-ts</h4>
+<pre><code class="language-typescript">import * as Either from 'fp-ts/Either';
+import { z as zod } from 'zod/v3';
+import { toValidationError, ValidationError } from 'zod-validation-error/v3';
+
+// create zod schema
+const zodSchema = zod
+  .object({
+    id: zod.number().int().positive(),
+    email: zod.string().email(),
+  })
+  .brand&lt;'User'&gt;();
+
+export type User = zod.infer&lt;typeof zodSchema&gt;;
+
+export function parse(
+  value: zod.input&lt;typeof zodSchema&gt;
+): Either.Either&lt;ValidationError, User&gt; {
+  return Either.tryCatch(() =&gt; schema.parse(value), toValidationError());
+}
+</code></pre>
+<h2 id="messagebuilder">MessageBuilder</h2>
+<p><code>zod-validation-error</code> can be configured with a custom <code>MessageBuilder</code> function in order to produce case-specific error messages.</p>
+<h4>Example</h4>
+<p>For instance, one may want to print <code>invalid_string</code> errors to the console in red color.</p>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { type MessageBuilder, fromError } from 'zod-validation-error/v3';
+import chalk from 'chalk';
+
+// create custom MessageBuilder
+const myMessageBuilder: MessageBuilder = (issues) =&gt; {
+  return (
+    issues
+      // format error message
+      .map((issue) =&gt; {
+        if (issue.code === zod.ZodIssueCode.invalid_string) {
+          return chalk.red(issue.message);
+        }
+
+        return issue.message;
+      })
+      // join as string with new-line character
+      .join('\n')
+  );
+};
+
+// create zod schema
+const zodSchema = zod.object({
+  id: zod.number().int().positive(),
+  email: zod.string().email(),
+});
+
+// parse some invalid value
+try {
+  zodSchema.parse({
+    id: 1,
+    email: 'foobar', // note: invalid email value
+  });
+} catch (err) {
+  const validationError = fromError(err, {
+    messageBuilder: myMessageBuilder,
+  });
+  // the error is now displayed with red letters
+  console.log(validationError.toString());
+}
+</code></pre>
+<h2 id="faq">FAQ</h2>
+<h3 id="how-to-distinguish-between-errors">How to distinguish between errors</h3>
+<p>Use the <code>isValidationErrorLike</code> type guard.</p>
+<h4>Example</h4>
+<p>Scenario: Distinguish between <code>ValidationError</code> VS generic <code>Error</code> in order to respond with 400 VS 500 HTTP status code respectively.</p>
+<pre><code class="language-typescript">import * as Either from 'fp-ts/Either';
+import { z as zod } from 'zod/v3';
+import { isValidationErrorLike } from 'zod-validation-error/v3';
+
+try {
+  func(); // throws Error - or - ValidationError
+} catch (err) {
+  if (isValidationErrorLike(err)) {
+    return 400; // Bad Data (this is a client error)
+  }
+
+  return 500; // Server Error
+}
+</code></pre>
+<h3 id="how-to-use-validationerror-outside-zod">How to use <code>ValidationError</code> outside <code>zod</code></h3>
+<p>It’s possible to implement custom validation logic outside <code>zod</code> and throw a <code>ValidationError</code>.</p>
+<h4>Example 1: passing custom message</h4>
+<pre><code class="language-typescript">import { ValidationError } from 'zod-validation-error/v3';
+import { Buffer } from 'node:buffer';
+
+function parseBuffer(buf: unknown): Buffer {
+  if (!Buffer.isBuffer(buf)) {
+    throw new ValidationError('Invalid argument; expected buffer');
+  }
+
+  return buf;
+}
+</code></pre>
+<h4>Example 2: passing custom message and original error as cause</h4>
+<pre><code class="language-typescript">import { ValidationError } from 'zod-validation-error/v3';
+
+try {
+  // do something that throws an error
+} catch (err) {
+  throw new ValidationError('Something went deeply wrong', { cause: err });
+}
+</code></pre>
+<h3 id="how-to-use-validationerror-with-custom-error-map">How to use <code>ValidationError</code> with custom “error map”</h3>
+<p>Zod supports customizing error messages by providing a custom “error map”. You may combine this with <code>zod-validation-error</code> to produce user-friendly messages.</p>
+<h4>Example 1: produce user-friendly error messages using the <code>errorMap</code> property</h4>
+<p>If all you need is to produce user-friendly error messages you may use the <code>errorMap</code> property.</p>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { errorMap } from 'zod-validation-error/v3';
+
+zod.setErrorMap(errorMap);
+</code></pre>
+<h4>Example 2: extra customization using <code>fromZodIssue</code></h4>
+<p>If you need to customize some error code, you may use the <code>fromZodIssue</code> function.</p>
+<pre><code class="language-typescript">import { z as zod } from 'zod/v3';
+import { fromZodIssue } from 'zod-validation-error/v3';
+
+const customErrorMap: zod.ZodErrorMap = (issue, ctx) =&gt; {
+  switch (issue.code) {
+    case ZodIssueCode.invalid_type: {
+      return {
+        message:
+          'Custom error message of your preference for invalid_type errors',
+      };
+    }
+    default: {
+      const validationError = fromZodIssue({
+        ...issue,
+        // fallback to the default error message
+        // when issue does not have a message
+        message: issue.message ?? ctx.defaultError,
+      });
+
+      return {
+        message: validationError.message,
+      };
+    }
+  }
+};
+
+zod.setErrorMap(customErrorMap);
+</code></pre>
+<h3 id="how-to-use-zod-validation-error-with-react-hook-form">How to use <code>zod-validation-error</code> with <code>react-hook-form</code>?</h3>
+<pre><code class="language-typescript">import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { errorMap } from 'zod-validation-error/v3';
+
+useForm({
+  resolver: zodResolver(schema, { errorMap }),
+});
+</code></pre>
+<h3 id="does-zod-validation-error-support-commonjs">Does <code>zod-validation-error</code> support CommonJS</h3>
+<p>Yes, <code>zod-validation-error</code> supports CommonJS out-of-the-box. All you need to do is import it using <code>require</code>.</p>
+<h4>Example</h4>
+<pre><code class="language-typescript">const { ValidationError } = require('zod-validation-error');
+</code></pre>
+<h2 id="contribute">Contribute</h2>
+<p>Source code contributions are most welcome. Please open a PR, ensure the linter is satisfied and all tests pass.</p>
+<h4>We are hiring</h4>
+<p>Causaly is building the world’s largest biomedical knowledge platform, using technologies such as TypeScript, React and Node.js. Find out more about our openings at <a href="https://jobs.ashbyhq.com/causaly" target="_blank" rel="noopener">https://jobs.ashbyhq.com/causaly</a>.</p>
+<h2 id="license">License</h2>
+<p>MIT</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

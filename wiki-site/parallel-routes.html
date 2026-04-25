@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>parallel-routes — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-parallel-routes">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#convention">Convention</a></li><ul><li><a href="#slots">Slots</a></li><li><a href="#defaultjs">default.js</a></li></ul><li><a href="#behavior">Behavior</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#with-useselectedlayoutsegments">With useSelectedLayoutSegment(s)</a></li><li><a href="#conditional-routes">Conditional Routes</a></li><li><a href="#tab-groups">Tab Groups</a></li><li><a href="#modals">Modals</a></li><li><a href="#loading-and-error-ui">Loading and Error UI</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">parallel-routes</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Simultaneously render one or more pages in the same view that can be navigated independently. A pattern for highly dynamic applications.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Parallel Routes allows you to simultaneously or conditionally render one or more pages within the same layout. They are useful for highly dynamic sections of an app, such as dashboards and feeds on social sites.</p>
+<p>For example, considering a dashboard, you can use parallel routes to simultaneously render the <code>team</code> and <code>analytics</code> pages:</p>
+<p><Image
+  alt="Parallel Routes Diagram"
+  srcLight="/docs/light/parallel-routes.png"
+  srcDark="/docs/dark/parallel-routes.png"
+  width="1600"
+  height="942"
+/></p>
+<h2 id="convention">Convention</h2>
+<h3 id="slots">Slots</h3>
+<p>Parallel routes are created using named <strong>slots</strong>. Slots are defined with the <code>@folder</code> convention. For example, the following file structure defines two slots: <code>@analytics</code> and <code>@team</code>:</p>
+<p><Image
+  alt="Parallel Routes File-system Structure"
+  srcLight="/docs/light/parallel-routes-file-system.png"
+  srcDark="/docs/dark/parallel-routes-file-system.png"
+  width="1600"
+  height="687"
+/></p>
+<p>Slots are passed as props to the shared parent layout. For the example above, the component in <code>app/layout.js</code> now accepts the <code>@analytics</code> and <code>@team</code> slots props, and can render them in parallel alongside the <code>children</code> prop:</p>
+<pre><code class="language-tsx">export default function Layout({
+  children,
+  team,
+  analytics,
+}: {
+  children: React.ReactNode
+  analytics: React.ReactNode
+  team: React.ReactNode
+}) {
+  return (
+    &lt;&gt;
+      {children}
+      {team}
+      {analytics}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Layout({ children, team, analytics }) {
+  return (
+    &lt;&gt;
+      {children}
+      {team}
+      {analytics}
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>However, slots are <strong>not</strong> route segments and do not affect the URL structure. For example, for <code>/@analytics/views</code>, the URL will be <code>/views</code> since <code>@analytics</code> is a slot. Slots are combined with the regular <a href="/docs/app/api-reference/file-conventions/page">Page</a> component to form the final page associated with the route segment. Because of this, you cannot have separate <a href="/docs/app/glossary#prerendering">prerendered</a> and <a href="/docs/app/glossary#dynamic-rendering">dynamically rendered</a> slots at the same route segment level. If one slot is dynamic, all slots at that level must be dynamic.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The <code>children</code> prop is an implicit slot that does not need to be mapped to a folder. This means <code>app/page.js</code> is equivalent to <code>app/@children/page.js</code>.</li>
+</ul>
+</blockquote>
+<h3 id="defaultjs"><code>default.js</code></h3>
+<p>You can define a <code>default.js</code> file to render as a fallback for unmatched slots during the initial load or full-page reload.</p>
+<p>Consider the following folder structure. The <code>@team</code> slot has a <code>/settings</code> page, but <code>@analytics</code> does not.</p>
+<p><Image
+  alt="Parallel Routes unmatched routes"
+  srcLight="/docs/light/parallel-routes-unmatched-routes.png"
+  srcDark="/docs/dark/parallel-routes-unmatched-routes.png"
+  width="1600"
+  height="930"
+/></p>
+<p>When navigating to <code>/settings</code>, the <code>@team</code> slot will render the <code>/settings</code> page while maintaining the currently active page for the <code>@analytics</code> slot.</p>
+<p>On refresh, Next.js will render a <code>default.js</code> for <code>@analytics</code>. If <code>default.js</code> doesn’t exist, a <code>404</code> is rendered instead.</p>
+<p>Additionally, since <code>children</code> is an implicit slot, you also need to create a <code>default.js</code> file to render a fallback for <code>children</code> when Next.js cannot recover the active state of the parent page.</p>
+<h2 id="behavior">Behavior</h2>
+<p>By default, Next.js keeps track of the active <em>state</em> (or subpage) for each slot. However, the content rendered within a slot will depend on the type of navigation:</p>
+<ul>
+<li><a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions"><strong>Soft Navigation</strong></a>: During client-side navigation, Next.js will perform a <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">partial render</a>, changing the subpage within the slot, while maintaining the other slot’s active subpages, even if they don’t match the current URL.</li>
+<li><strong>Hard Navigation</strong>: After a full-page load (browser refresh), Next.js cannot determine the active state for the slots that don’t match the current URL. Instead, it will render a <a href="#defaultjs"><code>default.js</code></a> file for the unmatched slots, or <code>404</code> if <code>default.js</code> doesn’t exist.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The <code>404</code> for unmatched routes helps ensure that you don’t accidentally render a parallel route on a page that it was not intended for.</li>
+</ul>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<h3 id="with-useselectedlayoutsegments">With <code>useSelectedLayoutSegment(s)</code></h3>
+<p>Both <a href="/docs/app/api-reference/functions/use-selected-layout-segment"><code>useSelectedLayoutSegment</code></a> and <a href="/docs/app/api-reference/functions/use-selected-layout-segments"><code>useSelectedLayoutSegments</code></a> accept a <code>parallelRoutesKey</code> parameter, which allows you to read the active route segment within a slot.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+export default function Layout({ auth }: { auth: React.ReactNode }) {
+  const loginSegment = useSelectedLayoutSegment('auth')
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+export default function Layout({ auth }) {
+  const loginSegment = useSelectedLayoutSegment('auth')
+  // ...
+}
+</code></pre>
+<p>When a user navigates to <code>app/@auth/login</code> (or <code>/login</code> in the URL bar), <code>loginSegment</code> will be equal to the string <code>&quot;login&quot;</code>.</p>
+<h3 id="conditional-routes">Conditional Routes</h3>
+<p>You can use Parallel Routes to conditionally render routes based on certain conditions, such as user role. For example, to render a different dashboard page for the <code>/admin</code> or <code>/user</code> roles:</p>
+<p><Image
+  alt="Conditional routes diagram"
+  srcLight="/docs/light/conditional-routes-ui.png"
+  srcDark="/docs/dark/conditional-routes-ui.png"
+  width="1600"
+  height="898"
+/></p>
+<pre><code class="language-tsx">import { checkUserRole } from '@/lib/auth'
+
+export default function Layout({
+  user,
+  admin,
+}: {
+  user: React.ReactNode
+  admin: React.ReactNode
+}) {
+  const role = checkUserRole()
+  return role === 'admin' ? admin : user
+}
+</code></pre>
+<pre><code class="language-jsx">import { checkUserRole } from '@/lib/auth'
+
+export default function Layout({ user, admin }) {
+  const role = checkUserRole()
+  return role === 'admin' ? admin : user
+}
+</code></pre>
+<h3 id="tab-groups">Tab Groups</h3>
+<p>You can add a <code>layout</code> inside a slot to allow users to navigate the slot independently. This is useful for creating tabs.</p>
+<p>For example, the <code>@analytics</code> slot has two subpages: <code>/page-views</code> and <code>/visitors</code>.</p>
+<p><Image
+  alt="Analytics slot with two subpages and a layout"
+  srcLight="/docs/light/parallel-routes-tab-groups.png"
+  srcDark="/docs/dark/parallel-routes-tab-groups.png"
+  width="1600"
+  height="768"
+/></p>
+<p>Within <code>@analytics</code>, create a <a href="/docs/app/api-reference/file-conventions/layout"><code>layout</code></a> file to share the tabs between the two pages:</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;Link href=&quot;/page-views&quot;&gt;Page Views&lt;/Link&gt;
+        &lt;Link href=&quot;/visitors&quot;&gt;Visitors&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;Link href=&quot;/page-views&quot;&gt;Page Views&lt;/Link&gt;
+        &lt;Link href=&quot;/visitors&quot;&gt;Visitors&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h3 id="modals">Modals</h3>
+<p>Parallel Routes can be used together with <a href="/docs/app/api-reference/file-conventions/intercepting-routes">Intercepting Routes</a> to create modals that support deep linking. This allows you to solve common challenges when building modals, such as:</p>
+<ul>
+<li>Making the modal content <strong>shareable through a URL</strong>.</li>
+<li><strong>Preserving context</strong> when the page is refreshed, instead of closing the modal.</li>
+<li><strong>Closing the modal on backwards navigation</strong> rather than going to the previous route.</li>
+<li><strong>Reopening the modal on forwards navigation</strong>.</li>
+</ul>
+<p>Consider the following UI pattern, where a user can open a login modal from a layout using client-side navigation, or access a separate <code>/login</code> page:</p>
+<p><Image
+  alt="Parallel Routes Diagram"
+  srcLight="/docs/light/parallel-routes-auth-modal.png"
+  srcDark="/docs/dark/parallel-routes-auth-modal.png"
+  width="1600"
+  height="687"
+/></p>
+<p>To implement this pattern, start by creating a <code>/login</code> route that renders your <strong>main</strong> login page.</p>
+<p><Image
+  alt="Parallel Routes Diagram"
+  srcLight="/docs/light/parallel-routes-modal-login-page.png"
+  srcDark="/docs/dark/parallel-routes-modal-login-page.png"
+  width="1600"
+  height="768"
+/></p>
+<pre><code class="language-tsx">import { Login } from '@/app/ui/login'
+
+export default function Page() {
+  return &lt;Login /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { Login } from '@/app/ui/login'
+
+export default function Page() {
+  return &lt;Login /&gt;
+}
+</code></pre>
+<p>Then, inside the <code>@auth</code> slot, add <a href="/docs/app/api-reference/file-conventions/default"><code>default.js</code></a> file that returns <code>null</code>. This ensures that the modal is not rendered when it’s not active.</p>
+<pre><code class="language-tsx">export default function Default() {
+  return null
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Default() {
+  return null
+}
+</code></pre>
+<p>Inside your <code>@auth</code> slot, intercept the <code>/login</code> route by importing the <code>&lt;Modal&gt;</code> component and its children into the <code>@auth/(.)login/page.tsx</code> file, and updating the folder name to <code>/@auth/(.)login/page.tsx</code>.</p>
+<pre><code class="language-tsx">import { Modal } from '@/app/ui/modal'
+import { Login } from '@/app/ui/login'
+
+export default function Page() {
+  return (
+    &lt;Modal&gt;
+      &lt;Login /&gt;
+    &lt;/Modal&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Modal } from '@/app/ui/modal'
+import { Login } from '@/app/ui/login'
+
+export default function Page() {
+  return (
+    &lt;Modal&gt;
+      &lt;Login /&gt;
+    &lt;/Modal&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>The convention <code>(.)</code> is used for intercepting routes. See <a href="/docs/app/api-reference/file-conventions/intercepting-routes#convention">Intercepting Routes</a> docs for more information.</li>
+<li>By separating the <code>&lt;Modal&gt;</code> functionality from the modal content (<code>&lt;Login&gt;</code>), you can ensure any content inside the modal, e.g. <a href="/docs/app/guides/forms">forms</a>, are Server Components. See <a href="/docs/app/getting-started/server-and-client-components#interleaving-server-and-client-components">Interleaving Client and Server Components</a> for more information.</li>
+</ul>
+</blockquote>
+<h4>Opening the modal</h4>
+<p>Now, you can leverage the Next.js router to open and close the modal. This ensures the URL is correctly updated when the modal is open, and when navigating backwards and forwards.</p>
+<p>To open the modal, pass the <code>@auth</code> slot as a prop to the parent layout and render it alongside the <code>children</code> prop.</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Layout({
+  auth,
+  children,
+}: {
+  auth: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;Link href=&quot;/login&quot;&gt;Open modal&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;{auth}&lt;/div&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Layout({ auth, children }) {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;Link href=&quot;/login&quot;&gt;Open modal&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;{auth}&lt;/div&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>When the user clicks the <code>&lt;Link&gt;</code>, the modal will open instead of navigating to the <code>/login</code> page. However, on refresh or initial load, navigating to <code>/login</code> will take the user to the main login page.</p>
+<h4>Closing the modal</h4>
+<p>You can close the modal by calling <code>router.back()</code> or by using the <code>Link</code> component.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useRouter } from 'next/navigation'
+
+export function Modal({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+
+  return (
+    &lt;&gt;
+      &lt;button
+        onClick={() =&gt; {
+          router.back()
+        }}
+      &gt;
+        Close modal
+      &lt;/button&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useRouter } from 'next/navigation'
+
+export function Modal({ children }) {
+  const router = useRouter()
+
+  return (
+    &lt;&gt;
+      &lt;button
+        onClick={() =&gt; {
+          router.back()
+        }}
+      &gt;
+        Close modal
+      &lt;/button&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>When using the <code>Link</code> component to navigate away from a page that shouldn’t render the <code>@auth</code> slot anymore, we need to make sure the parallel route matches to a component that returns <code>null</code>. For example, when navigating back to the root page, we create a <code>@auth/page.tsx</code> component:</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export function Modal({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;&gt;
+      &lt;Link href=&quot;/&quot;&gt;Close modal&lt;/Link&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export function Modal({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Link href=&quot;/&quot;&gt;Close modal&lt;/Link&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">export default function Page() {
+  return null
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return null
+}
+</code></pre>
+<p>Or if navigating to any other page (such as <code>/foo</code>, <code>/foo/bar</code>, etc), you can use a catch-all slot:</p>
+<pre><code class="language-tsx">export default function CatchAll() {
+  return null
+}
+</code></pre>
+<pre><code class="language-jsx">export default function CatchAll() {
+  return null
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>We use a catch-all route in our <code>@auth</code> slot to close the modal because of how parallel routes behave. Since client-side navigations to a route that no longer match the slot will remain visible, we need to match the slot to a route that returns <code>null</code> to close the modal.</li>
+<li>Other examples could include opening a photo modal in a gallery while also having a dedicated <code>/photo/[id]</code> page, or opening a shopping cart in a side modal.</li>
+<li><a href="https://github.com/vercel-labs/nextgram" target="_blank" rel="noopener">View an example</a> of modals with Intercepted and Parallel Routes.</li>
+</ul>
+</blockquote>
+<h3 id="loading-and-error-ui">Loading and Error UI</h3>
+<p>Parallel Routes can be streamed independently, allowing you to define independent error and loading states for each route:</p>
+<p><Image
+  alt="Parallel routes enable custom error and loading states"
+  srcLight="/docs/light/parallel-routes-cinematic-universe.png"
+  srcDark="/docs/dark/parallel-routes-cinematic-universe.png"
+  width="1600"
+  height="1218"
+/></p>
+<p>See the <a href="/docs/app/api-reference/file-conventions/loading">Loading UI</a> and <a href="/docs/app/getting-started/error-handling">Error Handling</a> documentation for more information.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

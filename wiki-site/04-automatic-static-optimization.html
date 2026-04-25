@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>04-automatic-static-optimization — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-04-automatic-static-optimization">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-it-works">How it works</a></li><li><a href="#caveats">Caveats</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">04-automatic-static-optimization</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Next.js automatically optimizes your app to be static HTML whenever possible. Learn how it works here.</td></tr></table><p>Next.js automatically determines that a page is static (can be prerendered) if it has no blocking data requirements. This determination is made by the absence of <code>getServerSideProps</code> and <code>getInitialProps</code> in the page.</p>
+<p>This feature allows Next.js to emit hybrid applications that contain <strong>both server-rendered and statically generated pages</strong>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Statically generated pages are still reactive. Next.js will hydrate your application client-side to give it full interactivity.</p>
+</blockquote>
+<p>One of the main benefits of this feature is that optimized pages require no server-side computation, and can be instantly streamed to the end-user from multiple CDN locations. The result is an <em>ultra fast</em> loading experience for your users.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>If <code>getServerSideProps</code> or <code>getInitialProps</code> is present in a page, Next.js will switch to render the page on-demand, per-request (meaning <a href="/docs/pages/building-your-application/rendering/server-side-rendering">Server-Side Rendering</a>).</p>
+<p>If the above is not the case, Next.js will <strong>statically optimize</strong> your page automatically by prerendering the page to static HTML.</p>
+<p>During prerendering, the router’s <code>query</code> object will be empty since we do not have <code>query</code> information to provide during this phase. After hydration, Next.js will trigger an update to your application to provide the route parameters in the <code>query</code> object.</p>
+<p>The cases where the query will be updated after hydration triggering another render are:</p>
+<ul>
+<li>The page is a <a href="/docs/pages/building-your-application/routing/dynamic-routes">dynamic-route</a>.</li>
+<li>The page has query values in the URL.</li>
+<li><a href="/docs/pages/api-reference/config/next-config-js/rewrites">Rewrites</a> are configured in your <code>next.config.js</code> since these can have parameters that may need to be parsed and provided in the <code>query</code>.</li>
+</ul>
+<p>To be able to distinguish if the query is fully updated and ready for use, you can leverage the <code>isReady</code> field on <a href="/docs/pages/api-reference/functions/use-router#router-object"><code>next/router</code></a>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Parameters added with <a href="/docs/pages/building-your-application/routing/dynamic-routes">dynamic routes</a> to a page that’s using <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a> will always be available inside the <code>query</code> object.</p>
+</blockquote>
+<p><code>next build</code> will emit <code>.html</code> files for statically optimized pages. For example, the result for the page <code>pages/about.js</code> would be:</p>
+<pre><code class="language-bash">.next/server/pages/about.html
+</code></pre>
+<p>And if you add <code>getServerSideProps</code> to the page, it will then be JavaScript, like so:</p>
+<pre><code class="language-bash">.next/server/pages/about.js
+</code></pre>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li>If you have a <a href="/docs/pages/building-your-application/routing/custom-app">custom <code>App</code></a> with <code>getInitialProps</code> then this optimization will be turned off in pages without <a href="/docs/pages/building-your-application/data-fetching/get-static-props">Static Generation</a>.</li>
+<li>If you have a <a href="/docs/pages/building-your-application/routing/custom-document">custom <code>Document</code></a> with <code>getInitialProps</code> be sure you check if <code>ctx.req</code> is defined before assuming the page is server-side rendered. <code>ctx.req</code> will be <code>undefined</code> for pages that are prerendered.</li>
+<li>Avoid using the <code>asPath</code> value on <a href="/docs/pages/api-reference/functions/use-router#router-object"><code>next/router</code></a> in the rendering tree until the router’s <code>isReady</code> field is <code>true</code>. Statically optimized pages only know <code>asPath</code> on the client and not the server, so using it as a prop may lead to mismatch errors. The <a href="https://github.com/vercel/next.js/tree/canary/examples/active-class-name" target="_blank" rel="noopener"><code>active-class-name</code> example</a> demonstrates one way to use <code>asPath</code> as a prop.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

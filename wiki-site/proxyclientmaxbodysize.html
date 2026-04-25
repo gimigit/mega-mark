@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>proxyclientmaxbodysize — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-proxyclientmaxbodysize">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#options">Options</a></li><ul><li><a href="#string-format-recommended">String format (recommended)</a></li><li><a href="#number-format">Number format</a></li></ul><li><a href="#behavior">Behavior</a></li><li><a href="#example">Example</a></li><li><a href="#good-to-know">Good to know</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">proxyclientmaxbodysize</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Configure the maximum request body size when using proxy.</td></tr><tr><th>version</th><td>experimental</td></tr></table><p>When proxy is used, Next.js automatically clones the request body and buffers it in memory to enable multiple reads - both in proxy and the underlying route handler. To prevent excessive memory usage, this configuration option sets a size limit on the buffered body.</p>
+<p>By default, the maximum body size is <strong>10MB</strong>. If a request body exceeds this limit, the body will only be buffered up to the limit, and a warning will be logged indicating which route exceeded the limit.</p>
+<h2 id="options">Options</h2>
+<h3 id="string-format-recommended">String format (recommended)</h3>
+<p>Specify the size using a human-readable string format:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    proxyClientMaxBodySize: '1mb',
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    proxyClientMaxBodySize: '1mb',
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Supported units: <code>b</code>, <code>kb</code>, <code>mb</code>, <code>gb</code></p>
+<h3 id="number-format">Number format</h3>
+<p>Alternatively, specify the size in bytes as a number:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    proxyClientMaxBodySize: 1048576, // 1MB in bytes
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    proxyClientMaxBodySize: 1048576, // 1MB in bytes
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h2 id="behavior">Behavior</h2>
+<p>When a request body exceeds the configured limit:</p>
+<ol>
+<li>Next.js will buffer only the first N bytes (up to the limit)</li>
+<li>A warning will be logged to the console indicating the route that exceeded the limit</li>
+<li>The request will continue processing normally, but only the partial body will be available</li>
+<li>The request will <strong>not</strong> fail or return an error to the client</li>
+</ol>
+<p>If your application needs to process the full request body, you should either:</p>
+<ul>
+<li>Increase the <code>proxyClientMaxBodySize</code> limit</li>
+<li>Handle the partial body gracefully in your application logic</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-ts">import { NextRequest, NextResponse } from 'next/server'
+
+export async function proxy(request: NextRequest) {
+  // Next.js automatically buffers the body with the configured size limit
+  // You can read the body in proxy...
+  const body = await request.text()
+
+  // If the body exceeded the limit, only partial data will be available
+  console.log('Body size:', body.length)
+
+  return NextResponse.next()
+}
+</code></pre>
+<pre><code class="language-ts">import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  // ...and the body is still available in your route handler
+  const body = await request.text()
+
+  console.log('Body in route handler:', body.length)
+
+  return NextResponse.json({ received: body.length })
+}
+</code></pre>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li>This setting only applies when proxy is used in your application</li>
+<li>The default limit of 10MB is designed to balance memory usage and typical use cases</li>
+<li>The limit applies per-request, not globally across all concurrent requests</li>
+<li>For applications handling large file uploads, consider increasing the limit accordingly</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

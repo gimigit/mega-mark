@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devindicators — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-devindicators">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#troubleshooting">Troubleshooting</a></li><ul><li><a href="#indicator-not-marking-a-route-as-static">Indicator not marking a route as static</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">devindicators</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Configuration options for the on-screen indicator that gives context about the current route you're viewing during development.</td></tr></table><p><code>devIndicators</code> allows you to configure the on-screen indicator that gives context about the current route you’re viewing during development.</p>
+<pre><code class="language-ts">  devIndicators: false | {
+    position?: 'bottom-right'
+    | 'bottom-left'
+    | 'top-right'
+    | 'top-left', // defaults to 'bottom-left',
+  },
+</code></pre>
+<p>Setting <code>devIndicators</code> to <code>false</code> will hide the indicator, however Next.js will continue to surface any build or runtime errors that were encountered.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="indicator-not-marking-a-route-as-static">Indicator not marking a route as static</h3>
+<p>If you expect a route to be static and the indicator has marked it as dynamic, it’s likely the route has opted out of prerendering.</p>
+<p>You can confirm if a route is <a href="/docs/app/glossary#prerendering">prerendered</a> or <a href="/docs/app/glossary#dynamic-rendering">dynamically rendered</a> by building your application using <code>next build --debug</code>, and checking the output in your terminal. Static (or prerendered) routes will display a <code>○</code> symbol, whereas dynamic routes will display a <code>ƒ</code> symbol. For example:</p>
+<pre><code class="language-bash">Route (app)
+┌ ○ /_not-found
+└ ƒ /products/[id]
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+</code></pre>
+<AppOnly>
+<p>There are two reasons a route might opt out of prerendering:</p>
+<ul>
+<li>The presence of <a href="/docs/app/glossary#request-time-apis">Request-time APIs</a> which rely on request information.</li>
+<li>An <a href="/docs/app/getting-started/fetching-data">uncached data request</a>, like a call to an ORM or database driver.</li>
+</ul>
+<p>Check your route for any of these conditions, and if you are not able to statically render the route, then consider using <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.js</code></a> or <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener"><code>&lt;Suspense /&gt;</code></a> to leverage <a href="/docs/app/getting-started/linking-and-navigating#streaming">streaming</a>.</p>
+</AppOnly>
+<PagesOnly>
+<p>When exporting <a href="/docs/pages/building-your-application/data-fetching/get-server-side-props"><code>getServerSideProps</code></a> or <a href="/docs/pages/api-reference/functions/get-initial-props"><code>getInitialProps</code></a> from a page, it will be marked as dynamic.</p>
+</PagesOnly>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>appIsrStatus</code>, <code>buildActivity</code>, and <code>buildActivityPosition</code> options have been removed.</td>
+</tr>
+<tr>
+<td><code>v15.2.0</code></td>
+<td>Improved on-screen indicator with new <code>position</code> option. <code>appIsrStatus</code>, <code>buildActivity</code>, and <code>buildActivityPosition</code> options have been deprecated.</td>
+</tr>
+<tr>
+<td><code>v15.0.0</code></td>
+<td>Static on-screen indicator added with <code>appIsrStatus</code> option.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mega-Mark — Marketplace Agricol Premium — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-readme">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#stack">Stack</a></li><li><a href="#setup">Setup</a></li><li><a href="#features">Features</a></li><li><a href="#deploy">Deploy</a></li><li><a href="#documentaie">Documentație</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Mega-Mark — Marketplace Agricol Premium</h1>
+
+</div>
+<div class="article-body">
+<blockquote>
+<p>Marketplace agricol pentru România și UE. Cel mai bun din AgroMark-EU + 4sale.</p>
+</blockquote>
+<h2 id="stack">Stack</h2>
+<ul>
+<li><strong>Next.js 16</strong> — React framework cu App Router</li>
+<li><strong>TypeScript</strong> — Type safety</li>
+<li><strong>Tailwind CSS + shadcn/ui</strong> — Design system</li>
+<li><strong>Supabase</strong> — Database, Auth, Storage, Realtime</li>
+<li><strong>Stripe</strong> — Plăți și promovare anunțuri</li>
+<li><strong>Resend</strong> — Email notifications</li>
+<li><strong>Vercel</strong> — Deployment</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<pre><code class="language-bash"># Instalează dependențele
+npm install
+
+# Setup Supabase local (opțional)
+npx supabase init
+npx supabase start
+
+# Copiază .env.example în .env.local și completează variabilele
+cp .env.example .env.local
+
+# Rulează migrațiile
+npx supabase db push
+
+# Pornește development server
+npm run dev
+</code></pre>
+<h2 id="features">Features</h2>
+<ul>
+<li>✅ Auth (email, magic link, OAuth)</li>
+<li>✅ Creare anunțuri cu galerii foto</li>
+<li>✅ Căutare cu filtre avansate</li>
+<li>✅ Mesagerie internă</li>
+<li>✅ Promovare anunțuri (Stripe)</li>
+<li>✅ Notificări email (Resend)</li>
+<li>✅ Dashboard utilizator</li>
+<li>✅ Admin panel</li>
+<li>✅ SEO optimizat</li>
+</ul>
+<h2 id="deploy">Deploy</h2>
+<p>Deploy automat pe Vercel la push pe <code>main</code>.</p>
+<h2 id="documentaie">Documentație</h2>
+<ul>
+<li><a href="./PLAN.md">PLAN.md</a> — Plan complet de dezvoltare</li>
+<li><a href="./CLAUDE.md">CLAUDE.md</a> — Instrucțiuni pentru agenți AI</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

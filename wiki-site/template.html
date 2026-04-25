@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>template — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-template">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#convention">Convention</a></li><li><a href="#props">Props</a></li><ul><li><a href="#children-required">children (required)</a></li></ul><li><a href="#behavior">Behavior</a></li><ul><li><a href="#templates-during-navigation-and-remounting">Templates during navigation and remounting</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">template</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the template.js file.</td></tr></table><p>A <strong>template</strong> file is similar to a <a href="/docs/app/getting-started/layouts-and-pages#creating-a-layout">layout</a> in that it wraps a layout or page. Unlike layouts that persist across routes and maintain state, templates are given a unique key, meaning children Client Components reset their state on navigation.</p>
+<p>They are useful when you need to:</p>
+<ul>
+<li>Resynchronize <code>useEffect</code> on navigation.</li>
+<li>Reset the state of a child Client Components on navigation. For example, an input field.</li>
+<li>To change default framework behavior. For example, Suspense boundaries inside layouts only show a fallback on first load, while templates show it on every navigation.</li>
+</ul>
+<h2 id="convention">Convention</h2>
+<p>A template can be defined by exporting a default React component from a <code>template.js</code> file. The component should accept a <code>children</code> prop.</p>
+<p><Image
+  alt="template.js special file"
+  srcLight="/docs/light/template-special-file.png"
+  srcDark="/docs/dark/template-special-file.png"
+  width="1600"
+  height="444"
+/></p>
+<pre><code class="language-tsx">export default function Template({ children }: { children: React.ReactNode }) {
+  return &lt;div&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Template({ children }) {
+  return &lt;div&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<p>In terms of nesting, <code>template.js</code> is rendered between a layout and its children. Here’s a simplified output:</p>
+<pre><code class="language-jsx">&lt;Layout&gt;
+  {/* Note that the template is given a unique key. */}
+  &lt;Template key={routeParam}&gt;{children}&lt;/Template&gt;
+&lt;/Layout&gt;
+</code></pre>
+<p>In the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, <code>template.js</code> renders between <code>layout.js</code> and <code>error.js</code>. It wraps <code>error.js</code>, <code>loading.js</code>, <code>not-found.js</code>, and <code>page.js</code>, but does <strong>not</strong> wrap the <code>layout.js</code> in the same segment.</p>
+<h2 id="props">Props</h2>
+<h3 id="children-required"><code>children</code> (required)</h3>
+<p>Template accepts a <code>children</code> prop.</p>
+<pre><code class="language-jsx">&lt;Layout&gt;
+  {/* Note that the template is automatically given a unique key. */}
+  &lt;Template key={routeParam}&gt;{children}&lt;/Template&gt;
+&lt;/Layout&gt;
+</code></pre>
+<h2 id="behavior">Behavior</h2>
+<ul>
+<li><strong>Server Components</strong>: By default, templates are Server Components.</li>
+<li><strong>With navigation</strong>: Templates receive a unique key for their own segment level. They remount when that segment (including its dynamic params) changes. Navigations within deeper segments do not remount higher-level templates. Search params do not trigger remounts.</li>
+<li><strong>State reset</strong>: Any Client Component inside the template will reset its state on navigation.</li>
+<li><strong>Effect re-run</strong>: Effects like <code>useEffect</code> will re-synchronize as the component remounts.</li>
+<li><strong>DOM reset</strong>: DOM elements inside the template are fully recreated.</li>
+</ul>
+<h3 id="templates-during-navigation-and-remounting">Templates during navigation and remounting</h3>
+<p>This section illustrates how templates behave during navigation. It shows, step by step, which templates remount on each route change and why.</p>
+<p>Using this project tree:</p>
+<pre><code>app
+├── about
+│   ├── page.tsx
+├── blog
+│   ├── [slug]
+│   │   └── page.tsx
+│   ├── page.tsx
+│   └── template.tsx
+├── layout.tsx
+├── page.tsx
+└── template.tsx
+</code></pre>
+<p>Starting at <code>/</code>, the React tree looks roughly like this.</p>
+<blockquote>
+<p>Note: The <code>key</code> values shown in the examples are illustrative, the values in your application may differ.</p>
+</blockquote>
+<pre><code class="language-jsx">&lt;RootLayout&gt;
+  {/* app/template.tsx */}
+  &lt;Template key=&quot;/&quot;&gt;
+    &lt;Page /&gt;
+  &lt;/Template&gt;
+&lt;/RootLayout&gt;
+</code></pre>
+<p>Navigating to <code>/about</code> (first segment changes), the root template key changes, it remounts:</p>
+<pre><code class="language-jsx">&lt;RootLayout&gt;
+  {/* app/template.tsx */}
+  &lt;Template key=&quot;/about&quot;&gt;
+    &lt;AboutPage /&gt;
+  &lt;/Template&gt;
+&lt;/RootLayout&gt;
+</code></pre>
+<p>Navigating to <code>/blog</code> (first segment changes), the root template key changes, it remounts and the blog-level template mounts:</p>
+<pre><code class="language-jsx">&lt;RootLayout&gt;
+  {/* app/template.tsx (root) */}
+  &lt;Template key=&quot;/blog&quot;&gt;
+    {/* app/blog/template.tsx */}
+    &lt;Template key=&quot;/blog&quot;&gt;
+      &lt;BlogIndexPage /&gt;
+    &lt;/Template&gt;
+  &lt;/Template&gt;
+&lt;/RootLayout&gt;
+</code></pre>
+<p>Navigating within the same first segment to <code>/blog/first-post</code> (child segment changes), the root template key doesn’t change, but the blog-level template key changes, it remounts:</p>
+<pre><code class="language-jsx">&lt;RootLayout&gt;
+  {/* app/template.tsx (root) */}
+  &lt;Template key=&quot;/blog&quot;&gt;
+    {/* app/blog/template.tsx */}
+    {/* remounts because the child segment at this level changed */}
+    &lt;Template key=&quot;/blog/first-post&quot;&gt;
+      &lt;BlogPostPage slug=&quot;first-post&quot; /&gt;
+    &lt;/Template&gt;
+  &lt;/Template&gt;
+&lt;/RootLayout&gt;
+</code></pre>
+<p>Navigating to <code>/blog/second-post</code> (same first segment, different child segment), the root template key doesn’t change, but the blog-level template key changes, it remounts again:</p>
+<pre><code class="language-jsx">&lt;RootLayout&gt;
+  {/* app/template.tsx (root) */}
+  &lt;Template key=&quot;/blog&quot;&gt;
+    {/* app/blog/template.tsx */}
+    {/* remounts again due to changed child segment */}
+    &lt;Template key=&quot;/blog/second-post&quot;&gt;
+      &lt;BlogPostPage slug=&quot;second-post&quot; /&gt;
+    &lt;/Template&gt;
+  &lt;/Template&gt;
+&lt;/RootLayout&gt;
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>template</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

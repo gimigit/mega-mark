@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>pageextensions — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-pageextensions">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">pageextensions</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Extend the default page extensions used by Next.js when resolving pages in the Pages Router.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<AppOnly>
+<p>By default, Next.js accepts files with the following extensions: <code>.tsx</code>, <code>.ts</code>, <code>.jsx</code>, <code>.js</code>. This can be modified to allow other extensions like markdown (<code>.md</code>, <code>.mdx</code>).</p>
+<pre><code class="language-js">const withMDX = require('@next/mdx')()
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+}
+
+module.exports = withMDX(nextConfig)
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>You can extend the default Page extensions (<code>.tsx</code>, <code>.ts</code>, <code>.jsx</code>, <code>.js</code>) used by Next.js. Inside <code>next.config.js</code>, add the <code>pageExtensions</code> config:</p>
+<pre><code class="language-js">module.exports = {
+  pageExtensions: ['mdx', 'md', 'jsx', 'js', 'tsx', 'ts'],
+}
+</code></pre>
+<p>Changing these values affects <em>all</em> Next.js pages, including the following:</p>
+<ul>
+<li><a href="/docs/pages/api-reference/file-conventions/proxy"><code>proxy.js</code></a></li>
+<li><a href="/docs/pages/guides/instrumentation"><code>instrumentation.js</code></a></li>
+<li><code>pages/_document.js</code></li>
+<li><code>pages/_app.js</code></li>
+<li><code>pages/api/</code></li>
+</ul>
+<p>For example, if you reconfigure <code>.ts</code> page extensions to <code>.page.ts</code>, you would need to rename pages like <code>proxy.page.ts</code>, <code>instrumentation.page.ts</code>, <code>_app.page.ts</code>.</p>
+<h2 id="including-non-page-files-in-the-pages-directory">Including non-page files in the <code>pages</code> directory</h2>
+<p>You can colocate test files or other files used by components in the <code>pages</code> directory. Inside <code>next.config.js</code>, add the <code>pageExtensions</code> config:</p>
+<pre><code class="language-js">module.exports = {
+  pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
+}
+</code></pre>
+<p>Then, rename your pages to have a file extension that includes <code>.page</code> (e.g. rename <code>MyPage.tsx</code> to <code>MyPage.page.tsx</code>). Ensure you rename <em>all</em> Next.js pages, including the files mentioned above.</p>
+</PagesOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

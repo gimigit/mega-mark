@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-anonymous-default-export — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-anonymous-default-export">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#options">Options</a></li><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#fail">Fail</a></li><li><a href="#pass">Pass</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-anonymous-default-export</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Reports if a module’s default export is unnamed. This includes several types of unnamed data types; literals, object expressions, arrays, anonymous functions, arrow functions, and anonymous class declarations.</p>
+<p>Ensuring that default exports are named helps improve the grepability of the codebase by encouraging the re-use of the same identifier for the module’s default export at its declaration site and at its import sites.</p>
+<h2 id="options">Options</h2>
+<p>By default, all types of anonymous default exports are forbidden, but any types can be selectively allowed by toggling them on in the options.</p>
+<p>The complete default configuration looks like this.</p>
+<pre><code class="language-js">&quot;import/no-anonymous-default-export&quot;: [&quot;error&quot;, {
+  &quot;allowArray&quot;: false,
+  &quot;allowArrowFunction&quot;: false,
+  &quot;allowAnonymousClass&quot;: false,
+  &quot;allowAnonymousFunction&quot;: false,
+  &quot;allowCallExpression&quot;: true, // The true value here is for backward compatibility
+  &quot;allowNew&quot;: false,
+  &quot;allowLiteral&quot;: false,
+  &quot;allowObject&quot;: false
+}]
+</code></pre>
+<h2 id="rule-details">Rule Details</h2>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-js">export default []
+
+export default () =&gt; {}
+
+export default class {}
+
+export default function () {}
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowCallExpression&quot;: false}] */
+export default foo(bar)
+
+export default 123
+
+export default {}
+
+export default new Foo()
+</code></pre>
+<h3 id="pass">Pass</h3>
+<pre><code class="language-js">const foo = 123
+export default foo
+
+export default class MyClass() {}
+
+export default function foo() {}
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowArray&quot;: true}] */
+export default []
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowArrowFunction&quot;: true}] */
+export default () =&gt; {}
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowAnonymousClass&quot;: true}] */
+export default class {}
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowAnonymousFunction&quot;: true}] */
+export default function () {}
+
+export default foo(bar)
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowLiteral&quot;: true}] */
+export default 123
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowObject&quot;: true}] */
+export default {}
+
+/* eslint import/no-anonymous-default-export: [2, {&quot;allowNew&quot;: true}] */
+export default new Foo()
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generate-image-metadata — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-generate-image-metadata">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#image-generation-function-props">Image generation function props</a></li><ul><li><a href="#examples">Examples</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">generate-image-metadata</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>View all the Metadata API options.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>You can use <code>generateImageMetadata</code> to generate different versions of one image or return multiple images for one route segment. This is useful for when you want to avoid hard-coding metadata values, such as for icons.</p>
+<h2 id="parameters">Parameters</h2>
+<p><code>generateImageMetadata</code> function accepts the following parameters:</p>
+<h4><code>params</code> (optional)</h4>
+<p>An object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> object from the root segment down to the segment <code>generateImageMetadata</code> is called from.</p>
+<pre><code class="language-tsx">export function generateImageMetadata({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export function generateImageMetadata({ params }) {
+  // ...
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/icon.js</code></td>
+<td><code>/shop</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[slug]/icon.js</code></td>
+<td><code>/shop/1</code></td>
+<td><code>{ slug: '1' }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[tag]/[item]/icon.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>{ tag: '1', item: '2' }</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="returns">Returns</h2>
+<p>The <code>generateImageMetadata</code> function should return an <code>array</code> of objects containing the image’s metadata such as <code>alt</code> and <code>size</code>. In addition, each item <strong>must</strong> include an <code>id</code> value which will be passed as a promise to the props of the image generating function.</p>
+<table>
+<thead>
+<tr>
+<th>Image Metadata Object</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>string</code> (required)</td>
+</tr>
+<tr>
+<td><code>alt</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>{ width: number; height: number }</code></td>
+</tr>
+<tr>
+<td><code>contentType</code></td>
+<td><code>string</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+
+export function generateImageMetadata() {
+  return [
+    {
+      contentType: 'image/png',
+      size: { width: 48, height: 48 },
+      id: 'small',
+    },
+    {
+      contentType: 'image/png',
+      size: { width: 72, height: 72 },
+      id: 'medium',
+    },
+  ]
+}
+
+export default async function Icon({ id }: { id: Promise&lt;string | number&gt; }) {
+  const iconId = await id
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 88,
+          background: '#000',
+          color: '#fafafa',
+        }}
+      &gt;
+        Icon {iconId}
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+
+export function generateImageMetadata() {
+  return [
+    {
+      contentType: 'image/png',
+      size: { width: 48, height: 48 },
+      id: 'small',
+    },
+    {
+      contentType: 'image/png',
+      size: { width: 72, height: 72 },
+      id: 'medium',
+    },
+  ]
+}
+
+export default async function Icon({ id }) {
+  const iconId = await id
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 88,
+          background: '#000',
+          color: '#fafafa',
+        }}
+      &gt;
+        Icon {iconId}
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<h2 id="image-generation-function-props">Image generation function props</h2>
+<p>When using <code>generateImageMetadata</code>, the default export image generation function receives the following props:</p>
+<h4><code>id</code></h4>
+<p>A promise that resolves to the <code>id</code> value from one of the items returned by <code>generateImageMetadata</code>. The <code>id</code> will be a <code>string</code> or <code>number</code> depending on what was returned from <code>generateImageMetadata</code>.</p>
+<pre><code class="language-tsx">export default async function Icon({ id }: { id: Promise&lt;string | number&gt; }) {
+  const iconId = await id
+  // Use iconId to generate the image
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Icon({ id }) {
+  const iconId = await id
+  // Use iconId to generate the image
+}
+</code></pre>
+<h4><code>params</code> (optional)</h4>
+<p>A promise that resolves to an object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> from the root segment down to the segment the image is colocated in.</p>
+<pre><code class="language-tsx">export default async function Icon({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  // Use slug to generate the image
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Icon({ params }) {
+  const { slug } = await params
+  // Use slug to generate the image
+}
+</code></pre>
+<h3 id="examples">Examples</h3>
+<h4>Using external data</h4>
+<p>This example uses the <code>params</code> object and external data to generate multiple <a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image">Open Graph images</a> for a route segment.</p>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+import { getCaptionForImage, getOGImages } from '@/app/utils/images'
+
+export async function generateImageMetadata({
+  params,
+}: {
+  params: { id: string }
+}) {
+  const images = await getOGImages(params.id)
+
+  return images.map((image, idx) =&gt; ({
+    id: idx,
+    size: { width: 1200, height: 600 },
+    alt: image.text,
+    contentType: 'image/png',
+  }))
+}
+
+export default async function Image({
+  params,
+  id,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+  id: Promise&lt;number&gt;
+}) {
+  const productId = (await params).id
+  const imageId = await id
+  const text = await getCaptionForImage(productId, imageId)
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={
+          {
+            // ...
+          }
+        }
+      &gt;
+        {text}
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+import { getCaptionForImage, getOGImages } from '@/app/utils/images'
+
+export async function generateImageMetadata({ params }) {
+  const images = await getOGImages(params.id)
+
+  return images.map((image, idx) =&gt; ({
+    id: idx,
+    size: { width: 1200, height: 600 },
+    alt: image.text,
+    contentType: 'image/png',
+  }))
+}
+
+export default async function Image({ params, id }) {
+  const productId = (await params).id
+  const imageId = await id
+  const text = await getCaptionForImage(productId, imageId)
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={
+          {
+            // ...
+          }
+        }
+      &gt;
+        {text}
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>id</code> passed to the Image generation function is now a promise that resolves to <code>string</code> or <code>number</code></td>
+</tr>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>params</code> passed to the Image generation function is now a promise that resolves to an object</td>
+</tr>
+<tr>
+<td><code>v13.3.0</code></td>
+<td><code>generateImageMetadata</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

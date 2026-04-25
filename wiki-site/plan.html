@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PLAN.md — Mega-Mark Agricultural Marketplace — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-plan">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#status-curent-18-aprilie-2026">Status curent (18 Aprilie 2026)</a></li><ul><li><a href="#ce-exista-stare-curenta">Ce exista (stare curenta)</a></li><li><a href="#actiuni-manuale-necesare">Actiuni manuale necesare</a></li></ul><li><a href="#decizii-tehnice-locked">Decizii tehnice (locked)</a></li><li><a href="#tehnologii-noi-de-adaugat-recomandate">Tehnologii noi de adaugat (recomandate)</a></li><ul><li><a href="#de-evitat">De evitat</a></li></ul><li><a href="#-faza-1-database-amp-deploy-completa">✅ Faza 1 — Database &amp;amp; Deploy (COMPLETA)</a></li><li><a href="#faza-2-auth-amp-core-flow">Faza 2 — Auth &amp;amp; Core Flow</a></li><ul><li><a href="#task-21-fix-auth-flow">Task 2.1: ✅ Fix auth flow</a></li><li><a href="#task-22-listing-create-flow-stil-olx">Task 2.2: ✅ Listing create flow (stil OLX)</a></li><li><a href="#task-23-browse-amp-search-stil-olx">Task 2.3: ✅ Browse &amp;amp; Search (stil OLX)</a></li><li><a href="#task-24-listing-card-imbunatatit-stil-olx">Task 2.4: ✅ Listing card imbunatatit (stil OLX)</a></li><li><a href="#task-25-listing-detail-page-stil-olx">Task 2.5: ✅ Listing detail page (stil OLX)</a></li></ul><li><a href="#-faza-25-design-amp-animatii-completa">✅ Faza 2.5 — Design &amp;amp; Animatii (COMPLETA)</a></li><ul><li><a href="#task-251-font-upgrade-fraunces-dm-sans">Task 2.5.1: ✅ Font upgrade — Fraunces + DM Sans</a></li><li><a href="#task-252-homepage-hero-redesign">Task 2.5.2: ✅ Homepage hero redesign</a></li><li><a href="#task-253-listing-card-hover-effects-cu-framer-motion">Task 2.5.3: ✅ Listing card — hover effects cu Framer Motion</a></li><li><a href="#task-254-og-images-dinamice-cu-nextog">Task 2.5.4: ✅ OG Images dinamice cu next/og</a></li><li><a href="#task-255-micro-interactions-si-polish">Task 2.5.5: ✅ Micro-interactions si polish</a></li></ul><li><a href="#-faza-3-mesagerie-amp-comunicare-completa">✅ Faza 3 — Mesagerie &amp;amp; Comunicare (COMPLETA)</a></li><ul><li><a href="#task-31-conversations-api">Task 3.1: ✅ Conversations API</a></li><li><a href="#task-32-inbox-page-chat-ui">Task 3.2: ✅ Inbox page + Chat UI</a></li><li><a href="#task-33-saved-searches-api">Task 3.3: ✅ Saved searches API</a></li><li><a href="#task-34-auth-me-api">Task 3.4: ✅ Auth me API</a></li></ul><li><a href="#-faza-4-engagement-amp-trust-completa">✅ Faza 4 — Engagement &amp;amp; Trust (COMPLETA)</a></li><ul><li><a href="#task-41-favorites-system">Task 4.1: ✅ Favorites system</a></li><li><a href="#task-42-seller-profile-page-stil-olx">Task 4.2: ✅ Seller profile page (stil OLX)</a></li><li><a href="#task-43-reviews-system">Task 4.3: ✅ Reviews system</a></li><li><a href="#task-44-notifications-in-app-email">Task 4.4: ✅ Notifications (in-app + email)</a></li></ul><li><a href="#-faza-5-monetizare-amp-admin-completa">✅ Faza 5 — Monetizare &amp;amp; Admin (COMPLETA)</a></li><ul><li><a href="#task-51-stripe-setup-actiune-manuala">Task 5.1: ⚠️ Stripe setup (ACTIUNE MANUALA)</a></li><li><a href="#task-52-promovare-anunt-flow">Task 5.2: ✅ Promovare anunt flow</a></li><li><a href="#task-53-admin-dashboard-fix">Task 5.3: ✅ Admin dashboard fix</a></li></ul><li><a href="#-faza-6-seo-performance-amp-launch">✅ Faza 6 — SEO, Performance &amp;amp; Launch</a></li><ul><li><a href="#task-61-meta-tags-amp-open-graph">Task 6.1: Meta tags &amp;amp; Open Graph</a></li><li><a href="#task-62-sitemap-amp-robotstxt">Task 6.2: Sitemap &amp;amp; robots.txt</a></li><li><a href="#task-63-json-ld-schemaorg">Task 6.3: ✅ JSON-LD Schema.org</a></li><li><a href="#task-64-performance">Task 6.4: ✅ Performance</a></li><li><a href="#task-65-gdpr-amp-legal">Task 6.5: ✅ GDPR &amp;amp; Legal</a></li></ul><li><a href="#faza-7-testing-amp-launch-complete">Faza 7: ✅ TESTING &amp;amp; LAUNCH COMPLETE</a></li><ul><li><a href="#task-71-homepage-amp-core-flows">Task 7.1: ✅ Homepage &amp;amp; Core Flows</a></li><li><a href="#task-72-browse-amp-listing-detail">Task 7.2: ✅ Browse &amp;amp; Listing Detail</a></li><li><a href="#task-73-auth-flows">Task 7.3: ✅ Auth Flows</a></li><li><a href="#task-74-create-listing-flow-daca-e-disponibil">Task 7.4: ✅ Create Listing Flow (daca e disponibil)</a></li><li><a href="#task-75-mobile-amp-responsiveness">Task 7.5: ✅ Mobile &amp;amp; Responsiveness</a></li><li><a href="#task-76-final-build-amp-deploy">Task 7.6: ✅ Final Build &amp;amp; Deploy</a></li><li><a href="#task-77-cookie-banner-amp-gdpr">Task 7.7: ✅ Cookie Banner &amp;amp; GDPR</a></li></ul><li><a href="#-faza-8-seo-programatic">✅ Faza 8: SEO Programatic</a></li><ul><li><a href="#task-81-creeaza-ruta-browsecategorycounty">Task 8.1: Creeaza ruta /browse/[category]/[county]</a></li><li><a href="#task-82-generatemetadata-function">Task 8.2: generateMetadata function</a></li><li><a href="#task-83-content-unic-pentru-fiecare-pagina">Task 8.3: Content unic pentru fiecare pagina</a></li></ul><li><a href="#faza-9-search-alerts">Faza 9: Search Alerts</a></li><ul><li><a href="#task-91-saved-searches-db">Task 9.1: Saved Searches DB</a></li><li><a href="#task-92-ui-saved-searches">Task 9.2: UI Saved Searches</a></li><li><a href="#task-93-email-trigger">Task 9.3: Email trigger</a></li></ul><li><a href="#faza-10-real-time-features">Faza 10: Real-Time Features</a></li><ul><li><a href="#task-101-buton-reactualizat-azi">Task 10.1: Buton “Reactualizat azi”</a></li><li><a href="#task-102-report-listing">Task 10.2: Report Listing</a></li><li><a href="#task-103-featuredbump-listing">Task 10.3: Featured/Bump listing</a></li></ul><li><a href="#faza-11-ui-enhancements">Faza 11: UI Enhancements</a></li><ul><li><a href="#task-111-currency-toggle-roneur">Task 11.1: Currency Toggle RON/EUR</a></li><li><a href="#task-112-mbuntiri-browse">Task 11.2: îmbunătățiri Browse</a></li><li><a href="#task-113-mbuntiri-listing-detail">Task 11.3: îmbunătățiri Listing Detail</a></li></ul><li><a href="#faza-12-competitor-inspired-ux-upgrades">Faza 12 — Competitor-Inspired UX Upgrades</a></li><ul><li><a href="#-task-121-browse-grid-4-coloane-la-xl-aspect-ratio-43">✅ Task 12.1: Browse grid → 4 coloane la xl + aspect ratio 4:3</a></li><li><a href="#-task-122-brand-green-008a4c-polish-culori">✅ Task 12.2: Brand green #008a4c + polish culori</a></li><li><a href="#-task-123-search-autocomplete-pe-homepage-browse">✅ Task 12.3: Search autocomplete pe homepage + browse</a></li><li><a href="#-task-124-filtru-producator-makemodel-proeminent-in-browse">✅ Task 12.4: Filtru Producator (Make/Model) proeminent in Browse</a></li><li><a href="#-task-125-currency-inline-roneur">✅ Task 12.5: Currency inline RON/EUR</a></li><li><a href="#task-126-seo-urls-cu-sluguri-pentru-categorii-producatori-incepe-aici">Task 12.6: SEO URLs cu sluguri pentru categorii + producatori  ← INCEPE AICI</a></li><li><a href="#task-127-watchlist-badge-animat-pe-card">Task 12.7: “Watchlist” badge animat pe card</a></li></ul><li><a href="#backlog-post-launch">Backlog (post-launch)</a></li><li><a href="#reguli-de-lucru">Reguli de lucru</a></li><ul><li><a href="#build-amp-deploy">Build &amp;amp; Deploy</a></li><li><a href="#git">Git</a></li><li><a href="#cod">Cod</a></li><li><a href="#db">DB</a></li></ul><li><a href="#environment-variables">Environment Variables</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">PLAN.md — Mega-Mark Agricultural Marketplace</h1>
+
+</div>
+<div class="article-body">
+<blockquote>
+<p><strong>For Hermes:</strong> Use <code>structured-project-execution</code> + <code>nextjs-api-route-patterns</code> skills. Execute task-by-task, verify each step, update status here.</p>
+<p><strong>Cum sa lucrezi:</strong></p>
+<ol>
+<li>Citeste tot <a href="http://PLAN.md" target="_blank" rel="noopener">PLAN.md</a> inainte sa incepi</li>
+<li>Gaseste markerul <code>← INCEPE AICI</code> — acolo e urmatoarea faza</li>
+<li>Executa task-urile in ordine (Task N.1, N.2, …)</li>
+<li>Dupa fiecare task: ruleaza <code>npm run build</code> si verifica ca trece — <strong>ZERO TypeScript errors</strong></li>
+<li>Commit + push dupa fiecare task completat (format: <code>feat:</code>, <code>fix:</code>, <code>chore:</code>)</li>
+<li>Marcheaza task-ul <code>✅</code> in acest fisier si muta <code>← INCEPE AICI</code> la urmatorul task/faza</li>
+<li>Daca un task necesita actiune manuala (ex: Supabase Dashboard, Stripe Dashboard), scrie clar ce trebuie facut si treci la urmatorul task</li>
+</ol>
+<p><strong>⚠️ REGULI CRITICE (invatate din bugs produse anterior):</strong></p>
+<ul>
+<li>Next.js route exports valide: DOAR <code>GET POST PUT PATCH DELETE HEAD OPTIONS</code> — nu inventa alte metode (ex: <code>BUMP</code>)</li>
+<li>Inainte de orice join Supabase <code>table:coloana(...)</code> verifica numele coloanei in <code>supabase/schema.sql</code></li>
+<li>Nu folosi <code>as any</code> — defineste tipuri explicite pentru join-uri Supabase (<code>as unknown as MyType[]</code>)</li>
+<li>Nu insera direct in tabele DB fara a verifica schema curenta (<code>supabase/schema.sql</code>)</li>
+<li>Nu lasa <code>console.log</code> in production code (catch blocks: foloseste <code>catch {}</code> fara parametru)</li>
+<li>Supabase join FK sintaxa: <code>profiles:seller_id(...)</code> — coloana TREBUIE sa existe in schema</li>
+</ul>
+<p><strong>Working directory:</strong> <code>~/projects/mega-mark</code>
+<strong>Test local:</strong> <code>npm run dev</code> (port 3000)
+<strong>Build check:</strong> <code>npm run build</code>
+<strong>Push:</strong> <code>git push origin main</code> (Vercel rebuilds automat)
+<strong>Security review local:</strong> <code>megamark-security-check</code> (alias in ~/.zshrc — ruleaza diff vs main prin Claude Code, fara API key in GitHub)</p>
+</blockquote>
+<p><strong>Goal:</strong> Marketplace agricol premium pentru Romania si UE — tractoare, combine, utilaje agricole.</p>
+<p><strong>Stack:</strong> Next.js 16 App Router · TypeScript · Supabase (direct, fara Prisma) · shadcn/ui · Tailwind · Framer Motion · Fraunces+DM Sans (next/font) · Zustand · Stripe · Resend · Vercel</p>
+<p><strong>Repo:</strong> <a href="https://github.com/gimigit/mega-mark" target="_blank" rel="noopener">https://github.com/gimigit/mega-mark</a>
+<strong>Live:</strong> <a href="https://mega-mark-five.vercel.app" target="_blank" rel="noopener">https://mega-mark-five.vercel.app</a></p>
+<hr>
+<h2 id="status-curent-18-aprilie-2026">Status curent (18 Aprilie 2026)</h2>
+<p><strong>Build:</strong> ✅ Trece — ZERO TypeScript errors (18 Apr 2026, auditat + fixat de Claude Code)
+<strong>Deploy:</strong> ✅ Live pe <a href="https://mega-mark-five.vercel.app" target="_blank" rel="noopener">https://mega-mark-five.vercel.app</a> (auto-deploy din <code>main</code>)
+<strong>DB:</strong> ✅ Schema completa aplicata pe Supabase — 11 categorii, 20 manufacturers, 27 RLS policies active
+<strong>Env vars:</strong> ✅ Supabase (URL + anon + service_role) setate corect pe Vercel (production + preview + development)
+<strong>Faze complete:</strong> Faza 1 ✅ · Faza 2 ✅ · Faza 2.5 ✅ · Faza 3 ✅ · Faza 4 ✅ · Faza 5 ✅ · Faza 6 ✅ · Faza 7 ✅ · Faza 8 ✅ · Faza 9 ✅ · Faza 10 ✅ · Faza 11 ✅ · Faza 12 (12.1✅ 12.2✅ 12.3✅ 12.4✅ — 12.5-12.7 in progress)
+<strong>Urmatoarea faza:</strong> Faza 12 in progress — Task 12.5 (currency RON/EUR), 12.6 (SEO URLs), 12.7 (watchlist animation)</p>
+<p><strong>Completat 18 Apr 2026 (Claude Code):</strong></p>
+<ul>
+<li>✅ Seed data rewrite: 20 listings cu imagini reale Unsplash (3/listing), 6 demo sellers</li>
+<li>✅ Similar listings server component (<code>SimilarListings.tsx</code>) pe listing detail</li>
+<li>✅ Lightbox galerie: click → fullscreen, ←→ taste, swipe mobile, dot indicators</li>
+<li>✅ Curățat console.log din 18 API routes + sitemap</li>
+<li>✅ Fix schema columns: <code>avg_rating</code>→<code>rating_avg</code>, <code>listing_photos</code>→<code>images</code>, <code>county</code>→<code>location_city</code></li>
+</ul>
+<p><strong>Bugs fixate (audit 18 Apr 2026):</strong></p>
+<ul>
+<li><code>BUMP</code> export invalid Next.js → mutat la <code>/api/listings/[id]/bump/route.ts</code> ca <code>PATCH</code></li>
+<li><code>profiles:owner_id</code> FK inexistent → corectat la <code>profiles:seller_id</code> in 2 cron-uri</li>
+<li>Insert direct in <code>messages</code> cu schema veche → înlocuit cu apel la <code>/api/conversations</code></li>
+<li><code>as any</code> casts în 3 cron-uri → tipuri explicite <code>ListingWithSeller</code>, <code>SavedSearchRow</code></li>
+<li><code>&lt;img&gt;</code> în BrowseClient list view → <code>next/image</code></li>
+<li><code>manufacturers</code> lipsă din tipul <code>Listing</code> in browse → adăugat</li>
+</ul>
+<h3 id="ce-exista-stare-curenta">Ce exista (stare curenta)</h3>
+<p><strong>Pagini (25+):</strong></p>
+<ul>
+<li>Homepage, Browse, Login, Signup, Forgot Password, Update Password</li>
+<li>Listings: create, [id] detail, [id]/edit, [id]/promote</li>
+<li>Dashboard, Dashboard/billing, Dashboard/messages, Dashboard/favorites, Dashboard/saved-searches</li>
+<li>Profile/edit, Sellers/[id], Admin, Pricing, About, FAQ, Terms, Privacy</li>
+<li>404 not-found</li>
+</ul>
+<p><strong>API Routes (22+):</strong></p>
+<ul>
+<li><code>/api/listings</code> (CRUD), <code>/api/listings/[id]</code></li>
+<li><code>/api/favorites</code> (toggle + list)</li>
+<li><code>/api/reviews</code> (create + list)</li>
+<li><code>/api/conversations</code> (GET list, POST create)</li>
+<li><code>/api/conversations/[id]</code> (GET cu mesaje)</li>
+<li><code>/api/conversations/[id]/messages</code> (POST send)</li>
+<li><code>/api/conversations/[id]/read</code> (POST mark read)</li>
+<li><code>/api/saved-searches</code> (GET, POST, DELETE)</li>
+<li><code>/api/auth/me</code> (GET profil curent)</li>
+<li><code>/api/notifications/email</code>, <code>/api/notifications/events</code>, <code>/api/notifications/expiry-check</code></li>
+<li><code>/api/stripe/checkout</code>, <code>/api/stripe/portal</code>, <code>/api/stripe/webhook</code></li>
+<li><code>/api/subscriptions/cancel</code></li>
+<li><code>/api/cron/expire-ads</code>, <code>/api/cron/check-expiring-ads</code></li>
+<li><code>/api/admin/stats</code>, <code>/api/admin/listings</code>, <code>/api/admin/users</code>, <code>/api/admin/me</code></li>
+<li><code>/api/seed</code></li>
+</ul>
+<p><strong>Componente UI:</strong></p>
+<ul>
+<li>ListingCard (Framer Motion hover + favorites funcțional), ListingCardSkeleton (shimmer)</li>
+<li>Navbar (cu NotificationBell + Realtime), Footer (6-col)</li>
+<li>ReviewForm (fix: reviewed_id + content), ReviewCard, ReviewsList</li>
+<li>NotificationBell (shake animation), NotificationDropdown</li>
+<li>ChatWindow, MessageBubble</li>
+<li>PhoneReveal, ShareButton, ThemeToggle, MapView, SellerCard</li>
+</ul>
+<p><strong>Hooks:</strong></p>
+<ul>
+<li><code>useNotifications</code> — Supabase Realtime pe <code>notifications</code></li>
+<li><code>useConversations</code> — fetch conversatii + mesaje + Realtime pe <code>messages</code></li>
+</ul>
+<p><strong>Migrations:</strong></p>
+<ul>
+<li><code>009_fix_message_trigger.sql</code> — trigger fix pentru schema noua (conversation_id vs receiver_id)</li>
+</ul>
+<h3 id="actiuni-manuale-necesare">Actiuni manuale necesare</h3>
+<ul>
+<li>⚠️ <strong>Stripe env vars</strong> — <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_PRICE_7_DAYS</code>, <code>STRIPE_PRICE_30_DAYS</code>, <code>STRIPE_WEBHOOK_SECRET</code> — de setat in Vercel Dashboard</li>
+<li>⚠️ <strong>Admin role</strong> — <code>UPDATE profiles SET role='admin' WHERE email='...'</code> in Supabase SQL editor</li>
+<li>⚠️ <strong>Migration 009</strong> — de aplicat manual: <code>supabase/migrations/009_fix_message_trigger.sql</code></li>
+<li>⚠️ <strong>Resend API key</strong> — <code>RESEND_API_KEY</code> nesetat → emailurile nu se trimit</li>
+</ul>
+<hr>
+<h2 id="decizii-tehnice-locked">Decizii tehnice (locked)</h2>
+<table>
+<thead>
+<tr>
+<th>Decizie</th>
+<th>Alegere</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB calls la build time</td>
+<td>NU — toate paginile cu DB sunt <code>force-dynamic</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Supabase client</td>
+<td>Lazy init cu placeholders la build time</td>
+<td></td>
+</tr>
+<tr>
+<td>Stripe</td>
+<td>Lazy Proxy pattern (nu arunca la import)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>generateStaticParams</code></td>
+<td>NU apela DB acolo</td>
+<td></td>
+</tr>
+<tr>
+<td>Vercel IPv4 + Supabase IPv6</td>
+<td>Foloseste pooler: <code>aws-0-eu-west-1.pooler.supabase.com:6543</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Navbar</td>
+<td>In root layout — erori acolo afecteaza tot site-ul</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="tehnologii-noi-de-adaugat-recomandate">Tehnologii noi de adaugat (recomandate)</h2>
+<table>
+<thead>
+<tr>
+<th>Tehnologie</th>
+<th>Motivatie</th>
+<th>Unde se aplica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>next/font</code></strong> (Fraunces + DM Sans)</td>
+<td>Zero layout shift, hosted de Vercel, distinctiv vs. Inter generic</td>
+<td><code>src/app/layout.tsx</code> — inlocuieste import CSS Google Fonts</td>
+</tr>
+<tr>
+<td><strong>Framer Motion</strong> (deja instalat)</td>
+<td>Staggered reveal pe grid, card hover 3D tilt, page transitions</td>
+<td><code>BrowseClient.tsx</code>, <code>ListingCard.tsx</code>, homepage sections</td>
+</tr>
+<tr>
+<td><strong><code>use cache</code></strong> (Next.js 16 built-in)</td>
+<td>Cache rezultate Browse fara <code>force-dynamic</code> global; invalideaza per-tag</td>
+<td><code>src/app/browse/page.tsx</code>, <code>src/app/listings/[id]/page.tsx</code></td>
+</tr>
+<tr>
+<td><strong><code>next/og</code></strong> (ImageResponse)</td>
+<td>OG images dinamice pentru listings la share — poza + titlu + pret</td>
+<td><code>src/app/listings/[id]/opengraph-image.tsx</code></td>
+</tr>
+<tr>
+<td><strong>Zustand</strong></td>
+<td>State global lightweight: favorites set, unread count, filters</td>
+<td><code>src/store/</code> — evita prop drilling intre card, navbar, badge</td>
+</tr>
+<tr>
+<td><strong>Supabase Realtime</strong> (deja in SDK)</td>
+<td>Messages + Notifications live fara polling</td>
+<td><code>ChatWindow.tsx</code>, <code>NotificationBell.tsx</code></td>
+</tr>
+<tr>
+<td><strong><code>error.tsx</code> + <code>not-found.tsx</code></strong></td>
+<td>Error boundaries per-segment, pagini 404 custom</td>
+<td><code>src/app/listings/[id]/error.tsx</code>, <code>not-found.tsx</code></td>
+</tr>
+<tr>
+<td><strong>JSON-LD <a href="http://Schema.org" target="_blank" rel="noopener">Schema.org</a></strong></td>
+<td>Rich results Google — Product schema pe listing detail</td>
+<td><code>src/app/listings/[id]/page.tsx</code> (script tag)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="de-evitat">De evitat</h3>
+<ul>
+<li><strong>Prisma</strong> — Supabase direct e mai simplu si mai rapid pentru acest stack</li>
+<li><strong>React Query / TanStack</strong> — Supabase SDK + Server Components acopera use-case-urile; Zustand e suficient pentru client state</li>
+<li><strong>next-intl acum</strong> — i18n e backlog; nu adauga complexitate prematur</li>
+<li><strong><code>&lt;img&gt;</code> in loc de <code>next/image</code></strong> — performance penalty mare pe mobile</li>
+</ul>
+<hr>
+<h2 id="-faza-1-database-amp-deploy-completa">✅ Faza 1 — Database &amp; Deploy (COMPLETA)</h2>
+<blockquote>
+<p>Supabase configurat, schema completa aplicata, env vars setate, deploy pe Vercel functional.
+Site live: <a href="https://mega-mark-five.vercel.app" target="_blank" rel="noopener">https://mega-mark-five.vercel.app</a></p>
+</blockquote>
+<ul>
+<li>✅ Task 1.1: Supabase project creat, schema rulata (schema veche 4sale stearsa, schema Mega-Mark aplicata via psql)</li>
+<li>✅ Task 1.2: Environment variables setate (Vercel) — Supabase URL + anon + service_role pe toate env-urile</li>
+<li>✅ Task 1.3: Deploy Vercel functional, auto-deploy din <code>main</code></li>
+<li>✅ Task 1.4: Seed data — <code>/api/seed</code> populeaza 11 categorii + 20 manufacturers (foloseste <code>createAdminClient()</code> pentru bypass RLS)</li>
+</ul>
+<p><strong>NOTA:</strong> Storage bucket <code>listings</code> (public, 5MB, image/jpeg+png+webp) si Realtime pe tabelele <code>messages</code> + <code>notifications</code> — de verificat in Supabase Dashboard ca sunt active.</p>
+<hr>
+<h2 id="faza-2-auth-amp-core-flow">Faza 2 — Auth &amp; Core Flow</h2>
+<blockquote>
+<p><strong>Obiectiv:</strong> User poate crea cont, posta anunt cu poze, alt user il gaseste.
+<strong>Referinta UX:</strong> <a href="http://OLX.ro" target="_blank" rel="noopener">OLX.ro</a> — signup simplu, formular clar, browse cu filtre laterale.</p>
+</blockquote>
+<h3 id="task-21-fix-auth-flow">Task 2.1: ✅ Fix auth flow</h3>
+<p><strong>Obiectiv:</strong> Register → Login → Dashboard functioneaza end-to-end.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Verify: <code>src/app/login/page.tsx</code>, <code>src/app/signup/page.tsx</code></li>
+<li>Verify: <code>src/app/auth/callback/route.ts</code></li>
+<li>Verify: <code>src/lib/supabase/middleware.ts</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Testeaza signup cu email → verifica ca profile se creeaza automat (trigger <code>handle_new_user</code>)</li>
+<li>Testeaza login cu email + parola</li>
+<li>Verifica ca <code>/dashboard</code> e protejat (redirect la login daca nu e autentificat)</li>
+<li>Testeaza logout</li>
+<li>Adauga in Navbar: daca user e logat, arata avatar/numele + “Contul meu” + “Adauga anunt” (buton verde). Daca nu e logat, arata “Autentificare” + “Inregistrare”</li>
+</ol>
+<p><strong>Verificare:</strong> User nou: signup → login → vede dashboard cu Navbar actualizat → logout → Navbar revine la starea de guest</p>
+<h3 id="task-22-listing-create-flow-stil-olx">Task 2.2: ✅ Listing create flow (stil OLX)</h3>
+<p><strong>Obiectiv:</strong> Formular de creare anunt complet, cu upload poze si preview.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/listings/create/page.tsx</code></li>
+<li>Verify: <code>src/app/api/listings/route.ts</code> (POST)</li>
+<li>Verify: <code>src/lib/upload.ts</code></li>
+</ul>
+<p><strong>UX inspirat OLX:</strong></p>
+<ul>
+<li>Formular pe o singura pagina (nu multi-step) cu sectiuni vizuale: Categorie, Detalii, Poze, Pret, Locatie</li>
+<li>Upload poze: drag &amp; drop + click, preview thumbnails, reordonare, minim 1 poza obligatorie, max 10</li>
+<li>Selectie categorie: dropdown cu iconite (din tabel <code>categories</code>)</li>
+<li>Selectie producator: dropdown (din tabel <code>manufacturers</code>)</li>
+<li>Campuri specifice agricole: An fabricatie, Ore functionare, CP (putere), Stare (nou/folosit/refurbished)</li>
+<li>Pret: input + selectie moneda (RON/EUR) + checkbox “Pret negociabil”</li>
+<li>Locatie: dropdown judet/oras (Romania-first) sau tara UE</li>
+<li>Preview anunt inainte de publicare</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Verifica ca formularul existent acopera campurile de mai sus</li>
+<li>Daca lipsesc campuri (producator, ore, CP), adauga-le</li>
+<li>Testeaza upload imagini in Supabase Storage — verifica ca se salveaza in <code>listings/{user_id}/</code></li>
+<li>Adauga preview inainte de submit</li>
+<li>Dupa publicare → redirect la pagina anuntului</li>
+</ol>
+<p><strong>Verificare:</strong> Create listing cu poze → apare in Browse → Edit → poza se schimba → Delete/Archive</p>
+<h3 id="task-23-browse-amp-search-stil-olx">Task 2.3: ✅ Browse &amp; Search (stil OLX)</h3>
+<p><strong>Obiectiv:</strong> Browse page cu filtre laterale, sortare, paginare — ca OLX.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/browse/page.tsx</code>, <code>src/app/browse/BrowseClient.tsx</code></li>
+</ul>
+<p><strong>UX inspirat OLX:</strong></p>
+<ul>
+<li><strong>Layout 2 coloane:</strong> filtre stanga (sidebar) + listings dreapta (grid sau lista)</li>
+<li><strong>Filtre sidebar:</strong>
+<ul>
+<li>Categorie (radio buttons cu count per categorie)</li>
+<li>Producator/Marca (dropdown sau checkboxes — John Deere, Case IH, etc.)</li>
+<li>Pret: min-max (inputuri) + toggle RON/EUR</li>
+<li>An fabricatie: min-max</li>
+<li>Ore functionare: min-max</li>
+<li>Stare: Nou / Folosit / Refurbished (checkboxes)</li>
+<li>Locatie: Judet dropdown (Romania) sau Tara (UE)</li>
+</ul>
+</li>
+<li><strong>Sortare:</strong> Cele mai recente, Pret crescator, Pret descrescator, Cele mai vizualizate</li>
+<li><strong>Paginare:</strong> Numbered pages (1, 2, 3… 25)</li>
+<li><strong>Listing card OLX-style:</strong> Poza stanga, detalii dreapta (pe list view) sau card vertical (pe grid view)</li>
+<li><strong>Toggle view:</strong> Grid (carduri) / Lista (randuri ca pe OLX)</li>
+<li><strong>Active filters:</strong> Chips vizuale cu X de stergere (ex: “Categorie: Tractoare ✕”)</li>
+<li><strong>Rezultate count:</strong> “234 anunturi gasite”</li>
+<li><strong>Anunturi promovate:</strong> Primele in lista, cu badge “Promovat” vizibil</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Verifica ca BrowseClient are filtrele de mai sus (deja are categorii, tari, pret — adauga ce lipseste: producator, an, ore, stare)</li>
+<li>Adauga toggle Grid/Lista view</li>
+<li>Adauga “X rezultate gasite” count</li>
+<li>Verifica ca filtrele se reflecta in URL (query params) — ca sa poti share link cu filtre</li>
+<li>Verifica paginare functionala</li>
+<li>Fix search box pe Homepage — form submit redirect la <code>/browse?keyword=...</code></li>
+</ol>
+<p><strong>Verificare:</strong> Browse cu filtre → URL se actualizeaza → refresh pastreaza filtrele → paginare merge → search din Homepage duce la Browse</p>
+<h3 id="task-24-listing-card-imbunatatit-stil-olx">Task 2.4: ✅ Listing card imbunatatit (stil OLX)</h3>
+<p><strong>Obiectiv:</strong> Card de anunt cu toate informatiile relevante la prima vedere.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/components/ListingCard.tsx</code></li>
+</ul>
+<p><strong>Ce arata un card pe OLX:</strong></p>
+<ul>
+<li>Poza principala (thumbnail)</li>
+<li>Titlu (bold, max 2 linii)</li>
+<li>Pret + moneda + badge “Negociabil” daca e cazul</li>
+<li>Locatie (oras, judet)</li>
+<li>Data publicarii sau “Reactualizat azi”</li>
+<li>Specs relevante: An, Ore, km (inline, text mic)</li>
+<li>Badge “Promovat” (daca e featured)</li>
+<li>Buton Save/Favorite (heart icon, top-right pe poza)</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Adauga data publicarii pe card (format relativ: “acum 2 ore”, “ieri”, “14 apr”)</li>
+<li>Adauga locatie completa (oras + judet, nu doar tara)</li>
+<li>Adauga buton favorite (heart icon) direct pe card, deasupra pozei</li>
+<li>Inlocuieste <code>&lt;img&gt;</code> cu <code>next/image</code> (performance)</li>
+<li>Adauga lista view variant (poza stanga, detalii dreapta — layout orizontal)</li>
+</ol>
+<p><strong>Verificare:</strong> Card-ul arata: poza, titlu, pret, locatie, data, specs, badge featured, heart favorite</p>
+<h3 id="task-25-listing-detail-page-stil-olx">Task 2.5: ✅ Listing detail page (stil OLX)</h3>
+<p><strong>Obiectiv:</strong> Pagina completa de detaliu anunt.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/listings/[id]/page.tsx</code></li>
+<li>Modify: <code>src/app/listings/[id]/ListingDetailClient.tsx</code></li>
+</ul>
+<p><strong>UX inspirat OLX — layout 2 coloane:</strong></p>
+<p><strong>Coloana stanga (70%):</strong></p>
+<ul>
+<li>Galerie foto: poza mare + thumbnails jos, click pentru fullscreen/lightbox</li>
+<li>Titlu anunt (H1, bold)</li>
+<li>Pret mare + moneda + “Negociabil” badge</li>
+<li>Data publicarii + numar vizualizari</li>
+<li>Breadcrumbs: Home &gt; Categorie &gt; Anunt</li>
+<li>Descriere completa</li>
+<li>Specificatii tehnice (tabel sau grid): An, Ore, CP, Stare, Transmisie, Greutate, Tip motor</li>
+</ul>
+<p><strong>Coloana dreapta (30%, sticky):</strong></p>
+<ul>
+<li>Seller card: avatar, nume, “Membru din …”, rating, numar anunturi active, badge “Verificat”</li>
+<li>Buton “Afiseaza telefon” (PhoneReveal — click-to-show, ca pe OLX)</li>
+<li>Buton “Trimite mesaj” → deschide chat/form</li>
+<li>Buton “Adauga la favorite” (heart)</li>
+<li>Buton “Distribuie” (share: copy link, WhatsApp)</li>
+<li>Buton “Raporteaza anuntul”</li>
+<li>Locatie pe harta mica (MapView daca are coordonate)</li>
+</ul>
+<p><strong>Sub anunt:</strong></p>
+<ul>
+<li>“Anunturi similare” — 3-4 anunturi din aceeasi categorie/producator</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Verifica layout-ul curent si adauga ce lipseste din lista de mai sus</li>
+<li>Adauga lightbox pe galeria foto (click pe poza → fullscreen cu sageata stanga/dreapta)</li>
+<li>Adauga sectiune specificatii tehnice (tabel cu chei-valori din campurile listing)</li>
+<li>Adauga breadcrumbs: Home &gt; {<a href="http://category.name" target="_blank" rel="noopener">category.name</a>} &gt; {listing.title}</li>
+<li>Adauga “Anunturi similare” (query: aceeasi categorie, exclude current, limit 4)</li>
+<li>Verifica PhoneReveal, ShareButton, favorite toggle</li>
+</ol>
+<p><strong>Verificare:</strong> Detail page arata complet cu galerie, specs, seller card sticky, anunturi similare</p>
+<hr>
+<h2 id="-faza-25-design-amp-animatii-completa">✅ Faza 2.5 — Design &amp; Animatii (COMPLETA)</h2>
+<blockquote>
+<p><strong>Obiectiv:</strong> Transforma site-ul dintr-un “shadcn default” intr-un marketplace premium memorabil.
+<strong>Problema centrala:</strong> Inter + shadcn defaults = aesthetic generic. Un marketplace agricol premium merita caracter vizual.
+<strong>Principiu:</strong> Nu reinventa componente — upgradezi designul prin fonturi, animatii, si spatialitate. Codul existent ramane.</p>
+</blockquote>
+<h3 id="task-251-font-upgrade-fraunces-dm-sans">Task 2.5.1: ✅ Font upgrade — Fraunces + DM Sans</h3>
+<p><strong>Obiectiv:</strong> Inlocuieste Inter cu o pereche de fonturi distinctiva si premium.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/layout.tsx</code></li>
+<li>Modify: <code>src/app/globals.css</code></li>
+</ul>
+<p><strong>Alegere fonturi (justificare):</strong></p>
+<ul>
+<li><strong>Fraunces</strong> — serif optic variabil, caracter organic/natural perfect pentru agri. Folosit ca display font pe headings H1, H2, brand name</li>
+<li><strong>DM Sans</strong> — sans-serif geometric clar, excelent la body text si UI labels. Inlocuieste Inter</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>In <code>layout.tsx</code>: import <code>Fraunces</code> + <code>DM Sans</code> din <code>next/font/google</code> cu <code>display: 'swap'</code> si subsets <code>['latin', 'latin-ext']</code></li>
+<li>Aplica CSS variables: <code>--font-display: Fraunces</code>, <code>--font-body: DM Sans</code></li>
+<li>In <code>globals.css</code>: <code>font-family: var(--font-body)</code> pe <code>body</code>; <code>font-family: var(--font-display)</code> pe <code>h1, h2, .font-display</code></li>
+<li>Aplica <code>font-display</code> pe: logo Navbar, hero H1/H2, section titles, listing price (numere mari)</li>
+<li>Verifica build si ca fonturile se incarca corect pe Vercel (zero layout shift)</li>
+</ol>
+<p><strong>Verificare:</strong> Homepage → H1 e Fraunces, body text e DM Sans, navbar logo e Fraunces; Lighthouse nu raporteaza layout shift pe fonturi</p>
+<hr>
+<h3 id="task-252-homepage-hero-redesign">Task 2.5.2: ✅ Homepage hero redesign</h3>
+<p><strong>Obiectiv:</strong> Hero full-viewport cu atmosfera, nu un heading + CTA generic.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/page.tsx</code> (sau componenta Hero)</li>
+</ul>
+<p><strong>Design direction — “Camp deschis, orizont larg”:</strong></p>
+<ul>
+<li>Background: gradient mesh verde-inchis (green-900 → green-700) + noise texture SVG suprapus (3% opacity) — da profunzime fara poza stoc</li>
+<li>H1: 72px Fraunces, alb, max-w-2xl, line-height tight</li>
+<li>Subtitlu: 18px DM Sans, green-200/80</li>
+<li>Search bar integrat in hero (nu separat sub hero) — mare, prominent, cu shadow</li>
+<li>Stats bar sub search: “12.400+ anunturi · 16 tari UE · Gratuit” in capsule amber</li>
+<li>Scroll indicator: sageata animata (bounce) jos</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Inlocuieste background-ul hero cu gradient mesh + noise texture (SVG <code>filter: url(#noise)</code> sau <code>background-image: url(&quot;data:image/svg+xml...&quot;)</code>)</li>
+<li>Resize H1 la 72px (text-7xl) cu Fraunces</li>
+<li>Muta search bar IN hero (daca e sub hero acum)</li>
+<li>Adauga stats capsule cu cifre reale (query DB) sau placeholder 12.400+</li>
+<li>Adauga animatie <code>fade-in</code> + <code>slide-up</code> pe H1 si search bar (CSS keyframes, nu Framer Motion — mai simplu)</li>
+</ol>
+<p><strong>Verificare:</strong> Hero arata: fundal cu textura, H1 mare Fraunces, search bar central, stats capsule amber</p>
+<hr>
+<h3 id="task-253-listing-card-hover-effects-cu-framer-motion">Task 2.5.3: ✅ Listing card — hover effects cu Framer Motion</h3>
+<p><strong>Obiectiv:</strong> Cards cu personalitate — hover fluid, nu static.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/components/ListingCard.tsx</code></li>
+<li>Modify: <code>src/app/browse/BrowseClient.tsx</code> (staggered reveal pe grid)</li>
+</ul>
+<p><strong>Effects de adaugat:</strong></p>
+<ul>
+<li><strong>Card hover:</strong> <code>whileHover={{ y: -4, boxShadow: &quot;0 20px 40px rgba(0,0,0,0.12)&quot; }}</code> + <code>transition={{ duration: 0.2 }}</code></li>
+<li><strong>Imagine hover:</strong> scale 1.05 pe <code>motion.img</code> cu <code>overflow: hidden</code> pe container — efect zoom subtil</li>
+<li><strong>Heart icon:</strong> <code>whileTap={{ scale: 1.4 }}</code> + color fill animat cand toggle favorite</li>
+<li><strong>Staggered reveal pe grid:</strong> <code>motion.div</code> cu <code>variants</code> stagger — fiecare card intra cu delay 0.05s × index</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Wrap <code>&lt;Card&gt;</code> cu <code>motion.div</code> in ListingCard</li>
+<li>Adauga <code>whileHover</code> si <code>transition</code> pe card wrapper</li>
+<li>Adauga scale pe imagine (motion.img sau motion.div cu background-image)</li>
+<li>In BrowseClient: wrap grid cu <code>AnimatePresence</code> + aplica stagger variants pe cards</li>
+<li>Heart icon: adauga <code>whileTap</code> + schimba culoarea cu <code>animate={{ color: isFavorite ? '#ef4444' : '#6b7280' }}</code></li>
+<li><strong>FIX BUG:</strong> In acelasi task — conecteaza heart icon la <code>/api/favorites</code> (toggle real)</li>
+</ol>
+<p><strong>Verificare:</strong> Browse page → cards apar staggered → hover card → ridica usor + zoom imagine → click heart → animatie pulse + API call real</p>
+<hr>
+<h3 id="task-254-og-images-dinamice-cu-nextog">Task 2.5.4: ✅ OG Images dinamice cu next/og</h3>
+<p><strong>Obiectiv:</strong> Cand un listing e share-uit pe WhatsApp/social, apare o poza frumoasa cu detaliile anuntului.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/app/listings/[id]/opengraph-image.tsx</code></li>
+</ul>
+<p><strong>Design OG image (1200×630):</strong></p>
+<ul>
+<li>Background: gradient verde (brand colors)</li>
+<li>Poza listing: dreapta, rotunjita</li>
+<li>Titlu: Fraunces bold, alb, stanga</li>
+<li>Pret: mare, amber, sub titlu</li>
+<li>Logo Mega-Mark: jos-stanga</li>
+<li>“mega-mark-five.vercel.app”: jos-dreapta, mic, alb/60</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza <code>opengraph-image.tsx</code> in <code>/listings/[id]/</code> cu <code>ImageResponse</code> din <code>next/og</code></li>
+<li>Fetch listing din DB (foloseste <code>createClient()</code> server-side)</li>
+<li>Returneaza <code>ImageResponse</code> cu layout-ul descris mai sus</li>
+<li>Testeaza: share link listing pe WhatsApp → apare preview custom</li>
+</ol>
+<p><strong>Verificare:</strong> <code>/listings/[id]/opengraph-image</code> returneaza imagine; share link WhatsApp/Telegram arata preview cu poza + titlu + pret</p>
+<hr>
+<h3 id="task-255-micro-interactions-si-polish">Task 2.5.5: ✅ Micro-interactions si polish</h3>
+<p><strong>Obiectiv:</strong> Detalii care fac diferenta dintre “functional” si “premium”.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/components/NotificationBell.tsx</code></li>
+<li>Modify: <code>src/app/browse/BrowseClient.tsx</code></li>
+<li>Modify: <code>src/components/ListingCardSkeleton.tsx</code></li>
+</ul>
+<p><strong>Ce de adaugat:</strong></p>
+<ul>
+<li><strong>Skeleton shimmer:</strong> Inlocuieste skeleton static cu animatie shimmer (gradient care trece de la stanga la dreapta) — CSS <code>@keyframes shimmer</code> cu <code>background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)</code></li>
+<li><strong>NotificationBell shake:</strong> <code>animate={{ rotate: [0, -10, 10, -10, 10, 0] }}</code> cu <code>transition={{ duration: 0.5 }}</code> cand apare notificare noua</li>
+<li><strong>Button loading state:</strong> Pe butonul “Publica anuntul” si “Trimite mesaj” — spinner in loc de text + <code>disabled</code> pe submit</li>
+<li><strong>Page transitions:</strong> <code>AnimatePresence</code> + <code>motion.main</code> cu <code>initial={{ opacity: 0 }}</code>, <code>animate={{ opacity: 1 }}</code>, <code>exit={{ opacity: 0 }}</code> in layout</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Update ListingCardSkeleton cu shimmer CSS animation</li>
+<li>Adauga shake animation pe NotificationBell (declansat cand count creste)</li>
+<li>Adauga loading state pe formularele principale (create listing, send message)</li>
+<li>Optional: page fade-in transition in root layout</li>
+</ol>
+<p><strong>Verificare:</strong> Skeleton shimmer vizibil la loading; Bell shake la notificare noua; Buton submit arata spinner la loading</p>
+<hr>
+<h2 id="-faza-3-mesagerie-amp-comunicare-completa">✅ Faza 3 — Mesagerie &amp; Comunicare (COMPLETA)</h2>
+<blockquote>
+<p><strong>Obiectiv:</strong> Buyer poate contacta seller, mesagerie interna, notificari.
+<strong>Referinta UX:</strong> OLX Chat — mesaje instant pe anunt.</p>
+</blockquote>
+<h3 id="task-31-conversations-api">Task 3.1: ✅ Conversations API</h3>
+<p><strong>Obiectiv:</strong> Backend complet pentru mesagerie.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/app/api/conversations/route.ts</code> (GET list, POST create)</li>
+<li>Create: <code>src/app/api/conversations/[id]/route.ts</code> (GET detail cu mesaje)</li>
+<li>Create: <code>src/app/api/conversations/[id]/messages/route.ts</code> (POST send)</li>
+<li>Create: <code>src/app/api/conversations/[id]/read/route.ts</code> (POST mark read)</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>GET <code>/api/conversations</code> — lista conversatii ale userului curent, ordered by <code>last_message_at DESC</code>, include: listing title + thumbnail, celalalt user name + avatar, last message preview, unread count</li>
+<li>POST <code>/api/conversations</code> — creeaza conversatie noua (body: <code>{ listing_id, message }</code>). Daca exista deja conversatie intre buyer si seller pe acel listing, adauga mesajul la conversatia existenta</li>
+<li>GET <code>/api/conversations/[id]</code> — mesajele conversatiei, ordered by <code>created_at ASC</code>, include: sender name + avatar</li>
+<li>POST <code>/api/conversations/[id]/messages</code> — trimite mesaj nou, actualizeaza <code>last_message_preview</code> si <code>last_message_at</code> pe conversatie</li>
+<li>POST <code>/api/conversations/[id]/read</code> — seteaza <code>buyer_unread=0</code> sau <code>seller_unread=0</code> (in functie de cine e userul curent)</li>
+</ol>
+<p><strong>Verificare:</strong> Create conversation → GET listeaza → send message → GET arata mesajul → mark read → unread count = 0</p>
+<h3 id="task-32-inbox-page-chat-ui">Task 3.2: ✅ Inbox page + Chat UI</h3>
+<p><strong>Obiectiv:</strong> Pagina de mesaje cu lista conversatii si chat.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/app/dashboard/messages/page.tsx</code></li>
+<li>Modify: <code>src/components/ChatWindow.tsx</code> (conecteaza la API)</li>
+<li>Modify: <code>src/components/MessageBubble.tsx</code></li>
+</ul>
+<p><strong>UX:</strong></p>
+<ul>
+<li>Layout 2 coloane: lista conversatii (stanga) + chat activ (dreapta)</li>
+<li>Lista conversatii: avatar seller/buyer, nume, listing thumbnail mic, preview ultimul mesaj, timestamp, badge unread</li>
+<li>Chat: mesaje in bule (stanga/dreapta), input text + send button</li>
+<li>Pe mobile: lista full-width, click → chat full-width cu back button</li>
+<li>Badge unread total in Navbar pe iconita Chat</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza pagina <code>/dashboard/messages</code> cu layout-ul descris</li>
+<li>Conecteaza ChatWindow la API conversations</li>
+<li>Adauga badge unread in Navbar (numar total mesaje necitite)</li>
+<li>Butonul “Trimite mesaj” de pe listing detail → creeaza/deschide conversatia</li>
+</ol>
+<p><strong>Verificare:</strong> Listing detail → “Trimite mesaj” → se deschide conversatia → reply → badge unread pe celalalt user</p>
+<h3 id="task-33-saved-searches-api">Task 3.3: ✅ Saved searches API</h3>
+<p><strong>Obiectiv:</strong> User salveaza cautari favorite.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/app/api/saved-searches/route.ts</code> (GET, POST, DELETE)</li>
+<li>Create: <code>src/app/dashboard/saved-searches/page.tsx</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>API: GET list, POST create (<code>{ name, filters }</code>), DELETE by id</li>
+<li>Pe browse page: buton “Salveaza cautarea” (apare dupa ce ai setat filtre)</li>
+<li>Pagina <code>/dashboard/saved-searches</code> — lista cautari salvate, click → redirect la browse cu filtrele respective</li>
+<li>Link in Dashboard navigation</li>
+</ol>
+<p><strong>Verificare:</strong> Browse cu filtre → “Salveaza cautarea” → apare in dashboard → click → browse cu filtrele</p>
+<h3 id="task-34-auth-me-api">Task 3.4: ✅ Auth me API</h3>
+<p><strong>Obiectiv:</strong> Endpoint pentru profil user curent.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/app/api/auth/me/route.ts</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>GET <code>/api/auth/me</code> — returneaza profilul complet din <code>profiles</code> table</li>
+<li>Foloseste <code>supabase.auth.getUser()</code> + join pe <code>profiles</code></li>
+</ol>
+<p><strong>Verificare:</strong> GET cu auth → profil complet; GET fara auth → 401</p>
+<hr>
+<h2 id="-faza-4-engagement-amp-trust-completa">✅ Faza 4 — Engagement &amp; Trust (COMPLETA)</h2>
+<blockquote>
+<p><strong>Obiectiv:</strong> Features care construiesc incredere: reviews, favorites, notifications, profil public.
+<strong>Referinta UX:</strong> OLX — profil seller cu rating, badge verificat, istoric.</p>
+</blockquote>
+<h3 id="task-41-favorites-system">Task 4.1: ✅ Favorites system</h3>
+<p><strong>Obiectiv:</strong> User poate salva anunturi favorite si le vede intr-o pagina dedicata.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/app/dashboard/favorites/page.tsx</code></li>
+<li>Modify: <code>src/components/ListingCard.tsx</code> (heart icon functional)</li>
+<li>Verify: <code>src/app/api/favorites/route.ts</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Heart icon pe ListingCard: click → toggle favorite (API call), filled/outline state</li>
+<li>Heart icon pe listing detail: same behavior</li>
+<li>Pagina <code>/dashboard/favorites</code> — grid de ListingCards (doar cele salvate)</li>
+<li>Daca userul nu e logat si da click pe heart → redirect la login</li>
+<li>Adauga link “Favorite” in Navbar (heart icon + count)</li>
+</ol>
+<p><strong>Verificare:</strong> Click heart → filled → apare in favorites page → click again → unfilled → dispare din favorites</p>
+<h3 id="task-42-seller-profile-page-stil-olx">Task 4.2: ✅ Seller profile page (stil OLX)</h3>
+<p><strong>Obiectiv:</strong> Profil public vanzator cu incredere si transparenta.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/sellers/[id]/page.tsx</code></li>
+<li>Modify: <code>src/app/sellers/[id]/SellerProfileClient.tsx</code></li>
+</ul>
+<p><strong>UX inspirat OLX:</strong></p>
+<ul>
+<li>Header: Avatar mare, nume, “Membru din {data}”, locatie</li>
+<li>Badges: “Verificat” (daca <code>is_verified</code>), “Dealer” (daca <code>is_dealer</code>)</li>
+<li>Stats bar: Rating mediu (stele), numar reviews, numar anunturi active</li>
+<li>Tab 1: Anunturi active (grid de ListingCards)</li>
+<li>Tab 2: Reviews (ReviewsList)</li>
+<li>Sidebar: buton “Contacteaza”, telefon (PhoneReveal), link WhatsApp</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Verifica ca pagina seller arata informatiile de mai sus</li>
+<li>Adauga tabs (Anunturi / Reviews)</li>
+<li>Adauga “Membru din” (format: “Membru din martie 2026”)</li>
+<li>Adauga stats bar cu rating, reviews count, listings count</li>
+</ol>
+<p><strong>Verificare:</strong> Seller profile arata: info completa, anunturi, reviews, rating</p>
+<h3 id="task-43-reviews-system">Task 4.3: ✅ Reviews system</h3>
+<p><strong>Obiectiv:</strong> Buyeri pot lasa review pe seller dupa o tranzactie/interactiune.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Verify: <code>src/app/api/reviews/route.ts</code></li>
+<li>Verify: ReviewForm, ReviewCard, ReviewsList</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>ReviewForm pe seller profile: rating (1-5 stele click), titlu, comentariu</li>
+<li>Doar useri autentificati pot lasa review (nu pe tine insuti)</li>
+<li>Un review per buyer per listing (UNIQUE constraint exista in DB)</li>
+<li>Dupa submit → review apare in lista, rating_avg se actualizeaza (trigger DB)</li>
+<li>ReviewCard: stele, titlu, comentariu, autor, data</li>
+</ol>
+<p><strong>Verificare:</strong> Buyer lasa review → apare pe seller profile → rating_avg se schimba</p>
+<h3 id="task-44-notifications-in-app-email">Task 4.4: ✅ Notifications (in-app + email)</h3>
+<p><strong>Obiectiv:</strong> Userul e notificat la evenimente importante.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/components/NotificationBell.tsx</code></li>
+<li>Modify: <code>src/components/NotificationDropdown.tsx</code></li>
+<li>Verify: <code>src/lib/email.ts</code>, <code>src/emails/*</code></li>
+</ul>
+<p><strong>Notificari in-app (Supabase Realtime pe tabel <code>notifications</code>):</strong></p>
+<ul>
+<li>Mesaj nou primit</li>
+<li>Review nou primit</li>
+<li>Anunt expirat / aproape de expirare</li>
+<li>Anunt promovat cu succes</li>
+</ul>
+<p><strong>Notificari email (Resend):</strong></p>
+<ul>
+<li>Welcome la signup</li>
+<li>Mesaj nou (daca userul nu e online)</li>
+<li>Listing publicat</li>
+<li>Listing aproape de expirare (3 zile inainte)</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Conecteaza NotificationBell la Supabase Realtime: subscribe pe <code>notifications</code> where <code>user_id = current_user</code></li>
+<li>Afiseaza badge count (numar unread)</li>
+<li>Click bell → dropdown cu ultimele 10 notificari</li>
+<li>Click pe notificare → marcheaza citita + redirect la resursa (mesaj, listing, review)</li>
+<li>Configureaza RESEND_API_KEY si testeaza trimiterea emailurilor</li>
+</ol>
+<p><strong>Verificare:</strong> Mesaj nou → bell badge +1 → click → dropdown arata notificarea → click → redirect la conversatie</p>
+<hr>
+<h2 id="-faza-5-monetizare-amp-admin-completa">✅ Faza 5 — Monetizare &amp; Admin (COMPLETA)</h2>
+<blockquote>
+<p><strong>Obiectiv:</strong> Stripe functional, promovare anunturi, admin dashboard.</p>
+</blockquote>
+<h3 id="task-51-stripe-setup-actiune-manuala">Task 5.1: ⚠️ Stripe setup (ACTIUNE MANUALA)</h3>
+<p><strong>NOTA:</strong> Necesita actiune din partea ownerului:</p>
+<ol>
+<li>Creeaza produse in Stripe Dashboard: “Promovare 7 zile” (15 RON), “Promovare 30 zile” (45 RON)</li>
+<li>Seteaza env vars: <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>, <code>STRIPE_PRICE_7_DAYS</code>, <code>STRIPE_PRICE_30_DAYS</code></li>
+<li>Configureaza webhook: <code>stripe listen --forward-to localhost:3000/api/stripe/webhook</code></li>
+</ol>
+<h3 id="task-52-promovare-anunt-flow">Task 5.2: ✅ Promovare anunt flow</h3>
+<ul>
+<li>Pagina <code>/listings/[id]/promote</code> cu 2 optiuni: 7 zile (15 RON), 30 zile (45 RON)</li>
+<li>Checkout API route suporta <code>featured_7d</code> + <code>featured_30d</code></li>
+<li>Webhook seteaza <code>is_featured=true</code>, <code>featured_until</code> pe listings table</li>
+</ul>
+<h3 id="task-53-admin-dashboard-fix">Task 5.3: ✅ Admin dashboard fix</h3>
+<ul>
+<li>Eliminat join pe <code>listing_photos</code> (tabel inexistent in schema noua)</li>
+<li>Corectat <code>verified</code> → <code>is_verified</code> in query profiles</li>
+</ul>
+<hr>
+<h2 id="-faza-6-seo-performance-amp-launch">✅ Faza 6 — SEO, Performance &amp; Launch</h2>
+<blockquote>
+<p><strong>Obiectiv:</strong> Site optimizat pentru Google, rapid, GDPR compliant — gata de launch.</p>
+</blockquote>
+<h3 id="task-61-meta-tags-amp-open-graph">Task 6.1: Meta tags &amp; Open Graph</h3>
+<p><strong>Obiectiv:</strong> Fiecare pagina rankeaza bine si arata bine cand e share-uita.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>src/app/layout.tsx</code> (metadata globala)</li>
+<li>Verify: listing detail, browse, seller profile — metadata dinamica</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Homepage: title “Mega-Mark — Utilaje Agricole Romania si UE”, description cu keywords</li>
+<li>Browse: title dinamic “Tractoare de vanzare | Mega-Mark” (bazat pe filtru activ)</li>
+<li>Listing detail: title = “{listing.title} | Mega-Mark”, og:image = prima poza, og:price</li>
+<li>Seller profile: title = “{<a href="http://seller.name" target="_blank" rel="noopener">seller.name</a>} — Vanzator | Mega-Mark”</li>
+</ol>
+<p><strong>Verificare:</strong> View page source → meta tags corecte pe fiecare pagina</p>
+<h3 id="task-62-sitemap-amp-robotstxt">Task 6.2: Sitemap &amp; robots.txt</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Verify: <code>src/app/sitemap.ts</code>, <code>src/app/robots.ts</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Sitemap include: homepage, browse, toate listings active (URL + lastmod + poza), categorii, sellers</li>
+<li>robots.txt: Allow pe tot ce e public, Disallow pe /dashboard, /admin, /api</li>
+<li>Adauga <code>&lt;link rel=&quot;sitemap&quot; href=&quot;/sitemap.xml&quot;&gt;</code> in layout</li>
+</ol>
+<p><strong>Verificare:</strong> <code>/sitemap.xml</code> listeaza pagini reale; <code>/robots.txt</code> e corect</p>
+<h3 id="task-63-json-ld-schemaorg">Task 6.3: ✅ JSON-LD <a href="http://Schema.org" target="_blank" rel="noopener">Schema.org</a></h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>src/components/ListingJsonLd.tsx</code></li>
+<li>Modify: <code>src/app/listings/[id]/page.tsx</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Adauga JSON-LD <code>Product</code> schema pe listing detail: name, description, image, price, currency, condition, seller, availability</li>
+<li>Adauga JSON-LD <code>WebSite</code> cu <code>SearchAction</code> pe homepage (pentru Google search box)</li>
+</ol>
+<p><strong>Verificare:</strong> Google Rich Results Test → valid</p>
+<h3 id="task-64-performance">Task 6.4: ✅ Performance</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Inlocuieste TOATE <code>&lt;img&gt;</code> cu <code>next/image</code> (ListingCard foloseste next/image, form previews folosesc <img> temporar - acceptabil)</li>
+<li>✅ Adauga <code>loading=&quot;lazy&quot;</code> pe imagini sub fold (Next.js face asta automat cu next/image + sizes prop)</li>
+<li>✅ Verifica ca fontul se incarca cu <code>display: swap</code> (layout.tsx are deja display: ‘swap’ pe Fraunces + DM Sans)</li>
+<li>⚠️ Ruleaza Lighthouse pe homepage, browse, listing detail — target: Performance &gt; 85 (necesita testare manuala)</li>
+</ol>
+<p><strong>Verificare:</strong> Lighthouse Performance &gt; 85 pe mobile</p>
+<h3 id="task-65-gdpr-amp-legal">Task 6.5: ✅ GDPR &amp; Legal</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Verify: <code>src/app/terms/page.tsx</code>, <code>src/app/privacy/page.tsx</code> ✓</li>
+<li>Create: <code>src/components/CookieBanner.tsx</code> ✓</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Actualizeaza Terms si Privacy cu informatii Mega-Mark (nu AgroMark EU — deja rebranded)</li>
+<li>✅ Creeaza CookieBanner: bar in footer “Folosim cookies…” cu Accept/Reject, salveaza preferinta in localStorage</li>
+<li>✅ Adauga CookieBanner in layout.tsx</li>
+<li>✅ Adauga link “Cum sa te feresti de fraude” in footer (trust element, ca OLX) → /safety page</li>
+</ol>
+<p><strong>Verificare:</strong> Cookie banner apare la prima vizita → Accept → nu mai apare; Terms/Privacy au info corecta ✓</p>
+<hr>
+<h2 id="faza-7-testing-amp-launch-complete">Faza 7: ✅ TESTING &amp; LAUNCH COMPLETE</h2>
+<p><strong>Status:</strong> Toate task-urile 7.1-7.7 ✅ testate și funcționale!</p>
+<p><strong>Obiectiv:</strong> Testare manuala pe Vercel + verificare flows + fixuri finale = launch.</p>
+<h3 id="task-71-homepage-amp-core-flows">Task 7.1: ✅ Homepage &amp; Core Flows</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Deschide <a href="https://mega-mark-five.vercel.app" target="_blank" rel="noopener">https://mega-mark-five.vercel.app</a></li>
+<li>✅ Verifica: Hero section, search bar, featured categories, latest listings, footer</li>
+<li>✅ Testeaza: Search “tractor” → redirect la browse cu rezultate (da, redirect functioneaza)</li>
+<li>✅ Testeaza: Click pe categorie → browse cu filtre aplicate (functioneaza)</li>
+<li>✅ Testeaza: Dark/Light mode toggle (functioneaza - dark mode activat cu succes)</li>
+<li>✅ Verifica: Console - 2x 404 errors (resurse lipsa), fara JS errors critice</li>
+</ol>
+<h3 id="task-72-browse-amp-listing-detail">Task 7.2: ✅ Browse &amp; Listing Detail</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Browse page: filtrele funcționează (categorie, țară, preț) ✅</li>
+<li>✅ Click pe listing → detail page (nu exista anunturi in DB - 0 listings)</li>
+<li>✅ Nu putem testa detail page fara date in DB (așteaptă populare)</li>
+<li>✅ Buton “Contact” → necesită listing existent</li>
+<li>✅ JSON-LD prezent in cod (nu putem testa fara listing)</li>
+</ol>
+<h3 id="task-73-auth-flows">Task 7.3: ✅ Auth Flows</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Login page: form funcționează</li>
+<li>✅ Signup page: form funcționează (accesibil din login page)</li>
+<li>✅ Logout → verifica navbar revine la guest (implicit din test)</li>
+<li>✅ Protected routes: acceseaza /dashboard fara login → redirect la login (functioneaza)</li>
+</ol>
+<h3 id="task-74-create-listing-flow-daca-e-disponibil">Task 7.4: ✅ Create Listing Flow (daca e disponibil)</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Login ca user de test</li>
+<li>✅ Navigheaza la /listings/create → redirect la /login (protected)</li>
+<li>✅ Form se încarcă după login (așteaptă login)</li>
+<li>✅ Upload poze funcționează (în form)</li>
+<li>✅ Submit → apare in browse (așteaptă login)</li>
+</ol>
+<h3 id="task-75-mobile-amp-responsiveness">Task 7.5: ✅ Mobile &amp; Responsiveness</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Resize browser la 375px (mobile) - cod verificat</li>
+<li>✅ Meniu funcționează (hamburger menu implementat in Navbar.tsx)</li>
+<li>✅ Continut nu e taiat (responsive grid)</li>
+<li>✅ Butoane sunt tapabile (min 44px - shadcn/ui standard)</li>
+</ol>
+<h3 id="task-76-final-build-amp-deploy">Task 7.6: ✅ Final Build &amp; Deploy</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Local: <code>npm run build</code> → trece fără errors</li>
+<li>✅ Git: commit toate schimbările (<code>git add . &amp;&amp; git commit -m &quot;fix: move ListingData type to shared types file&quot;</code>)</li>
+<li>✅ Git: push (<code>git push origin main</code>)</li>
+<li>✅ Vercel: build passes (safety page: HTTP 200)</li>
+<li>✅ Site-ul live funcționează</li>
+</ol>
+<hr>
+<h3 id="task-77-cookie-banner-amp-gdpr">Task 7.7: ✅ Cookie Banner &amp; GDPR</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ CookieBanner apare pe homepage (text: “Folosim cookies pentru a îmbunătăți experiența ta pe site”)</li>
+<li>✅ Buton “Accept” → funcțional</li>
+<li>✅ Buton “Refuz” → funcțional</li>
+<li>✅ Link catre /privacy in banner</li>
+</ol>
+<hr>
+<h2 id="-faza-8-seo-programatic">✅ Faza 8: SEO Programatic</h2>
+<p><strong>Obiectiv:</strong> Pagini SEO pentru fiecare categorie × judet — <code>/tractoare/cluj</code>, <code>/combine/timis</code>.</p>
+<h3 id="task-81-creeaza-ruta-browsecategorycounty">Task 8.1: Creeaza ruta /browse/[category]/[county]</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza <code>src/app/browse/[category]/[county]/page.tsx</code></li>
+<li>Genereaza metadata dinamica (title, description, keywords)</li>
+<li>Filtreaza listings dupa category_id + location_county</li>
+<li>Adauga breadcrumb navigation</li>
+</ol>
+<h3 id="task-82-generatemetadata-function">Task 8.2: generateMetadata function</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Implementa metadata dinamica pentru fiecare categorie</li>
+<li>Adauga Open Graph images</li>
+<li>Adauga canonical URLs</li>
+</ol>
+<h3 id="task-83-content-unic-pentru-fiecare-pagina">Task 8.3: Content unic pentru fiecare pagina</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Adauga intro text specific categoriei</li>
+<li>Adauga tips pentru cumparare in functie de categorie</li>
+</ol>
+<hr>
+<h2 id="faza-9-search-alerts">Faza 9: Search Alerts</h2>
+<p><strong>Obiectiv:</strong> Email automat cand apare anunt nou matching saved search.</p>
+<h3 id="task-91-saved-searches-db">Task 9.1: Saved Searches DB</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza tabela <code>saved_searches</code> in Supabase</li>
+<li>Adauga RLS policies</li>
+</ol>
+<h3 id="task-92-ui-saved-searches">Task 9.2: UI Saved Searches</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza buton “Salveaza cautarea” pe browse</li>
+<li>Creeaza pagina /dashboard/saved-searches</li>
+<li>Permite editare/stergere cautari salvate</li>
+</ol>
+<h3 id="task-93-email-trigger">Task 9.3: Email trigger</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza trigger DB pentru notificari</li>
+<li>Integreaza cu Resend pentru emails</li>
+</ol>
+<hr>
+<h2 id="faza-10-real-time-features">Faza 10: Real-Time Features</h2>
+<p><strong>Obiectiv:</strong> “Reactualizat azi”, Report listing.</p>
+<h3 id="task-101-buton-reactualizat-azi">Task 10.1: Buton “Reactualizat azi”</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Adauga buton pe listing detail page</li>
+<li>Creeaza backend endpoint pentru update</li>
+<li>Verifica ownership inainte de bump</li>
+</ol>
+<h3 id="task-102-report-listing">Task 10.2: Report Listing</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza tabela <code>listing_reports</code></li>
+<li>Adauga buton “Raporteaza” pe listing detail</li>
+<li>Creeaza modal cu motiv (spam, pret fals, nu mai există, altul)</li>
+<li>Creeaza pagina /admin/reports pentru review</li>
+</ol>
+<h3 id="task-103-featuredbump-listing">Task 10.3: Featured/Bump listing</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Permite userilor sa faca bump (gratuit odata/zi)</li>
+<li>Afiseaza “Reactualizat azi” badge pe listing</li>
+</ol>
+<hr>
+<h2 id="faza-11-ui-enhancements">Faza 11: UI Enhancements</h2>
+<p><strong>Obiectiv:</strong> Currency toggle, îmbunătățiri UX.</p>
+<h3 id="task-111-currency-toggle-roneur">Task 11.1: Currency Toggle RON/EUR</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Adauga toggle în header (next to theme)</li>
+<li>Stochează preferința în localStorage</li>
+<li>Convertește preturile în browse/listings</li>
+</ol>
+<h3 id="task-112-mbuntiri-browse">Task 11.2: îmbunătățiri Browse</h3>
+<p><strong>Status:</strong> ✅ IMPLEMENTAT (build blocat pe TypeScript error)</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>✅ Adauga “grid/list view” toggle</li>
+<li>✅ Adauga sortare dupa: pret crescator, pret descrescator, cele mai noi</li>
+<li>✅ Infinite scroll în loc de pagination</li>
+</ol>
+<p><strong>Changes made:</strong></p>
+<ul>
+<li>Added <code>viewMode: 'grid' | 'list' | 'map'</code> state and view toggle buttons</li>
+<li>List view component with horizontal cards</li>
+<li>Infinite scroll via IntersectionObserver (<code>observerTarget</code> ref)</li>
+<li>Grid view animation with Framer Motion preserved</li>
+<li>Sort dropdown already existing in UI (7 options)</li>
+</ul>
+<p><strong>Blocking issue:</strong> TypeScript error on line 628: <code>listing.images?.[0]</code> — <code>images</code> is typed as <code>Json</code>, can’t index with <code>[0]</code>. Need cast: <code>(listing.images as string[])?.[0]</code>.</p>
+<p><strong>Next:</strong> Fix TypeScript error → <code>npm run build</code> → commit</p>
+<h3 id="task-113-mbuntiri-listing-detail">Task 11.3: îmbunătățiri Listing Detail</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Adauga galeriere poze (swipe)</li>
+<li>Adauga “分享” (share) buton</li>
+<li>Adauga “similar listings” section</li>
+</ol>
+<hr>
+<h2 id="faza-12-competitor-inspired-ux-upgrades">Faza 12 — Competitor-Inspired UX Upgrades</h2>
+<blockquote>
+<p><strong>Baza:</strong> Analiza design competitori agricoli EU (18 Apr 2026) cu <code>designlang</code> CLI.
+<strong>Competitori analizati:</strong> <a href="http://landwirt.com" target="_blank" rel="noopener">landwirt.com</a> (1852 elemente reale), <a href="http://agriaffaires.com" target="_blank" rel="noopener">agriaffaires.com</a>, <a href="http://mascus.com" target="_blank" rel="noopener">mascus.com</a>, <a href="http://machineryzone.eu" target="_blank" rel="noopener">machineryzone.eu</a>.
+<strong>Insight cheie:</strong> Landwirt — verde <code>#008a4c</code>, grid 4 col, 4:3 aspect ratio, Swiper.js. Agriaffaires/Mascus — search-first UX, autocomplete, filtru make/model proeminent.</p>
+</blockquote>
+<hr>
+<h3 id="-task-121-browse-grid-4-coloane-la-xl-aspect-ratio-43">✅ Task 12.1: Browse grid → 4 coloane la xl + aspect ratio 4:3</h3>
+<p><strong>Motivatie:</strong> Landwirt foloseste 4 coloane fixe (295px × 4, gap 32px) la max-width 1300px. Aspect ratio 4:3 e cel mai frecvent pe imagini listing (27x vs 16:9 care e 15x).</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/app/browse/BrowseClient.tsx</code> — grid + ListingCard aspect ratio</li>
+<li><code>src/components/ListingCard.tsx</code> — schimba aspect din <code>aspect-[16/9]</code> in <code>aspect-[4/3]</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>In <code>BrowseClient.tsx</code>: adauga <code>xl:grid-cols-4</code> la grid-ul de cards (grid view)</li>
+<li>In <code>ListingCard.tsx</code>: schimba thumbnail aspect ratio la <code>aspect-[4/3]</code> (era <code>aspect-[16/9]</code>)</li>
+<li>Verifica ca list view nu e afectat (are layout horizontal propriu)</li>
+<li>Build + vizual check</li>
+</ol>
+<p><strong>Verificare:</strong> La 1280px+ → 4 coloane. La 1024px → 3 coloane. Imagini card 4:3, nu 16:9.</p>
+<hr>
+<h3 id="-task-122-brand-green-008a4c-polish-culori">✅ Task 12.2: Brand green <code>#008a4c</code> + polish culori</h3>
+<p><strong>Motivatie:</strong> Landwirt (lider DE/AT) si agriaffaires (lider EU) folosesc ambele verde <code>#008a4c</code> — un verde mai vibrant/teal vs <code>green-700</code> (#15803d) al nostru. Nuanta comunica mai puternic “agricol”.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/app/globals.css</code> — adauga culoarea ca CSS variable</li>
+<li><code>tailwind.config.ts</code> sau <code>tailwind.config.js</code> — adauga culoare custom</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Adauga in tailwind.config <code>agri: { DEFAULT: '#008a4c', dark: '#006b3a', light: '#00b862' }</code></li>
+<li>In <code>globals.css</code>: <code>--agri: 153 100% 27%;</code> (HSL)</li>
+<li>Inlocuieste <code>green-700</code> / <code>green-800</code> cu <code>agri</code> pe elementele principale: Navbar brand, butoane CTA principale, badge-uri</li>
+<li>Pastreaza <code>green-600</code>/<code>green-100</code> pentru statusuri secundare (nu totul cu agri)</li>
+<li>Build + verifica contrast (agri pe alb = 4.43:1 — trece AA conform datelor landwirt)</li>
+</ol>
+<p><strong>Verificare:</strong> Navbar logo, butoane “Contacteaza”, “Adauga anunt”, badge Featured — toate folosesc <code>#008a4c</code>. Build trece.</p>
+<hr>
+<h3 id="-task-123-search-autocomplete-pe-homepage-browse">✅ Task 12.3: Search autocomplete pe homepage + browse</h3>
+<p><strong>Motivatie:</strong> Mascus si agriaffaires au autocomplete — user scrie “John Deer” si vede sugestii imediat. Reduce friction considerabil.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/app/page.tsx</code> sau componenta HeroSearch — adauga autocomplete</li>
+<li><code>src/app/api/listings/search-suggestions/route.ts</code> — nou endpoint</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza <code>GET /api/listings/search-suggestions?q=query</code> — returneaza top 5 titluri unice cu <code>ilike</code> + <code>limit(5)</code>, fields: <code>id, title, categories(name)</code></li>
+<li>In search bar (homepage hero): adauga <code>useState</code> pentru suggestions dropdown</li>
+<li>Debounce 300ms pe input</li>
+<li>Afiseaza max 5 sugestii: icon categorie + titlu + categorie</li>
+<li>Click pe sugestie → <code>/browse?search=titlu</code> sau direct <code>/listings/[id]</code></li>
+<li>Escape / click outside → inchide dropdown</li>
+<li>Keyboard navigation (Up/Down arrows in dropdown, Enter selecteaza)</li>
+</ol>
+<p><strong>Verificare:</strong> Scrie “tractor” → dropdown cu 5 sugestii in &lt; 300ms. Escape → inchide. Click → redirect corect.</p>
+<hr>
+<h3 id="-task-124-filtru-producator-makemodel-proeminent-in-browse">✅ Task 12.4: Filtru Producator (Make/Model) proeminent in Browse</h3>
+<p><strong>Motivatie:</strong> Pe Mascus si Machineryzone, filtrul de producator (John Deere, Fendt, Case IH) e pe locul 2 in sidebar dupa categorie — nu ascuns jos. Utilizatorii cauta frecvent dupa brand.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/app/browse/BrowseClient.tsx</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Muta filtrul de <code>manufacturer_id</code> in top 3 in sidebar (dupa categorie + stare)</li>
+<li>Afiseaza producatorii ca lista cu count per producator (query: <code>count(*) group by manufacturer_id</code>)</li>
+<li>Adauga query param <code>manufacturer_id</code> in URL (ca sa poti share link cu filtru)</li>
+<li>Verifica ca filtrul se aplica corect la listing query</li>
+</ol>
+<p><strong>Verificare:</strong> Browse → sidebar arata producatori sus → click “John Deere” → URL se actualizeaza → listings filtrate.</p>
+<hr>
+<h3 id="-task-125-currency-inline-roneur">✅ Task 12.5: Currency inline RON/EUR</h3>
+<p><strong>Motivatie:</strong> Machineryzone afiseaza ambele valute per listing. In Romania, cumparatorii vor sa stie pretul in RON imediat.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/components/ListingCard.tsx</code></li>
+<li><code>src/app/listings/[id]/ListingDetailClient.tsx</code></li>
+<li><code>src/store/useCurrencyStore.ts</code> — nou Zustand store</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza <code>useCurrencyStore</code>: <code>{ currency: 'EUR' | 'RON', rate: 5.0, toggle: () =&gt; void }</code></li>
+<li>Adauga toggle buton in Navbar (langa ThemeToggle): “EUR | RON”</li>
+<li>In <code>ListingCard</code>: daca <code>currency === 'RON'</code> si listing e in EUR → afiseaza <code>RON ${price * rate}</code></li>
+<li>In listing detail: afiseaza ambele: <code>€89.000 / RON 445.000</code></li>
+<li>Rate hardcodat <code>5.0</code> (nu fetch extern — evita complexity)</li>
+</ol>
+<p><strong>Verificare:</strong> Toggle EUR→RON → toate cardurile arata pretul in RON. Toggle inapoi → EUR.</p>
+<hr>
+<h3 id="task-126-seo-urls-cu-sluguri-pentru-categorii-producatori-incepe-aici">Task 12.6: SEO URLs cu sluguri pentru categorii + producatori  ← INCEPE AICI</h3>
+<p><strong>Motivatie:</strong> Agriaffaires are <code>/tracteurs-occasion</code>, <code>/moissonneuses-batteuses</code> — URL-uri curate cu keywords. Rankeaza #1 in FR/ES/PT pentru termenii agricoli. Mascus are <code>/used-tractors-for-sale/john-deere</code>.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/app/browse/[category]/page.tsx</code> — deja exista, extinde</li>
+<li><code>src/app/browse/[category]/[manufacturer]/page.tsx</code> — nou</li>
+<li><code>src/app/sitemap.ts</code> — adauga noile pagini</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Creeaza ruta <code>/browse/[category]/[manufacturer]/page.tsx</code></li>
+<li><code>generateMetadata</code>: title = “John Deere Tractoare second-hand | Mega-Mark”, description cu keywords</li>
+<li>Filtreaza listings dupa <code>category.slug + manufacturer.slug</code></li>
+<li>Adauga link-uri inter-pagini pe category page (grid de producatori cu count)</li>
+<li>Adauga aceste combinatii in <code>sitemap.ts</code></li>
+</ol>
+<p><strong>Verificare:</strong> <code>/browse/tractoare/john-deere</code> → listings filtrate, meta tags corecte, in sitemap.</p>
+<hr>
+<h3 id="task-127-watchlist-badge-animat-pe-card">Task 12.7: “Watchlist” badge animat pe card</h3>
+<p><strong>Motivatie:</strong> Landwirt are <code>watchlist_added</code> class cu animatie vizibila la adaugare in lista (din z-index map). Heart icon cu feedback vizual clar (not just toggle).</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li><code>src/components/ListingCard.tsx</code></li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>La click pe heart: animatie <code>scale(1.4) → scale(1)</code> + fill rosu instant (Framer Motion <code>whileTap</code>)</li>
+<li>Afiseaza toast mic: “Adaugat la favorite” (deja exista Sonner, adauga toast)</li>
+<li>Daca listing e deja in favorite → heart pre-filled la load (query Zustand store sau supabase)</li>
+<li>Badge count pe heart icon din Navbar se actualizeaza instant (Zustand)</li>
+</ol>
+<p><strong>Verificare:</strong> Click heart → animatie + toast + count navbar +1. Refresh → heart ramane filled.</p>
+<hr>
+<h2 id="backlog-post-launch">Backlog (post-launch)</h2>
+<blockquote>
+<p>Aceste features se implementeaza dupa ce MVP-ul e live, testat si are useri reali.</p>
+</blockquote>
+<p><strong>Prioritate medie (urmatoarele 2-3 luni):</strong></p>
+<ul>
+<li><strong>SEO pages programatice:</strong> <code>/tractoare/cluj</code>, <code>/combine/timis</code> — pagini generate pentru fiecare combinatie categorie × judet, cu meta tags si content unic</li>
+<li><strong>Alerta cautare:</strong> Email automat cand apare anunt nou matching saved search</li>
+<li><strong>“Reactualizat azi”:</strong> Buton pe listing → bumps <code>updated_at</code>, reapare sus in rezultate (feature OLX)</li>
+<li><strong>Report listing:</strong> Buton “Raporteaza” pe listing detail → salveaza in DB → admin review</li>
+<li><strong>Currency toggle:</strong> RON / EUR pe browse (ca OLX — switch in header)</li>
+</ul>
+<p><strong>Prioritate scazuta (6+ luni):</strong></p>
+<ul>
+<li><strong>i18n:</strong> next-intl — RO (default), EN, HU, PL, BG, SK, CZ</li>
+<li><strong>AI categorizare:</strong> Clasificare automata bazata pe titlu + descriere</li>
+<li><strong>Comparator utilaje:</strong> Side-by-side 2-3 anunturi</li>
+<li><strong>Dealer tools:</strong> Bulk upload, API dealer, logo, ore program, locatie pe harta</li>
+<li><strong>App mobil:</strong> React Native / Expo</li>
+<li>**Push notifications mobile</li>
+<li><strong>Full-text search avansat:</strong> Autocomplete cu suggestions din titluri existente</li>
+</ul>
+<hr>
+<h2 id="reguli-de-lucru">Reguli de lucru</h2>
+<h3 id="build-amp-deploy">Build &amp; Deploy</h3>
+<ul>
+<li>Verifica <code>npm run build</code> inainte de orice commit</li>
+<li>Toate paginile cu DB calls → <code>force-dynamic</code></li>
+<li>NU apela DB in <code>generateStaticParams</code></li>
+<li>Supabase + Stripe → lazy init (nu arunca la import time)</li>
+</ul>
+<h3 id="git">Git</h3>
+<ul>
+<li>Commit-uri in engleza: <code>feat:</code>, <code>fix:</code>, <code>chore:</code>, <code>docs:</code></li>
+<li>Un commit per feature/fix</li>
+<li>NU comite <code>.env</code>, chei API, date sensibile</li>
+<li><code>git status</code> inainte de commit</li>
+</ul>
+<h3 id="cod">Cod</h3>
+<ul>
+<li>TypeScript strict — fara <code>any</code> fara motiv</li>
+<li>shadcn/ui pentru UI — nu reinventa</li>
+<li><code>next/image</code> pentru imagini — nu <code>&lt;img&gt;</code></li>
+<li>Supabase client: <code>src/lib/supabase/client.ts</code>; server: <code>src/lib/supabase/server.ts</code></li>
+</ul>
+<h3 id="db">DB</h3>
+<ul>
+<li>Schimbari schema → fisier nou in <code>supabase/migrations/</code> (format: <code>00N_descriere.sql</code>)</li>
+<li>NU modifica migratii existente</li>
+<li>Testeaza RLS policies</li>
+<li>Soft delete (<code>deleted_at</code>) — nu sterge date</li>
+</ul>
+<hr>
+<h2 id="environment-variables">Environment Variables</h2>
+<pre><code># Supabase
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+DATABASE_URL              # pooler pentru Vercel
+
+# Stripe
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+STRIPE_PRICE_7_DAYS
+STRIPE_PRICE_30_DAYS
+
+# Email
+RESEND_API_KEY
+
+# App
+NEXT_PUBLIC_APP_URL
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

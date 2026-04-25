@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>dynamic-routes — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-dynamic-routes">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#convention">Convention</a></li><ul><li><a href="#in-client-components">In Client Components</a></li><li><a href="#catch-all-segments">Catch-all Segments</a></li><li><a href="#optional-catch-all-segments">Optional Catch-all Segments</a></li><li><a href="#typescript">TypeScript</a></li></ul><li><a href="#behavior">Behavior</a></li><ul><li><a href="#with-cache-components">With Cache Components</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#with-generatestaticparams">With generateStaticParams</a></li><li><a href="#dynamic-get-route-handlers-with-generatestaticparams">Dynamic GET Route Handlers with generateStaticParams</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">dynamic-routes</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Dynamic Segments</td></tr><tr><th>description</th><td>For more information on what to do next, we recommend the following sections</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>When you don’t know the exact route segment names ahead of time and want to create routes from dynamic data, you can use Dynamic Segments that are filled in at request time or prerendered at build time.</p>
+<h2 id="convention">Convention</h2>
+<p>A Dynamic Segment can be created by wrapping a folder’s name in square brackets: <code>[folderName]</code>. For example, a blog could include the following route <code>app/blog/[slug]/page.js</code> where <code>[slug]</code> is the Dynamic Segment for blog posts.</p>
+<pre><code class="language-tsx">export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  return &lt;div&gt;My Post: {slug}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ params }) {
+  const { slug } = await params
+  return &lt;div&gt;My Post: {slug}&lt;/div&gt;
+}
+</code></pre>
+<p>Dynamic Segments are passed as the <code>params</code> prop to <a href="/docs/app/api-reference/file-conventions/layout"><code>layout</code></a>, <a href="/docs/app/api-reference/file-conventions/page"><code>page</code></a>, <a href="/docs/app/api-reference/file-conventions/route"><code>route</code></a>, and <a href="/docs/app/api-reference/functions/generate-metadata#generatemetadata-function"><code>generateMetadata</code></a> functions.</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/blog/[slug]/page.js</code></td>
+<td><code>/blog/a</code></td>
+<td><code>{ slug: 'a' }</code></td>
+</tr>
+<tr>
+<td><code>app/blog/[slug]/page.js</code></td>
+<td><code>/blog/b</code></td>
+<td><code>{ slug: 'b' }</code></td>
+</tr>
+<tr>
+<td><code>app/blog/[slug]/page.js</code></td>
+<td><code>/blog/c</code></td>
+<td><code>{ slug: 'c' }</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-client-components">In Client Components</h3>
+<p>In a Client Component <strong>page</strong>, dynamic segments from props can be accessed using the <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> API.</p>
+<pre><code class="language-tsx">'use client'
+import { use } from 'react'
+
+export default function BlogPostPage({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = use(params)
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{slug}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+import { use } from 'react'
+
+export default function BlogPostPage({ params }) {
+  const { slug } = use(params)
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{slug}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Alternatively Client Components can use the <a href="/docs/app/api-reference/functions/use-params"><code>useParams</code></a> hook to access the <code>params</code> anywhere in the Client Component tree.</p>
+<h3 id="catch-all-segments">Catch-all Segments</h3>
+<p>Dynamic Segments can be extended to <strong>catch-all</strong> subsequent segments by adding an ellipsis inside the brackets <code>[...folderName]</code>.</p>
+<p>For example, <code>app/shop/[...slug]/page.js</code> will match <code>/shop/clothes</code>, but also <code>/shop/clothes/tops</code>, <code>/shop/clothes/tops/t-shirts</code>, and so on.</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/[...slug]/page.js</code></td>
+<td><code>/shop/a</code></td>
+<td><code>{ slug: ['a'] }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[...slug]/page.js</code></td>
+<td><code>/shop/a/b</code></td>
+<td><code>{ slug: ['a', 'b'] }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[...slug]/page.js</code></td>
+<td><code>/shop/a/b/c</code></td>
+<td><code>{ slug: ['a', 'b', 'c'] }</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-catch-all-segments">Optional Catch-all Segments</h3>
+<p>Catch-all Segments can be made <strong>optional</strong> by including the parameter in double square brackets: <code><a class="wikilink missing" data-slug="...foldername" href="...foldername.html">...folderName</a></code>.</p>
+<p>For example, <code>app/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.js</code> will <strong>also</strong> match <code>/shop</code>, in addition to <code>/shop/clothes</code>, <code>/shop/clothes/tops</code>, <code>/shop/clothes/tops/t-shirts</code>.</p>
+<p>The difference between <strong>catch-all</strong> and <strong>optional catch-all</strong> segments is that with optional, the route without the parameter is also matched (<code>/shop</code> in the example above).</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.js</code></td>
+<td><code>/shop</code></td>
+<td><code>{ slug: undefined }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.js</code></td>
+<td><code>/shop/a</code></td>
+<td><code>{ slug: ['a'] }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.js</code></td>
+<td><code>/shop/a/b</code></td>
+<td><code>{ slug: ['a', 'b'] }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.js</code></td>
+<td><code>/shop/a/b/c</code></td>
+<td><code>{ slug: ['a', 'b', 'c'] }</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="typescript">TypeScript</h3>
+<p>When using TypeScript, you can add types for <code>params</code> depending on your configured route segment — use <a href="/docs/app/api-reference/file-conventions/page#page-props-helper"><code>PageProps&lt;'/route'&gt;</code></a>, <a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper"><code>LayoutProps&lt;'/route'&gt;</code></a>, or <a href="/docs/app/api-reference/file-conventions/route#route-context-helper"><code>RouteContext&lt;'/route'&gt;</code></a> to type <code>params</code> in <code>page</code>, <code>layout</code>, and <code>route</code> respectively.</p>
+<p>Route <code>params</code> values are typed as <code>string</code>, <code>string[]</code>, or <code>undefined</code> (for optional catch-all segments), because their values aren’t known until runtime. Users can enter any URL into the address bar, and these broad types help ensure that your application code handles all these possible cases.</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th><code>params</code> Type Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/blog/[slug]/page.js</code></td>
+<td><code>{ slug: string }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[...slug]/page.js</code></td>
+<td><code>{ slug: string[] }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/<a class="wikilink missing" data-slug="...slug" href="...slug.html">...slug</a>/page.js</code></td>
+<td><code>{ slug?: string[] }</code></td>
+</tr>
+<tr>
+<td><code>app/[categoryId]/[itemId]/page.js</code></td>
+<td><code>{ categoryId: string, itemId: string }</code></td>
+</tr>
+</tbody>
+</table>
+<p>If you’re working on a route where <code>params</code> can only have a fixed number of valid values, such as a <code>[locale]</code> param with a known set of language codes, you can use runtime validation to handle any invalid params a user may enter, and let the rest of your application work with the narrower type from your known set.</p>
+<pre><code class="language-tsx">import { notFound } from 'next/navigation'
+import type { Locale } from '@i18n/types'
+import { isValidLocale } from '@i18n/utils'
+
+function assertValidLocale(value: string): asserts value is Locale {
+  if (!isValidLocale(value)) notFound()
+}
+
+export default async function Page(props: PageProps&lt;'/[locale]'&gt;) {
+  const { locale } = await props.params // locale is typed as string
+  assertValidLocale(locale)
+  // locale is now typed as Locale
+}
+</code></pre>
+<h2 id="behavior">Behavior</h2>
+<ul>
+<li>Since the <code>params</code> prop is a promise. You must use <code>async</code>/<code>await</code> or React’s use function to access the values.
+<ul>
+<li>In version 14 and earlier, <code>params</code> was a synchronous prop. To help with backwards compatibility, you can still access it synchronously in Next.js 15, but this behavior will be deprecated in the future.</li>
+</ul>
+</li>
+</ul>
+<h3 id="with-cache-components">With Cache Components</h3>
+<p>When using <a href="/docs/app/getting-started/caching">Cache Components</a> with dynamic route segments, how you handle params depends on whether you use <a href="/docs/app/api-reference/functions/generate-static-params"><code>generateStaticParams</code></a>.</p>
+<p>Without <code>generateStaticParams</code>, param values are unknown during prerendering, making params runtime data. You must wrap param access in <code>&lt;Suspense&gt;</code> boundaries to provide fallback UI.</p>
+<p>With <code>generateStaticParams</code>, you provide sample param values that can be used at build time. The build process validates that dynamic content and other runtime APIs are correctly handled, then generates static HTML files for the samples. Pages rendered with runtime params are saved to disk after a successful first request.</p>
+<p>The sections below demonstrate both patterns.</p>
+<h4>Without <code>generateStaticParams</code></h4>
+<p>All params are runtime data. Param access must be wrapped by Suspense fallback UI. Next.js generates a static shell at build time, and content loads on each request.</p>
+<blockquote>
+<p><strong>Good to know</strong>: You can also use <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.tsx</code></a> for page-level fallback UI.</p>
+</blockquote>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+
+export default function Page({ params }: PageProps&lt;'/blog/[slug]'&gt;) {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Blog Post&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+        {params.then(({ slug }) =&gt; (
+          &lt;Content slug={slug} /&gt;
+        ))}
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+
+async function Content({ slug }: { slug: string }) {
+  const res = await fetch(`https://api.vercel.app/blog/${slug}`)
+  const post = await res.json()
+
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{post.title}&lt;/h2&gt;
+      &lt;p&gt;{post.content}&lt;/p&gt;
+    &lt;/article&gt;
+  )
+}
+</code></pre>
+<h4>With <code>generateStaticParams</code></h4>
+<p>Provide params ahead of time to prerender pages at build time. You can prerender all routes or a subset depending on your needs.</p>
+<p>During the build process, the route is executed with each sample param to collect the HTML result. If dynamic content or runtime data are accessed incorrectly, the build will fail.</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+
+export async function generateStaticParams() {
+  return [{ slug: '1' }, { slug: '2' }, { slug: '3' }]
+}
+
+export default async function Page({ params }: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await params
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Blog Post&lt;/h1&gt;
+      &lt;Content slug={slug} /&gt;
+    &lt;/div&gt;
+  )
+}
+
+async function Content({ slug }: { slug: string }) {
+  const post = await getPost(slug)
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{post.title}&lt;/h2&gt;
+      &lt;p&gt;{post.content}&lt;/p&gt;
+    &lt;/article&gt;
+  )
+}
+
+async function getPost(slug: string) {
+  'use cache'
+  const res = await fetch(`https://api.vercel.app/blog/${slug}`)
+  return res.json()
+}
+</code></pre>
+<p>Build-time validation only covers code paths that execute with the sample params. If your route has conditional logic that accesses runtime APIs for certain param values not in your samples, those branches won’t be validated at build time:</p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+
+export async function generateStaticParams() {
+  return [{ slug: 'public-post' }, { slug: 'hello-world' }]
+}
+
+export default async function Page({ params }: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await params
+
+  if (slug.startsWith('private-')) {
+    // This branch is never executed at build time
+    // Runtime requests for 'private-*' slugs will error
+    return &lt;PrivatePost slug={slug} /&gt;
+  }
+
+  return &lt;PublicPost slug={slug} /&gt;
+}
+
+async function PrivatePost({ slug }: { slug: string }) {
+  const token = (await cookies()).get('token')
+  // ... fetch and render private post using token for auth
+}
+</code></pre>
+<p>For runtime params not returned by <code>generateStaticParams</code>, validation occurs during the first request. In the example above, requests for slugs starting with <code>private-</code> will fail because <code>PrivatePost</code> accesses <code>cookies()</code> without a Suspense boundary. Other runtime params that don’t hit the conditional branch will render successfully and be saved to disk for subsequent requests.</p>
+<p>To fix this, wrap <code>PrivatePost</code> with Suspense:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { cookies } from 'next/headers'
+
+export async function generateStaticParams() {
+  return [{ slug: 'public-post' }, { slug: 'hello-world' }]
+}
+
+export default async function Page({ params }: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await params
+
+  if (slug.startsWith('private-')) {
+    return (
+      &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+        &lt;PrivatePost slug={slug} /&gt;
+      &lt;/Suspense&gt;
+    )
+  }
+
+  return &lt;PublicPost slug={slug} /&gt;
+}
+
+async function PrivatePost({ slug }: { slug: string }) {
+  const token = (await cookies()).get('token')
+  // ... fetch and render private post using token for auth
+}
+</code></pre>
+<h2 id="examples">Examples</h2>
+<h3 id="with-generatestaticparams">With <code>generateStaticParams</code></h3>
+<p>The <a href="/docs/app/api-reference/functions/generate-static-params"><code>generateStaticParams</code></a> function can be used to <a href="/docs/app/glossary#prerendering">statically generate</a> routes at build time instead of on-demand at request time.</p>
+<pre><code class="language-tsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<pre><code class="language-jsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<p>When using <code>fetch</code> inside the <code>generateStaticParams</code> function, the requests are <a href="/docs/app/glossary#memoization">automatically deduplicated</a>. This avoids multiple network calls for the same data Layouts, Pages, and other <code>generateStaticParams</code> functions, speeding up build time.</p>
+<h3 id="dynamic-get-route-handlers-with-generatestaticparams">Dynamic GET Route Handlers with <code>generateStaticParams</code></h3>
+<p><code>generateStaticParams</code> also works with dynamic <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> to statically generate API responses at build time:</p>
+<pre><code class="language-ts">export async function generateStaticParams() {
+  const posts: { id: number }[] = await fetch(
+    'https://api.vercel.app/blog'
+  ).then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    id: `${post.id}`,
+  }))
+}
+
+export async function GET(
+  request: Request,
+  { params }: RouteContext&lt;'/api/posts/[id]'&gt;
+) {
+  const { id } = await params
+  const res = await fetch(`https://api.vercel.app/blog/${id}`)
+
+  if (!res.ok) {
+    return Response.json({ error: 'Post not found' }, { status: 404 })
+  }
+
+  const post = await res.json()
+  return Response.json(post)
+}
+</code></pre>
+<pre><code class="language-js">export async function generateStaticParams() {
+  const posts = await fetch('https://api.vercel.app/blog').then((res) =&gt;
+    res.json()
+  )
+
+  return posts.map((post) =&gt; ({
+    id: `${post.id}`,
+  }))
+}
+
+export async function GET(request, { params }) {
+  const { id } = await params
+  const res = await fetch(`https://api.vercel.app/blog/${id}`)
+
+  if (!res.ok) {
+    return Response.json({ error: 'Post not found' }, { status: 404 })
+  }
+
+  const post = await res.json()
+  return Response.json(post)
+}
+</code></pre>
+<p>In this example, route handlers for all blog post IDs returned by <code>generateStaticParams</code> will be statically generated at build time. Requests to other IDs will be handled dynamically at request time.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

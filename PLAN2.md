@@ -593,13 +593,13 @@
 
 | Faza | Status |
 |-----|--------|
-| Faza 14 | ❌ |
-| Faza 15 | ❌ |
-| Faza 16 | ❌ |
-| Faza 17 | ❌ |
-| Faza 18 | ❌ |
+| Faza 14 | ✅ Financing Calculator + Price History |
+| Faza 15 | ✅ Video Upload + YouTube/Vimeo Embed |
+| Faza 16 | ✅ Export Badge + Shipping Calculator |
+| Faza 17 | 🔄 In Progress |
+| Faza 18 | ✅ Listing Quality Score |
 | Faza 19 | ❌ |
-| Faza 20 | ❌ |
+| Faza 20 | ✅ Social Share |
 | Faza 21 | ❌ |
 | Faza 22 | ❌ |
 

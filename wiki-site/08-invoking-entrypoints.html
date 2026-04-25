@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>08-invoking-entrypoints — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-08-invoking-entrypoints">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#nodejs-runtime-runtime-nodejs">Node.js runtime (runtime: 'nodejs')</a></li><li><a href="#edge-runtime-runtime-edge">Edge runtime (runtime: 'edge')</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">08-invoking-entrypoints</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Invoke Node.js and Edge build entrypoints with adapter runtime context.</td></tr></table><p>Build output entrypoints use a <code>handler(..., ctx)</code> interface, with runtime-specific request/response types.</p>
+<h2 id="nodejs-runtime-runtime-nodejs">Node.js runtime (<code>runtime: 'nodejs'</code>)</h2>
+<p>Node.js entrypoints use the following interface:</p>
+<pre><code class="language-typescript">handler(
+  req: IncomingMessage,
+  res: ServerResponse,
+  ctx: {
+    waitUntil?: (promise: Promise&lt;void&gt;) =&gt; void
+    requestMeta?: RequestMeta
+  }
+): Promise&lt;void&gt;
+</code></pre>
+<p>When invoking Node.js entrypoints directly, adapters can pass helpers directly on <code>requestMeta</code> instead of relying on internals. Some of the supported fields are <code>hostname</code>,
+<code>revalidate</code>, and <code>render404</code>:</p>
+<pre><code class="language-ts">await handler(req, res, {
+  requestMeta: {
+    // Relative path from process.cwd() to the Next.js project directory.
+    relativeProjectDir: '.',
+    // Optional hostname used by route handlers when constructing absolute URLs.
+    hostname: '127.0.0.1',
+    // Optional internal revalidate function to avoid revalidating over the network
+    revalidate: async ({ urlPath, headers, opts }) =&gt; {
+      // platform-specific revalidate implementation
+    },
+    // Optional function to render the 404 page for pages router `notFound: true`
+    render404: async (req, res, parsedUrl, setHeaders) =&gt; {
+      // platform-specific 404 rendering implementation
+    },
+  },
+})
+</code></pre>
+<p>Relevant files in the Next.js core:</p>
+<ul>
+<li><a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/app-page.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/app-page.ts</code></a></li>
+<li><a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/app-route.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/app-route.ts</code></a></li>
+<li>and <a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/pages-api.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/pages-api.ts</code></a></li>
+</ul>
+<h2 id="edge-runtime-runtime-edge">Edge runtime (<code>runtime: 'edge'</code>)</h2>
+<p>Edge entrypoints use the following interface:</p>
+<pre><code class="language-typescript">handler(
+  request: Request,
+  ctx: {
+    waitUntil?: (prom: Promise&lt;void&gt;) =&gt; void
+    signal?: AbortSignal
+    requestMeta?: RequestMeta
+  }
+): Promise&lt;Response&gt;
+</code></pre>
+<p>The shape is aligned around <code>handler(..., ctx)</code>, but Node.js and Edge runtimes use different request/response primitives.</p>
+<p>For outputs with <code>runtime: 'edge'</code>, Next.js also provides <code>output.edgeRuntime</code> with the canonical metadata needed to invoke the entrypoint:</p>
+<pre><code class="language-typescript">{
+  modulePath: string // Absolute path to the module registered in the edge runtime
+  entryKey: string // Canonical key used by the edge entry registry
+  handlerExport: string // Export name to invoke, currently 'handler'
+}
+</code></pre>
+<p>After your edge runtime loads and evaluates the chunks for <code>modulePath</code>, use <code>entryKey</code> to read the registered entry from the global edge entry registry (<code>globalThis._ENTRIES</code>), then invoke <code>handlerExport</code> from that entry:</p>
+<pre><code class="language-ts">const entry = await globalThis._ENTRIES[output.edgeRuntime.entryKey]
+const handler = entry[output.edgeRuntime.handlerExport]
+await handler(request, ctx)
+</code></pre>
+<p>Use <code>edgeRuntime</code> instead of deriving registry keys or handler names from filenames.</p>
+<p>Relevant files in the Next.js core:</p>
+<ul>
+<li><a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/edge-ssr.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/edge-ssr.ts</code></a></li>
+<li><a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/edge-app-route.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/edge-app-route.ts</code></a></li>
+<li><a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/pages-edge-api.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/pages-edge-api.ts</code></a></li>
+<li>and <a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/templates/middleware.ts" target="_blank" rel="noopener"><code>packages/next/src/build/templates/middleware.ts</code></a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/autocomplete-valid — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-autocomplete-valid">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/autocomplete-valid</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Ensure the autocomplete attribute is correct and suitable for the form field it is used with.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>This rule takes one optional object argument of type object:</p>
+<pre><code>{
+    &quot;rules&quot;: {
+        &quot;jsx-a11y/autocomplete-valid&quot;: [ 2, {
+            &quot;inputComponents&quot;: [&quot;Input&quot;, &quot;FormField&quot;]
+        }],
+    }
+}
+</code></pre>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;!-- Good: the autocomplete attribute is used according to the HTML specification --&gt;
+&lt;input type=&quot;text&quot; autocomplete=&quot;name&quot; /&gt;
+
+&lt;!-- Good: MyInput is not listed in inputComponents --&gt;
+&lt;MyInput autocomplete=&quot;incorrect&quot; /&gt;
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;!-- Bad: the autocomplete attribute has an invalid value --&gt;
+&lt;input type=&quot;text&quot; autocomplete=&quot;incorrect&quot; /&gt;
+
+&lt;!-- Bad: the autocomplete attribute is on an inappropriate input element --&gt;
+&lt;input type=&quot;email&quot; autocomplete=&quot;url&quot; /&gt;
+
+&lt;!-- Bad: MyInput is listed in inputComponents --&gt;
+&lt;MyInput autocomplete=&quot;incorrect&quot; /&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose" target="_blank" rel="noopener">WCAG 1.3.5</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://dequeuniversity.com/rules/axe/3.2/autocomplete-valid" target="_blank" rel="noopener">axe-core, autocomplete-valid</a></li>
+<li><a href="https://www.w3.org/TR/html52/sec-forms.html#autofilling-form-controls-the-autocomplete-attribute" target="_blank" rel="noopener">HTML 5.2, Autocomplete requirements</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

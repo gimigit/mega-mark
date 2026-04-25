@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>preserving-ui-state — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-preserving-ui-state">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#choosing-what-to-preserve">Choosing what to preserve</a></li><ul><li><a href="#expandable-ui-dropdowns-accordions-panels">Expandable UI (dropdowns, accordions, panels)</a></li><li><a href="#dialog-and-initialization-logic">Dialog and initialization logic</a></li><li><a href="#form-input-values">Form input values</a></li><li><a href="#action-state-useactionstate">Action state (useActionState)</a></li></ul><li><a href="#state-and-authentication">State and authentication</a></li><li><a href="#global-styles">Global styles</a></li><li><a href="#testing">Testing</a></li><ul><li><a href="#use-visibility-aware-selectors">Use visibility-aware selectors</a></li></ul><li><a href="#using-activity-in-your-components">Using Activity in your components</a></li><ul><li><a href="#prerendering-hidden-content">Prerendering hidden content</a></li><li><a href="#effect-and-media-cleanup">Effect and media cleanup</a></li><li><a href="#distinguishing-first-mount-from-re-show">Distinguishing first mount from re-show</a></li></ul><li><a href="#examples">Examples</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">preserving-ui-state</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Preserving UI state</td></tr><tr><th>description</th><td>Learn more about Cache Components and preserving UI state.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><blockquote>
+<p><strong>Good to know:</strong> This guide assumes <a href="/docs/app/getting-started/caching">Cache Components</a> is enabled. Enable it by setting <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents: true</code></a> in your Next config file.</p>
+</blockquote>
+<p>Before Cache Components, preserving page-level state across navigations required workarounds like hoisting state to a <a href="/docs/app/getting-started/layouts-and-pages#nesting-layouts">shared layout</a> or using an external store. With Cache Components, Next.js preserves state and DOM out of the box.</p>
+<p>Instead of unmounting pages on navigation, Next.js hides them using React’s <a href="https://react.dev/reference/react/Activity" target="_blank" rel="noopener"><code>&lt;Activity&gt;</code></a> component. The DOM nodes stay in the document (hidden with <code>display: none</code>), so both React state and DOM state are preserved: form drafts, scroll positions, expanded <code>&lt;details&gt;</code> elements, video playback progress, and more.</p>
+<p>Next.js preserves up to 3 routes. Beyond that, the oldest route is evicted and will re-render fresh.</p>
+<blockquote>
+<p><strong>Good to know:</strong> Opt-out strategies are being considered for gradual migration.</p>
+</blockquote>
+<h2 id="choosing-what-to-preserve">Choosing what to preserve</h2>
+<p>Activity preserves all component state and DOM state by default. For each piece of state, you decide whether that’s the right behavior for your UI. The patterns below show common scenarios and how to handle both sides.</p>
+<h3 id="expandable-ui-dropdowns-accordions-panels">Expandable UI (dropdowns, accordions, panels)</h3>
+<p>When a user navigates away and returns, Activity preserves the open/closed state of expandable elements.</p>
+<p><strong>When to keep it:</strong> A sidebar with expanded sections, a FAQ accordion, or a filters panel. The user set up their view intentionally, and restoring it avoids re-doing that work.</p>
+<p><strong>When to reset it:</strong> A dropdown menu or popover triggered by a button click. These are transient interactions, not persistent view state. Returning to a page with a dropdown already open is not user friendly.</p>
+<p>To reset transient open/closed state, close it in a <code>useLayoutEffect</code> cleanup function:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useState, useLayoutEffect } from 'react'
+
+function SettingsDropdown() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  // Close dropdown when this component becomes hidden
+  useLayoutEffect(() =&gt; {
+    return () =&gt; {
+      setIsOpen(false)
+    }
+  }, [])
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; setIsOpen((o) =&gt; !o)}&gt;Options&lt;/button&gt;
+      {isOpen &amp;&amp; (
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;button&gt;Edit Profile&lt;/button&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;button&gt;Change Password&lt;/button&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      )}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>When Activity hides this component, the cleanup function runs and resets <code>isOpen</code>. When the page becomes visible again, the dropdown is closed. Using <code>useLayoutEffect</code> ensures the cleanup runs synchronously before the component is hidden, avoiding any flash of stale state.</p>
+<p>You can also use <code>Link</code>’s <a href="/docs/app/api-reference/components/link#onnavigate"><code>onNavigate</code></a> callback to close dropdowns immediately when a navigation link is clicked.</p>
+<h3 id="dialog-and-initialization-logic">Dialog and initialization logic</h3>
+<p>Activity preserves dialog open/closed state. This also affects Effects that run based on that state.</p>
+<p><strong>When to keep it:</strong> A multi-step wizard or a settings panel that the user was actively working in. Preserving the step and input state avoids losing progress.</p>
+<p><strong>When to reset it:</strong> A dialog that runs initialization logic (like focusing an input) each time it opens. If the user navigated away while the dialog was open, Activity preserves <code>isDialogOpen: true</code>. Opening it again sets it to <code>true</code> when it’s already <code>true</code>, so no state change happens and the Effect doesn’t re-run.</p>
+<p>Consider this example:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useState, useRef, useEffect } from 'react'
+
+function ProductTab() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const inputRef = useRef&lt;HTMLInputElement&gt;(null)
+
+  useEffect(() =&gt; {
+    if (isDialogOpen) {
+      inputRef.current?.focus()
+    }
+  }, [isDialogOpen])
+
+  // ...
+}
+</code></pre>
+<p>If the user navigated away while the dialog was open, returning and opening the dialog won’t trigger the focus Effect because <code>isDialogOpen</code> was already <code>true</code>.</p>
+<p>To fix this, derive the dialog state from something outside the preserved component state like a search param:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useEffect, useRef } from 'react'
+
+function ProductTab() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const isDialogOpen = searchParams.get('edit') === 'true'
+  const inputRef = useRef&lt;HTMLInputElement&gt;(null)
+
+  useEffect(() =&gt; {
+    if (isDialogOpen) {
+      inputRef.current?.focus()
+    }
+  }, [isDialogOpen])
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; router.push('?edit=true')}&gt;Edit Product&lt;/button&gt;
+
+      {isDialogOpen &amp;&amp; (
+        &lt;dialog open&gt;
+          &lt;input ref={inputRef} placeholder=&quot;Product name&quot; /&gt;
+          &lt;button onClick={() =&gt; router.replace('?', { scroll: false })}&gt;
+            Close
+          &lt;/button&gt;
+        &lt;/dialog&gt;
+      )}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>With this approach, <code>isDialogOpen</code> derives from the URL rather than component state. When navigating away and returning, the search param is cleared (the URL changed), so <code>isDialogOpen</code> becomes <code>false</code>. Opening the dialog sets the param, which changes <code>isDialogOpen</code> and triggers the Effect.</p>
+<h3 id="form-input-values">Form input values</h3>
+<p>Activity preserves form input values: text typed into fields, selected options, checkbox states.</p>
+<p><strong>When to keep it:</strong> A search page with filters, a draft the user was composing, or a settings form with unsaved changes. Preserving input state is one of the biggest UX wins because the user doesn’t lose work.</p>
+<p><strong>When to reset it:</strong> A “create new item” page where returning should start fresh, or a contact form after successful submission.</p>
+<p>To reset form fields when Activity hides the component, use a callback ref:</p>
+<pre><code class="language-tsx">&lt;form
+  ref={(form) =&gt; {
+    // Cleanup function - runs when Activity hides this component
+    return () =&gt; form?.reset()
+  }}
+&gt;
+  {/* fields */}
+&lt;/form&gt;
+</code></pre>
+<p>This resets the form whenever the user navigates away.</p>
+<h3 id="action-state-useactionstate">Action state (<code>useActionState</code>)</h3>
+<p>Activity preserves <a href="https://react.dev/reference/react/useActionState" target="_blank" rel="noopener"><code>useActionState</code></a> results: success messages, error messages, and any other state returned by the action.</p>
+<p><strong>When to keep it:</strong> A ticket redemption form showing “Ticket redeemed successfully”, or a settings form showing “Changes saved”. Seeing the result of a previous action when returning to the page is useful confirmation so the user can see what happened.</p>
+<p><strong>When to reset it:</strong> A “new transaction” flow where each visit should start fresh, or a form where stale success/error messages would be confusing in a new context.</p>
+<p>You can think of <code>useActionState</code> as a <code>useReducer</code> that allows side effects. It doesn’t have to only handle form submissions; you can dispatch any action to it. Adding a <code>RESET</code> action gives you a clean way to clear state when Activity hides the component (see <a href="https://react.dev/reference/react/useActionState#reset-state" target="_blank" rel="noopener">Reset state</a> in the React docs):</p>
+<pre><code class="language-tsx">'use client'
+
+import { useActionState, useLayoutEffect, useRef, startTransition } from 'react'
+
+type Action = { type: 'SUBMIT'; data: FormData } | { type: 'RESET' }
+type State = { success: boolean; error: string | null }
+
+function CommentForm() {
+  const [state, dispatch, isPending] = useActionState(
+    async (prev: State, action: Action) =&gt; {
+      if (action.type === 'RESET') {
+        return { success: false, error: null }
+      }
+      // Handle the form submission
+      const res = await saveComment(action.data)
+      if (!res.ok) return { success: false, error: res.message }
+      shouldReset.current = true
+      return { success: true, error: null }
+    },
+    { success: false, error: null }
+  )
+
+  const shouldReset = useRef(false)
+
+  // Dispatch RESET when Activity hides this component
+  useLayoutEffect(() =&gt; {
+    return () =&gt; {
+      if (shouldReset.current) {
+        shouldReset.current = false
+        startTransition(() =&gt; {
+          dispatch({ type: 'RESET' })
+        })
+      }
+    }
+  }, [dispatch])
+
+  return (
+    &lt;form action={(formData) =&gt; dispatch({ type: 'SUBMIT', data: formData })}&gt;
+      &lt;textarea name=&quot;comment&quot; /&gt;
+      &lt;button type=&quot;submit&quot; disabled={isPending}&gt;
+        {isPending ? 'Posting...' : 'Post Comment'}
+      &lt;/button&gt;
+      {state.success &amp;&amp; &lt;p&gt;Comment posted!&lt;/p&gt;}
+      {state.error &amp;&amp; &lt;p&gt;{state.error}&lt;/p&gt;}
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<p>Here’s what happens step by step:</p>
+<ol>
+<li>The user submits the form. The reducer receives a <code>SUBMIT</code> action with the <code>FormData</code>, calls <code>saveComment</code>, and returns <code>{ success: true }</code>. It also sets <code>shouldReset.current = true</code> to mark that a reset is needed.</li>
+<li>The user navigates away. Activity hides the component and runs the <code>useLayoutEffect</code> cleanup. Because <code>shouldReset.current</code> is <code>true</code>, it dispatches a <code>RESET</code> action.</li>
+<li>The reducer receives <code>RESET</code> and returns the initial state (<code>{ success: false, error: null }</code>). The stale success message is cleared.</li>
+<li>If the user navigates back, the form is ready for a new submission. If they never submitted (step 1 didn’t happen), <code>shouldReset.current</code> is still <code>false</code>, so no <code>RESET</code> is dispatched. The form stays as-is.</li>
+</ol>
+<h2 id="state-and-authentication">State and authentication</h2>
+<p>Activity preserves local component state (<code>useState</code>, DOM input values) across navigations, including authentication changes. This is standard React behavior: props changing (such as receiving a new user) triggers a re-render but does not reset existing state. A draft composed by one user shouldn’t be visible to another.</p>
+<p>For logout flows, using <code>window.location.href</code> instead of <code>router.push</code> triggers a full page reload, clearing all client-side state.</p>
+<p>To reset specific state when the user changes without a full reload:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useState, useEffect, useRef } from 'react'
+
+function UserScopedForm({ userId }: { userId: string | null }) {
+  const [draft, setDraft] = useState('')
+  const lastUserIdRef = useRef&lt;string | null&gt;(null)
+
+  useEffect(() =&gt; {
+    if (lastUserIdRef.current !== null &amp;&amp; lastUserIdRef.current !== userId) {
+      setDraft('') // Reset on user change
+    }
+    lastUserIdRef.current = userId
+  }, [userId])
+
+  return &lt;textarea value={draft} onChange={(e) =&gt; setDraft(e.target.value)} /&gt;
+}
+</code></pre>
+<p>Alternatively, key components by user ID to let React handle the reset: <code>&lt;Form key={userId} /&gt;</code>.</p>
+<h2 id="global-styles">Global styles</h2>
+<p>Page-level styles (CSS variables, z-index, global classes) can affect visible pages when the originating component is hidden by Activity. You likely want to disable them when hidden: a hidden page’s accent color or z-index overrides shouldn’t leak into the visible page.</p>
+<p>Use a callback ref to toggle the stylesheet’s <code>media</code> attribute:</p>
+<pre><code class="language-tsx">&lt;style
+  ref={(style) =&gt; {
+    if (style) style.media = '' // Enable when visible
+    return () =&gt; {
+      if (style) style.media = 'not all' // Disable when hidden
+    }
+  }}
+&gt;
+  {`:root { --page-accent: blue; }`}
+&lt;/style&gt;
+</code></pre>
+<p>Or use <code>useLayoutEffect</code> when managing multiple style elements or more complex cleanup:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useLayoutEffect, useRef } from 'react'
+
+function PageWithStyles() {
+  const styleRef = useRef&lt;HTMLStyleElement&gt;(null)
+
+  useLayoutEffect(() =&gt; {
+    if (styleRef.current) styleRef.current.media = ''
+    return () =&gt; {
+      if (styleRef.current) styleRef.current.media = 'not all'
+    }
+  }, [])
+
+  return &lt;style ref={styleRef}&gt;{`:root { --page-accent: blue; }`}&lt;/style&gt;
+}
+</code></pre>
+<p>When Activity hides the component, the cleanup sets <code>media=&quot;not all&quot;</code>, which disables the stylesheet. When visible again, the effect re-runs and resets <code>media</code> to enable it.</p>
+<h2 id="testing">Testing</h2>
+<p>Hidden Activity content has <code>display: none</code> but remains in the document. This applies both to routes preserved by Cache Components and to content you hide with <code>&lt;Activity&gt;</code> directly. It affects end-to-end testing with tools like Playwright, Cypress, or Puppeteer:</p>
+<ul>
+<li><strong>DOM queries can find hidden elements.</strong> Selectors may match elements regardless of visibility.</li>
+<li><strong>Interactions with hidden elements fail or timeout.</strong> Most tools wait for elements to become visible before interacting.</li>
+<li><strong>Assertions may match hidden content.</strong> Be explicit about visibility when asserting element presence.</li>
+</ul>
+<h3 id="use-visibility-aware-selectors">Use visibility-aware selectors</h3>
+<p>In Playwright, <code>getByRole</code> queries automatically filter by visibility:</p>
+<pre><code class="language-ts">// Good - getByRole filters by visibility automatically
+await page.getByRole('button', { name: 'Submit' }).click()
+await page.getByRole('textbox', { name: 'Email' }).fill('test@example.com')
+
+// Also good - getByLabel, getByPlaceholder filter by visibility
+await page.getByLabel('Email').fill('test@example.com')
+await page.getByPlaceholder('Search...').fill('query')
+</code></pre>
+<p>When <code>getByRole</code> isn’t suitable, use <code>.locator()</code> with visibility filtering:</p>
+<pre><code class="language-ts">// Fallback - filter by visibility explicitly
+await page.locator('.product-card').filter({ visible: true }).first().click()
+await page
+  .locator('[data-testid=&quot;timer&quot;]')
+  .filter({ visible: true })
+  .textContent()
+
+// Avoid - may match hidden elements in Activity boundaries
+await page.locator('.product-card').first().click()
+</code></pre>
+<p><code>getByRole</code> is robust to Activity, tabbed navigation, accordions, and any other pattern that keeps hidden content in the DOM. It queries the accessibility tree, which excludes hidden elements. For other testing tools, check their documentation for visibility-aware selectors. For example, Cypress uses <code>.should('be.visible')</code> or <code>{ visible: true }</code> options.</p>
+<h2 id="using-activity-in-your-components">Using Activity in your components</h2>
+<p>Cache Components uses Activity automatically at the route level, but you can also use <code>&lt;Activity&gt;</code> directly in your own components. This is useful for tabs, expandable panels, or any UI where you want to hide content without unmounting it.</p>
+<h3 id="prerendering-hidden-content">Prerendering hidden content</h3>
+<p>Activity can prerender content the user hasn’t seen yet. Hidden boundaries render at lower priority. Combined with Suspense, this lets you prefetch data for content the user is likely to view next.</p>
+<p>A Server Component can start fetching data immediately and pass the promise to a client component. The client component uses Activity to hide the content until the user requests it, and <code>use()</code> to resolve the promise when rendering:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { ExpandableComments } from './expandable-comments'
+
+async function getCommentsData() {
+  return db.comments.findMany()
+}
+
+export default function Page() {
+  const commentsPromise = getCommentsData()
+
+  return (
+    &lt;article&gt;
+      &lt;h1&gt;Post Title&lt;/h1&gt;
+      &lt;p&gt;Main content visible immediately...&lt;/p&gt;
+
+      &lt;ExpandableComments commentsPromise={commentsPromise} /&gt;
+    &lt;/article&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">'use client'
+
+import { Activity, Suspense, useState, use } from 'react'
+
+type Comment = { id: string; text: string; author: string }
+
+export function ExpandableComments({
+  commentsPromise,
+}: {
+  commentsPromise: Promise&lt;Comment[]&gt;
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setExpanded((e) =&gt; !e)}&gt;
+        {expanded ? 'Hide Comments' : 'Show Comments'}
+      &lt;/button&gt;
+
+      &lt;Activity mode={expanded ? 'visible' : 'hidden'}&gt;
+        &lt;Suspense fallback={&lt;CommentsSkeleton /&gt;}&gt;
+          &lt;Comments commentsPromise={commentsPromise} /&gt;
+        &lt;/Suspense&gt;
+      &lt;/Activity&gt;
+    &lt;/&gt;
+  )
+}
+
+function Comments({
+  commentsPromise,
+}: {
+  commentsPromise: Promise&lt;Comment[]&gt;
+}) {
+  const comments = use(commentsPromise)
+  return (
+    &lt;ul&gt;
+      {comments.map((c) =&gt; (
+        &lt;li key={c.id}&gt;{c.text}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+
+function CommentsSkeleton() {
+  return &lt;div&gt;Loading comments...&lt;/div&gt;
+}
+</code></pre>
+<p>The Server Component starts fetching comments immediately and passes the promise down. While hidden, the data streams at lower priority. When the user clicks “Show Comments”, the <code>Comments</code> component resolves the promise with <code>use()</code> and the content appears instantly.</p>
+<h3 id="effect-and-media-cleanup">Effect and media cleanup</h3>
+<p>When Activity hides content, React runs effect cleanup functions just like it does on unmount. This means timers, subscriptions, and media playback pause automatically if you have proper cleanup:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useEffect, useState } from 'react'
+
+function LiveTimer() {
+  const [count, setCount] = useState(0)
+
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; setCount((c) =&gt; c + 1), 1000)
+    return () =&gt; clearInterval(id) // Pauses when hidden
+  }, [])
+
+  return &lt;p&gt;Count: {count}&lt;/p&gt;
+}
+</code></pre>
+<p>For media elements like <code>&lt;video&gt;</code> and <code>&lt;audio&gt;</code>, <code>display: none</code> does not stop playback. Add explicit cleanup with <code>useLayoutEffect</code>:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useLayoutEffect, useRef } from 'react'
+
+function VideoPlayer({ src }: { src: string }) {
+  const videoRef = useRef&lt;HTMLVideoElement&gt;(null)
+
+  useLayoutEffect(() =&gt; {
+    const video = videoRef.current
+    return () =&gt; {
+      video?.pause() // Pauses when hidden, preserves playback position
+    }
+  }, [])
+
+  return &lt;video ref={videoRef} src={src} controls /&gt;
+}
+</code></pre>
+<p>When the component becomes visible again, effects re-run and playback position is preserved since the DOM node was never removed.</p>
+<h3 id="distinguishing-first-mount-from-re-show">Distinguishing first mount from re-show</h3>
+<p>Effects run on every hide-to-visible transition, not just the initial mount. If you need to distinguish the first mount from subsequent visibility changes, use a ref:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useEffect, useRef } from 'react'
+
+function TrackedComponent() {
+  const hasMountedRef = useRef(false)
+
+  useEffect(() =&gt; {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      console.log('First mount')
+    } else {
+      console.log('Became visible again')
+    }
+  }, [])
+
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<p>The ref persists across hide/show cycles (refs aren’t cleaned up), so <code>hasMountedRef.current</code> stays <code>true</code> after the first mount. Each time Activity becomes visible, the Effect runs again, but now it takes the <code>else</code> branch.</p>
+<h2 id="examples">Examples</h2>
+<p>The <a href="https://react-activity-patterns.labs.vercel.dev" target="_blank" rel="noopener">Activity Patterns Demo</a> (<a href="https://github.com/vercel-labs/react-activity-patterns" target="_blank" rel="noopener">source</a>) is a Next.js app with Cache Components enabled and three routes. Navigate between them to see state preservation in action:</p>
+<ul>
+<li><strong>Data</strong> — sortable table and selectable list that keep their state across navigations, plus a reviews section that prerenders in the background</li>
+<li><strong>Forms</strong> — filter panel with DOM state (<code>&lt;details&gt;</code>, checkboxes, text inputs) that persists, and a newsletter form that resets after submission using <code>useLayoutEffect</code> cleanup</li>
+<li><strong>Side Effects</strong> — a live timer that pauses when you navigate away and resumes when you return, and a video player that auto-pauses with playback position preserved</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

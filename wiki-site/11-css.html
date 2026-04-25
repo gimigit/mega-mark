@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-css — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-11-css">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#tailwind-css">Tailwind CSS</a></li><li><a href="#css-modules">CSS Modules</a></li><li><a href="#global-css">Global CSS</a></li><li><a href="#external-stylesheets">External stylesheets</a></li><ul><li><a href="#import-styles-from-node_modules">Import styles from node_modules</a></li></ul><li><a href="#ordering-and-merging">Ordering and Merging</a></li><ul><li><a href="#recommendations">Recommendations</a></li></ul><li><a href="#development-vs-production">Development vs Production</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">11-css</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about the alternatives ways you can use CSS in your application.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Next.js provides several ways to style your application using CSS, including:</p>
+<ul>
+<li><a href="#tailwind-css">Tailwind CSS</a></li>
+<li><a href="#css-modules">CSS Modules</a></li>
+<li><a href="#global-css">Global CSS</a></li>
+<li><a href="#external-stylesheets">External Stylesheets</a></li>
+<li><a href="/docs/app/guides/sass">Sass</a></li>
+<li><a href="/docs/app/guides/css-in-js">CSS-in-JS</a></li>
+</ul>
+<h2 id="tailwind-css">Tailwind CSS</h2>
+<p><a href="https://tailwindcss.com/" target="_blank" rel="noopener">Tailwind CSS</a> is a utility-first CSS framework that provides low-level utility classes to build custom designs.</p>
+<AppOnly>
+<p>Install Tailwind CSS:</p>
+<pre><code class="language-bash">pnpm add -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<pre><code class="language-bash">npm install -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<pre><code class="language-bash">yarn add -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<pre><code class="language-bash">bun add -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<p>Add the PostCSS plugin to your <code>postcss.config.mjs</code> file:</p>
+<pre><code class="language-js">export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+</code></pre>
+<p>Import Tailwind in your global CSS file:</p>
+<pre><code class="language-css">@import 'tailwindcss';
+</code></pre>
+<p>Import the CSS file in your root layout:</p>
+<pre><code class="language-tsx">import './globals.css'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import './globals.css'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>Now you can start using Tailwind’s utility classes in your application:</p>
+<pre><code class="language-tsx">export default function Page() {
+  return (
+    &lt;main className=&quot;flex min-h-screen flex-col items-center justify-between p-24&quot;&gt;
+      &lt;h1 className=&quot;text-4xl font-bold&quot;&gt;Welcome to Next.js!&lt;/h1&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return (
+    &lt;main className=&quot;flex min-h-screen flex-col items-center justify-between p-24&quot;&gt;
+      &lt;h1 className=&quot;text-4xl font-bold&quot;&gt;Welcome to Next.js!&lt;/h1&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>Install Tailwind CSS:</p>
+<pre><code class="language-bash">pnpm add -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<pre><code class="language-bash">npm install -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<pre><code class="language-bash">yarn add -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<pre><code class="language-bash">bun add -D tailwindcss @tailwindcss/postcss
+</code></pre>
+<p>Add the PostCSS plugin to your <code>postcss.config.mjs</code> file:</p>
+<pre><code class="language-js">export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+</code></pre>
+<p>Import Tailwind in your global CSS file:</p>
+<pre><code class="language-css">@import 'tailwindcss';
+</code></pre>
+<p>Import the CSS file in your <code>pages/_app.js</code> file:</p>
+<pre><code class="language-jsx">import '@/styles/globals.css'
+
+export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>Now you can start using Tailwind’s utility classes in your application:</p>
+<pre><code class="language-tsx">export default function Home() {
+  return (
+    &lt;main className=&quot;flex min-h-screen flex-col items-center justify-between p-24&quot;&gt;
+      &lt;h1 className=&quot;text-4xl font-bold&quot;&gt;Welcome to Next.js!&lt;/h1&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Home() {
+  return (
+    &lt;main className=&quot;flex min-h-screen flex-col items-center justify-between p-24&quot;&gt;
+      &lt;h1 className=&quot;text-4xl font-bold&quot;&gt;Welcome to Next.js!&lt;/h1&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<blockquote>
+<p><strong>Good to know:</strong> If you need broader browser support for very old browsers, see the <a href="/docs/app/guides/tailwind-v3-css">Tailwind CSS v3 setup instructions</a>.</p>
+</blockquote>
+<h2 id="css-modules">CSS Modules</h2>
+<p>CSS Modules locally scope CSS by generating unique class names. This allows you to use the same class in different files without worrying about naming collisions.</p>
+<AppOnly>
+<p>To start using CSS Modules, create a new file with the extension <code>.module.css</code> and import it into any component inside the <code>app</code> directory:</p>
+<pre><code class="language-css">.blog {
+  padding: 24px;
+}
+</code></pre>
+<pre><code class="language-tsx">import styles from './blog.module.css'
+
+export default function Page() {
+  return &lt;main className={styles.blog}&gt;&lt;/main&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import styles from './blog.module.css'
+
+export default function Page() {
+  return &lt;main className={styles.blog}&gt;&lt;/main&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To start using CSS Modules, create a new file with the extension <code>.module.css</code> and import it into any component inside the <code>pages</code> directory:</p>
+<pre><code class="language-css">.blog {
+  padding: 24px;
+}
+</code></pre>
+<pre><code class="language-tsx">import styles from './blog.module.css'
+
+export default function Page() {
+  return &lt;main className={styles.blog}&gt;&lt;/main&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import styles from './blog.module.css'
+
+export default function Page() {
+  return &lt;main className={styles.blog}&gt;&lt;/main&gt;
+}
+</code></pre>
+</PagesOnly>
+<h2 id="global-css">Global CSS</h2>
+<p>You can use global CSS to apply styles across your application.</p>
+<AppOnly>
+<p>Create a <code>app/global.css</code> file and import it in the root layout to apply the styles to <strong>every route</strong> in your application:</p>
+<pre><code class="language-css">body {
+  padding: 20px 20px 60px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+</code></pre>
+<pre><code class="language-tsx">// These styles apply to every route in the application
+import './global.css'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">// These styles apply to every route in the application
+import './global.css'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> Global styles can be imported into any layout, page, or component inside the <code>app</code> directory. However, since Next.js uses React’s built-in support for stylesheets to integrate with Suspense, this currently does not remove stylesheets as you navigate between routes which can lead to conflicts. We recommend using global styles for <em>truly</em> global CSS (like Tailwind’s base styles), <a href="#tailwind-css">Tailwind CSS</a> for component styling, and <a href="#css-modules">CSS Modules</a> for custom scoped CSS when needed.</p>
+</blockquote>
+</AppOnly>
+<PagesOnly>
+<p>Import the stylesheet in the <code>pages/_app.js</code> file to apply the styles to <strong>every route</strong> in your application:</p>
+<pre><code class="language-tsx">import '@/styles/global.css'
+
+export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>Due to the global nature of stylesheets, and to avoid conflicts, you should import them inside <a href="/docs/pages/building-your-application/routing/custom-app"><code>pages/_app.js</code></a>.</p>
+</PagesOnly>
+<h2 id="external-stylesheets">External stylesheets</h2>
+<AppOnly>
+<p>Stylesheets published by external packages can be imported anywhere in the <code>app</code> directory, including colocated components:</p>
+<pre><code class="language-tsx">import 'bootstrap/dist/css/bootstrap.css'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body className=&quot;container&quot;&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import 'bootstrap/dist/css/bootstrap.css'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body className=&quot;container&quot;&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> In React 19, <code>&lt;link rel=&quot;stylesheet&quot; href=&quot;...&quot; /&gt;</code> can also be used. See the <a href="https://react.dev/reference/react-dom/components/link" target="_blank" rel="noopener">React <code>link</code> documentation</a> for more information.</p>
+</blockquote>
+</AppOnly>
+<PagesOnly>
+<p>Next.js allows you to import CSS files from a JavaScript file. This is possible because Next.js extends the concept of <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/import" target="_blank" rel="noopener"><code>import</code></a> beyond JavaScript.</p>
+<h3 id="import-styles-from-node_modules">Import styles from <code>node_modules</code></h3>
+<p>Since Next.js <strong>9.5.4</strong>, importing a CSS file from <code>node_modules</code> is permitted anywhere in your application.</p>
+<p>For global stylesheets, like <code>bootstrap</code> or <code>nprogress</code>, you should import the file inside <code>pages/_app.js</code>. For example:</p>
+<pre><code class="language-jsx">import 'bootstrap/dist/css/bootstrap.css'
+
+export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>To import CSS required by a third-party component, you can do so in your component. For example:</p>
+<pre><code class="language-jsx">import { useState } from 'react'
+import { Dialog } from '@reach/dialog'
+import VisuallyHidden from '@reach/visually-hidden'
+import '@reach/dialog/styles.css'
+
+function ExampleDialog(props) {
+  const [showDialog, setShowDialog] = useState(false)
+  const open = () =&gt; setShowDialog(true)
+  const close = () =&gt; setShowDialog(false)
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={open}&gt;Open Dialog&lt;/button&gt;
+      &lt;Dialog isOpen={showDialog} onDismiss={close}&gt;
+        &lt;button className=&quot;close-button&quot; onClick={close}&gt;
+          &lt;VisuallyHidden&gt;Close&lt;/VisuallyHidden&gt;
+          &lt;span aria-hidden&gt;×&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;p&gt;Hello there. I am a dialog&lt;/p&gt;
+      &lt;/Dialog&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h2 id="ordering-and-merging">Ordering and Merging</h2>
+<p>Next.js optimizes CSS during production builds by automatically chunking (merging) stylesheets. The <strong>order of your CSS</strong> depends on the <strong>order you import styles in your code</strong>.</p>
+<p>For example, <code>base-button.module.css</code> will be ordered before <code>page.module.css</code> since <code>&lt;BaseButton&gt;</code> is imported before <code>page.module.css</code>:</p>
+<pre><code class="language-tsx">import { BaseButton } from './base-button'
+import styles from './page.module.css'
+
+export default function Page() {
+  return &lt;BaseButton className={styles.primary} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { BaseButton } from './base-button'
+import styles from './page.module.css'
+
+export default function Page() {
+  return &lt;BaseButton className={styles.primary} /&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">import styles from './base-button.module.css'
+
+export function BaseButton() {
+  return &lt;button className={styles.primary} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import styles from './base-button.module.css'
+
+export function BaseButton() {
+  return &lt;button className={styles.primary} /&gt;
+}
+</code></pre>
+<h3 id="recommendations">Recommendations</h3>
+<p>To keep CSS ordering predictable:</p>
+<ul>
+<li>Try to contain CSS imports to a single JavaScript or TypeScript entry file</li>
+<li>Import global styles and Tailwind stylesheets in the root of your application.</li>
+<li><strong>Use Tailwind CSS</strong> for most styling needs as it covers common design patterns with utility classes.</li>
+<li>Use CSS Modules for component-specific styles when Tailwind utilities aren’t sufficient.</li>
+<li>Use a consistent naming convention for your CSS modules. For example, using <code>&lt;name&gt;.module.css</code> over <code>&lt;name&gt;.tsx</code>.</li>
+<li>Extract shared styles into shared components to avoid duplicate imports.</li>
+<li>Turn off linters or formatters that auto-sort imports like ESLint’s <a href="https://eslint.org/docs/latest/rules/sort-imports" target="_blank" rel="noopener"><code>sort-imports</code></a>.</li>
+<li>You can use the <a href="/docs/app/api-reference/config/next-config-js/cssChunking"><code>cssChunking</code></a> option in <code>next.config.js</code> to control how CSS is chunked.</li>
+</ul>
+<h2 id="development-vs-production">Development vs Production</h2>
+<ul>
+<li>In development (<code>next dev</code>), CSS updates apply instantly with <a href="/docs/architecture/fast-refresh">Fast Refresh</a>.</li>
+<li>In production (<code>next build</code>), all CSS files are automatically concatenated into <strong>many minified and code-split</strong> <code>.css</code> files, ensuring the minimal amount of CSS is loaded for a route.</li>
+<li>CSS still loads with JavaScript disabled in production, but JavaScript is required in development for Fast Refresh.</li>
+<li>CSS ordering can behave differently in development, always ensure to check the build (<code>next build</code>) to verify the final CSS order.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

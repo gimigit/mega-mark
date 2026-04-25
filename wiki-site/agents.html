@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AGENTS.md — AgroMark EU — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-agents">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#proiect">Proiect</a></li><li><a href="#plan-complet">Plan complet</a></li><li><a href="#structura-proiectului">Structura proiectului</a></li><li><a href="#reguli-de-lucru">Reguli de lucru</a></li><ul><li><a href="#git-amp-commits">Git &amp;amp; Commits</a></li><li><a href="#cod">Cod</a></li><li><a href="#baza-de-date">Baza de date</a></li><li><a href="#environment-variables">Environment variables</a></li></ul><li><a href="#stare-curent-aprilie-2026">Stare curentă (Aprilie 2026)</a></li><ul><li><a href="#implementat-">Implementat ✅</a></li><li><a href="#de-implementat-">De implementat ❌</a></li></ul><li><a href="#deployment">Deployment</a></li><li><a href="#note-tehnice-importante">Note tehnice importante</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">AGENTS.md — AgroMark EU</h1>
+
+</div>
+<div class="article-body">
+<blockquote>
+<p>Instrucțiuni pentru agenți care lucrează în acest repo.</p>
+</blockquote>
+<h2 id="proiect">Proiect</h2>
+<p><strong>AgroMark EU</strong> — Platformă marketplace agro-industrială (utilaje agricole, tractoare, echipamente).</p>
+<ul>
+<li><strong>URL producție:</strong> <a href="https://agromark-eu.vercel.app" target="_blank" rel="noopener">https://agromark-eu.vercel.app</a></li>
+<li><strong>Repo:</strong> <a href="https://github.com/gimigit/agromark-eu" target="_blank" rel="noopener">https://github.com/gimigit/agromark-eu</a></li>
+<li><strong>Stack:</strong> Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui + Supabase</li>
+</ul>
+<h2 id="plan-complet">Plan complet</h2>
+<p>Planul detaliat de implementare se află în:</p>
+<pre><code>/Users/tizo/projects/AgroMark-EU/Agromark-eu-plan.md
+</code></pre>
+<p>Citește-l înainte de a începe orice task. Respectă fazele și prioritățile din plan.</p>
+<h2 id="structura-proiectului">Structura proiectului</h2>
+<pre><code>src/
+├── app/              # Next.js App Router (pages + API routes)
+├── components/       # Componente React reutilizabile
+│   └── ui/           # shadcn/ui components
+├── hooks/            # React hooks custom
+├── emails/           # Template-uri email (React Email)
+├── lib/              # Utilitare: supabase, stripe, email, upload
+└── types/
+    └── database.ts   # Tipuri TypeScript generate din Supabase schema
+supabase/
+├── migrations/       # Migrări SQL (prefix timestamp obligatoriu)
+├── schema.sql        # Schema completă
+└── functions/        # Supabase Edge Functions
+</code></pre>
+<h2 id="reguli-de-lucru">Reguli de lucru</h2>
+<h3 id="git-amp-commits">Git &amp; Commits</h3>
+<ul>
+<li>Commit-uri în engleză, format convențional: <code>feat:</code>, <code>fix:</code>, <code>chore:</code>, <code>docs:</code></li>
+<li>Un commit per feature/fix — nu bate mai multe lucruri într-un singur commit</li>
+<li>Nu comite fișiere <code>.env</code>, chei API sau date sensibile</li>
+<li>Verifică întotdeauna cu <code>git status</code> înainte de commit</li>
+</ul>
+<h3 id="cod">Cod</h3>
+<ul>
+<li>TypeScript strict — nu folosi <code>any</code> fără motiv întemeiat</li>
+<li>Componente noi → în <code>src/components/</code> (reutilizabile) sau direct în <code>src/app/</code> (page-specific)</li>
+<li>Folosește shadcn/ui pentru UI components — nu reinventa butoane, inputs, etc.</li>
+<li>Supabase client-side: <code>src/lib/supabase/client.ts</code>; server-side: <code>src/lib/supabase/server.ts</code></li>
+<li>Imagini: folosește <code>next/image</code> (nu <code>&lt;img&gt;</code> direct)</li>
+</ul>
+<h3 id="baza-de-date">Baza de date</h3>
+<ul>
+<li>Orice schimbare de schemă → fișier nou în <code>supabase/migrations/</code> cu format: <code>00N_descriere.sql</code></li>
+<li>Testează RLS policies — userul nu trebuie să poată edita datele altcuiva</li>
+<li>Nu șterge date, folosește soft delete (<code>deleted_at TIMESTAMPTZ</code>)</li>
+</ul>
+<h3 id="environment-variables">Environment variables</h3>
+<p>Disponibile pe Vercel și local în <code>.env.local</code>:</p>
+<pre><code>NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+RESEND_API_KEY
+NEXT_PUBLIC_APP_URL
+</code></pre>
+<h2 id="stare-curent-aprilie-2026">Stare curentă (Aprilie 2026)</h2>
+<p><strong>MVP ~65% complet.</strong></p>
+<h3 id="implementat-">Implementat ✅</h3>
+<ul>
+<li>Auth (login / signup / magic link / OAuth)</li>
+<li>Creare anunț multi-step + upload imagini (Supabase Storage)</li>
+<li>Browse + filtre + căutare</li>
+<li>Detaliu anunț + galerie imagini</li>
+<li>Mesagerie basic (contact seller, inbox, thread replies)</li>
+<li>Favorite anunțuri</li>
+<li>Dashboard utilizator</li>
+<li>Profil edit cu avatar upload</li>
+<li>Pagini legale: terms, privacy, about, faq (necommit-uite încă)</li>
+<li>Notificări in-app: NotificationBell, NotificationDropdown (necommit-uite)</li>
+<li>Profil public vânzător: <code>/sellers/[id]</code> (necommit-uit)</li>
+<li>Recenzii: ReviewForm, ReviewCard, ReviewsList (necommit-uite)</li>
+<li>Chat real-time: ChatWindow, MessageBubble (necommit-uit)</li>
+<li>Email: <code>src/lib/email.ts</code> + templates (necommit-uite)</li>
+<li>SEO: <code>sitemap.ts</code>, <code>robots.ts</code> (necommit-uite)</li>
+<li>Căutări salvate: migrare <code>004_saved_searches.sql</code> (necommit-uită)</li>
+</ul>
+<h3 id="de-implementat-">De implementat ❌</h3>
+<ul>
+<li>Stripe — plăți, abonamente, pagina prețuri</li>
+<li>Panou admin (<code>/admin</code>)</li>
+<li>Sistem raportare anunțuri</li>
+<li>Comparator utilaje</li>
+<li>Hartă (react-leaflet)</li>
+<li>Dealer tools (bulk upload, API)</li>
+<li>Optimizare imagini (compresie la upload)</li>
+</ul>
+<h2 id="deployment">Deployment</h2>
+<ul>
+<li><strong>Vercel</strong> — deploy automat la push pe <code>main</code></li>
+<li>Verifică că build-ul trece local: <code>npm run build</code> înainte de push</li>
+<li>Nu face push direct pe <code>main</code> dacă există erori TypeScript sau de build</li>
+</ul>
+<h2 id="note-tehnice-importante">Note tehnice importante</h2>
+<ol>
+<li><strong>Supabase Realtime</strong> — activează <code>REALTIME</code> pe tabelele <code>messages</code> și <code>notifications</code> în Supabase Dashboard → Database → Replication</li>
+<li><strong>Admin role</strong> — setează manual: <code>UPDATE profiles SET role='admin' WHERE email='...'</code></li>
+<li><strong>Migrări</strong> — rulează în ordine; nu modifica migrările existente, adaugă fișiere noi</li>
+<li><strong>Stripe webhooks</strong> — în dev: <code>stripe listen --forward-to localhost:3000/api/stripe/webhook</code></li>
+</ol>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

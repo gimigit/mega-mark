@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Internationalization — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-i18n">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#table-of-contents">Table of Contents</a></li><li><a href="#usage">Usage</a></li><li><a href="#adding-new-language">Adding New Language</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Internationalization</h1>
+
+</div>
+<div class="article-body">
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li>
+<p><a href="#usage">Usage</a></p>
+</li>
+<li>
+<p><a href="#adding-new-language">Adding New Language</a></p>
+</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>There are just a few functions that support I18n:</p>
+<ul>
+<li><a href="https://date-fns.org/docs/format" target="_blank" rel="noopener"><code>format</code></a></li>
+<li><a href="https://date-fns.org/docs/formatDistance" target="_blank" rel="noopener"><code>formatDistance</code></a></li>
+<li><a href="https://date-fns.org/docs/formatDistanceStrict" target="_blank" rel="noopener"><code>formatDistanceStrict</code></a></li>
+<li><a href="https://date-fns.org/docs/formatRelative" target="_blank" rel="noopener"><code>formatRelative</code></a></li>
+</ul>
+<p>To use a locale, you need to require it and then pass
+as an option to a function:</p>
+<pre><code class="language-js">import { formatDistance } from &quot;date-fns&quot;;
+// Require Esperanto locale
+import { eo } from &quot;date-fns/locale&quot;;
+
+const result = formatDistance(
+  new Date(2016, 7, 1),
+  new Date(2015, 0, 1),
+  { locale: eo }, // Pass the locale as an option
+);
+//=&gt; 'pli ol 1 jaro'
+</code></pre>
+<p>It might seem complicated to require and pass locales as options,
+but unlike Moment.js which bloats your build with all the locales
+by default date-fns forces developer to manually require locales when needed.
+To make API simple, we encourage you to write tiny wrappers and use those
+instead of original functions:</p>
+<pre><code class="language-js">// app/_lib/format.js
+
+import { format } from &quot;date-fns&quot;;
+import { enGB, eo, ru } from &quot;date-fns/locale&quot;;
+
+const locales = { enGB, eo, ru };
+
+// by providing a default string of 'PP' or any of its variants for `formatStr`
+// it will format dates in whichever way is appropriate to the locale
+export default function (date, formatStr = &quot;PP&quot;) {
+  return format(date, formatStr, {
+    locale: locales[window.__localeId__], // or global.__localeId__
+  });
+}
+
+// Later:
+
+import format from &quot;app/_lib/format&quot;;
+
+window.__localeId__ = &quot;enGB&quot;;
+format(friday13, &quot;EEEE d&quot;);
+//=&gt; 'Friday 13'
+
+window.__localeId__ = &quot;eo&quot;;
+format(friday13, &quot;EEEE d&quot;);
+//=&gt; 'vendredo 13'
+
+// If the format string is omitted, it will take the default for the locale.
+window.__localeId__ = &quot;enGB&quot;;
+format(friday13);
+//=&gt; Jul 13, 2019
+
+window.__localeId__ = &quot;eo&quot;;
+format(friday13);
+//=&gt; 2019-jul-13
+</code></pre>
+<h2 id="adding-new-language">Adding New Language</h2>
+<p>At the moment there is no definitive guide, so if you feel brave enough,
+use this quick guide:</p>
+<ul>
+<li>First of all, <a href="https://github.com/date-fns/date-fns/issues/new?title=XXX%20language%20support" target="_blank" rel="noopener">create an issue</a>
+so you won’t overlap with others.</li>
+<li>A detailed explanation of how to <a href="https://github.com/date-fns/date-fns/blob/master/docs/i18nContributionGuide.md#adding-a-new-locale" target="_blank" rel="noopener">add a new locale</a>.</li>
+<li>Use <a href="https://github.com/date-fns/date-fns/tree/master/src/locale/en-US" target="_blank" rel="noopener">English locale</a>
+as the basis and then incrementally adjust the tests and the code.</li>
+<li>Directions on <a href="https://github.com/date-fns/date-fns/blob/master/docs/i18nContributionGuide.md#creating-a-locale-with-the-same-language-as-another-locale" target="_blank" rel="noopener">adding a locale with the same language as another locale</a>.</li>
+<li>If you have questions or need guidance, leave a comment in the issue.</li>
+</ul>
+<p>Thank you for your support!</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/named — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-named">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#settings">Settings</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li><li><a href="#further-reading">Further Reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/named</h1>
+
+</div>
+<div class="article-body">
+<p>💼🚫 This rule is enabled in the following configs: ❗ <code>errors</code>, ☑️ <code>recommended</code>. This rule is <em>disabled</em> in the ⌨️ <code>typescript</code> config.</p>
+<!-- end auto-generated rule header -->
+<p>Verifies that all named imports are part of the set of named exports in the referenced module.</p>
+<p>For <code>export</code>, verifies that all named exports exist in the referenced module.</p>
+<p>Note: for packages, the plugin will find exported names
+from <a href="https://github.com/jsforum/jsforum/issues/5" target="_blank" rel="noopener"><code>jsnext:main</code></a> (deprecated) or <code>module</code>, if present in <code>package.json</code>.
+Redux’s npm module includes this key, and thereby is lintable, for example.</p>
+<p>A module path that is <a href="../../README.md#importignore">ignored</a> or not <a href="https://github.com/bmeck/UnambiguousJavaScriptGrammar" target="_blank" rel="noopener">unambiguously an ES module</a> will not be reported when imported. Note that type imports and exports, as used by <a href="https://flow.org/" target="_blank" rel="noopener">Flow</a>, are always ignored.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>Given:</p>
+<pre><code class="language-js">// ./foo.js
+export const foo = &quot;I'm so foo&quot;
+</code></pre>
+<p>The following is considered valid:</p>
+<pre><code class="language-js">// ./bar.js
+import { foo } from './foo'
+
+// ES7 proposal
+export { foo as bar } from './foo'
+
+// node_modules without jsnext:main are not analyzed by default
+// (import/ignore setting)
+import { SomeNonsenseThatDoesntExist } from 'react'
+</code></pre>
+<p>…and the following are reported:</p>
+<pre><code class="language-js">// ./baz.js
+import { notFoo } from './foo'
+
+// ES7 proposal
+export { notFoo as defNotBar } from './foo'
+
+// will follow 'jsnext:main', if available
+import { dontCreateStore } from 'redux'
+</code></pre>
+<h3 id="settings">Settings</h3>
+<p><a href="../../README.md#importignore"><code>import/ignore</code></a> can be provided as a setting to ignore certain modules (node_modules,
+CoffeeScript, CSS if using Webpack, etc.).</p>
+<p>Given:</p>
+<pre><code class="language-yaml"># .eslintrc (YAML)
+---
+settings:
+  import/ignore:
+    - node_modules  # included by default, but replaced if explicitly configured
+    - *.coffee$     # can't parse CoffeeScript (unless a custom polyglot parser was configured)
+</code></pre>
+<p>and</p>
+<pre><code class="language-coffeescript"># ./whatever.coffee
+exports.whatever = (foo) -&gt; console.log foo
+</code></pre>
+<p>then the following is not reported:</p>
+<pre><code class="language-js">// ./foo.js
+
+// can't be analyzed, and ignored, so not reported
+import { notWhatever } from './whatever'
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you are using CommonJS and/or modifying the exported namespace of any module at
+runtime, you will likely see false positives with this rule.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="../../README.md#importignore"><code>import/ignore</code></a> setting</li>
+<li><a href="https://github.com/jsforum/jsforum/issues/5" target="_blank" rel="noopener"><code>jsnext:main</code></a> deprecation</li>
+<li><a href="https://github.com/rollup/rollup/wiki/pkg.module" target="_blank" rel="noopener"><code>pkg.module</code></a> (Rollup)</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

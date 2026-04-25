@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generate-viewport — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-generate-viewport">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#the-viewport-object">The viewport object</a></li><li><a href="#generateviewport-function">generateViewport function</a></li><li><a href="#viewport-fields">Viewport Fields</a></li><ul><li><a href="#themecolor">themeColor</a></li><li><a href="#width-initialscale-maximumscale-and-userscalable">width, initialScale, maximumScale and userScalable</a></li><li><a href="#colorscheme">colorScheme</a></li></ul><li><a href="#with-cache-components">With Cache Components</a></li><li><a href="#types">Types</a></li><ul><li><a href="#viewport-object">viewport object</a></li><li><a href="#generateviewport-function-1">generateViewport function</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">generate-viewport</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>View all the Metadata API options.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>You can customize the initial viewport of the page with the static <code>viewport</code> object or the dynamic <code>generateViewport</code> function.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The <code>viewport</code> object and <code>generateViewport</code> function exports are <strong>only supported in Server Components</strong>.</li>
+<li>You cannot export both the <code>viewport</code> object and <code>generateViewport</code> function from the same route segment.</li>
+<li>If you’re coming from migrating <code>metadata</code> exports, you can use <a href="/docs/app/guides/upgrading/codemods#metadata-to-viewport-export">metadata-to-viewport-export codemod</a> to update your changes.</li>
+</ul>
+</blockquote>
+<h2 id="the-viewport-object">The <code>viewport</code> object</h2>
+<p>To define the viewport options, export a <code>viewport</code> object from a <code>layout.jsx</code> or <code>page.jsx</code> file.</p>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  themeColor: 'black',
+}
+
+export default function Page() {}
+</code></pre>
+<pre><code class="language-jsx">export const viewport = {
+  themeColor: 'black',
+}
+
+export default function Page() {}
+</code></pre>
+<h2 id="generateviewport-function"><code>generateViewport</code> function</h2>
+<p><code>generateViewport</code> should return a <a href="#viewport-fields"><code>Viewport</code> object</a> containing one or more viewport fields.</p>
+<pre><code class="language-tsx">export function generateViewport({ params }) {
+  return {
+    themeColor: '...',
+  }
+}
+</code></pre>
+<p>In TypeScript, the <code>params</code> argument can be typed via <a href="/docs/app/api-reference/file-conventions/page#page-props-helper"><code>PageProps&lt;'/route'&gt;</code></a> or <a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper"><code>LayoutProps&lt;'/route'&gt;</code></a> depending on where <code>generateViewport</code> is defined.</p>
+<pre><code class="language-jsx">export function generateViewport({ params }) {
+  return {
+    themeColor: '...',
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If the viewport doesn’t depend on request information, it should be defined using the static <a href="#the-viewport-object"><code>viewport</code> object</a> rather than <code>generateViewport</code>.</li>
+</ul>
+</blockquote>
+<h2 id="viewport-fields">Viewport Fields</h2>
+<h3 id="themecolor"><code>themeColor</code></h3>
+<p>Learn more about <a href="https://developer.mozilla.org/docs/Web/HTML/Element/meta/name/theme-color" target="_blank" rel="noopener"><code>theme-color</code></a>.</p>
+<p><strong>Simple theme color</strong></p>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  themeColor: 'black',
+}
+</code></pre>
+<pre><code class="language-jsx">export const viewport = {
+  themeColor: 'black',
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;theme-color&quot; content=&quot;black&quot; /&gt;
+</code></pre>
+<p><strong>With media attribute</strong></p>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'cyan' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+}
+</code></pre>
+<pre><code class="language-jsx">export const viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'cyan' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;theme-color&quot; media=&quot;(prefers-color-scheme: light)&quot; content=&quot;cyan&quot; /&gt;
+&lt;meta name=&quot;theme-color&quot; media=&quot;(prefers-color-scheme: dark)&quot; content=&quot;black&quot; /&gt;
+</code></pre>
+<h3 id="width-initialscale-maximumscale-and-userscalable"><code>width</code>, <code>initialScale</code>, <code>maximumScale</code> and <code>userScalable</code></h3>
+<blockquote>
+<p><strong>Good to know</strong>: The <code>viewport</code> meta tag is automatically set, and manual configuration is usually unnecessary as the default is sufficient. However, the information is provided for completeness.</p>
+</blockquote>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  // Also supported but less commonly used
+  // interactiveWidget: 'resizes-visual',
+}
+</code></pre>
+<pre><code class="language-jsx">export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  // Also supported but less commonly used
+  // interactiveWidget: 'resizes-visual',
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta
+  name=&quot;viewport&quot;
+  content=&quot;width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no&quot;
+/&gt;
+</code></pre>
+<h3 id="colorscheme"><code>colorScheme</code></h3>
+<p>Learn more about <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta/name#:~:text=color%2Dscheme%3A%20specifies,of%20the%20following%3A" target="_blank" rel="noopener"><code>color-scheme</code></a>.</p>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  colorScheme: 'dark',
+}
+</code></pre>
+<pre><code class="language-jsx">export const viewport = {
+  colorScheme: 'dark',
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;color-scheme&quot; content=&quot;dark&quot; /&gt;
+</code></pre>
+<h2 id="with-cache-components">With Cache Components</h2>
+<p>When <a href="/docs/app/getting-started/caching">Cache Components</a> is enabled, <code>generateViewport</code> follows the same rules as other components. If viewport accesses runtime data (<code>cookies()</code>, <code>headers()</code>, <code>params</code>, <code>searchParams</code>) or performs uncached data fetching, it defers to request time.</p>
+<p>Unlike metadata, viewport cannot be streamed because it affects initial page load UI. If <code>generateViewport</code> defers to request time, the page would need to block until resolved.</p>
+<p>If viewport depends on external data but not runtime data, use <code>use cache</code>:</p>
+<pre><code class="language-tsx">export async function generateViewport() {
+  'use cache'
+  const { width, initialScale } = await db.query('viewport-size')
+  return { width, initialScale }
+}
+</code></pre>
+<p>If viewport genuinely requires runtime data, wrap the document <code>&lt;body&gt;</code> in a Suspense boundary to signal that the entire route should be dynamic:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { cookies } from 'next/headers'
+
+export async function generateViewport() {
+  const cookieJar = await cookies()
+  return {
+    themeColor: cookieJar.get('theme-color')?.value,
+  }
+}
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;Suspense&gt;
+      &lt;html&gt;
+        &lt;body&gt;{children}&lt;/body&gt;
+      &lt;/html&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<p>Caching is preferred because it allows static shell generation. Wrapping the document <code>body</code> in Suspense means there is no static shell or content to immediately send when a request arrives, making the entire route block until ready on every request.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Use <a href="/docs/app/api-reference/file-conventions/layout#root-layout">multiple root layouts</a> to isolate fully dynamic viewport to specific routes, while still letting other routes in your application generate a static shell.</p>
+</blockquote>
+<h2 id="types">Types</h2>
+<p>You can add type safety to your viewport object by using the <code>Viewport</code> type. If you are using the <a href="/docs/app/api-reference/config/typescript">built-in TypeScript plugin</a> in your IDE, you do not need to manually add the type, but you can still explicitly add it if you want.</p>
+<h3 id="viewport-object"><code>viewport</code> object</h3>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  themeColor: 'black',
+}
+</code></pre>
+<h3 id="generateviewport-function-1"><code>generateViewport</code> function</h3>
+<h4>Regular function</h4>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+export function generateViewport(): Viewport {
+  return {
+    themeColor: 'black',
+  }
+}
+</code></pre>
+<h4>With segment props</h4>
+<pre><code class="language-tsx">import type { Viewport } from 'next'
+
+type Props = {
+  params: Promise&lt;{ id: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}
+
+export function generateViewport({ params, searchParams }: Props): Viewport {
+  return {
+    themeColor: 'black',
+  }
+}
+
+export default function Page({ params, searchParams }: Props) {}
+</code></pre>
+<h4>JavaScript Projects</h4>
+<p>For JavaScript projects, you can use JSDoc to add type safety.</p>
+<pre><code class="language-js">/** @type {import(&quot;next&quot;).Viewport} */
+export const viewport = {
+  themeColor: 'black',
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v14.0.0</code></td>
+<td><code>viewport</code> and <code>generateViewport</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

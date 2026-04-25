@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>updatetag — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-updatetag">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#differences-from-revalidatetag">Differences from revalidateTag</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#server-action-with-read-your-own-writes">Server Action with Read-Your-Own-Writes</a></li><li><a href="#error-when-used-outside-server-actions">Error when used outside Server Actions</a></li></ul><li><a href="#when-to-use-updatetag">When to use updateTag</a></li><li><a href="#related">Related</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">updatetag</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the updateTag function.</td></tr></table><p><code>updateTag</code> allows you to update cached data on-demand for a specific cache tag from within <a href="/docs/app/getting-started/mutating-data">Server Actions</a>.</p>
+<p>This function is designed for <strong>read-your-own-writes</strong> scenarios, where a user makes a change (like creating a post), and the UI immediately shows the change, rather than stale data.</p>
+<h2 id="usage">Usage</h2>
+<p><code>updateTag</code> can <strong>only</strong> be called from within <a href="/docs/app/getting-started/mutating-data">Server Actions</a>. It cannot be used in Route Handlers, Client Components, or any other context.</p>
+<p>If you need to invalidate cache tags in Route Handlers or other contexts, use <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> instead.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>updateTag</code> immediately expires the cached data for the specified tag. The next request will wait to fetch fresh data rather than serving stale content from the cache, ensuring users see their changes immediately.</p>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">updateTag(tag: string): void;
+</code></pre>
+<ul>
+<li><code>tag</code>: A string representing the cache tag associated with the data you want to update. Must not exceed 256 characters. This value is case-sensitive.</li>
+</ul>
+<p>Tags must first be assigned to cached data. You can do this in two ways:</p>
+<ul>
+<li>Using the <a href="/docs/app/api-reference/functions/fetch"><code>next.tags</code></a> option with <code>fetch</code> for caching external API requests:</li>
+</ul>
+<pre><code class="language-tsx">fetch(url, { next: { tags: ['posts'] } })
+</code></pre>
+<ul>
+<li>Using <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code></a> inside cached functions or components with the <code>'use cache'</code> directive:</li>
+</ul>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+async function getData() {
+  'use cache'
+  cacheTag('posts')
+  // ...
+}
+</code></pre>
+<h2 id="returns">Returns</h2>
+<p><code>updateTag</code> does not return a value.</p>
+<h2 id="differences-from-revalidatetag">Differences from revalidateTag</h2>
+<p>While both <code>updateTag</code> and <code>revalidateTag</code> invalidate cached data, they serve different purposes:</p>
+<ul>
+<li>
+<p><strong><code>updateTag</code></strong>:</p>
+<ul>
+<li>Can only be used in Server Actions</li>
+<li>Next request waits for fresh data (no stale content served)</li>
+<li>Designed for read-your-own-writes scenarios</li>
+</ul>
+</li>
+<li>
+<p><strong><code>revalidateTag</code></strong>:</p>
+<ul>
+<li>Can be used in Server Actions and Route Handlers</li>
+<li>With <code>profile=&quot;max&quot;</code> (recommended): Serves cached data while fetching fresh data in the background (stale-while-revalidate)</li>
+<li>With custom profile: Can be configured to any cache life profile for advanced usage</li>
+<li>Without profile: legacy behavior which is equivalent to <code>updateTag</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="server-action-with-read-your-own-writes">Server Action with Read-Your-Own-Writes</h3>
+<pre><code class="language-ts">'use server'
+
+import { updateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+export async function createPost(formData: FormData) {
+  const title = formData.get('title')
+  const content = formData.get('content')
+
+  // Create the post in your database
+  const post = await db.post.create({
+    data: { title, content },
+  })
+
+  // Invalidate cache tags so the new post is immediately visible
+  // 'posts' tag: affects any page that displays a list of posts
+  updateTag('posts')
+  // 'post-{id}' tag: affects the individual post detail page
+  updateTag(`post-${post.id}`)
+
+  // Redirect to the new post - user will see fresh data, not cached
+  redirect(`/posts/${post.id}`)
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { updateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+export async function createPost(formData) {
+  const title = formData.get('title')
+  const content = formData.get('content')
+
+  // Create the post in your database
+  const post = await db.post.create({
+    data: { title, content },
+  })
+
+  // Invalidate cache tags so the new post is immediately visible
+  // 'posts' tag: affects any page that displays a list of posts
+  updateTag('posts')
+  // 'post-{id}' tag: affects the individual post detail page
+  updateTag(`post-${post.id}`)
+
+  // Redirect to the new post - user will see fresh data, not cached
+  redirect(`/posts/${post.id}`)
+}
+</code></pre>
+<h3 id="error-when-used-outside-server-actions">Error when used outside Server Actions</h3>
+<pre><code class="language-ts">import { updateTag } from 'next/cache'
+
+export async function POST() {
+  // This will throw an error
+  updateTag('posts')
+  // Error: updateTag can only be called from within a Server Action
+
+  // Use revalidateTag instead in Route Handlers
+  revalidateTag('posts', 'max')
+}
+</code></pre>
+<h2 id="when-to-use-updatetag">When to use updateTag</h2>
+<p>Use <code>updateTag</code> when:</p>
+<ul>
+<li>You’re in a Server Action</li>
+<li>You need immediate cache invalidation for read-your-own-writes</li>
+<li>You want to ensure the next request sees updated data</li>
+</ul>
+<p>Use <code>revalidateTag</code> instead when:</p>
+<ul>
+<li>You’re in a Route Handler or other non-action context</li>
+<li>You want stale-while-revalidate semantics</li>
+<li>You’re building a webhook or API endpoint for cache invalidation</li>
+</ul>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> - For invalidating tags in Route Handlers</li>
+<li><a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a> - For invalidating specific paths</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

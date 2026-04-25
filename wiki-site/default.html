@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/default — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-default">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><li><a href="#when-not-to-use-it">When Not To Use It</a></li><li><a href="#further-reading">Further Reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/default</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ❗ <code>errors</code>, ☑️ <code>recommended</code>.</p>
+<!-- end auto-generated rule header -->
+<p>If a default import is requested, this rule will report if there is no default
+export in the imported module.</p>
+<p>For <a href="https://github.com/leebyron/ecmascript-more-export-from" target="_blank" rel="noopener">ES7</a>, reports if a default is named and exported but is not found in the
+referenced module.</p>
+<p>Note: for packages, the plugin will find exported names
+from <a href="https://github.com/rollup/rollup/wiki/jsnext:main" target="_blank" rel="noopener"><code>jsnext:main</code></a>, if present in <code>package.json</code>.
+Redux’s npm module includes this key, and thereby is lintable, for example.</p>
+<p>A module path that is <a href="../README.md#importignore">ignored</a> or not <a href="https://github.com/bmeck/UnambiguousJavaScriptGrammar" target="_blank" rel="noopener">unambiguously an ES module</a> will not be reported when imported.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>Given:</p>
+<pre><code class="language-js">// ./foo.js
+export default function () { return 42 }
+
+// ./bar.js
+export function bar() { return null }
+
+// ./baz.js
+module.exports = function () { /* ... */ }
+
+// node_modules/some-module/index.js
+exports.sharedFunction = function shared() { /* ... */ }
+</code></pre>
+<p>The following is considered valid:</p>
+<pre><code class="language-js">import foo from './foo'
+
+// assuming 'node_modules' are ignored (true by default)
+import someModule from 'some-module'
+</code></pre>
+<p>…and the following cases are reported:</p>
+<pre><code class="language-js">import bar from './bar' // no default export found in ./bar
+import baz from './baz' // no default export found in ./baz
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you are using CommonJS and/or modifying the exported namespace of any module at
+runtime, you will likely see false positives with this rule.</p>
+<p>This rule currently does not interpret <code>module.exports = ...</code> as a <code>default</code> export,
+either, so such a situation will be reported in the importing module.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li>Lee Byron’s <a href="https://github.com/leebyron/ecmascript-more-export-from" target="_blank" rel="noopener">ES7</a> export proposal</li>
+<li><a href="../../README.md#importignore"><code>import/ignore</code></a> setting</li>
+<li><a href="https://github.com/rollup/rollup/wiki/jsnext:main" target="_blank" rel="noopener"><code>jsnext:main</code></a> (Rollup)</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/anchor-ambiguous-text — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-anchor-ambiguous-text">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/anchor-ambiguous-text</h1>
+
+</div>
+<div class="article-body">
+<p>🚫 This rule is <em>disabled</em> in the ☑️ <code>recommended</code> config.</p>
+<!-- end auto-generated rule header -->
+<p>Enforces <code>&lt;a&gt;</code> values are not exact matches for the phrases “click here”, “here”, “link”, “a link”, or “learn more”. Screen readers announce tags as links/interactive, but rely on values for context. Ambiguous anchor descriptions do not provide sufficient context for users.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>This rule takes one optional object argument with the parameter <code>words</code>.</p>
+<pre><code class="language-json">{
+  &quot;rules&quot;: {
+    &quot;jsx-a11y/anchor-ambiguous-text&quot;: [2, {
+      &quot;words&quot;: [&quot;click this&quot;],
+    }],
+  }
+}
+</code></pre>
+<p>The <code>words</code> option allows users to modify the strings that can be checked for in the anchor text. Useful for specifying other words in other languages. The default value is set by <code>DEFAULT_AMBIGUOUS_WORDS</code>:</p>
+<pre><code class="language-js">const DEFAULT_AMBIGUOUS_WORDS = ['click here', 'here', 'link', 'a link', 'learn more'];
+</code></pre>
+<p>The logic to calculate the inner text of an anchor is as follows:</p>
+<ul>
+<li>if an element has the <code>aria-label</code> property, its value is used instead of the inner text</li>
+<li>if an element has <code>aria-hidden=&quot;true</code>, it is skipped over</li>
+<li>if an element is <code>&lt;img /&gt;</code> or configured to be interpreted like one, its <code>alt</code> value is used as its inner text</li>
+</ul>
+<p>Note that this rule still disallows ambiguous <code>aria-label</code> or <code>alt</code> values.</p>
+<p>Note that this rule is case-insensitive, trims whitespace, and ignores certain punctuation (<code>[,.?¿!‽¡;:]</code>). It only looks for <strong>exact matches</strong>.</p>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;a&gt;read this tutorial&lt;/a&gt; // passes since it is not one of the disallowed words
+&lt;a&gt;${here}&lt;/a&gt; // this is valid since 'here' is a variable name
+&lt;a aria-label=&quot;tutorial on using eslint-plugin-jsx-a11y&quot;&gt;click here&lt;/a&gt; // the aria-label supersedes the inner text
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;a&gt;here&lt;/a&gt;
+&lt;a&gt;HERE&lt;/a&gt;
+&lt;a&gt;link&lt;/a&gt;
+&lt;a&gt;click here&lt;/a&gt;
+&lt;a&gt;learn more&lt;/a&gt;
+&lt;a&gt;learn more.&lt;/a&gt;
+&lt;a&gt;learn more,&lt;/a&gt;
+&lt;a&gt;learn more?&lt;/a&gt;
+&lt;a&gt;learn more!&lt;/a&gt;
+&lt;a&gt;learn more:&lt;/a&gt;
+&lt;a&gt;learn more;&lt;/a&gt;
+&lt;a&gt;a link&lt;/a&gt;
+&lt;a&gt; a link &lt;/a&gt;
+&lt;a&gt;&lt;span&gt; click &lt;/span&gt; here&lt;/a&gt; // goes through element children
+&lt;a&gt;a&lt;i&gt;&lt;/i&gt; link&lt;/a&gt;
+&lt;a&gt;&lt;i&gt;&lt;/i&gt;a link&lt;/a&gt;
+&lt;a&gt;&lt;span aria-hidden=&quot;true&quot;&gt;more text&lt;/span&gt;learn more&lt;/a&gt; // skips over elements with aria-hidden=true
+&lt;a aria-label=&quot;click here&quot;&gt;something&lt;/a&gt; // the aria-label here is inaccessible
+&lt;a&gt;&lt;img alt=&quot;click here&quot;/&gt;&lt;/a&gt; // the alt tag is still ambiguous
+&lt;a alt=&quot;tutorial on using eslint-plugin-jsx-a11y&quot;&gt;click here&lt;/a&gt; // the alt tag is only parsed on img
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<p>Ensure anchor tags describe the content of the link, opposed to simply describing them as a link.</p>
+<p>Compare</p>
+<pre><code class="language-jsx">&lt;p&gt;&lt;a href=&quot;#&quot;&gt;click here&lt;/a&gt; to read a tutorial by Foo Bar&lt;/p&gt;
+</code></pre>
+<p>which can be more concise and accessible with</p>
+<pre><code class="language-jsx">&lt;p&gt;read &lt;a href=&quot;#&quot;&gt;a tutorial by Foo Bar&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+<h3 id="resources">Resources</h3>
+<ol>
+<li><a href="https://webaim.org/techniques/hypertext/" target="_blank" rel="noopener">WebAIM, Hyperlinks</a></li>
+<li><a href="https://dequeuniversity.com/checklists/web/links" target="_blank" rel="noopener">Deque University, Link Checklist - ‘Avoid “link” (or similar) in the link text’</a></li>
+</ol>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

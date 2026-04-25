@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>09-output-types — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-09-output-types">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#pages-outputspages">Pages (outputs.pages)</a></li><li><a href="#api-routes-outputspagesapi">API Routes (outputs.pagesApi)</a></li><li><a href="#app-pages-outputsapppages">App Pages (outputs.appPages)</a></li><li><a href="#app-routes-outputsapproutes">App Routes (outputs.appRoutes)</a></li><li><a href="#prerenders-outputsprerenders">Prerenders (outputs.prerenders)</a></li><li><a href="#static-files-outputsstaticfiles">Static Files (outputs.staticFiles)</a></li><li><a href="#middleware-outputsmiddleware">Middleware (outputs.middleware)</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">09-output-types</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Reference for all build output types exposed to adapters.</td></tr></table><p>The <code>outputs</code> object contains arrays of build output types:</p>
+<ul>
+<li><code>outputs.pages</code>: React pages from the <code>pages/</code> directory</li>
+<li><code>outputs.pagesApi</code>: API routes from <code>pages/api/</code></li>
+<li><code>outputs.appPages</code>: React pages from the <code>app/</code> directory</li>
+<li><code>outputs.appRoutes</code>: API and metadata routes from <code>app/</code></li>
+<li><code>outputs.prerenders</code>: ISR-enabled routes and static prerenders</li>
+<li><code>outputs.staticFiles</code>: Static assets and auto-statically optimized pages</li>
+<li><code>outputs.middleware</code>: Middleware function (if present)</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> When <code>config.output</code> is set to <code>'export'</code>, only <code>outputs.staticFiles</code> is populated. All other arrays (<code>pages</code>, <code>appPages</code>, <code>pagesApi</code>, <code>appRoutes</code>, <code>prerenders</code>) will be empty since the entire application is exported as static files.</p>
+</blockquote>
+<p>For any route output with <code>runtime: 'edge'</code>, <code>edgeRuntime</code> is included and contains the canonical entry metadata for invoking that output in your edge runtime.</p>
+<h2 id="pages-outputspages">Pages (<code>outputs.pages</code>)</h2>
+<p>React pages from the <code>pages/</code> directory:</p>
+<pre><code class="language-typescript">{
+  type: 'PAGES'
+  id: string           // Route identifier
+  filePath: string     // Path to the built file
+  pathname: string     // URL pathname
+  sourcePage: string   // Original source file path in pages/ directory
+  runtime: 'nodejs' | 'edge'
+  assets: Record&lt;string, string&gt;  // Traced dependencies (key: relative path from repo root, value: absolute path)
+  wasmAssets?: Record&lt;string, string&gt;  // Bundled wasm files (key: name, value: absolute path)
+  edgeRuntime?: {
+    modulePath: string    // Absolute path to the module registered in the edge runtime
+    entryKey: string      // Canonical key used by the edge entry registry
+    handlerExport: string // Export name to invoke, currently 'handler'
+  }
+  config: {
+    maxDuration?: number  // Maximum duration of the route in seconds
+    preferredRegion?: string | string[]  // Preferred deployment region
+    env?: Record&lt;string, string&gt;  // Environment variables (edge runtime only)
+  }
+}
+</code></pre>
+<h2 id="api-routes-outputspagesapi">API Routes (<code>outputs.pagesApi</code>)</h2>
+<p>API routes from <code>pages/api/</code>:</p>
+<pre><code class="language-typescript">{
+  type: 'PAGES_API'
+  id: string           // Route identifier
+  filePath: string     // Path to the built file
+  pathname: string     // URL pathname
+  sourcePage: string   // Original relative source file path
+  runtime: 'nodejs' | 'edge'
+  assets: Record&lt;string, string&gt;  // Traced dependencies (key: relative path from repo root, value: absolute path)
+  wasmAssets?: Record&lt;string, string&gt;  // Bundled wasm files (key: name, value: absolute path)
+  edgeRuntime?: {
+    modulePath: string    // Absolute path to the module registered in the edge runtime
+    entryKey: string      // Canonical key used by the edge entry registry
+    handlerExport: string // Export name to invoke, currently 'handler'
+  }
+  config: {
+    maxDuration?: number  // Maximum duration of the route in seconds
+    preferredRegion?: string | string[]  // Preferred deployment region
+    env?: Record&lt;string, string&gt;  // Environment variables (edge runtime only)
+  }
+}
+</code></pre>
+<h2 id="app-pages-outputsapppages">App Pages (<code>outputs.appPages</code>)</h2>
+<p>React pages from the <code>app/</code> directory:</p>
+<pre><code class="language-typescript">{
+  type: 'APP_PAGE'
+  id: string           // Route identifier
+  filePath: string     // Path to the built file
+  pathname: string     // URL pathname. Includes .rsc suffix for RSC routes
+  sourcePage: string   // Original relative source file path
+  runtime: 'nodejs' | 'edge' // Runtime the route is built for
+  assets: Record&lt;string, string&gt;  // Traced dependencies (key: relative path from repo root, value: absolute path)
+  wasmAssets?: Record&lt;string, string&gt;  // Bundled wasm files (key: name, value: absolute path)
+  edgeRuntime?: {
+    modulePath: string    // Absolute path to the module registered in the edge runtime
+    entryKey: string      // Canonical key used by the edge entry registry
+    handlerExport: string // Export name to invoke, currently 'handler'
+  }
+  config: {
+    maxDuration?: number  // Maximum duration of the route in seconds
+    preferredRegion?: string | string[]  // Preferred deployment region
+    env?: Record&lt;string, string&gt;  // Environment variables (edge runtime only)
+  }
+}
+</code></pre>
+<h2 id="app-routes-outputsapproutes">App Routes (<code>outputs.appRoutes</code>)</h2>
+<p>API and metadata routes from the <code>app/</code> directory:</p>
+<pre><code class="language-typescript">{
+  type: 'APP_ROUTE'
+  id: string           // Route identifier
+  filePath: string     // Path to the built file
+  pathname: string     // URL pathname
+  sourcePage: string   // Original relative source file path
+  runtime: 'nodejs' | 'edge' // Runtime the route is built for
+  assets: Record&lt;string, string&gt;  // Traced dependencies (key: relative path from repo root, value: absolute path)
+  wasmAssets?: Record&lt;string, string&gt;  // Bundled wasm files (key: name, value: absolute path)
+  edgeRuntime?: {
+    modulePath: string    // Absolute path to the module registered in the edge runtime
+    entryKey: string      // Canonical key used by the edge entry registry
+    handlerExport: string // Export name to invoke, currently 'handler'
+  }
+  config: {
+    maxDuration?: number  // Maximum duration of the route in seconds
+    preferredRegion?: string | string[]  // Preferred deployment region
+    env?: Record&lt;string, string&gt;  // Environment variables (edge runtime only)
+  }
+}
+</code></pre>
+<h2 id="prerenders-outputsprerenders">Prerenders (<code>outputs.prerenders</code>)</h2>
+<p>ISR-enabled routes and static prerenders:</p>
+<pre><code class="language-typescript">{
+  type: 'PRERENDER'
+  id: string           // Route identifier
+  pathname: string     // URL pathname
+  parentOutputId: string  // ID of the source page/route
+  groupId: number        // Revalidation group identifier (prerenders with same groupId revalidate together)
+  pprChain?: {
+    headers: Record&lt;string, string&gt;  // PPR chain headers (e.g., 'next-resume': '1')
+  }
+  parentFallbackMode?: false | null | string  // false: no additional paths (fallback: false), null: blocking render, string: path to HTML fallback
+  fallback?: {
+    filePath: string | undefined  // Path to the fallback file (HTML, JSON, or RSC)
+    initialStatus?: number  // Initial status code
+    initialHeaders?: Record&lt;string, string | string[]&gt;  // Initial headers
+    initialExpiration?: number  // Initial expiration time in seconds
+    initialRevalidate?: number | false  // Initial revalidate time in seconds, or false for fully static
+    postponedState: string | undefined  // Serialized PPR state used for resuming rendering
+  }
+  config: {
+    allowQuery?: string[]     // Allowed query parameters considered for the cache key
+    allowHeader?: string[]    // Allowed headers for ISR
+    bypassFor?: RouteHas[]    // Cache bypass conditions
+    renderingMode?: 'STATIC' | 'PARTIALLY_STATIC'  // STATIC: fully static, PARTIALLY_STATIC: PPR-enabled
+    partialFallback?: boolean  // Serves a partial fallback shell that should be upgraded to a full route in the background
+    bypassToken?: string      // Generated token that signals the prerender cache should be bypassed
+  }
+}
+</code></pre>
+<h2 id="static-files-outputsstaticfiles">Static Files (<code>outputs.staticFiles</code>)</h2>
+<p>Static assets and auto-statically optimized pages:</p>
+<pre><code class="language-typescript">{
+  type: 'STATIC_FILE'
+  id: string // Route identifier
+  filePath: string // Path to the built file
+  pathname: string // URL pathname
+  immutableHash: string | undefined // Content hash when the filename contains a hash, indicating the file is immutable
+}
+</code></pre>
+<h2 id="middleware-outputsmiddleware">Middleware (<code>outputs.middleware</code>)</h2>
+<p><code>middleware.ts</code> (<code>.js</code>/<code>.ts</code>) or <code>proxy.ts</code> (<code>.js</code>/<code>.ts</code>) function (if present):</p>
+<pre><code class="language-typescript">{
+  type: 'MIDDLEWARE'
+  id: string           // Route identifier
+  filePath: string     // Path to the built file
+  pathname: string      // Always '/_middleware'
+  sourcePage: string    // Always 'middleware'
+  runtime: 'nodejs' | 'edge' // Runtime the route is built for
+  assets: Record&lt;string, string&gt;  // Traced dependencies (key: relative path from repo root, value: absolute path)
+  wasmAssets?: Record&lt;string, string&gt;  // Bundled wasm files (key: name, value: absolute path)
+  edgeRuntime?: {
+    modulePath: string    // Absolute path to the module registered in the edge runtime
+    entryKey: string      // Canonical key used by the edge entry registry
+    handlerExport: string // Export name to invoke, currently 'handler'
+  }
+  config: {
+    maxDuration?: number  // Maximum duration of the route in seconds
+    preferredRegion?: string | string[]  // Preferred deployment region
+    env?: Record&lt;string, string&gt;  // Environment variables (edge runtime only)
+    matchers?: Array&lt;{
+      source: string  // Source pattern
+      sourceRegex: string  // Compiled regex for matching requests
+      has: RouteHas[] | undefined  // Positive matching conditions
+      missing: RouteHas[] | undefined  // Negative matching conditions
+    }&gt;
+  }
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/unambiguous — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-unambiguous">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><li><a href="#when-not-to-use-it">When Not To Use It</a></li><li><a href="#further-reading">Further Reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/unambiguous</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Warn if a <code>module</code> could be mistakenly parsed as a <code>script</code> by a consumer leveraging
+<a href="https://github.com/nodejs/node-eps/blob/HEAD/002-es-modules.md#32-determining-if-source-is-an-es-module" target="_blank" rel="noopener">Unambiguous JavaScript Grammar</a> to determine correct parsing goal.</p>
+<p>Will respect the <a href="https://eslint.org/docs/user-guide/configuring#specifying-parser-options" target="_blank" rel="noopener"><code>parserOptions.sourceType</code></a> from ESLint config, i.e. files parsed
+as <code>script</code> per that setting will not be reported.</p>
+<p>This plugin uses <a href="https://github.com/nodejs/node-eps/blob/HEAD/002-es-modules.md#32-determining-if-source-is-an-es-module" target="_blank" rel="noopener">Unambiguous JavaScript Grammar</a> internally to decide whether
+dependencies should be parsed as modules and searched for exports matching the
+<code>import</code>ed names, so it may be beneficial to keep this rule on even if your application
+will run in an explicit <code>module</code>-only environment.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>For files parsed as <code>module</code> by ESLint, the following are valid:</p>
+<pre><code class="language-js">import 'foo'
+function x() { return 42 }
+</code></pre>
+<pre><code class="language-js">export function x() { return 42 }
+</code></pre>
+<pre><code class="language-js">(function x() { return 42 })()
+export {} // simple way to mark side-effects-only file as 'module' without any imports/exports
+</code></pre>
+<p>…whereas the following file would be reported:</p>
+<pre><code class="language-js">(function x() { return 42 })()
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If your application environment will always know via <a href="https://github.com/nodejs/node-eps/issues/13" target="_blank" rel="noopener">some other means</a>
+how to parse, regardless of syntax, you may not need this rule.</p>
+<p>Remember, though, that this plugin uses this strategy internally, so if you were
+to <code>import</code> from a module with no <code>import</code>s or <code>export</code>s, this plugin would not
+report it as it would not be clear whether it should be considered a <code>script</code> or
+a <code>module</code>.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="https://github.com/nodejs/node-eps/blob/HEAD/002-es-modules.md#32-determining-if-source-is-an-es-module" target="_blank" rel="noopener">Unambiguous JavaScript Grammar</a></li>
+<li><a href="https://eslint.org/docs/user-guide/configuring#specifying-parser-options" target="_blank" rel="noopener"><code>parserOptions.sourceType</code></a></li>
+<li><a href="https://github.com/nodejs/node-eps/issues/13" target="_blank" rel="noopener">node-eps#13</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

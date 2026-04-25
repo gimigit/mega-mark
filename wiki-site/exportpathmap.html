@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>exportpathmap — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-exportpathmap">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#adding-a-trailing-slash">Adding a trailing slash</a></li><li><a href="#customizing-the-output-directory">Customizing the output directory</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">exportpathmap</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Customize the pages that will be exported as HTML files when using `next export`.</td></tr><tr><th>version</th><td>legacy</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<blockquote>
+<p>This feature is exclusive to <code>next export</code> and currently <strong>deprecated</strong> in favor of <code>getStaticPaths</code> with <code>pages</code> or <code>generateStaticParams</code> with <code>app</code>.</p>
+</blockquote>
+<p><code>exportPathMap</code> allows you to specify a mapping of request paths to page destinations, to be used during export. Paths defined in <code>exportPathMap</code> will also be available when using <a href="/docs/app/api-reference/cli/next#next-dev-options"><code>next dev</code></a>.</p>
+<p>Let’s start with an example, to create a custom <code>exportPathMap</code> for an app with the following pages:</p>
+<ul>
+<li><code>pages/index.js</code></li>
+<li><code>pages/about.js</code></li>
+<li><code>pages/post.js</code></li>
+</ul>
+<p>Open <code>next.config.js</code> and add the following <code>exportPathMap</code> config:</p>
+<pre><code class="language-js">module.exports = {
+  exportPathMap: async function (
+    defaultPathMap,
+    { dev, dir, outDir, distDir, buildId }
+  ) {
+    return {
+      '/': { page: '/' },
+      '/about': { page: '/about' },
+      '/p/hello-nextjs': { page: '/post', query: { title: 'hello-nextjs' } },
+      '/p/learn-nextjs': { page: '/post', query: { title: 'learn-nextjs' } },
+      '/p/deploy-nextjs': { page: '/post', query: { title: 'deploy-nextjs' } },
+    }
+  },
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: the <code>query</code> field in <code>exportPathMap</code> cannot be used with <a href="/docs/pages/building-your-application/rendering/automatic-static-optimization">automatically statically optimized pages</a> or <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code> pages</a> as they are rendered to HTML files at build-time and additional query information cannot be provided during <code>next export</code>.</p>
+</blockquote>
+<p>The pages will then be exported as HTML files, for example, <code>/about</code> will become <code>/about.html</code>.</p>
+<p><code>exportPathMap</code> is an <code>async</code> function that receives 2 arguments: the first one is <code>defaultPathMap</code>, which is the default map used by Next.js. The second argument is an object with:</p>
+<ul>
+<li><code>dev</code> - <code>true</code> when <code>exportPathMap</code> is being called in development. <code>false</code> when running <code>next export</code>. In development <code>exportPathMap</code> is used to define routes.</li>
+<li><code>dir</code> - Absolute path to the project directory</li>
+<li><code>outDir</code> - Absolute path to the <code>out/</code> directory (<a href="#customizing-the-output-directory">configurable with <code>-o</code></a>). When <code>dev</code> is <code>true</code> the value of <code>outDir</code> will be <code>null</code>.</li>
+<li><code>distDir</code> - Absolute path to the <code>.next/</code> directory (configurable with the <a href="/docs/pages/api-reference/config/next-config-js/distDir"><code>distDir</code></a> config)</li>
+<li><code>buildId</code> - The generated build id</li>
+</ul>
+<p>The returned object is a map of pages where the <code>key</code> is the <code>pathname</code> and the <code>value</code> is an object that accepts the following fields:</p>
+<ul>
+<li><code>page</code>: <code>String</code> - the page inside the <code>pages</code> directory to render</li>
+<li><code>query</code>: <code>Object</code> - the <code>query</code> object passed to <code>getInitialProps</code> when prerendering. Defaults to <code>{}</code></li>
+</ul>
+<blockquote>
+<p>The exported <code>pathname</code> can also be a filename (for example, <code>/readme.md</code>), but you may need to set the <code>Content-Type</code> header to <code>text/html</code> when serving its content if it is different than <code>.html</code>.</p>
+</blockquote>
+<h2 id="adding-a-trailing-slash">Adding a trailing slash</h2>
+<p>It is possible to configure Next.js to export pages as <code>index.html</code> files and require trailing slashes, <code>/about</code> becomes <code>/about/index.html</code> and is routable via <code>/about/</code>. This was the default behavior prior to Next.js 9.</p>
+<p>To switch back and add a trailing slash, open <code>next.config.js</code> and enable the <code>trailingSlash</code> config:</p>
+<pre><code class="language-js">module.exports = {
+  trailingSlash: true,
+}
+</code></pre>
+<h2 id="customizing-the-output-directory">Customizing the output directory</h2>
+<AppOnly>
+<p><a href="/docs/app/guides/static-exports"><code>next export</code></a> will use <code>out</code> as the default output directory, you can customize this using the <code>-o</code> argument, like so:</p>
+</AppOnly>
+<PagesOnly>
+<p><a href="/docs/pages/guides/static-exports"><code>next export</code></a> will use <code>out</code> as the default output directory, you can customize this using the <code>-o</code> argument, like so:</p>
+</PagesOnly>
+<pre><code class="language-bash">next export -o outdir
+</code></pre>
+<blockquote>
+<p><strong>Warning</strong>: Using <code>exportPathMap</code> is deprecated and is overridden by <code>getStaticPaths</code> inside <code>pages</code>. We don’t recommend using them together.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

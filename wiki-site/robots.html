@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>robots — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-robots">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#static-robotstxt">Static robots.txt</a></li><li><a href="#generate-a-robots-file">Generate a Robots file</a></li><ul><li><a href="#customizing-specific-user-agents">Customizing specific user agents</a></li><li><a href="#robots-object">Robots object</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">robots</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for robots.txt file.</td></tr></table><p>Add or generate a <code>robots.txt</code> file that matches the <a href="https://en.wikipedia.org/wiki/Robots.txt#Standard" target="_blank" rel="noopener">Robots Exclusion Standard</a> in the <strong>root</strong> of <code>app</code> directory to tell search engine crawlers which URLs they can access on your site.</p>
+<h2 id="static-robotstxt">Static <code>robots.txt</code></h2>
+<pre><code class="language-txt">User-Agent: *
+Allow: /
+Disallow: /private/
+
+Sitemap: https://acme.com/sitemap.xml
+</code></pre>
+<h2 id="generate-a-robots-file">Generate a Robots file</h2>
+<p>Add a <code>robots.js</code> or <code>robots.ts</code> file that returns a <a href="#robots-object"><code>Robots</code> object</a>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>robots.js</code> is a special Route Handler that is cached by default unless it uses a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> or <a href="/docs/app/guides/caching-without-cache-components#dynamic">dynamic config</a> option.</p>
+</blockquote>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: '/private/',
+    },
+    sitemap: 'https://acme.com/sitemap.xml',
+  }
+}
+</code></pre>
+<pre><code class="language-js">export default function robots() {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: '/private/',
+    },
+    sitemap: 'https://acme.com/sitemap.xml',
+  }
+}
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-txt">User-Agent: *
+Allow: /
+Disallow: /private/
+
+Sitemap: https://acme.com/sitemap.xml
+</code></pre>
+<h3 id="customizing-specific-user-agents">Customizing specific user agents</h3>
+<p>You can customize how individual search engine bots crawl your site by passing an array of user agents to the <code>rules</code> property. For example:</p>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [
+      {
+        userAgent: 'Googlebot',
+        allow: ['/'],
+        disallow: '/private/',
+      },
+      {
+        userAgent: ['Applebot', 'Bingbot'],
+        disallow: ['/'],
+      },
+    ],
+    sitemap: 'https://acme.com/sitemap.xml',
+  }
+}
+</code></pre>
+<pre><code class="language-js">export default function robots() {
+  return {
+    rules: [
+      {
+        userAgent: 'Googlebot',
+        allow: ['/'],
+        disallow: ['/private/'],
+      },
+      {
+        userAgent: ['Applebot', 'Bingbot'],
+        disallow: ['/'],
+      },
+    ],
+    sitemap: 'https://acme.com/sitemap.xml',
+  }
+}
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-txt">User-Agent: Googlebot
+Allow: /
+Disallow: /private/
+
+User-Agent: Applebot
+Disallow: /
+
+User-Agent: Bingbot
+Disallow: /
+
+Sitemap: https://acme.com/sitemap.xml
+</code></pre>
+<h3 id="robots-object">Robots object</h3>
+<pre><code class="language-tsx">type Robots = {
+  rules:
+    | {
+        userAgent?: string | string[]
+        allow?: string | string[]
+        disallow?: string | string[]
+        crawlDelay?: number
+      }
+    | Array&lt;{
+        userAgent: string | string[]
+        allow?: string | string[]
+        disallow?: string | string[]
+        crawlDelay?: number
+      }&gt;
+  sitemap?: string | string[]
+  host?: string
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.3.0</code></td>
+<td><code>robots</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

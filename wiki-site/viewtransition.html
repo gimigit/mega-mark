@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>viewtransition — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-viewtransition">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><ul><li><a href="#live-demo">Live Demo</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">viewtransition</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Enable ViewTransition API from React in App Router</td></tr><tr><th>version</th><td>experimental</td></tr></table><p><code>viewTransition</code> enables React’s <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API" target="_blank" rel="noopener">View Transitions API</a> integration in Next.js. This lets you animate navigations, loading states, and content changes using the native browser View Transitions API.</p>
+<p>To enable this feature, you need to set the <code>viewTransition</code> property to <code>true</code> in your <code>next.config.js</code> file.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    viewTransition: true,
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>The <a href="https://react.dev/reference/react/ViewTransition" target="_blank" rel="noopener"><code>&lt;ViewTransition&gt;</code></a> component is provided by React.
+The <code>experimental.viewTransition</code> flag enables Next.js integration, such as triggering
+transitions during route navigations.</p>
+</aside>
+<h2 id="usage">Usage</h2>
+<p>You can import the <a href="https://react.dev/reference/react/ViewTransition" target="_blank" rel="noopener"><code>&lt;ViewTransition&gt;</code> Component</a> from React in your application:</p>
+<pre><code class="language-jsx">import { ViewTransition } from 'react'
+</code></pre>
+<h3 id="live-demo">Live Demo</h3>
+<p>Check out the <a href="https://react-view-transitions-demo.labs.vercel.dev" target="_blank" rel="noopener">View Transitions Demo</a> to see this feature in action, or read the <a href="/docs/app/guides/view-transitions">designing view transitions guide</a> for a step-by-step walkthrough.</p>
+<p>The View Transitions API is a baseline web standard, and browser support continues to expand. As React’s <a href="https://react.dev/reference/react/ViewTransition" target="_blank" rel="noopener"><code>&lt;ViewTransition&gt;</code></a> component evolves, more transition patterns and use cases will become available.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

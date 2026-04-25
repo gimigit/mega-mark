@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>reactcompiler — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-reactcompiler">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-it-works">How It Works</a></li><li><a href="#annotations">Annotations</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">reactcompiler</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Enable the React Compiler to automatically optimize component rendering.</td></tr></table><p>Next.js includes support for the <a href="https://react.dev/learn/react-compiler/introduction" target="_blank" rel="noopener">React Compiler</a>, a tool designed to improve performance by automatically optimizing component rendering. This reduces the need for manual memoization using <code>useMemo</code> and <code>useCallback</code>.</p>
+<p>Next.js includes a custom performance optimization written in SWC that makes the React Compiler more efficient. Instead of running the compiler on every file, Next.js analyzes your project and only applies the React Compiler to relevant files. This avoids unnecessary work and leads to faster builds compared to using the Babel plugin on its own.</p>
+<h2 id="how-it-works">How It Works</h2>
+<p>The React Compiler runs through a Babel plugin. To keep builds fast, Next.js uses a custom SWC optimization that only applies the React Compiler to relevant files—like those with JSX or React Hooks.</p>
+<p>This avoids compiling everything and keeps the performance cost minimal. You may still see slightly slower builds compared to the default Rust-based compiler, but the impact is small and localized.</p>
+<p>To use it, install the <code>babel-plugin-react-compiler</code>:</p>
+<pre><code class="language-bash">pnpm add -D babel-plugin-react-compiler
+</code></pre>
+<pre><code class="language-bash">npm install -D babel-plugin-react-compiler
+</code></pre>
+<pre><code class="language-bash">yarn add -D babel-plugin-react-compiler
+</code></pre>
+<pre><code class="language-bash">bun add -D babel-plugin-react-compiler
+</code></pre>
+<p>Then, add <code>reactCompiler</code> option in <code>next.config.js</code>:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactCompiler: true,
+}
+
+module.exports = nextConfig
+</code></pre>
+<h2 id="annotations">Annotations</h2>
+<p>You can configure the compiler to run in “opt-in” mode as follows:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  reactCompiler: {
+    compilationMode: 'annotation',
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactCompiler: {
+    compilationMode: 'annotation',
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Then, you can annotate specific components or hooks with the <code>&quot;use memo&quot;</code> directive from React to opt-in:</p>
+<pre><code class="language-ts">export default function Page() {
+  'use memo'
+  // ...
+}
+</code></pre>
+<pre><code class="language-js">export default function Page() {
+  'use memo'
+  // ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> You can also use the <code>&quot;use no memo&quot;</code> directive from React for the opposite effect, to opt-out a component or hook.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

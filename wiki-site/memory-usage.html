@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>memory-usage — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-memory-usage">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reduce-number-of-dependencies">Reduce number of dependencies</a></li><li><a href="#try-experimentalwebpackmemoryoptimizations">Try experimental.webpackMemoryOptimizations</a></li><li><a href="#run-next-build-with---experimental-debug-memory-usage">Run next build with --experimental-debug-memory-usage</a></li><li><a href="#record-a-heap-profile">Record a heap profile</a></li><li><a href="#analyze-a-snapshot-of-the-heap">Analyze a snapshot of the heap</a></li><li><a href="#webpack-build-worker">Webpack build worker</a></li><li><a href="#disable-webpack-cache">Disable Webpack cache</a></li><li><a href="#disable-static-analysis">Disable static analysis</a></li><li><a href="#disable-source-maps">Disable source maps</a></li><li><a href="#edge-memory-issues">Edge memory issues</a></li><li><a href="#preloading-entries">Preloading Entries</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">memory-usage</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Memory Usage</td></tr><tr><th>description</th><td>Optimize memory used by your application in development and production.</td></tr></table><p>As applications grow and become more feature rich, they can demand more resources when developing locally or creating production builds.</p>
+<p>Let’s explore some strategies and techniques to optimize memory and address common memory issues in Next.js.</p>
+<h2 id="reduce-number-of-dependencies">Reduce number of dependencies</h2>
+<p>Applications with a large amount of dependencies will use more memory.</p>
+<p>The <a href="/docs/app/guides/package-bundling">Bundle Analyzer</a> can help you investigate large dependencies in your application that may be able to be removed to improve performance and memory usage.</p>
+<h2 id="try-experimentalwebpackmemoryoptimizations">Try <code>experimental.webpackMemoryOptimizations</code></h2>
+<p>Starting in <code>v15.0.0</code>, you can add <code>experimental.webpackMemoryOptimizations: true</code> to your <code>next.config.js</code> file to change behavior in Webpack that reduces max memory usage but may increase compilation times by a slight amount.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This feature is currently experimental to test on more projects first, but it is considered to be low-risk.</p>
+</blockquote>
+<h2 id="run-next-build-with---experimental-debug-memory-usage">Run <code>next build</code> with <code>--experimental-debug-memory-usage</code></h2>
+<p>Starting in <code>14.2.0</code>, you can run <code>next build --experimental-debug-memory-usage</code> to run the build in a mode where Next.js will print out information about memory usage continuously throughout the build, such as heap usage and garbage collection statistics. Heap snapshots will also be taken automatically when memory usage gets close to the configured limit.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This feature is not compatible with the Webpack build worker option which is auto-enabled unless you have custom webpack config.</p>
+</blockquote>
+<h2 id="record-a-heap-profile">Record a heap profile</h2>
+<p>To look for memory issues, you can record a heap profile from Node.js and load it in Chrome DevTools to identify potential sources of memory leaks.</p>
+<p>In your terminal, pass the <code>--heap-prof</code> flag to Node.js when starting your Next.js build:</p>
+<pre><code class="language-sh">node --heap-prof node_modules/next/dist/bin/next build
+</code></pre>
+<p>At the end of the build, a <code>.heapprofile</code> file will be created by Node.js.</p>
+<p>In Chrome DevTools, you can open the Memory tab and click on the “Load Profile” button to visualize the file.</p>
+<h2 id="analyze-a-snapshot-of-the-heap">Analyze a snapshot of the heap</h2>
+<p>You can use an inspector tool to analyze the memory usage of the application.</p>
+<p>When running the <code>next build</code> or <code>next dev</code> command, add <code>NODE_OPTIONS=--inspect</code> to the beginning of the command. This will expose the inspector agent on the default port.
+If you wish to break before any user code starts, you can pass <code>--inspect-brk</code> instead. While the process is running, you can use a tool such as Chrome DevTools to connect to the debugging port to record and analyze a snapshot of the heap to see what memory is being retained.</p>
+<p>Starting in <code>14.2.0</code>, you can also run <code>next build</code> with the <code>--experimental-debug-memory-usage</code> flag to make it easier to take heap snapshots.</p>
+<p>While running in this mode, you can send a <code>SIGUSR2</code> signal to the process at any point, and the process will take a heap snapshot.</p>
+<p>The heap snapshot will be saved to the project root of the Next.js application and can be loaded in any heap analyzer, such as Chrome DevTools, to see what memory is retained. This mode is not yet compatible with Webpack build workers.</p>
+<p>See <a href="https://developer.chrome.com/docs/devtools/memory-problems/heap-snapshots" target="_blank" rel="noopener">how to record and analyze heap snapshots</a> for more information.</p>
+<h2 id="webpack-build-worker">Webpack build worker</h2>
+<p>The Webpack build worker allows you to run Webpack compilations inside a separate Node.js worker which will decrease memory usage of your application during builds.</p>
+<p>This option is enabled by default if your application does not have a custom Webpack configuration starting in <code>v14.1.0</code>.</p>
+<p>If you are using an older version of Next.js or you have a custom Webpack configuration, you can enable this option by setting <code>experimental.webpackBuildWorker: true</code> inside your <code>next.config.js</code>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This feature may not be compatible with all custom Webpack plugins.</p>
+</blockquote>
+<h2 id="disable-webpack-cache">Disable Webpack cache</h2>
+<p>The <a href="https://webpack.js.org/configuration/cache/" target="_blank" rel="noopener">Webpack cache</a> saves generated Webpack modules in memory and/or to disk to improve the speed of builds. This can
+help with performance, but it will also increase the memory usage of your application to store the cached data.</p>
+<p>You can disable this behavior by adding a <a href="/docs/app/api-reference/config/next-config-js/webpack">custom Webpack configuration</a> to your application:</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  webpack: (
+    config,
+    { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
+  ) =&gt; {
+    if (config.cache &amp;&amp; !dev) {
+      config.cache = Object.freeze({
+        type: 'memory',
+      })
+    }
+    // Important: return the modified config
+    return config
+  },
+}
+
+export default nextConfig
+</code></pre>
+<h2 id="disable-static-analysis">Disable static analysis</h2>
+<p>Typechecking may require a lot of memory, especially in large projects.
+However, most projects have a dedicated CI runner that already handles these tasks.
+When the build produces out-of-memory issues during the “Running TypeScript” step, you can disable this task during builds:</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<ul>
+<li><a href="/docs/app/api-reference/config/typescript#disabling-typescript-errors-in-production">Ignoring TypeScript Errors</a></li>
+</ul>
+<p>Keep in mind that this may produce faulty deploys due to type errors.
+We strongly recommend only promoting builds to production after static analysis has completed.
+If you deploy to Vercel, you can check out the <a href="https://vercel.com/docs/deployments/managing-deployments#staging-and-promoting-a-production-deployment" target="_blank" rel="noopener">guide for staging deployments</a> to learn how to promote builds to production after custom tasks have succeeded.</p>
+<h2 id="disable-source-maps">Disable source maps</h2>
+<p>Generating source maps consumes extra memory during the build process.</p>
+<p>You can disable source map generation by adding <code>productionBrowserSourceMaps: false</code> and <code>experimental.serverSourceMaps: false</code> to your Next.js configuration.</p>
+<p>When using the <code>cacheComponents</code> feature, Next.js will use source maps by default during the prerender phase of <code>next build</code>.
+If you consistently encounter memory issues during that phase (after “Generating static pages”),
+you can try disabling source maps in that phase by adding <code>enablePrerenderSourceMaps: false</code> to your Next.js configuration.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Some plugins may turn on source maps and may require custom configuration to disable.</p>
+</blockquote>
+<h2 id="edge-memory-issues">Edge memory issues</h2>
+<p>Next.js <code>v14.1.3</code> fixed a memory issue when using the Edge runtime. Please update to this version (or later) to see if it addresses your issue.</p>
+<h2 id="preloading-entries">Preloading Entries</h2>
+<p>When the Next.js server starts, it preloads each page’s JavaScript modules into memory, rather than at request time.</p>
+<p>This optimization allows for faster response times, in exchange for a larger initial memory footprint.</p>
+<p>To disable this optimization, set the <code>experimental.preloadEntriesOnStart</code> flag to <code>false</code>.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const config: NextConfig = {
+  experimental: {
+    preloadEntriesOnStart: false,
+  },
+}
+
+export default config
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const config = {
+  experimental: {
+    preloadEntriesOnStart: false,
+  },
+}
+
+export default config
+</code></pre>
+<p>Next.js doesn’t unload these JavaScript modules, meaning that even with this optimization disabled, the memory footprint of your Next.js server will eventually be the same if all pages are eventually requested.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

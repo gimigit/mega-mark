@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01-pages-and-layouts — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-01-pages-and-layouts">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#index-routes">Index routes</a></li><li><a href="#nested-routes">Nested routes</a></li><li><a href="#pages-with-dynamic-routes">Pages with Dynamic Routes</a></li><li><a href="#layout-pattern">Layout Pattern</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#single-shared-layout-with-custom-app">Single Shared Layout with Custom App</a></li><li><a href="#per-page-layouts">Per-Page Layouts</a></li><li><a href="#with-typescript">With TypeScript</a></li><li><a href="#data-fetching">Data Fetching</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">01-pages-and-layouts</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Create your first page and shared layout with the Pages Router.</td></tr></table><p>The Pages Router has a file-system based router built on the concept of pages.</p>
+<p>When a file is added to the <code>pages</code> directory, it’s automatically available as a route.</p>
+<p>In Next.js, a <strong>page</strong> is a <a href="https://react.dev/learn/your-first-component" target="_blank" rel="noopener">React Component</a> exported from a <code>.js</code>, <code>.jsx</code>, <code>.ts</code>, or <code>.tsx</code> file in the <code>pages</code> directory. Each page is associated with a route based on its file name.</p>
+<p><strong>Example</strong>: If you create <code>pages/about.js</code> that exports a React component like below, it will be accessible at <code>/about</code>.</p>
+<pre><code class="language-jsx">export default function About() {
+  return &lt;div&gt;About&lt;/div&gt;
+}
+</code></pre>
+<h2 id="index-routes">Index routes</h2>
+<p>The router will automatically route files named <code>index</code> to the root of the directory.</p>
+<ul>
+<li><code>pages/index.js</code> → <code>/</code></li>
+<li><code>pages/blog/index.js</code> → <code>/blog</code></li>
+</ul>
+<h2 id="nested-routes">Nested routes</h2>
+<p>The router supports nested files. If you create a nested folder structure, files will automatically be routed in the same way still.</p>
+<ul>
+<li><code>pages/blog/first-post.js</code> → <code>/blog/first-post</code></li>
+<li><code>pages/dashboard/settings/username.js</code> → <code>/dashboard/settings/username</code></li>
+</ul>
+<h2 id="pages-with-dynamic-routes">Pages with Dynamic Routes</h2>
+<p>Next.js supports pages with dynamic routes. For example, if you create a file called <code>pages/posts/[id].js</code>, then it will be accessible at <code>posts/1</code>, <code>posts/2</code>, etc.</p>
+<blockquote>
+<p>To learn more about dynamic routing, check the <a href="/docs/pages/building-your-application/routing/dynamic-routes">Dynamic Routing documentation</a>.</p>
+</blockquote>
+<h2 id="layout-pattern">Layout Pattern</h2>
+<p>The React model allows us to deconstruct a <a href="/docs/pages/building-your-application/routing/pages-and-layouts">page</a> into a series of components. Many of these components are often reused between pages. For example, you might have the same navigation bar and footer on every page.</p>
+<pre><code class="language-jsx">import Navbar from './navbar'
+import Footer from './footer'
+
+export default function Layout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;Navbar /&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+      &lt;Footer /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h2 id="examples">Examples</h2>
+<h3 id="single-shared-layout-with-custom-app">Single Shared Layout with Custom App</h3>
+<p>If you only have one layout for your entire application, you can create a <a href="/docs/pages/building-your-application/routing/custom-app">Custom App</a> and wrap your application with the layout. Since the <code>&lt;Layout /&gt;</code> component is re-used when changing pages, its component state will be preserved (e.g. input values).</p>
+<pre><code class="language-jsx">import Layout from '../components/layout'
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;Layout&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/Layout&gt;
+  )
+}
+</code></pre>
+<h3 id="per-page-layouts">Per-Page Layouts</h3>
+<p>If you need multiple layouts, you can add a property <code>getLayout</code> to your page, allowing you to return a React component for the layout. This allows you to define the layout on a <em>per-page basis</em>. Since we’re returning a function, we can have complex nested layouts if desired.</p>
+<pre><code class="language-jsx">
+import Layout from '../components/layout'
+import NestedLayout from '../components/nested-layout'
+
+export default function Page() {
+  return (
+    /** Your content */
+  )
+}
+
+Page.getLayout = function getLayout(page) {
+  return (
+    &lt;Layout&gt;
+      &lt;NestedLayout&gt;{page}&lt;/NestedLayout&gt;
+    &lt;/Layout&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MyApp({ Component, pageProps }) {
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout ?? ((page) =&gt; page)
+
+  return getLayout(&lt;Component {...pageProps} /&gt;)
+}
+</code></pre>
+<p>When navigating between pages, we want to <em>persist</em> page state (input values, scroll position, etc.) for a Single-Page Application (SPA) experience.</p>
+<p>This layout pattern enables state persistence because the React component tree is maintained between page transitions. With the component tree, React can understand which elements have changed to preserve state.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This process is called <a href="https://react.dev/learn/preserving-and-resetting-state" target="_blank" rel="noopener">reconciliation</a>, which is how React understands which elements have changed.</p>
+</blockquote>
+<h3 id="with-typescript">With TypeScript</h3>
+<p>When using TypeScript, you must first create a new type for your pages which includes a <code>getLayout</code> function. Then, you must create a new type for your <code>AppProps</code> which overrides the <code>Component</code> property to use the previously created type.</p>
+<pre><code class="language-tsx">import type { ReactElement } from 'react'
+import Layout from '../components/layout'
+import NestedLayout from '../components/nested-layout'
+import type { NextPageWithLayout } from './_app'
+
+const Page: NextPageWithLayout = () =&gt; {
+  return &lt;p&gt;hello world&lt;/p&gt;
+}
+
+Page.getLayout = function getLayout(page: ReactElement) {
+  return (
+    &lt;Layout&gt;
+      &lt;NestedLayout&gt;{page}&lt;/NestedLayout&gt;
+    &lt;/Layout&gt;
+  )
+}
+
+export default Page
+</code></pre>
+<pre><code class="language-jsx">import Layout from '../components/layout'
+import NestedLayout from '../components/nested-layout'
+
+const Page = () =&gt; {
+  return &lt;p&gt;hello world&lt;/p&gt;
+}
+
+Page.getLayout = function getLayout(page) {
+  return (
+    &lt;Layout&gt;
+      &lt;NestedLayout&gt;{page}&lt;/NestedLayout&gt;
+    &lt;/Layout&gt;
+  )
+}
+
+export default Page
+</code></pre>
+<pre><code class="language-tsx">import type { ReactElement, ReactNode } from 'react'
+import type { NextPage } from 'next'
+import type { AppProps } from 'next/app'
+
+export type NextPageWithLayout&lt;P = {}, IP = P&gt; = NextPage&lt;P, IP&gt; &amp; {
+  getLayout?: (page: ReactElement) =&gt; ReactNode
+}
+
+type AppPropsWithLayout = AppProps &amp; {
+  Component: NextPageWithLayout
+}
+
+export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout ?? ((page) =&gt; page)
+
+  return getLayout(&lt;Component {...pageProps} /&gt;)
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MyApp({ Component, pageProps }) {
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout ?? ((page) =&gt; page)
+
+  return getLayout(&lt;Component {...pageProps} /&gt;)
+}
+</code></pre>
+<h3 id="data-fetching">Data Fetching</h3>
+<p>Inside your layout, you can fetch data on the client-side using <code>useEffect</code> or a library like <a href="https://swr.vercel.app/" target="_blank" rel="noopener">SWR</a>. Because this file is not a <a href="/docs/pages/building-your-application/routing/pages-and-layouts">Page</a>, you cannot use <code>getStaticProps</code> or <code>getServerSideProps</code> currently.</p>
+<pre><code class="language-jsx">import useSWR from 'swr'
+import Navbar from './navbar'
+import Footer from './footer'
+
+export default function Layout({ children }) {
+  const { data, error } = useSWR('/api/navigation', fetcher)
+
+  if (error) return &lt;div&gt;Failed to load&lt;/div&gt;
+  if (!data) return &lt;div&gt;Loading...&lt;/div&gt;
+
+  return (
+    &lt;&gt;
+      &lt;Navbar links={data.links} /&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+      &lt;Footer /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

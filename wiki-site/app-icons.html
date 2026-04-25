@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>app-icons — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-app-icons">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#image-files-ico-jpg-png">Image files (.ico, .jpg, .png)</a></li><ul><li><a href="#favicon">favicon</a></li><li><a href="#icon">icon</a></li><li><a href="#apple-icon">apple-icon</a></li></ul><li><a href="#generate-icons-using-code-js-ts-tsx">Generate icons using code (.js, .ts, .tsx)</a></li><ul><li><a href="#props">Props</a></li><li><a href="#returns">Returns</a></li><li><a href="#config-exports">Config exports</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">app-icons</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the Favicon, Icon and Apple Icon file conventions.</td></tr></table><p>The <code>favicon</code>, <code>icon</code>, or <code>apple-icon</code> file conventions allow you to set icons for your application.</p>
+<p>They are useful for adding app icons that appear in places like web browser tabs, phone home screens, and search engine results.</p>
+<p>There are two ways to set app icons:</p>
+<ul>
+<li><a href="#image-files-ico-jpg-png">Using image files (.ico, .jpg, .png)</a></li>
+<li><a href="#generate-icons-using-code-js-ts-tsx">Using code to generate an icon (.js, .ts, .tsx)</a></li>
+</ul>
+<h2 id="image-files-ico-jpg-png">Image files (.ico, .jpg, .png)</h2>
+<p>Use an image file to set an app icon by placing a <code>favicon</code>, <code>icon</code>, or <code>apple-icon</code> image file within your <code>/app</code> directory.
+The <code>favicon</code> image can only be located in the top level of <code>app/</code>.</p>
+<p>Next.js will evaluate the file and automatically add the appropriate tags to your app’s <code>&lt;head&gt;</code> element.</p>
+<table>
+<thead>
+<tr>
+<th>File convention</th>
+<th>Supported file types</th>
+<th>Valid locations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#favicon"><code>favicon</code></a></td>
+<td><code>.ico</code></td>
+<td><code>app/</code></td>
+</tr>
+<tr>
+<td><a href="#icon"><code>icon</code></a></td>
+<td><code>.ico</code>, <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.svg</code></td>
+<td><code>app/**/*</code></td>
+</tr>
+<tr>
+<td><a href="#apple-icon"><code>apple-icon</code></a></td>
+<td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code></td>
+<td><code>app/**/*</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="favicon"><code>favicon</code></h3>
+<p>Add a <code>favicon.ico</code> image file to the root <code>/app</code> route segment.</p>
+<pre><code class="language-html">&lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; sizes=&quot;any&quot; /&gt;
+</code></pre>
+<h3 id="icon"><code>icon</code></h3>
+<p>Add an <code>icon.(ico|jpg|jpeg|png|svg)</code> image file.</p>
+<pre><code class="language-html">&lt;link
+  rel=&quot;icon&quot;
+  href=&quot;/icon?&lt;generated&gt;&quot;
+  type=&quot;image/&lt;generated&gt;&quot;
+  sizes=&quot;&lt;generated&gt;&quot;
+/&gt;
+</code></pre>
+<h3 id="apple-icon"><code>apple-icon</code></h3>
+<p>Add an <code>apple-icon.(jpg|jpeg|png)</code> image file.</p>
+<pre><code class="language-html">&lt;link
+  rel=&quot;apple-touch-icon&quot;
+  href=&quot;/apple-icon?&lt;generated&gt;&quot;
+  type=&quot;image/&lt;generated&gt;&quot;
+  sizes=&quot;&lt;generated&gt;&quot;
+/&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>You can set multiple icons by adding a number suffix to the file name. For example, <code>icon1.png</code>, <code>icon2.png</code>, etc. Numbered files will sort lexically.</li>
+<li>Favicons can only be set in the root <code>/app</code> segment. If you need more granularity, you can use <a href="#icon"><code>icon</code></a>.</li>
+<li>The appropriate <code>&lt;link&gt;</code> tags and attributes such as <code>rel</code>, <code>href</code>, <code>type</code>, and <code>sizes</code> are determined by the icon type and metadata of the evaluated file.</li>
+<li>For example, a 32 by 32px <code>.png</code> file will have <code>type=&quot;image/png&quot;</code> and <code>sizes=&quot;32x32&quot;</code> attributes.</li>
+<li><code>sizes=&quot;any&quot;</code> is added to icons when the extension is <code>.svg</code> or the image size of the file is not determined. More details in this <a href="https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs" target="_blank" rel="noopener">favicon handbook</a>.</li>
+</ul>
+</blockquote>
+<h2 id="generate-icons-using-code-js-ts-tsx">Generate icons using code (.js, .ts, .tsx)</h2>
+<p>In addition to using <a href="#image-files-ico-jpg-png">literal image files</a>, you can programmatically <strong>generate</strong> icons using code.</p>
+<p>Generate an app icon by creating an <code>icon</code> or <code>apple-icon</code> route that default exports a function.</p>
+<table>
+<thead>
+<tr>
+<th>File convention</th>
+<th>Supported file types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>icon</code></td>
+<td><code>.js</code>, <code>.ts</code>, <code>.tsx</code></td>
+</tr>
+<tr>
+<td><code>apple-icon</code></td>
+<td><code>.js</code>, <code>.ts</code>, <code>.tsx</code></td>
+</tr>
+</tbody>
+</table>
+<p>The easiest way to generate an icon is to use the <a href="/docs/app/api-reference/functions/image-response"><code>ImageResponse</code></a> API from <code>next/og</code>.</p>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+
+// Image metadata
+export const size = {
+  width: 32,
+  height: 32,
+}
+export const contentType = 'image/png'
+
+// Image generation
+export default function Icon() {
+  return new ImageResponse(
+    (
+      // ImageResponse JSX element
+      &lt;div
+        style={{
+          fontSize: 24,
+          background: 'black',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+        }}
+      &gt;
+        A
+      &lt;/div&gt;
+    ),
+    // ImageResponse options
+    {
+      // For convenience, we can re-use the exported icons size metadata
+      // config to also set the ImageResponse's width and height.
+      ...size,
+    }
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+
+// Image metadata
+export const size = {
+  width: 32,
+  height: 32,
+}
+export const contentType = 'image/png'
+
+// Image generation
+export default function Icon() {
+  return new ImageResponse(
+    (
+      // ImageResponse JSX element
+      &lt;div
+        style={{
+          fontSize: 24,
+          background: 'black',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+        }}
+      &gt;
+        A
+      &lt;/div&gt;
+    ),
+    // ImageResponse options
+    {
+      // For convenience, we can re-use the exported icons size metadata
+      // config to also set the ImageResponse's width and height.
+      ...size,
+    }
+  )
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;icon&quot; href=&quot;/icon?&lt;generated&gt;&quot; type=&quot;image/png&quot; sizes=&quot;32x32&quot; /&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>By default, generated icons are <a href="/docs/app/glossary#prerendering"><strong>statically optimized</strong></a> (generated at build time and cached) unless they use <a href="/docs/app/glossary#request-time-apis">Request-time APIs</a> or uncached data.</li>
+<li>You can generate multiple icons in the same file using <a href="/docs/app/api-reference/functions/generate-image-metadata"><code>generateImageMetadata</code></a>.</li>
+<li>You cannot generate a <code>favicon</code> icon. Use <a href="#icon"><code>icon</code></a> or a <a href="#favicon">favicon.ico</a> file instead.</li>
+<li>App icons are special Route Handlers that are cached by default unless they use a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> or <a href="/docs/app/guides/caching-without-cache-components#dynamic">dynamic config</a> option.</li>
+</ul>
+</blockquote>
+<h3 id="props">Props</h3>
+<p>The default export function receives the following props:</p>
+<h4><code>params</code> (optional)</h4>
+<p>A promise that resolves to an object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> object from the root segment down to the segment <code>icon</code> or <code>apple-icon</code> is colocated in.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If you use <a href="/docs/app/api-reference/functions/generate-image-metadata"><code>generateImageMetadata</code></a>, the function will also receive an <code>id</code> prop that is a promise resolving to the <code>id</code> value from one of the items returned by <code>generateImageMetadata</code>.</p>
+</blockquote>
+<pre><code class="language-tsx">export default async function Icon({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Icon({ params }) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/icon.js</code></td>
+<td><code>/shop</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[slug]/icon.js</code></td>
+<td><code>/shop/1</code></td>
+<td><code>Promise&lt;{ slug: '1' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[tag]/[item]/icon.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>Promise&lt;{ tag: '1', item: '2' }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="returns">Returns</h3>
+<p>The default export function should return a <code>Blob</code> | <code>ArrayBuffer</code> | <code>TypedArray</code> | <code>DataView</code> | <code>ReadableStream</code> | <code>Response</code>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>ImageResponse</code> satisfies this return type.</p>
+</blockquote>
+<h3 id="config-exports">Config exports</h3>
+<p>You can optionally configure the icon’s metadata by exporting <code>size</code> and <code>contentType</code> variables from the <code>icon</code> or <code>apple-icon</code> route.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#size"><code>size</code></a></td>
+<td><code>{ width: number; height: number }</code></td>
+</tr>
+<tr>
+<td><a href="#contenttype"><code>contentType</code></a></td>
+<td><code>string</code> - <a href="https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types" target="_blank" rel="noopener">image MIME type</a></td>
+</tr>
+</tbody>
+</table>
+<h4><code>size</code></h4>
+<pre><code class="language-tsx">export const size = { width: 32, height: 32 }
+
+export default function Icon() {}
+</code></pre>
+<pre><code class="language-jsx">export const size = { width: 32, height: 32 }
+
+export default function Icon() {}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;icon&quot; sizes=&quot;32x32&quot; /&gt;
+</code></pre>
+<h4><code>contentType</code></h4>
+<pre><code class="language-tsx">export const contentType = 'image/png'
+
+export default function Icon() {}
+</code></pre>
+<pre><code class="language-jsx">export const contentType = 'image/png'
+
+export default function Icon() {}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; /&gt;
+</code></pre>
+<h4>Route Segment Config</h4>
+<p><code>icon</code> and <code>apple-icon</code> are specialized <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> that can use the same <a href="/docs/app/api-reference/file-conventions/route-segment-config">route segment configuration</a> options as Pages and Layouts.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>params</code> is now a promise that resolves to an object</td>
+</tr>
+<tr>
+<td><code>v13.3.0</code></td>
+<td><code>favicon</code> <code>icon</code> and <code>apple-icon</code> introduced</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

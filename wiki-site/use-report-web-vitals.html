@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-report-web-vitals — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-report-web-vitals">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usereportwebvitals">useReportWebVitals</a></li><li><a href="#web-vitals">Web Vitals</a></li><li><a href="#custom-metrics">Custom Metrics</a></li><li><a href="#sending-results-to-external-systems">Sending results to external systems</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-report-web-vitals</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the useReportWebVitals function.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>The <code>useReportWebVitals</code> hook allows you to report <a href="https://web.dev/vitals/" target="_blank" rel="noopener">Core Web Vitals</a>, and can be used in combination with your analytics service.</p>
+<p>New functions passed to <code>useReportWebVitals</code> are called with the available metrics up to that point. To prevent reporting duplicated data, ensure that the callback function reference does not change (as shown in the code examples below).</p>
+<PagesOnly>
+<pre><code class="language-jsx">import { useReportWebVitals } from 'next/web-vitals'
+
+const logWebVitals = (metric) =&gt; {
+  console.log(metric)
+}
+
+function MyApp({ Component, pageProps }) {
+  useReportWebVitals(logWebVitals)
+
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+</PagesOnly>
+<AppOnly>
+<pre><code class="language-jsx">'use client'
+
+import { useReportWebVitals } from 'next/web-vitals'
+
+const logWebVitals = (metric) =&gt; {
+  console.log(metric)
+}
+
+export function WebVitals() {
+  useReportWebVitals(logWebVitals)
+
+  return null
+}
+</code></pre>
+<pre><code class="language-jsx">import { WebVitals } from './_components/web-vitals'
+
+export default function Layout({ children }) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;WebVitals /&gt;
+        {children}
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p>Since the <code>useReportWebVitals</code> hook requires the <code>'use client'</code> directive, the most performant approach is to create a separate component that the root layout imports. This confines the client boundary exclusively to the <code>WebVitals</code> component.</p>
+</blockquote>
+</AppOnly>
+<h2 id="usereportwebvitals">useReportWebVitals</h2>
+<p>The <code>metric</code> object passed as the hook’s argument consists of a number of properties:</p>
+<ul>
+<li><code>id</code>: Unique identifier for the metric in the context of the current page load</li>
+<li><code>name</code>: The name of the performance metric. Possible values include names of <a href="#web-vitals">Web Vitals</a> metrics (TTFB, FCP, LCP, FID, CLS) specific to a web application.</li>
+<li><code>delta</code>: The difference between the current value and the previous value of the metric. The value is typically in milliseconds and represents the change in the metric’s value over time.</li>
+<li><code>entries</code>: An array of <a href="https://developer.mozilla.org/docs/Web/API/PerformanceEntry" target="_blank" rel="noopener">Performance Entries</a> associated with the metric. These entries provide detailed information about the performance events related to the metric.</li>
+<li><code>navigationType</code>: Indicates the navigation type that triggered metric collection. Values are derived from <a href="https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type" target="_blank" rel="noopener">PerformanceNavigationTiming.type</a> and may include <code>&quot;navigate&quot;</code>, <code>&quot;reload&quot;</code>, <code>&quot;prerender&quot;</code>, <code>&quot;back-forward&quot;</code> (normalized from <code>&quot;back_forward&quot;</code>), <code>&quot;back-forward-cache&quot;</code> (BFCache restore), and <code>&quot;restore&quot;</code> (page restored after discard).</li>
+<li><code>rating</code>: A qualitative rating of the metric value, providing an assessment of the performance. Possible values are <code>&quot;good&quot;</code>, <code>&quot;needs-improvement&quot;</code>, and <code>&quot;poor&quot;</code>. The rating is typically determined by comparing the metric value against predefined thresholds that indicate acceptable or suboptimal performance.</li>
+<li><code>value</code>: The actual value or duration of the performance entry, typically in milliseconds. The value provides a quantitative measure of the performance aspect being tracked by the metric. The source of the value depends on the specific metric being measured and can come from various <a href="https://developer.mozilla.org/docs/Web/API/Performance_API" target="_blank" rel="noopener">Performance API</a>s.</li>
+</ul>
+<h2 id="web-vitals">Web Vitals</h2>
+<p><a href="https://web.dev/vitals/" target="_blank" rel="noopener">Web Vitals</a> are a set of useful metrics that aim to capture the user
+experience of a web page. The following web vitals are all included:</p>
+<ul>
+<li><a href="https://developer.mozilla.org/docs/Glossary/Time_to_first_byte" target="_blank" rel="noopener">Time to First Byte</a> (TTFB)</li>
+<li><a href="https://developer.mozilla.org/docs/Glossary/First_contentful_paint" target="_blank" rel="noopener">First Contentful Paint</a> (FCP)</li>
+<li><a href="https://web.dev/lcp/" target="_blank" rel="noopener">Largest Contentful Paint</a> (LCP)</li>
+<li><a href="https://web.dev/fid/" target="_blank" rel="noopener">First Input Delay</a> (FID)</li>
+<li><a href="https://web.dev/cls/" target="_blank" rel="noopener">Cumulative Layout Shift</a> (CLS)</li>
+<li><a href="https://web.dev/inp/" target="_blank" rel="noopener">Interaction to Next Paint</a> (INP)</li>
+</ul>
+<p>You can handle all the results of these metrics using the <code>name</code> property.</p>
+<PagesOnly>
+<pre><code class="language-jsx">import { useReportWebVitals } from 'next/web-vitals'
+
+const handleWebVitals = (metric) =&gt; {
+  switch (metric.name) {
+    case 'FCP': {
+      // handle FCP results
+    }
+    case 'LCP': {
+      // handle LCP results
+    }
+    // ...
+  }
+}
+
+function MyApp({ Component, pageProps }) {
+  useReportWebVitals(handleWebVitals)
+
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+</PagesOnly>
+<AppOnly>
+<pre><code class="language-tsx">'use client'
+
+import { useReportWebVitals } from 'next/web-vitals'
+
+type ReportWebVitalsCallback = Parameters&lt;typeof useReportWebVitals&gt;[0]
+
+const handleWebVitals: ReportWebVitalsCallback = (metric) =&gt; {
+  switch (metric.name) {
+    case 'FCP': {
+      // handle FCP results
+    }
+    case 'LCP': {
+      // handle LCP results
+    }
+    // ...
+  }
+}
+
+export function WebVitals() {
+  useReportWebVitals(handleWebVitals)
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useReportWebVitals } from 'next/web-vitals'
+
+const handleWebVitals = (metric) =&gt; {
+  switch (metric.name) {
+    case 'FCP': {
+      // handle FCP results
+    }
+    case 'LCP': {
+      // handle LCP results
+    }
+    // ...
+  }
+}
+
+export function WebVitals() {
+  useReportWebVitals(handleWebVitals)
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<h2 id="custom-metrics">Custom Metrics</h2>
+<p>In addition to the core metrics listed above, there are some additional custom metrics that
+measure the time it takes for the page to hydrate and render:</p>
+<ul>
+<li><code>Next.js-hydration</code>: Length of time it takes for the page to start and finish hydrating (in ms)</li>
+<li><code>Next.js-route-change-to-render</code>: Length of time it takes for a page to start rendering after a
+route change (in ms)</li>
+<li><code>Next.js-render</code>: Length of time it takes for a page to finish render after a route change (in ms)</li>
+</ul>
+<p>You can handle all the results of these metrics separately:</p>
+<pre><code class="language-jsx">import { useReportWebVitals } from 'next/web-vitals'
+
+function handleCustomMetrics(metric) {
+  switch (metric.name) {
+    case 'Next.js-hydration':
+      // handle hydration results
+      break
+    case 'Next.js-route-change-to-render':
+      // handle route-change to render results
+      break
+    case 'Next.js-render':
+      // handle render results
+      break
+    default:
+      break
+  }
+}
+
+function MyApp({ Component, pageProps }) {
+  useReportWebVitals(handleCustomMetrics)
+
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>These metrics work in all browsers that support the <a href="https://caniuse.com/#feat=user-timing" target="_blank" rel="noopener">User Timing API</a>.</p>
+</PagesOnly>
+<h2 id="sending-results-to-external-systems">Sending results to external systems</h2>
+<p>You can send results to any endpoint to measure and track
+real user performance on your site. For example:</p>
+<pre><code class="language-js">function postWebVitals(metric) {
+  const body = JSON.stringify(metric)
+  const url = 'https://example.com/analytics'
+
+  // Use `navigator.sendBeacon()` if available, falling back to `fetch()`.
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon(url, body)
+  } else {
+    fetch(url, { body, method: 'POST', keepalive: true })
+  }
+}
+
+useReportWebVitals(postWebVitals)
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: If you use <a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener">Google Analytics</a>, using the
+<code>id</code> value can allow you to construct metric distributions manually (to calculate percentiles,
+etc.)</p>
+</blockquote>
+<blockquote>
+<pre><code class="language-js">useReportWebVitals(metric =&gt; {
+  // Use `window.gtag` if you initialized Google Analytics as this example:
+  // https://github.com/vercel/next.js/blob/canary/examples/with-google-analytics
+  window.gtag('event', metric.name, {
+    value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value), // values must be integers
+    event_label: metric.id, // id unique to current page load
+    non_interaction: true, // avoids affecting bounce rate.
+  });
+}
+</code></pre>
+<p>Read more about <a href="https://github.com/GoogleChrome/web-vitals#send-the-results-to-google-analytics" target="_blank" rel="noopener">sending results to Google Analytics</a>.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

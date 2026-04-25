@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01-server-side-rendering — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-01-server-side-rendering">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">01-server-side-rendering</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Use Server-side Rendering to render pages on each request.</td></tr></table><blockquote>
+<p>Also referred to as “SSR” or “Dynamic Rendering”.</p>
+</blockquote>
+<p>If a page uses <strong>Server-side Rendering</strong>, the page HTML is generated on <strong>each request</strong>.</p>
+<p>To use Server-side Rendering for a page, you need to <code>export</code> an <code>async</code> function called <code>getServerSideProps</code>. This function will be called by the server on every request.</p>
+<p>For example, suppose that your page needs to prerender frequently updated data (fetched from an external API). You can write <code>getServerSideProps</code> which fetches this data and passes it to <code>Page</code> like below:</p>
+<pre><code class="language-jsx">export default function Page({ data }) {
+  // Render data...
+}
+
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch(`https://.../data`)
+  const data = await res.json()
+
+  // Pass data to the page via props
+  return { props: { data } }
+}
+</code></pre>
+<p>As you can see, <code>getServerSideProps</code> is similar to <code>getStaticProps</code>, but the difference is that <code>getServerSideProps</code> is run on every request instead of on build time.</p>
+<p>To learn more about how <code>getServerSideProps</code> works, check out our <a href="/docs/pages/building-your-application/data-fetching/get-server-side-props">Data Fetching documentation</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

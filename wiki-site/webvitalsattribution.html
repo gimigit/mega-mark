@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>webvitalsattribution — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-webvitalsattribution">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">webvitalsattribution</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use the webVitalsAttribution option to pinpoint the source of Web Vitals issues.</td></tr><tr><th>version</th><td>experimental</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>When debugging issues related to Web Vitals, it is often helpful if we can pinpoint the source of the problem.
+For example, in the case of Cumulative Layout Shift (CLS), we might want to know the first element that shifted when the single largest layout shift occurred.
+Or, in the case of Largest Contentful Paint (LCP), we might want to identify the element corresponding to the LCP for the page.
+If the LCP element is an image, knowing the URL of the image resource can help us locate the asset we need to optimize.</p>
+<p>Pinpointing the biggest contributor to the Web Vitals score, aka <a href="https://github.com/GoogleChrome/web-vitals/blob/4ca38ae64b8d1e899028c692f94d4c56acfc996c/README.md#attribution" target="_blank" rel="noopener">attribution</a>,
+allows us to obtain more in-depth information like entries for <a href="https://developer.mozilla.org/docs/Web/API/PerformanceEventTiming" target="_blank" rel="noopener">PerformanceEventTiming</a>, <a href="https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming" target="_blank" rel="noopener">PerformanceNavigationTiming</a> and <a href="https://developer.mozilla.org/docs/Web/API/PerformanceResourceTiming" target="_blank" rel="noopener">PerformanceResourceTiming</a>.</p>
+<p>Attribution is disabled by default in Next.js but can be enabled <strong>per metric</strong> by specifying the following in <code>next.config.js</code>.</p>
+<pre><code class="language-js">module.exports = {
+  experimental: {
+    webVitalsAttribution: ['CLS', 'LCP'],
+  },
+}
+</code></pre>
+<p>Valid attribution values are all <code>web-vitals</code> metrics specified in the <a href="https://github.com/vercel/next.js/blob/442378d21dd56d6e769863eb8c2cb521a463a2e0/packages/next/shared/lib/utils.ts#L43" target="_blank" rel="noopener"><code>NextWebVitalsMetric</code></a> type.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

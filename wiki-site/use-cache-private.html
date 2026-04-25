@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-cache-private — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-cache-private">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><ul><li><a href="#basic-example">Basic example</a></li></ul><li><a href="#request-apis-allowed-in-private-caches">Request APIs allowed in private caches</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-cache-private</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>View related API references.</td></tr><tr><th>version</th><td>experimental</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>'use cache: private'</code> directive allows functions to access runtime request APIs like <code>cookies()</code>, <code>headers()</code>, and <code>searchParams</code> within a cached scope. However, results are <strong>never stored on the server</strong>, they’re cached only in the browser’s memory and do not persist across page reloads.</p>
+<p>Reach for <code>'use cache: private'</code> when:</p>
+<ul>
+<li>You want to cache a function that already accesses runtime data, and refactoring to <a href="/docs/app/getting-started/caching#working-with-runtime-apis">move the runtime access outside and pass values as arguments</a> is not practical.</li>
+<li>Compliance requirements prevent storing certain data on the server, even temporarily</li>
+</ul>
+<p>Because this directive accesses runtime data, the function executes on every server render and is excluded from running during <a href="/docs/app/getting-started/caching#how-rendering-works">static shell</a> generation.</p>
+<p>It is <strong>not</strong> possible to configure custom cache handlers for <code>'use cache: private'</code>.</p>
+<p>For a comparison of the different cache directives, see <a href="/docs/app/api-reference/directives/use-cache-remote#how-use-cache-remote-differs-from-use-cache-and-use-cache-private">How <code>use cache: remote</code> differs from <code>use cache</code> and <code>use cache: private</code></a>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This directive is marked as <code>experimental</code> because it depends on runtime prefetching, which is not yet stable. Runtime prefetching is an upcoming feature that will let the router prefetch past the <a href="/docs/app/getting-started/caching#how-rendering-works">static shell</a> into <strong>any</strong> cached scope, not just private caches.</p>
+</blockquote>
+<h2 id="usage">Usage</h2>
+<p>To use <code>'use cache: private'</code>, enable the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> flag in your <code>next.config.ts</code> file:</p>
+<pre><code class="language-tsx">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-jsx">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<p>Then add <code>'use cache: private'</code> to your function along with a <code>cacheLife</code> configuration.</p>
+<blockquote>
+<p><strong>Good to know</strong>: This directive is not available in Route Handlers.</p>
+</blockquote>
+<h3 id="basic-example">Basic example</h3>
+<p>In this example, we demonstrate that you can access cookies within a <code>'use cache: private'</code> scope:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { cookies } from 'next/headers'
+import { cacheLife, cacheTag } from 'next/cache'
+
+export async function generateStaticParams() {
+  return [{ id: '1' }]
+}
+
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const { id } = await params
+
+  return (
+    &lt;div&gt;
+      &lt;ProductDetails id={id} /&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading recommendations...&lt;/div&gt;}&gt;
+        &lt;Recommendations productId={id} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+
+async function Recommendations({ productId }: { productId: string }) {
+  const recommendations = await getRecommendations(productId)
+
+  return (
+    &lt;div&gt;
+      {recommendations.map((rec) =&gt; (
+        &lt;ProductCard key={rec.id} product={rec} /&gt;
+      ))}
+    &lt;/div&gt;
+  )
+}
+
+async function getRecommendations(productId: string) {
+  'use cache: private'
+  cacheTag(`recommendations-${productId}`)
+  cacheLife({ stale: 60 })
+
+  // Access cookies within private cache functions
+  const sessionId = (await cookies()).get('session-id')?.value || 'guest'
+
+  return getPersonalizedRecommendations(productId, sessionId)
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { cookies } from 'next/headers'
+import { cacheLife, cacheTag } from 'next/cache'
+
+export async function generateStaticParams() {
+  return [{ id: '1' }]
+}
+
+export default async function ProductPage({ params }) {
+  const { id } = await params
+
+  return (
+    &lt;div&gt;
+      &lt;ProductDetails id={id} /&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading recommendations...&lt;/div&gt;}&gt;
+        &lt;Recommendations productId={id} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+
+async function Recommendations({ productId }) {
+  const recommendations = await getRecommendations(productId)
+
+  return (
+    &lt;div&gt;
+      {recommendations.map((rec) =&gt; (
+        &lt;ProductCard key={rec.id} product={rec} /&gt;
+      ))}
+    &lt;/div&gt;
+  )
+}
+
+async function getRecommendations(productId) {
+  'use cache: private'
+  cacheTag(`recommendations-${productId}`)
+  cacheLife({ stale: 60 })
+
+  // Access cookies within private cache functions
+  const sessionId = (await cookies()).get('session-id')?.value || 'guest'
+
+  return getPersonalizedRecommendations(productId, sessionId)
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: The <code>stale</code> time must be at least 30 seconds for runtime prefetching to work. See <a href="/docs/app/api-reference/functions/cacheLife#client-cache-behavior"><code>cacheLife</code> client cache behavior</a> for details.</p>
+</blockquote>
+<h2 id="request-apis-allowed-in-private-caches">Request APIs allowed in private caches</h2>
+<p>The following request-specific APIs can be used inside <code>'use cache: private'</code> functions:</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Allowed in <code>use cache</code></th>
+<th>Allowed in <code>'use cache: private'</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cookies()</code></td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>headers()</code></td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>searchParams</code></td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>connection()</code></td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> The <a href="https://nextjs.org/docs/app/api-reference/functions/connection" target="_blank" rel="noopener"><code>connection()</code></a> API is prohibited in both <code>use cache</code> and <code>'use cache: private'</code> as it provides connection-specific information that cannot be safely cached.</p>
+</blockquote>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>&quot;use cache: private&quot;</code> is enabled with the Cache Components feature.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

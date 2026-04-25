@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>or for production — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-cache">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#how-use-cache-works">How use cache works</a></li><ul><li><a href="#cache-keys">Cache keys</a></li></ul><li><a href="#serialization">Serialization</a></li><ul><li><a href="#supported-types">Supported types</a></li><li><a href="#unsupported-types">Unsupported types</a></li><li><a href="#pass-through-non-serializable-arguments">Pass-through (non-serializable arguments)</a></li></ul><li><a href="#constraints">Constraints</a></li><ul><li><a href="#request-time-apis">Request-time APIs</a></li><li><a href="#runtime-caching-considerations">Runtime caching considerations</a></li><li><a href="#reactcache-isolation">React.cache isolation</a></li></ul><li><a href="#use-cache-at-runtime">use cache at runtime</a></li><li><a href="#revalidation">Revalidation</a></li><ul><li><a href="#customizing-cache-lifetime">Customizing cache lifetime</a></li><li><a href="#on-demand-revalidation">On-demand revalidation</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#caching-an-entire-route-with-use-cache">Caching an entire route with use cache</a></li><li><a href="#caching-a-components-output-with-use-cache">Caching a component’s output with use cache</a></li><li><a href="#caching-function-output-with-use-cache">Caching function output with use cache</a></li><li><a href="#interleaving">Interleaving</a></li></ul><li><a href="#troubleshooting">Troubleshooting</a></li><ul><li><a href="#debugging-cache-behavior">Debugging cache behavior</a></li><li><a href="#build-hangs-cache-timeout">Build Hangs (Cache Timeout)</a></li></ul><li><a href="#platform-support">Platform Support</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">or for production</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>View related API references.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>use cache</code> directive allows you to mark a route, React component, or a function as cacheable. It can be used at the top of a file to indicate that all exports in the file should be cached, or inline at the top of function or component to cache the return value.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>To use cookies or headers, read them outside cached scopes and pass values as arguments. This is the preferred pattern.</li>
+<li>If the in-memory cache isn’t sufficient for runtime data, <a href="/docs/app/api-reference/directives/use-cache-remote"><code>'use cache: remote'</code></a> allows platforms to provide a dedicated cache handler, though it requires a network roundtrip to check the cache and typically incurs platform fees.</li>
+<li>For compliance requirements or when you can’t refactor to pass runtime data as arguments to a <code>use cache</code> scope, see <a href="/docs/app/api-reference/directives/use-cache-private"><code>'use cache: private'</code></a>.</li>
+</ul>
+</blockquote>
+<h2 id="usage">Usage</h2>
+<p><code>use cache</code> is a Cache Components feature. To enable it, add the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> option to your <code>next.config.ts</code> file:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  cacheComponents: true,
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Then, add <code>use cache</code> at the file, component, or function level:</p>
+<pre><code class="language-tsx">// File level
+'use cache'
+
+export default async function Page() {
+  // ...
+}
+
+// Component level
+export async function MyComponent() {
+  'use cache'
+  return &lt;&gt;&lt;/&gt;
+}
+
+// Function level
+export async function getData() {
+  'use cache'
+  const data = await fetch('/api/data')
+  return data
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: When used at file level, all function exports must be async functions.</p>
+</blockquote>
+<h2 id="how-use-cache-works">How <code>use cache</code> works</h2>
+<h3 id="cache-keys">Cache keys</h3>
+<p>A cache entry’s key is generated using a serialized version of its inputs, which includes:</p>
+<ol>
+<li><strong>Build ID</strong> - Unique per build, changing this invalidates all cache entries</li>
+<li><strong>Function ID</strong> - A secure hash of the function’s location and signature in the codebase</li>
+<li><strong>Serializable arguments</strong> - Props (for components) or function arguments</li>
+<li><strong>HMR refresh hash</strong> (development only) - Invalidates cache on hot module replacement</li>
+</ol>
+<p>When a cached function references variables from outer scopes, those variables are automatically captured and bound as arguments, making them part of the cache key.</p>
+<pre><code class="language-tsx">async function Component({ userId }: { userId: string }) {
+  const getData = async (filter: string) =&gt; {
+    'use cache'
+    // Cache key includes both userId (from closure) and filter (argument)
+    return fetch(`/api/users/${userId}/data?filter=${filter}`)
+  }
+
+  return getData('active')
+}
+</code></pre>
+<p>In the snippet above, <code>userId</code> is captured from the outer scope and <code>filter</code> is passed as an argument, so both become part of the <code>getData</code> function’s cache key. This means different user and filter combinations will have separate cache entries.</p>
+<h2 id="serialization">Serialization</h2>
+<p>Arguments to cached functions and their return values must be serializable.</p>
+<p>For a complete reference, see:</p>
+<ul>
+<li><a href="https://react.dev/reference/rsc/use-server#serializable-parameters-and-return-values" target="_blank" rel="noopener">Serializable arguments</a> - Uses <strong>React Server Components</strong> serialization</li>
+<li><a href="https://react.dev/reference/rsc/use-client#serializable-types" target="_blank" rel="noopener">Serializable return types</a> - Uses <strong>React Client Components</strong> serialization</li>
+</ul>
+<blockquote>
+<p><strong>Good to know:</strong> Arguments and return values use different serialization systems. Server Component serialization (for arguments) is more restrictive than Client Component serialization (for return values). This means you can return JSX elements but cannot accept them as arguments unless using pass-through patterns.</p>
+</blockquote>
+<h3 id="supported-types">Supported types</h3>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li>Primitives: <code>string</code>, <code>number</code>, <code>boolean</code>, <code>null</code>, <code>undefined</code></li>
+<li>Plain objects: <code>{ key: value }</code></li>
+<li>Arrays: <code>[1, 2, 3]</code></li>
+<li>Dates, Maps, Sets, TypedArrays, ArrayBuffers</li>
+<li>React elements (as pass-through only)</li>
+</ul>
+<p><strong>Return values:</strong></p>
+<ul>
+<li>Same as arguments, plus JSX elements</li>
+</ul>
+<h3 id="unsupported-types">Unsupported types</h3>
+<ul>
+<li>Class instances</li>
+<li>Functions (except as pass-through)</li>
+<li>Symbols, WeakMaps, WeakSets</li>
+<li>URL instances</li>
+</ul>
+<pre><code class="language-tsx">// Valid - primitives and plain objects
+async function UserCard({
+  id,
+  config,
+}: {
+  id: string
+  config: { theme: string }
+}) {
+  'use cache'
+  return &lt;div&gt;{id}&lt;/div&gt;
+}
+
+// Invalid - class instance
+async function UserProfile({ user }: { user: UserClass }) {
+  'use cache'
+  // Error: Cannot serialize class instance
+  return &lt;div&gt;{user.name}&lt;/div&gt;
+}
+</code></pre>
+<h3 id="pass-through-non-serializable-arguments">Pass-through (non-serializable arguments)</h3>
+<p>You can accept non-serializable values <strong>as long as you don’t introspect them</strong>. This enables composition patterns with <code>children</code> and Server Actions:</p>
+<pre><code class="language-tsx">async function CachedWrapper({ children }: { children: ReactNode }) {
+  'use cache'
+  // Don't read or modify children - just pass it through
+  return (
+    &lt;div className=&quot;wrapper&quot;&gt;
+      &lt;header&gt;Cached Header&lt;/header&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+
+// Usage: children can be dynamic
+export default function Page() {
+  return (
+    &lt;CachedWrapper&gt;
+      &lt;DynamicComponent /&gt; {/* Not cached, passed through */}
+    &lt;/CachedWrapper&gt;
+  )
+}
+</code></pre>
+<p>You can also pass Server Actions through cached components:</p>
+<pre><code class="language-tsx">async function CachedForm({ action }: { action: () =&gt; Promise&lt;void&gt; }) {
+  'use cache'
+  // Don't call action here - just pass it through
+  return &lt;form action={action}&gt;{/* ... */}&lt;/form&gt;
+}
+</code></pre>
+<h2 id="constraints">Constraints</h2>
+<p>Cached functions execute in an isolated environment. The following constraints ensure cache behavior remains predictable and secure.</p>
+<h3 id="request-time-apis">Request-time APIs</h3>
+<p>Cached functions and components <strong>cannot</strong> directly access runtime APIs like <code>cookies()</code>, <code>headers()</code>, or <code>searchParams</code>. Instead, read these values outside the cached scope and pass them as arguments.</p>
+<h3 id="runtime-caching-considerations">Runtime caching considerations</h3>
+<p>While <code>use cache</code> is designed primarily to include uncached data in the static shell, it can also cache data at runtime using in-memory LRU (Least Recently Used) storage.</p>
+<p>Runtime cache behavior depends on your hosting environment:</p>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Runtime Caching Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Serverless</strong></td>
+<td>Cache entries typically don’t persist across requests (each request can be a different instance). Build-time caching works normally.</td>
+</tr>
+<tr>
+<td><strong>Self-hosted</strong></td>
+<td>Cache entries persist across requests. Control cache size with <a href="/docs/app/api-reference/config/next-config-js/incrementalCacheHandlerPath"><code>cacheMaxMemorySize</code></a>.</td>
+</tr>
+</tbody>
+</table>
+<p>If the default in-memory cache isn’t enough, consider <strong><a href="/docs/app/api-reference/directives/use-cache-remote"><code>use cache: remote</code></a></strong> which allows platforms to provide a dedicated cache handler (like Redis or KV database). This helps reduce hits against data sources not scaled to your total traffic, though it comes with costs (storage, network latency, platform fees).</p>
+<p>Very rarely, for compliance requirements or when you can’t refactor your code to pass runtime data as arguments to a <code>use cache</code> scope, you might need <a href="/docs/app/api-reference/directives/use-cache-private"><code>use cache: private</code></a>.</p>
+<h3 id="reactcache-isolation">React.cache isolation</h3>
+<p><a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>React.cache</code></a> operates in an isolated scope inside <code>use cache</code> boundaries. Values stored via <code>React.cache</code> outside a <code>use cache</code> function are not visible inside it.</p>
+<p>This means you cannot use <code>React.cache</code> to pass data into a <code>use cache</code> scope:</p>
+<pre><code class="language-tsx">import { cache } from 'react'
+
+const store = cache(() =&gt; ({ current: null as string | null }))
+
+function Parent() {
+  const shared = store()
+  shared.current = 'value from parent'
+  return &lt;Child /&gt;
+}
+
+async function Child() {
+  'use cache'
+  const shared = store()
+  // shared.current is null, not 'value from parent'
+  // use cache has its own isolated React.cache scope
+  return &lt;div&gt;{shared.current}&lt;/div&gt;
+}
+</code></pre>
+<p>This isolation ensures cached functions have predictable, self-contained behavior. To pass data into a <code>use cache</code> scope, use function arguments instead.</p>
+<h2 id="use-cache-at-runtime"><code>use cache</code> at runtime</h2>
+<p>On the <strong>server</strong>, cache entries are stored in-memory and respect the <code>revalidate</code> and <code>expire</code> times from your <code>cacheLife</code> configuration. You can customize the cache storage by configuring <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers"><code>cacheHandlers</code></a> in your <code>next.config.js</code> file.</p>
+<p>On the <strong>client</strong>, content from the server cache is stored in the browser’s memory for the duration defined by the <code>stale</code> time. The client router enforces a <strong>minimum 30-second stale time</strong>, regardless of configuration.</p>
+<p>The <code>x-nextjs-stale-time</code> response header communicates cache lifetime from server to client, ensuring coordinated behavior.</p>
+<h2 id="revalidation">Revalidation</h2>
+<p>By default, <code>use cache</code> uses the <code>default</code> profile with these settings:</p>
+<ul>
+<li><strong>stale</strong>: 5 minutes (client-side)</li>
+<li><strong>revalidate</strong>: 15 minutes (server-side)</li>
+<li><strong>expire</strong>: Never expires by time</li>
+</ul>
+<pre><code class="language-tsx">async function getData() {
+  'use cache'
+  // Implicitly uses default profile
+  return fetch('/api/data')
+}
+</code></pre>
+<h3 id="customizing-cache-lifetime">Customizing cache lifetime</h3>
+<p>Use the <a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife</code></a> function to customize cache duration:</p>
+<pre><code class="language-tsx">import { cacheLife } from 'next/cache'
+
+async function getData() {
+  'use cache'
+  cacheLife('hours') // Use built-in 'hours' profile
+  return fetch('/api/data')
+}
+</code></pre>
+<h3 id="on-demand-revalidation">On-demand revalidation</h3>
+<p>Use <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code></a>, <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a>, or <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> for on-demand cache invalidation:</p>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+async function getProducts() {
+  'use cache'
+  cacheTag('products')
+  return fetch('/api/products')
+}
+</code></pre>
+<pre><code class="language-tsx">'use server'
+
+import { updateTag } from 'next/cache'
+
+export async function updateProduct() {
+  await db.products.update(...)
+  updateTag('products') // Invalidates all 'products' caches
+}
+</code></pre>
+<p>Both <code>cacheLife</code> and <code>cacheTag</code> integrate across client and server caching layers, meaning you configure your caching semantics in one place and they apply everywhere.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="caching-an-entire-route-with-use-cache">Caching an entire route with <code>use cache</code></h3>
+<p>To prerender an entire route, add <code>use cache</code> to the top of <strong>both</strong> the <code>layout</code> and <code>page</code> files. Each of these segments are treated as separate entry points in your application, and will be cached independently.</p>
+<pre><code class="language-tsx">'use cache'
+
+export default async function Layout({ children }: { children: ReactNode }) {
+  return &lt;div&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use cache'
+
+export default async function Layout({ children }) {
+  return &lt;div&gt;{children}&lt;/div&gt;
+}
+</code></pre>
+<p>Any components imported and nested in <code>page</code> file are part of the cache output associated with the <code>page</code>.</p>
+<pre><code class="language-tsx">'use cache'
+
+async function Users() {
+  const users = await fetch('/api/users')
+  // loop through users
+}
+
+export default async function Page() {
+  return (
+    &lt;main&gt;
+      &lt;Users /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use cache'
+
+async function Users() {
+  const users = await fetch('/api/users')
+  // loop through users
+}
+
+export default async function Page() {
+  return (
+    &lt;main&gt;
+      &lt;Users /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If <code>use cache</code> is added only to the <code>layout</code> or the <code>page</code>, only that route segment and any components imported into it will be cached.</li>
+</ul>
+</blockquote>
+<h3 id="caching-a-components-output-with-use-cache">Caching a component’s output with <code>use cache</code></h3>
+<p>You can use <code>use cache</code> at the component level to cache any fetches or computations performed within that component. The cache entry will be reused as long as the serialized props produce the same value in each instance.</p>
+<pre><code class="language-tsx">export async function Bookings({ type = 'haircut' }: BookingsProps) {
+  'use cache'
+  async function getBookingsData() {
+    const data = await fetch(`/api/bookings?type=${encodeURIComponent(type)}`)
+    return data
+  }
+  return //...
+}
+
+interface BookingsProps {
+  type: string
+}
+</code></pre>
+<pre><code class="language-jsx">export async function Bookings({ type = 'haircut' }) {
+  'use cache'
+  async function getBookingsData() {
+    const data = await fetch(`/api/bookings?type=${encodeURIComponent(type)}`)
+    return data
+  }
+  return //...
+}
+</code></pre>
+<h3 id="caching-function-output-with-use-cache">Caching function output with <code>use cache</code></h3>
+<p>Since you can add <code>use cache</code> to any asynchronous function, you aren’t limited to caching components or routes only. You might want to cache a network request, a database query, or a slow computation.</p>
+<pre><code class="language-tsx">export async function getData() {
+  'use cache'
+
+  const data = await fetch('/api/data')
+  return data
+}
+</code></pre>
+<pre><code class="language-jsx">export async function getData() {
+  'use cache'
+
+  const data = await fetch('/api/data')
+  return data
+}
+</code></pre>
+<h3 id="interleaving">Interleaving</h3>
+<p>In React, composition with <code>children</code> or slots is a well-known pattern for building flexible components. When using <code>use cache</code>, you can continue to compose your UI in this way. Anything included as <code>children</code>, or other compositional slots, in the returned JSX will be passed through the cached component without affecting its cache entry.</p>
+<p>As long as you don’t directly reference any of the JSX slots inside the body of the cacheable function itself, their presence in the returned output won’t affect the cache entry.</p>
+<pre><code class="language-tsx">export default async function Page() {
+  const uncachedData = await getData()
+  return (
+    // Pass compositional slots as props, e.g. header and children
+    &lt;CacheComponent header={&lt;h1&gt;Home&lt;/h1&gt;}&gt;
+      {/* DynamicComponent is provided as the children slot */}
+      &lt;DynamicComponent data={uncachedData} /&gt;
+    &lt;/CacheComponent&gt;
+  )
+}
+
+async function CacheComponent({
+  header, // header: a compositional slot, injected as a prop
+  children, // children: another slot for nested composition
+}: {
+  header: ReactNode
+  children: ReactNode
+}) {
+  'use cache'
+  const cachedData = await fetch('/api/cached-data')
+  return (
+    &lt;div&gt;
+      {header}
+      &lt;PrerenderedComponent data={cachedData} /&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page() {
+  const uncachedData = await getData()
+  return (
+    // Pass compositional slots as props, e.g. header and children
+    &lt;CacheComponent header={&lt;h1&gt;Home&lt;/h1&gt;}&gt;
+      {/* DynamicComponent is provided as the children slot */}
+      &lt;DynamicComponent data={uncachedData} /&gt;
+    &lt;/CacheComponent&gt;
+  )
+}
+
+async function CacheComponent({
+  header, // header: a compositional slot, injected as a prop
+  children, // children: another slot for nested composition
+}) {
+  'use cache'
+  const cachedData = await fetch('/api/cached-data')
+  return (
+    &lt;div&gt;
+      {header}
+      &lt;PrerenderedComponent data={cachedData} /&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>You can also pass Server Actions through cached components to Client Components without invoking them inside the cacheable function.</p>
+<pre><code class="language-tsx">import ClientComponent from './ClientComponent'
+
+export default async function Page() {
+  const performUpdate = async () =&gt; {
+    'use server'
+    // Perform some server-side update
+    await db.update(...)
+  }
+
+  return &lt;CachedComponent performUpdate={performUpdate} /&gt;
+}
+
+async function CachedComponent({
+  performUpdate,
+}: {
+  performUpdate: () =&gt; Promise&lt;void&gt;
+}) {
+  'use cache'
+  // Do not call performUpdate here
+  return &lt;ClientComponent action={performUpdate} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import ClientComponent from './ClientComponent'
+
+export default async function Page() {
+  const performUpdate = async () =&gt; {
+    'use server'
+    // Perform some server-side update
+    await db.update(...)
+  }
+
+  return &lt;CachedComponent performUpdate={performUpdate} /&gt;
+}
+
+async function CachedComponent({ performUpdate }) {
+  'use cache'
+  // Do not call performUpdate here
+  return &lt;ClientComponent action={performUpdate} /&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">'use client'
+
+export default function ClientComponent({
+  action,
+}: {
+  action: () =&gt; Promise&lt;void&gt;
+}) {
+  return &lt;button onClick={action}&gt;Update&lt;/button&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+export default function ClientComponent({ action }) {
+  return &lt;button onClick={action}&gt;Update&lt;/button&gt;
+}
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="debugging-cache-behavior">Debugging cache behavior</h3>
+<h4>Verbose logging</h4>
+<p>Set <code>NEXT_PRIVATE_DEBUG_CACHE=1</code> for verbose cache logging:</p>
+<pre><code class="language-bash">NEXT_PRIVATE_DEBUG_CACHE=1 npm run dev
+# or for production
+NEXT_PRIVATE_DEBUG_CACHE=1 npm run start
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> This environment variable also logs ISR and other caching mechanisms. See <a href="/docs/app/guides/incremental-static-regeneration#verifying-correct-production-behavior">Verifying correct production behavior</a> for more details.</p>
+</blockquote>
+<h4>Console log replays</h4>
+<p>In development, console logs from cached functions appear with a <code>Cache</code> prefix.</p>
+<h3 id="build-hangs-cache-timeout">Build Hangs (Cache Timeout)</h3>
+<p>If your build hangs, you’re accessing Promises that resolve to uncached or runtime data, created outside a <code>use cache</code> boundary. The cached function waits for data that can’t resolve during the build, causing a timeout after 50 seconds.</p>
+<p>When the build timeouts you’ll see this error message:</p>
+<blockquote>
+<p>Error: Filling a cache during prerender timed out, likely because request-specific arguments such as params, searchParams, cookies() or uncached data were used inside “use cache”.</p>
+</blockquote>
+<p>Common ways this happens: passing such Promises as props, accessing them via closure, or retrieving them from shared storage (Maps).</p>
+<blockquote>
+<p><strong>Good to know:</strong> Directly calling <code>cookies()</code> or <code>headers()</code> inside <code>use cache</code> fails immediately with a <a href="/docs/messages/next-request-in-use-cache">different error</a>, not a timeout.</p>
+</blockquote>
+<p><strong>Passing runtime data Promises as props:</strong></p>
+<pre><code class="language-tsx">import { cookies } from 'next/headers'
+import { Suspense } from 'react'
+
+export default function Page() {
+  return (
+    &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+      &lt;Dynamic /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+
+async function Dynamic() {
+  const cookieStore = cookies()
+  return &lt;Cached promise={cookieStore} /&gt; // Build hangs
+}
+
+async function Cached({ promise }: { promise: Promise&lt;unknown&gt; }) {
+  'use cache'
+  const data = await promise // Waits for runtime data during build
+  return &lt;p&gt;..&lt;/p&gt;
+}
+</code></pre>
+<p>Await the <code>cookies</code> store in the <code>Dynamic</code> component, and pass a cookie value to the <code>Cached</code> component.</p>
+<p><strong>Shared deduplication storage:</strong></p>
+<pre><code class="language-tsx">// Problem: Map stores dynamic Promises, accessed by cached code
+import { Suspense } from 'react'
+
+const cache = new Map&lt;string, Promise&lt;string&gt;&gt;()
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+        &lt;Dynamic id=&quot;data&quot; /&gt;
+      &lt;/Suspense&gt;
+      &lt;Cached id=&quot;data&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+
+async function Dynamic({ id }: { id: string }) {
+  // Stores dynamic Promise in shared Map
+  cache.set(
+    id,
+    fetch(`https://api.example.com/${id}`).then((r) =&gt; r.text())
+  )
+  return &lt;p&gt;Dynamic&lt;/p&gt;
+}
+
+async function Cached({ id }: { id: string }) {
+  'use cache'
+  return &lt;p&gt;{await cache.get(id)}&lt;/p&gt; // Build hangs - retrieves dynamic Promise
+}
+</code></pre>
+<p>Use Next.js’s built-in <code>fetch()</code> deduplication or use separate Maps for cached and uncached contexts.</p>
+<h2 id="platform-support">Platform Support</h2>
+<table>
+<thead>
+<tr>
+<th>Deployment Option</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#nodejs-server">Node.js server</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#docker">Docker container</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#static-export">Static export</a></td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#adapters">Adapters</a></td>
+<td>Platform-specific</td>
+</tr>
+</tbody>
+</table>
+<p>Learn how to <a href="/docs/app/guides/self-hosting#caching-and-isr">configure caching</a> when self-hosting Next.js.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>&quot;use cache&quot;</code> is enabled with the Cache Components feature.</td>
+</tr>
+<tr>
+<td><code>v15.0.0</code></td>
+<td><code>&quot;use cache&quot;</code> is introduced as an experimental feature.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

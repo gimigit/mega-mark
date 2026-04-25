@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-webpack-loader-syntax — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-webpack-loader-syntax">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#fail">Fail</a></li><li><a href="#pass">Pass</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-webpack-loader-syntax</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Forbid Webpack loader syntax in imports.</p>
+<p><a href="https://webpack.js.org" target="_blank" rel="noopener">Webpack</a> allows specifying the <a href="https://webpack.js.org/concepts/loaders/" target="_blank" rel="noopener">loaders</a> to use in the import source string using a special syntax like this:</p>
+<pre><code class="language-js">var moduleWithOneLoader = require(&quot;my-loader!./my-awesome-module&quot;);
+</code></pre>
+<p>This syntax is non-standard, so it couples the code to Webpack. The recommended way to specify Webpack loader configuration is in a <a href="https://webpack.js.org/concepts/loaders/#configuration" target="_blank" rel="noopener">Webpack configuration file</a>.</p>
+<h2 id="rule-details">Rule Details</h2>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-js">import myModule from 'my-loader!my-module';
+import theme from 'style!css!./theme.css';
+
+var myModule = require('my-loader!./my-module');
+var theme = require('style!css!./theme.css');
+</code></pre>
+<h3 id="pass">Pass</h3>
+<pre><code class="language-js">import myModule from 'my-module';
+import theme from './theme.css';
+
+var myModule = require('my-module');
+var theme = require('./theme.css');
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you have a project that doesn’t use Webpack you can safely disable this rule.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

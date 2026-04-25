@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>public-folder — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-public-folder">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#caching">Caching</a></li><li><a href="#robots-favicons-and-others">Robots, Favicons, and others</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">public-folder</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>public</td></tr><tr><th>description</th><td>Next.js allows you to serve static files, like images, in the public directory. You can learn how it works here.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>Next.js can serve static files, like images, under a folder called <code>public</code> in the root directory. Files inside <code>public</code> can then be referenced by your code starting from the base URL (<code>/</code>).</p>
+<p>For example, the file <code>public/avatars/me.png</code> can be viewed by visiting the <code>/avatars/me.png</code> path. The code to display that image might look like:</p>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+export function Avatar({ id, alt }) {
+  return &lt;Image src={`/avatars/${id}.png`} alt={alt} width=&quot;64&quot; height=&quot;64&quot; /&gt;
+}
+
+export function AvatarOfMe() {
+  return &lt;Avatar id=&quot;me&quot; alt=&quot;A portrait of me&quot; /&gt;
+}
+</code></pre>
+<h2 id="caching">Caching</h2>
+<p>Next.js cannot safely cache assets in the <code>public</code> folder because they may change. The default caching headers applied are:</p>
+<pre><code class="language-jsx">Cache-Control: public, max-age=0
+</code></pre>
+<h2 id="robots-favicons-and-others">Robots, Favicons, and others</h2>
+<PagesOnly>
+<p>The folder is also useful for <code>robots.txt</code>, <code>favicon.ico</code>, Google Site Verification, and any other static files (including <code>.html</code>). But make sure to not have a static file with the same name as a file in the <code>pages/</code> directory, as this will result in an error. <a href="/docs/messages/conflicting-public-file-page">Read more</a>.</p>
+</PagesOnly>
+<AppOnly>
+<p>For static metadata files, such as <code>robots.txt</code>, <code>favicon.ico</code>, etc, you should use <a href="/docs/app/api-reference/file-conventions/metadata">special metadata files</a> inside the <code>app</code> folder.</p>
+</AppOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

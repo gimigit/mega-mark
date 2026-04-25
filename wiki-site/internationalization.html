@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>internationalization — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-internationalization">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#terminology">Terminology</a></li><li><a href="#routing-overview">Routing Overview</a></li><li><a href="#localization">Localization</a></li><li><a href="#static-rendering">Static Rendering</a></li><li><a href="#resources">Resources</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">internationalization</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Add support for multiple languages with internationalized routing and localized content.</td></tr></table><p>Next.js enables you to configure the routing and rendering of content to support multiple languages. Making your site adaptive to different locales includes translated content (localization) and internationalized routes.</p>
+<h2 id="terminology">Terminology</h2>
+<ul>
+<li><strong>Locale:</strong> An identifier for a set of language and formatting preferences. This usually includes the preferred language of the user and possibly their geographic region.
+<ul>
+<li><code>en-US</code>: English as spoken in the United States</li>
+<li><code>nl-NL</code>: Dutch as spoken in the Netherlands</li>
+<li><code>nl</code>: Dutch, no specific region</li>
+</ul>
+</li>
+</ul>
+<h2 id="routing-overview">Routing Overview</h2>
+<p>It’s recommended to use the user’s language preferences in the browser to select which locale to use. Changing your preferred language will modify the incoming <code>Accept-Language</code> header to your application.</p>
+<p>For example, using the following libraries, you can look at an incoming <code>Request</code> to determine which locale to select, based on the <code>Headers</code>, locales you plan to support, and the default locale.</p>
+<pre><code class="language-js">import { match } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
+
+let headers = { 'accept-language': 'en-US,en;q=0.5' }
+let languages = new Negotiator({ headers }).languages()
+let locales = ['en-US', 'nl-NL', 'nl']
+let defaultLocale = 'en-US'
+
+match(languages, locales, defaultLocale) // -&gt; 'en-US'
+</code></pre>
+<p>Routing can be internationalized by either the sub-path (<code>/fr/products</code>) or domain (<code>my-site.fr/products</code>). With this information, you can now redirect the user based on the locale inside <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>.</p>
+<pre><code class="language-js">import { NextResponse } from &quot;next/server&quot;;
+
+let locales = ['en-US', 'nl-NL', 'nl']
+
+// Get the preferred locale, similar to the above or using a library
+function getLocale(request) { ... }
+
+export function proxy(request) {
+  // Check if there is any supported locale in the pathname
+  const { pathname } = request.nextUrl
+  const pathnameHasLocale = locales.some(
+    (locale) =&gt; pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  )
+
+  if (pathnameHasLocale) return
+
+  // Redirect if there is no locale
+  const locale = getLocale(request)
+  request.nextUrl.pathname = `/${locale}${pathname}`
+  // e.g. incoming request is /products
+  // The new URL is now /en-US/products
+  return NextResponse.redirect(request.nextUrl)
+}
+
+export const config = {
+  matcher: [
+    // Skip all internal paths (_next)
+    '/((?!_next).*)',
+    // Optional: only run on root (/) URL
+    // '/'
+  ],
+}
+</code></pre>
+<p>Finally, ensure all special files inside <code>app/</code> are nested under <code>app/[lang]</code>. This enables the Next.js router to dynamically handle different locales in the route, and forward the <code>lang</code> parameter to every layout and page. For example:</p>
+<pre><code class="language-tsx">// You now have access to the current locale
+// e.g. /en-US/products -&gt; `lang` is &quot;en-US&quot;
+export default async function Page({ params }: PageProps&lt;'/[lang]'&gt;) {
+  const { lang } = await params
+  return ...
+}
+</code></pre>
+<pre><code class="language-jsx">// You now have access to the current locale
+// e.g. /en-US/products -&gt; `lang` is &quot;en-US&quot;
+export default async function Page({ params }) {
+  const { lang } = await params
+  return ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> <code>PageProps</code> and <code>LayoutProps</code> are globally available TypeScript helpers that provide strong typing for route parameters. See <a href="/docs/app/api-reference/file-conventions/page#page-props-helper">PageProps</a> and <a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper">LayoutProps</a> for more details.</p>
+</blockquote>
+<p>The root layout can also be nested in the new folder (e.g. <code>app/[lang]/layout.js</code>).</p>
+<h2 id="localization">Localization</h2>
+<p>Changing displayed content based on the user’s preferred locale, or localization, is not something specific to Next.js. The patterns described below would work the same with any web application.</p>
+<p>Let’s assume we want to support both English and Dutch content inside our application. We might maintain two different “dictionaries”, which are objects that give us a mapping from some key to a localized string. For example:</p>
+<pre><code class="language-json">{
+  &quot;products&quot;: {
+    &quot;cart&quot;: &quot;Add to Cart&quot;
+  }
+}
+</code></pre>
+<pre><code class="language-json">{
+  &quot;products&quot;: {
+    &quot;cart&quot;: &quot;Toevoegen aan Winkelwagen&quot;
+  }
+}
+</code></pre>
+<p>We can then create a <code>getDictionary</code> function to load the translations for the requested locale:</p>
+<pre><code class="language-ts">import 'server-only'
+
+const dictionaries = {
+  en: () =&gt; import('./dictionaries/en.json').then((module) =&gt; module.default),
+  nl: () =&gt; import('./dictionaries/nl.json').then((module) =&gt; module.default),
+}
+
+export type Locale = keyof typeof dictionaries
+
+export const hasLocale = (locale: string): locale is Locale =&gt;
+  locale in dictionaries
+
+export const getDictionary = async (locale: Locale) =&gt; dictionaries[locale]()
+</code></pre>
+<pre><code class="language-js">import 'server-only'
+
+const dictionaries = {
+  en: () =&gt; import('./dictionaries/en.json').then((module) =&gt; module.default),
+  nl: () =&gt; import('./dictionaries/nl.json').then((module) =&gt; module.default),
+}
+
+export const hasLocale = (locale) =&gt; locale in dictionaries
+
+export const getDictionary = async (locale) =&gt; dictionaries[locale]()
+</code></pre>
+<p>Given the currently selected language, we can fetch the dictionary inside of a layout or page.</p>
+<p>Since <code>lang</code> is typed as <code>string</code>, using <code>hasLocale</code> narrows the type to your supported locales. It also ensures a 404 is returned if a translation is missing, rather than a runtime error.</p>
+<pre><code class="language-tsx">import { notFound } from 'next/navigation'
+import { getDictionary, hasLocale } from './dictionaries'
+
+export default async function Page({ params }: PageProps&lt;'/[lang]'&gt;) {
+  const { lang } = await params
+
+  if (!hasLocale(lang)) notFound()
+
+  const dict = await getDictionary(lang)
+  return &lt;button&gt;{dict.products.cart}&lt;/button&gt; // Add to Cart
+}
+</code></pre>
+<pre><code class="language-jsx">import { notFound } from 'next/navigation'
+import { getDictionary, hasLocale } from './dictionaries'
+
+export default async function Page({ params }) {
+  const { lang } = await params
+
+  if (!hasLocale(lang)) notFound()
+
+  const dict = await getDictionary(lang)
+  return &lt;button&gt;{dict.products.cart}&lt;/button&gt; // Add to Cart
+}
+</code></pre>
+<p>Because all layouts and pages in the <code>app/</code> directory default to <a href="/docs/app/getting-started/server-and-client-components">Server Components</a>, we do not need to worry about the size of the translation files affecting our client-side JavaScript bundle size. This code will <strong>only run on the server</strong>, and only the resulting HTML will be sent to the browser.</p>
+<h2 id="static-rendering">Static Rendering</h2>
+<p>To generate static routes for a given set of locales, we can use <code>generateStaticParams</code> with any page or layout. This can be global, for example, in the root layout:</p>
+<pre><code class="language-tsx">export async function generateStaticParams() {
+  return [{ lang: 'en-US' }, { lang: 'de' }]
+}
+
+export default async function RootLayout({
+  children,
+  params,
+}: LayoutProps&lt;'/[lang]'&gt;) {
+  return (
+    &lt;html lang={(await params).lang}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export async function generateStaticParams() {
+  return [{ lang: 'en-US' }, { lang: 'de' }]
+}
+
+export default async function RootLayout({ children, params }) {
+  return (
+    &lt;html lang={(await params).lang}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/i18n-routing" target="_blank" rel="noopener">Minimal i18n routing and translations</a></li>
+<li><a href="https://next-intl.dev" target="_blank" rel="noopener"><code>next-intl</code></a></li>
+<li><a href="https://github.com/QuiiBz/next-international" target="_blank" rel="noopener"><code>next-international</code></a></li>
+<li><a href="https://github.com/i18nexus/next-i18n-router" target="_blank" rel="noopener"><code>next-i18n-router</code></a></li>
+<li><a href="https://inlang.com/m/osslbuzt/paraglide-next-i18n" target="_blank" rel="noopener"><code>paraglide-next</code></a></li>
+<li><a href="https://lingui.dev" target="_blank" rel="noopener"><code>lingui</code></a></li>
+<li><a href="https://tolgee.io/apps-integrations/next" target="_blank" rel="noopener"><code>tolgee</code></a></li>
+<li><a href="https://intlayer.org/doc/environment/nextjs" target="_blank" rel="noopener"><code>next-intlayer</code></a></li>
+<li><a href="https://generaltranslation.com/en/docs/next" target="_blank" rel="noopener"><code>gt-next</code></a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

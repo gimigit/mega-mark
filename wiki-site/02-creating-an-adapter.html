@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02-creating-an-adapter — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-02-creating-an-adapter">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">02-creating-an-adapter</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Create an adapter module that implements the `NextAdapter` interface.</td></tr></table><p>An adapter is a module that exports an object implementing the <code>NextAdapter</code> interface.</p>
+<p>The interface can be imported from the <code>next</code> package:</p>
+<pre><code class="language-typescript">import type { NextAdapter } from 'next'
+</code></pre>
+<p>The interface is defined as follows:</p>
+<pre><code class="language-typescript">type Route = {
+  source?: string
+  sourceRegex: string
+  destination?: string
+  headers?: Record&lt;string, string&gt;
+  has?: RouteHas[]
+  missing?: RouteHas[]
+  status?: number
+  priority?: boolean
+}
+
+export interface AdapterOutputs {
+  pages: Array&lt;AdapterOutput['PAGES']&gt;
+  middleware?: AdapterOutput['MIDDLEWARE']
+  appPages: Array&lt;AdapterOutput['APP_PAGE']&gt;
+  pagesApi: Array&lt;AdapterOutput['PAGES_API']&gt;
+  appRoutes: Array&lt;AdapterOutput['APP_ROUTE']&gt;
+  prerenders: Array&lt;AdapterOutput['PRERENDER']&gt;
+  staticFiles: Array&lt;AdapterOutput['STATIC_FILE']&gt;
+}
+
+export interface NextAdapter {
+  name: string
+  modifyConfig?: (
+    config: NextConfigComplete,
+    ctx: {
+      phase: PHASE_TYPE
+      nextVersion: string
+    }
+  ) =&gt; Promise&lt;NextConfigComplete&gt; | NextConfigComplete
+  onBuildComplete?: (ctx: {
+    routing: {
+      beforeMiddleware: Array&lt;Route&gt;
+      beforeFiles: Array&lt;Route&gt;
+      afterFiles: Array&lt;Route&gt;
+      dynamicRoutes: Array&lt;Route&gt;
+      onMatch: Array&lt;Route&gt;
+      fallback: Array&lt;Route&gt;
+      shouldNormalizeNextData: boolean
+      rsc: RoutesManifest['rsc']
+    }
+    outputs: AdapterOutputs
+    projectDir: string
+    repoRoot: string
+    distDir: string
+    config: NextConfigComplete
+    nextVersion: string
+    buildId: string
+  }) =&gt; Promise&lt;void&gt; | void
+}
+</code></pre>
+<h2 id="basic-adapter-structure">Basic Adapter Structure</h2>
+<p>Here’s a minimal adapter example:</p>
+<pre><code class="language-js">/** @type {import('next').NextAdapter} */
+const adapter = {
+  name: 'my-custom-adapter',
+
+  async modifyConfig(config, { phase }) {
+    // Modify the Next.js config based on the build phase
+    if (phase === 'phase-production-build') {
+      return {
+        ...config,
+        // Add your modifications
+      }
+    }
+    return config
+  },
+
+  async onBuildComplete({
+    routing,
+    outputs,
+    projectDir,
+    repoRoot,
+    distDir,
+    config,
+    nextVersion,
+    buildId,
+  }) {
+    // Process the build output
+    console.log('Build completed with', outputs.pages.length, 'pages')
+    console.log('Build ID:', buildId)
+    console.log('Dynamic routes:', routing.dynamicRoutes.length)
+
+    // Access emitted output entries
+    for (const page of outputs.pages) {
+      console.log('Page:', page.pathname, 'at', page.filePath)
+    }
+
+    for (const apiRoute of outputs.pagesApi) {
+      console.log('API Route:', apiRoute.pathname, 'at', apiRoute.filePath)
+    }
+
+    for (const appPage of outputs.appPages) {
+      console.log('App Page:', appPage.pathname, 'at', appPage.filePath)
+    }
+
+    for (const prerender of outputs.prerenders) {
+      console.log('Prerendered:', prerender.pathname)
+    }
+  },
+}
+
+module.exports = adapter
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

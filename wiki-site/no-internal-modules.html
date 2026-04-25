@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-internal-modules — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-internal-modules">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#examples">Examples</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-internal-modules</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Use this rule to prevent importing the submodules of other modules.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule has two mutally exclusive options that are arrays of <a href="https://github.com/isaacs/node-glob#glob-primer" target="_blank" rel="noopener">minimatch/glob patterns</a> patterns:</p>
+<ul>
+<li><code>allow</code> that include paths and import statements that can be imported with reaching.</li>
+<li><code>forbid</code> that exclude paths and import statements that can be imported with reaching.</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<p>Given the following folder structure:</p>
+<pre><code class="language-pt">my-project
+├── actions
+│   └── getUser.js
+│   └── updateUser.js
+├── reducer
+│   └── index.js
+│   └── user.js
+├── redux
+│   └── index.js
+│   └── configureStore.js
+└── app
+│   └── index.js
+│   └── settings.js
+└── entry.js
+</code></pre>
+<p>And the .eslintrc file:</p>
+<pre><code class="language-json">{
+  ...
+  &quot;rules&quot;: {
+    &quot;import/no-internal-modules&quot;: [ &quot;error&quot;, {
+      &quot;allow&quot;: [ &quot;**/actions/*&quot;, &quot;source-map-support/*&quot; ],
+    } ]
+  }
+}
+</code></pre>
+<p>The following patterns are considered problems:</p>
+<pre><code class="language-js">/**
+ *  in my-project/entry.js
+ */
+
+import { settings } from './app/index'; // Reaching to &quot;./app/index&quot; is not allowed
+import userReducer from './reducer/user'; // Reaching to &quot;./reducer/user&quot; is not allowed
+import configureStore from './redux/configureStore'; // Reaching to &quot;./redux/configureStore&quot; is not allowed
+
+export { settings } from './app/index'; // Reaching to &quot;./app/index&quot; is not allowed
+export * from './reducer/user'; // Reaching to &quot;./reducer/user&quot; is not allowed
+</code></pre>
+<p>The following patterns are NOT considered problems:</p>
+<pre><code class="language-js">/**
+ *  in my-project/entry.js
+ */
+
+import 'source-map-support/register';
+import { settings } from '../app';
+import getUser from '../actions/getUser';
+
+export * from 'source-map-support/register';
+export { settings } from '../app';
+</code></pre>
+<p>Given the following folder structure:</p>
+<pre><code class="language-pt">my-project
+├── actions
+│   └── getUser.js
+│   └── updateUser.js
+├── reducer
+│   └── index.js
+│   └── user.js
+├── redux
+│   └── index.js
+│   └── configureStore.js
+└── app
+│   └── index.js
+│   └── settings.js
+└── entry.js
+</code></pre>
+<p>And the .eslintrc file:</p>
+<pre><code class="language-json">{
+  ...
+  &quot;rules&quot;: {
+    &quot;import/no-internal-modules&quot;: [ &quot;error&quot;, {
+      &quot;forbid&quot;: [ &quot;**/actions/*&quot;, &quot;source-map-support/*&quot; ],
+    } ]
+  }
+}
+</code></pre>
+<p>The following patterns are considered problems:</p>
+<pre><code class="language-js">/**
+ *  in my-project/entry.js
+ */
+
+import 'source-map-support/register';
+import getUser from '../actions/getUser';
+
+export * from 'source-map-support/register';
+export getUser from '../actions/getUser';
+</code></pre>
+<p>The following patterns are NOT considered problems:</p>
+<pre><code class="language-js">/**
+ *  in my-project/entry.js
+ */
+
+import 'source-map-support';
+import { getUser } from '../actions';
+
+export * from 'source-map-support';
+export { getUser } from '../actions';
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>13-fonts — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-13-fonts">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#google-fonts">Google fonts</a></li><li><a href="#local-fonts">Local fonts</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">13-fonts</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>See the API Reference for the full feature set of Next.js Font</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <a href="/docs/app/api-reference/components/font"><code>next/font</code></a> module automatically optimizes your fonts and removes external network requests for improved privacy and performance.</p>
+<p>It includes <strong>built-in self-hosting</strong> for any font file. This means you can optimally load web fonts with no layout shift.</p>
+<AppOnly>
+<p>To start using <code>next/font</code>, import it from <a href="#local-fonts"><code>next/font/local</code></a> or <a href="#google-fonts"><code>next/font/google</code></a>, call it as a function with the appropriate options, and set the <code>className</code> of the element you want to apply the font to. For example:</p>
+<pre><code class="language-tsx">import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={geist.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function Layout({ children }) {
+  return (
+    &lt;html className={geist.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>Fonts are scoped to the component they’re used in. To apply a font to your entire application, add it to the <a href="/docs/app/api-reference/file-conventions/layout#root-layout">Root Layout</a>.</p>
+</AppOnly>
+<PagesOnly>
+<p>To start using <code>next/font</code>, import it from <a href="#local-fonts"><code>next/font/local</code></a> or <a href="#google-fonts"><code>next/font/google</code></a>, call it as a function with the appropriate options, and set the <code>className</code> of the element you want to apply the font to. For example, you can apply fonts globally in your <a href="/docs/pages/building-your-application/routing/custom-app">Custom App</a> (<code>pages/_app</code>):</p>
+<pre><code class="language-tsx">import { Geist } from 'next/font/google'
+import type { AppProps } from 'next/app'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    &lt;main className={geist.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={geist.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h2 id="google-fonts">Google fonts</h2>
+<p>You can automatically self-host any Google Font. Fonts are included stored as static assets and served from the same domain as your deployment, meaning no requests are sent to Google by the browser when the user visits your site.</p>
+<p>To start using a Google Font, import your chosen font from <code>next/font/google</code>:</p>
+<AppOnly>
+<pre><code class="language-tsx">import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={geist.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={geist.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import { Geist } from 'next/font/google'
+import type { AppProps } from 'next/app'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    &lt;main className={geist.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={geist.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>We recommend using <a href="https://fonts.google.com/variablefonts" target="_blank" rel="noopener">variable fonts</a> for the best performance and flexibility. But if you can’t use a variable font, you will need to specify a weight:</p>
+<AppOnly>
+<pre><code class="language-tsx">import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={roboto.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={roboto.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import { Roboto } from 'next/font/google'
+import type { AppProps } from 'next/app'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    &lt;main className={roboto.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={roboto.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h2 id="local-fonts">Local fonts</h2>
+<AppOnly>
+<p>To use a local font, import the <code>localFont</code> function from <code>next/font/local</code> and specify the <a href="/docs/app/api-reference/components/font#src"><code>src</code></a> of your local font file. The path is resolved relative to the file where <code>localFont</code> is called. Fonts can be stored anywhere in the project, including the <a href="/docs/app/api-reference/file-conventions/public-folder"><code>public</code></a> folder or co-located inside the <code>app</code> folder. For example, to use a font stored in <code>app/fonts/</code>:</p>
+<pre><code class="language-tsx">import localFont from 'next/font/local'
+
+const myFont = localFont({
+  src: './my-font.woff2',
+})
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot; className={myFont.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import localFont from 'next/font/local'
+
+const myFont = localFont({
+  src: './my-font.woff2',
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; className={myFont.className}&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To use a local font, import your font from <code>next/font/local</code> and specify the <a href="/docs/pages/api-reference/components/font#src"><code>src</code></a> of your local font file. Fonts can be stored in the <a href="/docs/pages/api-reference/file-conventions/public-folder"><code>public</code></a> folder or inside the <code>pages</code> folder. For example:</p>
+<pre><code class="language-tsx">import localFont from 'next/font/local'
+import type { AppProps } from 'next/app'
+
+const myFont = localFont({
+  src: './my-font.woff2',
+})
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    &lt;main className={myFont.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import localFont from 'next/font/local'
+
+const myFont = localFont({
+  src: './my-font.woff2',
+})
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;main className={myFont.className}&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>If you want to use multiple files for a single font family, <code>src</code> can be an array:</p>
+<pre><code class="language-js">const roboto = localFont({
+  src: [
+    {
+      path: './Roboto-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './Roboto-Italic.woff2',
+      weight: '400',
+      style: 'italic',
+    },
+    {
+      path: './Roboto-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: './Roboto-BoldItalic.woff2',
+      weight: '700',
+      style: 'italic',
+    },
+  ],
+})
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

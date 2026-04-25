@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-client — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-client">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#nesting-client-components-within-server-components">Nesting Client Components within Server Components</a></li><li><a href="#reference">Reference</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-client</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use the use client directive to render a component on the client.</td></tr></table><p>The <code>'use client'</code> directive declares an entry point for the components to be rendered on the <strong>client side</strong> and should be used when creating interactive user interfaces (UI) that require client-side JavaScript capabilities, such as state management, event handling, and access to browser APIs. This is a React feature.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<p>You do not need to add the <code>'use client'</code> directive to every file that contains Client Components. You only need to add it to the files whose components you want to render directly within Server Components. The <code>'use client'</code> directive defines the client-server <a href="https://nextjs.org/docs/app/building-your-application/rendering#network-boundary" target="_blank" rel="noopener">boundary</a>, and the components exported from such a file serve as entry points to the client.</p>
+</blockquote>
+<h2 id="usage">Usage</h2>
+<p>To declare an entry point for the Client Components, add the <code>'use client'</code> directive <strong>at the top of the file</strong>, before any imports:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useState } from 'react'
+
+export default function Counter() {
+  const [count, setCount] = useState(0)
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;Increment&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useState } from 'react'
+
+export default function Counter() {
+  const [count, setCount] = useState(0)
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;Increment&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>When using the <code>'use client'</code> directive, the props of the Client Components must be <a href="https://react.dev/reference/rsc/use-client#serializable-types" target="_blank" rel="noopener">serializable</a>. This means the props need to be in a format that React can serialize when sending data from the server to the client.</p>
+<pre><code class="language-tsx">'use client'
+
+export default function Counter({
+  onClick /* ❌ Function is not serializable */,
+}) {
+  return (
+    &lt;div&gt;
+      &lt;button onClick={onClick}&gt;Increment&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+export default function Counter({
+  onClick /* ❌ Function is not serializable */,
+}) {
+  return (
+    &lt;div&gt;
+      &lt;button onClick={onClick}&gt;Increment&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="nesting-client-components-within-server-components">Nesting Client Components within Server Components</h2>
+<p>Combining Server and Client Components allows you to build applications that are both performant and interactive:</p>
+<ol>
+<li><strong>Server Components</strong>: Use for static content, data fetching, and SEO-friendly elements.</li>
+<li><strong>Client Components</strong>: Use for interactive elements that require state, effects, or browser APIs.</li>
+<li><strong>Component composition</strong>: Nest Client Components within Server Components as needed for a clear separation of server and client logic.</li>
+</ol>
+<p>In the following example:</p>
+<ul>
+<li><code>Header</code> is a Server Component handling static content.</li>
+<li><code>Counter</code> is a Client Component enabling interactivity within the page.</li>
+</ul>
+<pre><code class="language-tsx">import Header from './header'
+import Counter from './counter' // This is a Client Component
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;Counter /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Header from './header'
+import Counter from './counter' // This is a Client Component
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;Counter /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<p>See the <a href="https://react.dev/reference/rsc/use-client" target="_blank" rel="noopener">React documentation</a> for more information on <code>'use client'</code>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

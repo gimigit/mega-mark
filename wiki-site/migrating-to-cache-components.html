@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>migrating-to-cache-components — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-migrating-to-cache-components">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#dynamic-quotforce-dynamicquot">dynamic = &amp;quot;force-dynamic&amp;quot;</a></li><li><a href="#dynamic-quotforce-staticquot">dynamic = &amp;quot;force-static&amp;quot;</a></li><li><a href="#revalidate">revalidate</a></li><li><a href="#fetchcache">fetchCache</a></li><li><a href="#runtime-edge">runtime = 'edge'</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">migrating-to-cache-components</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Migrating to Cache Components</td></tr><tr><th>description</th><td>Learn how to migrate from route segment configs to Cache Components in Next.js.</td></tr></table><p>When <a href="/docs/app/api-reference/config/next-config-js/cacheComponents">Cache Components</a> is enabled, route segment configs like <code>dynamic</code>, <code>revalidate</code>, and <code>fetchCache</code> are replaced by <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> and <a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife</code></a>.</p>
+<h2 id="dynamic-quotforce-dynamicquot"><code>dynamic = &quot;force-dynamic&quot;</code></h2>
+<p><strong>Not needed.</strong> All pages are dynamic by default.</p>
+<pre><code class="language-tsx">// Before - No longer needed
+export const dynamic = 'force-dynamic'
+
+export default function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">// Before - No longer needed
+export const dynamic = 'force-dynamic'
+
+export default function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">// After - Just remove it
+export default function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">// After - Just remove it
+export default function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<h2 id="dynamic-quotforce-staticquot"><code>dynamic = &quot;force-static&quot;</code></h2>
+<p>Start by removing it. When unhandled uncached or runtime data access is detected during development and build time, Next.js raises an error. Otherwise, the prerendering step automatically extracts the static HTML shell.</p>
+<p>For uncached data access, add <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> as close to the data access as possible with a long <a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife</code></a> like <code>'max'</code> to maintain cached behavior. If needed, add it at the top of the page or layout.</p>
+<p>For runtime data access (<code>cookies()</code>, <code>headers()</code>, etc.), errors will direct you to wrap it with <code>&lt;Suspense&gt;</code>. Since you started by using <code>force-static</code>, you must remove the runtime data access to prevent any request time work.</p>
+<pre><code class="language-tsx">// Before
+export const dynamic = 'force-static'
+
+export default async function Page() {
+  const data = await fetch('https://api.example.com/data')
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">// Before
+export const dynamic = 'force-static'
+
+export default async function Page() {
+  const data = await fetch('https://api.example.com/data')
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">import { cacheLife } from 'next/cache'
+
+// After - Use 'use cache' instead
+export default async function Page() {
+  'use cache'
+  cacheLife('max')
+  const data = await fetch('https://api.example.com/data')
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { cacheLife } from 'next/cache'
+
+// After - Use 'use cache' instead
+export default async function Page() {
+  'use cache'
+  cacheLife('max')
+  const data = await fetch('https://api.example.com/data')
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<h2 id="revalidate"><code>revalidate</code></h2>
+<p><strong>Replace with <code>cacheLife</code>.</strong> Use the <code>cacheLife</code> function to define cache duration instead of the route segment config.</p>
+<pre><code class="language-tsx">// Before
+export const revalidate = 3600 // 1 hour
+
+export default async function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">// Before
+export const revalidate = 3600 // 1 hour
+
+export default async function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">// After - Use cacheLife
+import { cacheLife } from 'next/cache'
+
+export default async function Page() {
+  'use cache'
+  cacheLife('hours')
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">// After - Use cacheLife
+import { cacheLife } from 'next/cache'
+
+export default async function Page() {
+  'use cache'
+  cacheLife('hours')
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<h2 id="fetchcache"><code>fetchCache</code></h2>
+<p><strong>Not needed.</strong> With <code>use cache</code>, all data fetching within a cached scope is automatically cached, making <code>fetchCache</code> unnecessary.</p>
+<pre><code class="language-tsx">// Before
+export const fetchCache = 'force-cache'
+</code></pre>
+<pre><code class="language-jsx">// Before
+export const fetchCache = 'force-cache'
+</code></pre>
+<pre><code class="language-tsx">// After - Use 'use cache' to control caching behavior
+export default async function Page() {
+  'use cache'
+  // All fetches here are cached
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">// After - Use 'use cache' to control caching behavior
+export default async function Page() {
+  'use cache'
+  // All fetches here are cached
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<h2 id="runtime-edge"><code>runtime = 'edge'</code></h2>
+<p><strong>Not supported.</strong> Cache Components requires the Node.js runtime. Switch to the Node.js runtime (the default) by removing the <code>runtime = 'edge'</code> export. If you need edge behavior for specific routes, use <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a> instead.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>history — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-history">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">history</h1>
+
+</div>
+<div class="article-body">
+<h1>2.2.0 / 2025-03-26</h1>
+<ul>
+<li>Remove <code>setImmediate</code> support check</li>
+<li>Restore <code>debug</code> dependency</li>
+</ul>
+<h1>2.1.0 / 2025-02-10</h1>
+<ul>
+<li>Updated <code>engines</code> field to Node@18 or higher</li>
+<li>Remove <code>Object.setPrototypeOf</code> polyfill</li>
+<li>Use <code>Array.flat</code> instead of <code>array-flatten</code> package</li>
+<li>Replace <code>methods</code> dependency with standard library</li>
+<li>deps: parseurl@^1.3.3</li>
+<li>deps: is-promise@^4.0.0</li>
+<li>Replace <code>utils-merge</code> dependency with <code>Object.assign</code></li>
+<li>deps: Remove unused dep <code>after</code></li>
+</ul>
+<h1>2.0.0 / 2024-09-09</h1>
+<ul>
+<li>Drop support for node &lt;18</li>
+<li>deps: path-to-regexp@^8.0.0
+<ul>
+<li>Drop support for partial capture group <code>router.route('/user(s?)/:user/:op')</code> but still have optional non-capture <code>/user{s}/:user/:op</code></li>
+<li><code>:name?</code> becomes <code>{:name}</code></li>
+<li><code>:name*</code> becomes <code>*name</code>.</li>
+<li>The splat change also changes splat from strings to an array of strings</li>
+<li>Optional splats become <code>{*name}</code></li>
+<li><code>:name+</code> becomes <code>*name</code> and thus equivalent to <code>*name</code> so I dropped those tests</li>
+<li>Strings as regular expressions are fully removed, need to be converted to native regular expressions</li>
+</ul>
+</li>
+</ul>
+<h1>2.0.0-beta.2 / 2024-03-20</h1>
+<p>This incorporates all changes after 1.3.5 up to 1.3.8.</p>
+<ul>
+<li>Add support for returned, rejected Promises to <code>router.param</code></li>
+</ul>
+<h1>2.0.0-beta.1 / 2020-03-29</h1>
+<p>This incorporates all changes after 1.3.3 up to 1.3.5.</p>
+<ul>
+<li>Internalize private <code>router.process_params</code> method</li>
+<li>Remove <code>debug</code> dependency</li>
+<li>deps: array-flatten@3.0.0</li>
+<li>deps: parseurl@~1.3.3</li>
+<li>deps: path-to-regexp@3.2.0
+<ul>
+<li>Add new <code>?</code>, <code>*</code>, and <code>+</code> parameter modifiers.</li>
+<li>Matching group expressions are only RegExp syntax.
+<code>(*)</code> is no longer valid and must be written as <code>(.*)</code>, for example.</li>
+<li>Named matching groups no longer available by position in <code>req.params</code>.
+<code>/:foo(.*)</code> only captures as <code>req.params.foo</code> and not available as
+<code>req.params[0]</code>.</li>
+<li>Regular expressions can only be used in a matching group.
+<code>/\\d+</code> is no longer valid and must be written as <code>/(\\d+)</code>.</li>
+<li>Matching groups are now literal regular expressions.
+<code>:foo</code> named captures can no longer be included inside a capture group.</li>
+<li>Special <code>*</code> path segment behavior removed.
+<code>/foo/*/bar</code> will match a literal <code>*</code> as the middle segment.</li>
+</ul>
+</li>
+<li>deps: setprototypeof@1.2.0</li>
+</ul>
+<h1>2.0.0-alpha.1 / 2018-07-27</h1>
+<ul>
+<li>Add basic support for returned, rejected Promises
+<ul>
+<li>Rejected Promises from middleware functions <code>next(error)</code></li>
+</ul>
+</li>
+<li>Drop support for Node.js below 0.10</li>
+<li>deps: debug@3.1.0
+<ul>
+<li>Add <code>DEBUG_HIDE_DATE</code> environment variable</li>
+<li>Change timer to per-namespace instead of global</li>
+<li>Change non-TTY date format</li>
+<li>Remove <code>DEBUG_FD</code> environment variable support</li>
+<li>Support 256 namespace colors</li>
+</ul>
+</li>
+</ul>
+<h1>1.3.8 / 2023-02-24</h1>
+<ul>
+<li>Fix routing requests without method</li>
+</ul>
+<h1>1.3.7 / 2022-04-28</h1>
+<ul>
+<li>Fix hanging on large stack of sync routes</li>
+</ul>
+<h1>1.3.6 / 2021-11-15</h1>
+<ul>
+<li>Fix handling very large stacks of sync middleware</li>
+<li>deps: safe-buffer@5.2.1</li>
+</ul>
+<h1>1.3.5 / 2020-03-24</h1>
+<ul>
+<li>Fix incorrect middleware execution with unanchored <code>RegExp</code>s</li>
+<li>perf: use plain object for internal method map</li>
+</ul>
+<h1>1.3.4 / 2020-01-24</h1>
+<ul>
+<li>deps: array-flatten@3.0.0</li>
+<li>deps: parseurl@~1.3.3</li>
+<li>deps: setprototypeof@1.2.0</li>
+</ul>
+<h1>1.3.3 / 2018-07-06</h1>
+<ul>
+<li>Fix JSDoc for <code>Router</code> constructor</li>
+</ul>
+<h1>1.3.2 / 2017-09-24</h1>
+<ul>
+<li>deps: debug@2.6.9</li>
+<li>deps: parseurl@~1.3.2
+<ul>
+<li>perf: reduce overhead for full URLs</li>
+<li>perf: unroll the “fast-path” <code>RegExp</code></li>
+</ul>
+</li>
+<li>deps: setprototypeof@1.1.0</li>
+<li>deps: utils-merge@1.0.1</li>
+</ul>
+<h1>1.3.1 / 2017-05-19</h1>
+<ul>
+<li>deps: debug@2.6.8
+<ul>
+<li>Fix <code>DEBUG_MAX_ARRAY_LENGTH</code></li>
+<li>deps: ms@2.0.0</li>
+</ul>
+</li>
+</ul>
+<h1>1.3.0 / 2017-02-25</h1>
+<ul>
+<li>Add <code>next(&quot;router&quot;)</code> to exit from router</li>
+<li>Fix case where <code>router.use</code> skipped requests routes did not</li>
+<li>Use <code>%o</code> in path debug to tell types apart</li>
+<li>deps: setprototypeof@1.0.3</li>
+<li>perf: add fast match path for <code>*</code> route</li>
+</ul>
+<h1>1.2.0 / 2017-02-17</h1>
+<ul>
+<li>Skip routing when <code>req.url</code> is not set</li>
+<li>deps: debug@2.6.1
+<ul>
+<li>Allow colors in workers</li>
+<li>Deprecated <code>DEBUG_FD</code> environment variable set to <code>3</code> or higher</li>
+<li>Fix error when running under React Native</li>
+<li>Use same color for same namespace</li>
+<li>deps: ms@0.7.2</li>
+</ul>
+</li>
+</ul>
+<h1>1.1.5 / 2017-01-28</h1>
+<ul>
+<li>deps: array-flatten@2.1.1</li>
+<li>deps: setprototypeof@1.0.2
+<ul>
+<li>Fix using fallback even when native method exists</li>
+</ul>
+</li>
+</ul>
+<h1>1.1.4 / 2016-01-21</h1>
+<ul>
+<li>deps: array-flatten@2.0.0</li>
+<li>deps: methods@~1.1.2
+<ul>
+<li>perf: enable strict mode</li>
+</ul>
+</li>
+<li>deps: parseurl@~1.3.1
+<ul>
+<li>perf: enable strict mode</li>
+</ul>
+</li>
+</ul>
+<h1>1.1.3 / 2015-08-02</h1>
+<ul>
+<li>Fix infinite loop condition using <code>mergeParams: true</code></li>
+<li>Fix inner numeric indices incorrectly altering parent <code>req.params</code></li>
+<li>deps: array-flatten@1.1.1
+<ul>
+<li>perf: enable strict mode</li>
+</ul>
+</li>
+<li>deps: path-to-regexp@0.1.7
+<ul>
+<li>Fix regression with escaped round brackets and matching groups</li>
+</ul>
+</li>
+</ul>
+<h1>1.1.2 / 2015-07-06</h1>
+<ul>
+<li>Fix hiding platform issues with <code>decodeURIComponent</code>
+<ul>
+<li>Only <code>URIError</code>s are a 400</li>
+</ul>
+</li>
+<li>Fix using <code>*</code> before params in routes</li>
+<li>Fix using capture groups before params in routes</li>
+<li>deps: path-to-regexp@0.1.6</li>
+<li>perf: enable strict mode</li>
+<li>perf: remove argument reassignments in routing</li>
+<li>perf: skip attempting to decode zero length string</li>
+<li>perf: use plain for loops</li>
+</ul>
+<h1>1.1.1 / 2015-05-25</h1>
+<ul>
+<li>Fix issue where <code>next('route')</code> in <code>router.param</code> would incorrectly skip values</li>
+<li>deps: array-flatten@1.1.0</li>
+<li>deps: debug@~2.2.0
+<ul>
+<li>deps: ms@0.7.1</li>
+</ul>
+</li>
+</ul>
+<h1>1.1.0 / 2015-04-22</h1>
+<ul>
+<li>Use <code>setprototypeof</code> instead of <code>__proto__</code></li>
+<li>deps: debug@~2.1.3
+<ul>
+<li>Fix high intensity foreground color for bold</li>
+<li>deps: ms@0.7.0</li>
+</ul>
+</li>
+</ul>
+<h1>1.0.0 / 2015-01-13</h1>
+<ul>
+<li>Fix crash from error within <code>OPTIONS</code> response handler</li>
+<li>deps: array-flatten@1.0.2
+<ul>
+<li>Remove redundant code path</li>
+</ul>
+</li>
+</ul>
+<h1>1.0.0-beta.3 / 2015-01-11</h1>
+<ul>
+<li>Fix duplicate methods appearing in OPTIONS responses</li>
+<li>Fix OPTIONS responses to include the HEAD method properly</li>
+<li>Remove support for leading colon in <code>router.param(name, fn)</code></li>
+<li>Use <code>array-flatten</code> for flattening arrays</li>
+<li>deps: debug@~2.1.1</li>
+<li>deps: methods@~1.1.1</li>
+</ul>
+<h1>1.0.0-beta.2 / 2014-11-19</h1>
+<ul>
+<li>Match routes iteratively to prevent stack overflows</li>
+</ul>
+<h1>1.0.0-beta.1 / 2014-11-16</h1>
+<ul>
+<li>Initial release ported from Express 4.x
+<ul>
+<li>Altered to work without Express</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

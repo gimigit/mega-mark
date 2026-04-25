@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03-linking-and-navigating — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-03-linking-and-navigating">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#linking-to-dynamic-paths">Linking to dynamic paths</a></li><li><a href="#injecting-the-router">Injecting the router</a></li><li><a href="#imperative-routing">Imperative Routing</a></li><li><a href="#shallow-routing">Shallow Routing</a></li><ul><li><a href="#caveats">Caveats</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">03-linking-and-navigating</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how navigation works in Next.js, and how to use the Link Component and `useRouter` hook.</td></tr></table><p>The Next.js router allows you to do client-side route transitions between pages, similar to a single-page application.</p>
+<p>A React component called <code>Link</code> is provided to do this client-side route transition.</p>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+function Home() {
+  return (
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;Link href=&quot;/&quot;&gt;Home&lt;/Link&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;Link href=&quot;/about&quot;&gt;About Us&lt;/Link&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;Link href=&quot;/blog/hello-world&quot;&gt;Blog Post&lt;/Link&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  )
+}
+
+export default Home
+</code></pre>
+<p>The example above uses multiple links. Each one maps a path (<code>href</code>) to a known page:</p>
+<ul>
+<li><code>/</code> → <code>pages/index.js</code></li>
+<li><code>/about</code> → <code>pages/about.js</code></li>
+<li><code>/blog/hello-world</code> → <code>pages/blog/[slug].js</code></li>
+</ul>
+<p>Any <code>&lt;Link /&gt;</code> in the viewport (initially or through scroll) will be prefetched by default (including the corresponding data) for pages using <a href="/docs/pages/building-your-application/data-fetching/get-static-props">Static Generation</a>. The corresponding data for <a href="/docs/pages/building-your-application/data-fetching/get-server-side-props">server-rendered</a> routes is fetched <em>only when</em> the <code>&lt;Link /&gt;</code> is clicked.</p>
+<h2 id="linking-to-dynamic-paths">Linking to dynamic paths</h2>
+<p>You can also use interpolation to create the path, which comes in handy for <a href="/docs/pages/building-your-application/routing/dynamic-routes">dynamic route segments</a>. For example, to show a list of posts which have been passed to the component as a prop:</p>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+function Posts({ posts }) {
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;
+          &lt;Link href={`/blog/${encodeURIComponent(post.slug)}`}&gt;
+            {post.title}
+          &lt;/Link&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+
+export default Posts
+</code></pre>
+<blockquote>
+<p><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent" target="_blank" rel="noopener"><code>encodeURIComponent</code></a> is used in the example to keep the path utf-8 compatible.</p>
+</blockquote>
+<p>Alternatively, using a URL Object:</p>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+function Posts({ posts }) {
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;
+          &lt;Link
+            href={{
+              pathname: '/blog/[slug]',
+              query: { slug: post.slug },
+            }}
+          &gt;
+            {post.title}
+          &lt;/Link&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+
+export default Posts
+</code></pre>
+<p>Now, instead of using interpolation to create the path, we use a URL object in <code>href</code> where:</p>
+<ul>
+<li><code>pathname</code> is the name of the page in the <code>pages</code> directory. <code>/blog/[slug]</code> in this case.</li>
+<li><code>query</code> is an object with the dynamic segment. <code>slug</code> in this case.</li>
+</ul>
+<h2 id="injecting-the-router">Injecting the router</h2>
+<p>To access the <a href="/docs/pages/api-reference/functions/use-router#router-object"><code>router</code> object</a> in a React component you can use <a href="/docs/pages/api-reference/functions/use-router"><code>useRouter</code></a> or <a href="/docs/pages/api-reference/functions/use-router#withrouter"><code>withRouter</code></a>.</p>
+<p>In general we recommend using <a href="/docs/pages/api-reference/functions/use-router"><code>useRouter</code></a>.</p>
+<h2 id="imperative-routing">Imperative Routing</h2>
+<p><a href="/docs/pages/api-reference/components/link"><code>next/link</code></a> should be able to cover most of your routing needs, but you can also do client-side navigations without it, take a look at the <a href="/docs/pages/api-reference/functions/use-router">documentation for <code>next/router</code></a>.</p>
+<p>The following example shows how to do basic page navigations with <a href="/docs/pages/api-reference/functions/use-router"><code>useRouter</code></a>:</p>
+<pre><code class="language-jsx">import { useRouter } from 'next/router'
+
+export default function ReadMore() {
+  const router = useRouter()
+
+  return (
+    &lt;button onClick={() =&gt; router.push('/about')}&gt;
+      Click here to read more
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<h2 id="shallow-routing">Shallow Routing</h2>
+<details>
+  <summary>Examples</summary>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-shallow-routing" target="_blank" rel="noopener">Shallow Routing</a></li>
+</ul>
+</details>
+<p>Shallow routing allows you to change the URL without running data fetching methods again, that includes <a href="/docs/pages/building-your-application/data-fetching/get-server-side-props"><code>getServerSideProps</code></a>, <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a>, and <a href="/docs/pages/api-reference/functions/get-initial-props"><code>getInitialProps</code></a>.</p>
+<p>You’ll receive the updated <code>pathname</code> and the <code>query</code> via the <a href="/docs/pages/api-reference/functions/use-router#router-object"><code>router</code> object</a> (added by <a href="/docs/pages/api-reference/functions/use-router"><code>useRouter</code></a> or <a href="/docs/pages/api-reference/functions/use-router#withrouter"><code>withRouter</code></a>), without losing state.</p>
+<p>To enable shallow routing, set the <code>shallow</code> option to <code>true</code>. Consider the following example:</p>
+<pre><code class="language-jsx">import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+
+// Current URL is '/'
+function Page() {
+  const router = useRouter()
+
+  useEffect(() =&gt; {
+    // Always do navigations after the first render
+    router.push('/?counter=10', undefined, { shallow: true })
+  }, [])
+
+  useEffect(() =&gt; {
+    // The counter changed!
+  }, [router.query.counter])
+}
+
+export default Page
+</code></pre>
+<p>The URL will get updated to <code>/?counter=10</code> and the page won’t get replaced, only the state of the route is changed.</p>
+<p>You can also watch for URL changes via <a href="https://react.dev/reference/react/Component#componentdidupdate" target="_blank" rel="noopener"><code>componentDidUpdate</code></a> as shown below:</p>
+<pre><code class="language-jsx">componentDidUpdate(prevProps) {
+  const { pathname, query } = this.props.router
+  // verify props have changed to avoid an infinite loop
+  if (query.counter !== prevProps.router.query.counter) {
+    // fetch data based on the new query
+  }
+}
+</code></pre>
+<h3 id="caveats">Caveats</h3>
+<p>Shallow routing <strong>only</strong> works for URL changes in the current page. For example, let’s assume we have another page called <code>pages/about.js</code>, and you run this:</p>
+<pre><code class="language-js">router.push('/?counter=10', '/about?counter=10', { shallow: true })
+</code></pre>
+<p>Since that’s a new page, it’ll unload the current page, load the new one and wait for data fetching even though we asked to do shallow routing.</p>
+<p>When shallow routing is used with proxy it will not ensure the new page matches the current page like previously done without proxy. This is due to proxy being able to rewrite dynamically and can’t be verified client-side without a data fetch which is skipped with shallow, so a shallow route change must always be treated as shallow.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

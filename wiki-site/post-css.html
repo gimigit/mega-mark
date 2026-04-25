@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>post-css — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-post-css">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#default-behavior">Default Behavior</a></li><li><a href="#customizing-target-browsers">Customizing Target Browsers</a></li><li><a href="#css-modules">CSS Modules</a></li><li><a href="#customizing-plugins">Customizing Plugins</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">post-css</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>PostCSS</td></tr><tr><th>description</th><td>Extend the PostCSS config and plugins added by Next.js with your own.</td></tr></table><h2 id="default-behavior">Default Behavior</h2>
+<p>Next.js compiles CSS for its <a href="/docs/app/getting-started/css">built-in CSS support</a> using PostCSS.</p>
+<p>Out of the box, with no configuration, Next.js compiles CSS with the following transformations:</p>
+<ul>
+<li><a href="https://github.com/postcss/autoprefixer" target="_blank" rel="noopener">Autoprefixer</a> automatically adds vendor prefixes to CSS rules (back to IE11).</li>
+<li><a href="https://github.com/philipwalton/flexbugs" target="_blank" rel="noopener">Cross-browser Flexbox bugs</a> are corrected to behave like <a href="https://www.w3.org/TR/css-flexbox-1/" target="_blank" rel="noopener">the spec</a>.</li>
+<li>New CSS features are automatically compiled for Internet Explorer 11 compatibility:
+<ul>
+<li><a href="https://developer.mozilla.org/docs/Web/CSS/all" target="_blank" rel="noopener"><code>all</code> Property</a></li>
+<li><a href="https://developer.mozilla.org/docs/Web/CSS/break-after" target="_blank" rel="noopener">Break Properties</a></li>
+<li><a href="https://developer.mozilla.org/docs/Web/CSS/font-variant" target="_blank" rel="noopener"><code>font-variant</code> Property</a></li>
+<li><a href="https://developer.mozilla.org/docs/Web/CSS/gap" target="_blank" rel="noopener">Gap Properties</a></li>
+<li><a href="https://developer.mozilla.org/docs/Web/CSS/Media_Queries/Using_media_queries#Syntax_improvements_in_Level_4" target="_blank" rel="noopener">Media Query Ranges</a></li>
+</ul>
+</li>
+</ul>
+<p>By default, <a href="https://www.w3.org/TR/css-grid-1/" target="_blank" rel="noopener">CSS Grid</a> and <a href="https://developer.mozilla.org/docs/Web/CSS/var" target="_blank" rel="noopener">Custom Properties</a> (CSS variables) are <strong>not compiled</strong> for IE11 support.</p>
+<p>To compile <a href="https://developer.mozilla.org/docs/Web/CSS/grid" target="_blank" rel="noopener">CSS Grid Layout</a> for IE11, you can place the following comment at the top of your CSS file:</p>
+<pre><code class="language-css">/* autoprefixer grid: autoplace */
+</code></pre>
+<p>You can also enable IE11 support for <a href="https://developer.mozilla.org/docs/Web/CSS/grid" target="_blank" rel="noopener">CSS Grid Layout</a>
+in your entire project by configuring autoprefixer with the configuration shown below (collapsed).
+See <a href="#customizing-plugins">“Customizing Plugins”</a> below for more information.</p>
+<details>
+  <summary>Click to view the configuration to enable CSS Grid Layout</summary>
+<pre><code class="language-json">{
+  &quot;plugins&quot;: [
+    &quot;postcss-flexbugs-fixes&quot;,
+    [
+      &quot;postcss-preset-env&quot;,
+      {
+        &quot;autoprefixer&quot;: {
+          &quot;flexbox&quot;: &quot;no-2009&quot;,
+          &quot;grid&quot;: &quot;autoplace&quot;
+        },
+        &quot;stage&quot;: 3,
+        &quot;features&quot;: {
+          &quot;custom-properties&quot;: false
+        }
+      }
+    ]
+  ]
+}
+</code></pre>
+</details>
+<p>CSS variables are not compiled because it is <a href="https://github.com/MadLittleMods/postcss-css-variables#caveats" target="_blank" rel="noopener">not possible to safely do so</a>.
+If you must use variables, consider using something like <a href="https://sass-lang.com/documentation/variables" target="_blank" rel="noopener">Sass variables</a> which are compiled away by <a href="https://sass-lang.com/" target="_blank" rel="noopener">Sass</a>.</p>
+<h2 id="customizing-target-browsers">Customizing Target Browsers</h2>
+<p>Next.js allows you to configure the target browsers (for <a href="https://github.com/postcss/autoprefixer" target="_blank" rel="noopener">Autoprefixer</a> and compiled css features) through <a href="https://github.com/browserslist/browserslist" target="_blank" rel="noopener">Browserslist</a>.</p>
+<p>To customize browserslist, create a <code>browserslist</code> key in your <code>package.json</code> like so:</p>
+<pre><code class="language-json">{
+  &quot;browserslist&quot;: [&quot;&gt;0.3%&quot;, &quot;not dead&quot;, &quot;not op_mini all&quot;]
+}
+</code></pre>
+<p>You can use the <a href="https://browsersl.ist/?q=%3E0.3%25%2C+not+ie+11%2C+not+dead%2C+not+op_mini+all" target="_blank" rel="noopener">browsersl.ist</a> tool to visualize what browsers you are targeting.</p>
+<h2 id="css-modules">CSS Modules</h2>
+<p>No configuration is needed to support CSS Modules. To enable CSS Modules for a file, rename the file to have the extension <code>.module.css</code>.</p>
+<p>You can learn more about <a href="/docs/app/getting-started/css">Next.js’ CSS Module support here</a>.</p>
+<h2 id="customizing-plugins">Customizing Plugins</h2>
+<blockquote>
+<p><strong>Warning</strong>: When you define a custom PostCSS configuration file, Next.js <strong>completely disables</strong> the <a href="#default-behavior">default behavior</a>.
+Be sure to manually configure all the features you need compiled, including <a href="https://github.com/postcss/autoprefixer" target="_blank" rel="noopener">Autoprefixer</a>.
+You also need to install any plugins included in your custom configuration manually, i.e. <code>npm install postcss-flexbugs-fixes postcss-preset-env</code>.</p>
+</blockquote>
+<p>To customize the PostCSS configuration, create a <code>postcss.config.json</code> file in the root of your project.</p>
+<p>This is the default configuration used by Next.js:</p>
+<pre><code class="language-json">{
+  &quot;plugins&quot;: [
+    &quot;postcss-flexbugs-fixes&quot;,
+    [
+      &quot;postcss-preset-env&quot;,
+      {
+        &quot;autoprefixer&quot;: {
+          &quot;flexbox&quot;: &quot;no-2009&quot;
+        },
+        &quot;stage&quot;: 3,
+        &quot;features&quot;: {
+          &quot;custom-properties&quot;: false
+        }
+      }
+    ]
+  ]
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Next.js also allows the file to be named <code>.postcssrc.json</code>, or, to be read from the <code>postcss</code> key in <code>package.json</code>.</p>
+</blockquote>
+<p>It is also possible to configure PostCSS with a <code>postcss.config.js</code> file, which is useful when you want to conditionally include plugins based on environment:</p>
+<pre><code class="language-js">module.exports = {
+  plugins:
+    process.env.NODE_ENV === 'production'
+      ? [
+          'postcss-flexbugs-fixes',
+          [
+            'postcss-preset-env',
+            {
+              autoprefixer: {
+                flexbox: 'no-2009',
+              },
+              stage: 3,
+              features: {
+                'custom-properties': false,
+              },
+            },
+          ],
+        ]
+      : [
+          // No transformations in development
+        ],
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Next.js also allows the file to be named <code>.postcssrc.js</code>.</p>
+</blockquote>
+<p>Do <strong>not use <code>require()</code></strong> to import the PostCSS Plugins. Plugins must be provided as strings.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If your <code>postcss.config.js</code> needs to support other non-Next.js tools in the same project, you must use the interoperable object-based format instead:</p>
+<pre><code class="language-js">module.exports = {
+  plugins: {
+    'postcss-flexbugs-fixes': {},
+    'postcss-preset-env': {
+      autoprefixer: {
+        flexbox: 'no-2009',
+      },
+      stage: 3,
+      features: {
+        'custom-properties': false,
+      },
+    },
+  },
+}
+</code></pre>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-duplicates — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-duplicates">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#query-strings">Query Strings</a></li><li><a href="#inline-type-imports">Inline Type imports</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-duplicates</h1>
+
+</div>
+<div class="article-body">
+<p>⚠️ This rule <em>warns</em> in the following configs: ☑️ <code>recommended</code>, 🚸 <code>warnings</code>.</p>
+<p>🔧 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a>.</p>
+<!-- end auto-generated rule header -->
+<p>Reports if a resolved path is imported more than once.</p>
+<p>ESLint core has a similar rule (<a href="https://eslint.org/docs/rules/no-duplicate-imports" target="_blank" rel="noopener"><code>no-duplicate-imports</code></a>), but this version
+is different in two key ways:</p>
+<ol>
+<li>the paths in the source code don’t have to exactly match, they just have to point to the same module on the filesystem. (i.e. <code>./foo</code> and <code>./foo.js</code>)</li>
+<li>this version distinguishes Flow <code>type</code> imports from standard imports. (<a href="https://github.com/import-js/eslint-plugin-import/pull/334" target="_blank" rel="noopener">#334</a>)</li>
+</ol>
+<h2 id="rule-details">Rule Details</h2>
+<p>Valid:</p>
+<pre><code class="language-js">import SomeDefaultClass, * as names from './mod'
+// Flow `type` import from same module is fine
+import type SomeType from './mod'
+</code></pre>
+<p>…whereas here, both <code>./mod</code> imports will be reported:</p>
+<pre><code class="language-js">import SomeDefaultClass from './mod'
+
+// oops, some other import separated these lines
+import foo from './some-other-mod'
+
+import * as names from './mod'
+
+// will catch this too, assuming it is the same target module
+import { something } from './mod.js'
+</code></pre>
+<p>The motivation is that this is likely a result of two developers importing different
+names from the same module at different times (and potentially largely different
+locations in the file.) This rule brings both (or n-many) to attention.</p>
+<h3 id="query-strings">Query Strings</h3>
+<p>By default, this rule ignores query strings (i.e. paths followed by a question mark), and thus imports from <code>./mod?a</code> and <code>./mod?b</code> will be considered as duplicates. However you can use the option <code>considerQueryString</code> to handle them as different (primarily because browsers will resolve those imports differently).</p>
+<p>Config:</p>
+<pre><code class="language-json">&quot;import/no-duplicates&quot;: [&quot;error&quot;, {&quot;considerQueryString&quot;: true}]
+</code></pre>
+<p>And then the following code becomes valid:</p>
+<pre><code class="language-js">import minifiedMod from './mod?minify'
+import noCommentsMod from './mod?comments=0'
+import originalMod from './mod'
+</code></pre>
+<p>It will still catch duplicates when using the same module and the exact same query string:</p>
+<pre><code class="language-js">import SomeDefaultClass from './mod?minify'
+
+// This is invalid, assuming `./mod` and `./mod.js` are the same target:
+import * from './mod.js?minify'
+</code></pre>
+<h3 id="inline-type-imports">Inline Type imports</h3>
+<p>TypeScript 4.5 introduced a new <a href="https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/#type-on-import-names" target="_blank" rel="noopener">feature</a> that allows mixing of named value and type imports. In order to support fixing to an inline type import when duplicate imports are detected, <code>prefer-inline</code> can be set to true.</p>
+<p>Config:</p>
+<pre><code class="language-json">&quot;import/no-duplicates&quot;: [&quot;error&quot;, {&quot;prefer-inline&quot;: true}]
+</code></pre>
+<!--tabs-->
+<p>❌ Invalid <code>[&quot;error&quot;, {&quot;prefer-inline&quot;: true}]</code></p>
+<pre><code class="language-js">import { AValue, type AType } from './mama-mia'
+import type { BType } from './mama-mia'
+
+import { CValue } from './papa-mia'
+import type { CType } from './papa-mia'
+</code></pre>
+<p>✅ Valid with <code>[&quot;error&quot;, {&quot;prefer-inline&quot;: true}]</code></p>
+<pre><code class="language-js">import { AValue, type AType, type BType } from './mama-mia'
+
+import { CValue, type CType } from './papa-mia'
+</code></pre>
+<!--tabs-->
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If the core ESLint version is good enough (i.e. you’re <em>not</em> using Flow and you <em>are</em> using <a href="./extensions.md"><code>import/extensions</code></a>), keep it and don’t use this.</p>
+<p>If you like to split up imports across lines or may need to import a default and a namespace,
+you may not want to enable this rule.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

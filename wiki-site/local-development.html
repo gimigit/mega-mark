@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>local-development — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-local-development">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#local-dev-vs-production">Local dev vs. production</a></li><li><a href="#improving-local-dev-performance">Improving local dev performance</a></li><ul><li><a href="#1-check-your-computers-antivirus">1. Check your computer’s antivirus</a></li><li><a href="#2-update-nextjs-and-use-turbopack">2. Update Next.js and use Turbopack</a></li><li><a href="#3-check-your-imports">3. Check your imports</a></li><li><a href="#4-check-your-tailwind-css-setup">4. Check your Tailwind CSS setup</a></li><li><a href="#5-check-custom-webpack-settings">5. Check custom webpack settings</a></li><li><a href="#6-optimize-memory-usage">6. Optimize memory usage</a></li><li><a href="#7-server-components-and-data-fetching">7. Server Components and data fetching</a></li><li><a href="#8-consider-local-development-over-docker">8. Consider local development over Docker</a></li></ul><li><a href="#tools-for-finding-problems">Tools for finding problems</a></li><ul><li><a href="#detailed-fetch-logging">Detailed fetch logging</a></li><li><a href="#turbopack-tracing">Turbopack tracing</a></li><li><a href="#still-having-problems">Still having problems?</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">local-development</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Development Environment</td></tr><tr><th>description</th><td>Learn how to optimize your local development environment with Next.js.</td></tr></table><p>Next.js is designed to provide a great developer experience. As your application grows, you might notice slower compilation times during local development. This guide will help you identify and fix common compile-time performance issues.</p>
+<h2 id="local-dev-vs-production">Local dev vs. production</h2>
+<p>The development process with <code>next dev</code> is different than <code>next build</code> and <code>next start</code>.</p>
+<p><code>next dev</code> compiles routes in your application as you open or navigate to them. This enables you to start the dev server without waiting for every route in your application to compile, which is both faster and uses less memory. Running a production build applies other optimizations, like minifying files and creating content hashes, which are not needed for local development.</p>
+<h2 id="improving-local-dev-performance">Improving local dev performance</h2>
+<h3 id="1-check-your-computers-antivirus">1. Check your computer’s antivirus</h3>
+<p>Antivirus software can slow down file access. While this is more common on Windows machines, this can be an issue for any system with an antivirus tool installed.</p>
+<p>On Windows, you can add your project to the <a href="https://support.microsoft.com/en-us/windows/virus-and-threat-protection-in-the-windows-security-app-1362f4cd-d71a-b52a-0b66-c2820032b65e#bkmk_threat-protection-settings" target="_blank" rel="noopener">Microsoft Defender Antivirus exclusion list</a>.</p>
+<ol>
+<li>Open the <strong>“Windows Security”</strong> application and then select <strong>“Virus &amp; threat protection”</strong> → <strong>“Manage settings”</strong> → <strong>“Add or remove exclusions”</strong>.</li>
+<li>Add a <strong>“Folder”</strong> exclusion. Select your project folder.</li>
+</ol>
+<p>On macOS, you can disable <a href="https://support.apple.com/guide/security/gatekeeper-and-runtime-protection-sec5599b66df/web" target="_blank" rel="noopener">Gatekeeper</a> inside of your terminal.</p>
+<ol>
+<li>Run <code>sudo spctl developer-mode enable-terminal</code> in your terminal.</li>
+<li>Open the <strong>“System Settings”</strong> app and then select <strong>“Privacy &amp; Security”</strong> → <strong>“Developer Tools”</strong>.</li>
+<li>Ensure your terminal is listed and enabled. If you’re using a third-party terminal like iTerm or Ghostty, add that to the list.</li>
+<li>Restart your terminal.</li>
+</ol>
+<p><Image
+  alt="Screenshot of macOS System Settings showing the Privacy & Security pane"
+  srcLight="/docs/light/macos-gatekeeper-privacy-and-security.png"
+  srcDark="/docs/dark/macos-gatekeeper-privacy-and-security.png"
+  width="723"
+  height="250"
+/></p>
+<p><Image
+  alt="Screenshot of macOS System Settings showing the Developer Tools options"
+  srcLight="/docs/light/macos-gatekeeper-developer-tools.png"
+  srcDark="/docs/dark/macos-gatekeeper-developer-tools.png"
+  width="723"
+  height="250"
+/></p>
+<p>If you or your employer have configured any other Antivirus solutions on your system, you should inspect the relevant settings for those products.</p>
+<h3 id="2-update-nextjs-and-use-turbopack">2. Update Next.js and use Turbopack</h3>
+<p>Make sure you’re using the latest version of Next.js. Each new version often includes performance improvements.</p>
+<p>Turbopack is now the default bundler for Next.js development and provides significant performance improvements over webpack.</p>
+<pre><code class="language-bash">pnpm add next@latest
+pnpm dev  # Turbopack is used by default
+</code></pre>
+<pre><code class="language-bash">npm install next@latest
+npm run dev  # Turbopack is used by default
+</code></pre>
+<pre><code class="language-bash">yarn add next@latest
+yarn dev  # Turbopack is used by default
+</code></pre>
+<pre><code class="language-bash">bun add next@latest
+bun dev  # Turbopack is used by default
+</code></pre>
+<p>If you need to use Webpack instead of Turbopack, you can opt-in:</p>
+<pre><code class="language-bash">pnpm dev --webpack
+</code></pre>
+<pre><code class="language-bash">npm run dev -- --webpack
+</code></pre>
+<pre><code class="language-bash">yarn dev --webpack
+</code></pre>
+<pre><code class="language-bash">bun run dev --webpack
+</code></pre>
+<p><a href="/blog/turbopack-for-development-stable">Learn more about Turbopack</a>. See our <a href="/docs/app/guides/upgrading">upgrade guides</a> and codemods for more information.</p>
+<h3 id="3-check-your-imports">3. Check your imports</h3>
+<p>The way you import code can greatly affect compilation and bundling time. Learn more about <a href="/docs/app/guides/package-bundling">optimizing package bundling</a> and explore tools like <a href="https://github.com/sverweij/dependency-cruiser" target="_blank" rel="noopener">Dependency Cruiser</a> or <a href="https://github.com/pahen/madge" target="_blank" rel="noopener">Madge</a>.</p>
+<h4>Icon libraries</h4>
+<p>Libraries like <code>@material-ui/icons</code>, <code>@phosphor-icons/react</code>, or <code>react-icons</code> can import thousands of icons, even if you only use a few. Try to import only the icons you need:</p>
+<pre><code class="language-jsx">// Instead of this:
+import { TriangleIcon } from '@phosphor-icons/react'
+
+// Do this:
+import { TriangleIcon } from '@phosphor-icons/react/dist/csr/Triangle'
+</code></pre>
+<p>You can often find what import pattern to use in the documentation for the icon library you’re using. This example follows <a href="https://www.npmjs.com/package/@phosphor-icons/react#import-performance-optimization" target="_blank" rel="noopener"><code>@phosphor-icons/react</code></a> recommendation.</p>
+<p>Libraries like <code>react-icons</code> includes many different icon sets. Choose one set and stick with that set.</p>
+<p>For example, if your application uses <code>react-icons</code> and imports all of these:</p>
+<ul>
+<li><code>pi</code> (Phosphor Icons)</li>
+<li><code>md</code> (Material Design Icons)</li>
+<li><code>tb</code> (tabler-icons)</li>
+<li><code>cg</code> (cssgg)</li>
+</ul>
+<p>Combined they will be tens of thousands of modules that the compiler has to handle, even if you only use a single import from each.</p>
+<h4>Barrel files</h4>
+<p>“Barrel files” are files that export many items from other files. They can slow down builds because the compiler has to parse them to find if there are side-effects in the module scope by using the import.</p>
+<p>Try to import directly from specific files when possible. <a href="https://vercel.com/blog/how-we-optimized-package-imports-in-next-js" target="_blank" rel="noopener">Learn more about barrel files</a> and the built-in optimizations in Next.js.</p>
+<h4>Optimize package imports</h4>
+<p>Next.js can automatically optimize imports for certain packages. If you are using packages that utilize barrel files, add them to your <code>next.config.js</code>:</p>
+<pre><code class="language-jsx">module.exports = {
+  experimental: {
+    optimizePackageImports: ['package-name'],
+  },
+}
+</code></pre>
+<p>Turbopack automatically analyzes imports and optimizes them. It does not require this configuration.</p>
+<h3 id="4-check-your-tailwind-css-setup">4. Check your Tailwind CSS setup</h3>
+<p>If you’re using Tailwind CSS, make sure it’s set up correctly.</p>
+<p>A common mistake is configuring your <code>content</code> array in a way which includes <code>node_modules</code> or other large directories of files that should not be scanned.</p>
+<p>Tailwind CSS version 3.4.8 or newer will warn you about settings that might slow down your build.</p>
+<ol>
+<li>
+<p>In your <code>tailwind.config.js</code>, be specific about which files to scan:</p>
+<pre><code class="language-jsx">module.exports = {
+  content: [
+    './src/**/*.{js,ts,jsx,tsx}', // Good
+    // This might be too broad
+    // It will match `packages/**/node_modules` too
+    // '../../packages/**/*.{js,ts,jsx,tsx}',
+  ],
+}
+</code></pre>
+</li>
+<li>
+<p>Avoid scanning unnecessary files:</p>
+<pre><code class="language-jsx">module.exports = {
+  content: [
+    // Better - only scans the 'src' folder
+    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
+  ],
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="5-check-custom-webpack-settings">5. Check custom webpack settings</h3>
+<p>If you’ve added custom webpack settings, they might be slowing down compilation.</p>
+<p>Consider if you really need them for local development. You can optionally only include certain tools for production builds, or explore using the default Turbopack bundler and configuring <a href="/docs/app/api-reference/config/next-config-js/turbopack#configuring-webpack-loaders">loaders</a> instead.</p>
+<h3 id="6-optimize-memory-usage">6. Optimize memory usage</h3>
+<p>If your app is very large, it might need more memory.</p>
+<p><a href="/docs/app/guides/memory-usage">Learn more about optimizing memory usage</a>.</p>
+<h3 id="7-server-components-and-data-fetching">7. Server Components and data fetching</h3>
+<p>Changes to Server Components cause the entire page to re-render locally in order to show the new changes, which includes fetching new data for the component.</p>
+<p>The experimental <code>serverComponentsHmrCache</code> option allows you to cache <code>fetch</code> responses in Server Components across Hot Module Replacement (HMR) refreshes in local development. This results in faster responses and reduced costs for billed API calls.</p>
+<p><a href="/docs/app/api-reference/config/next-config-js/serverComponentsHmrCache">Learn more about the experimental option</a>.</p>
+<h3 id="8-consider-local-development-over-docker">8. Consider local development over Docker</h3>
+<p>If you’re using Docker for development on Mac or Windows, you may experience significantly slower performance compared to running Next.js locally.</p>
+<p>Docker’s filesystem access on Mac and Windows can cause Hot Module Replacement (HMR) to take seconds or even minutes, while the same application runs with fast HMR when developed locally.</p>
+<p>This performance difference is due to how Docker handles filesystem operations outside of Linux environments. For the best development experience:</p>
+<ul>
+<li>Use local development (<code>npm run dev</code> or <code>pnpm dev</code>) instead of Docker during development</li>
+<li>Reserve Docker for production deployments and testing production builds</li>
+<li>If you must use Docker for development, consider using Docker on a Linux machine or VM</li>
+</ul>
+<p><a href="/docs/app/getting-started/deploying#docker">Learn more about Docker deployment</a> for production use.</p>
+<h2 id="tools-for-finding-problems">Tools for finding problems</h2>
+<h3 id="detailed-fetch-logging">Detailed fetch logging</h3>
+<p>Use the <code>logging.fetches</code> option in your <code>next.config.js</code> file, to see more detailed information about what’s happening during development:</p>
+<pre><code class="language-js">module.exports = {
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+}
+</code></pre>
+<p><a href="/docs/app/api-reference/config/next-config-js/logging">Learn more about fetch logging</a>.</p>
+<h3 id="turbopack-tracing">Turbopack tracing</h3>
+<p>Turbopack tracing is a tool that helps you understand the performance of your application during local development.
+It provides detailed information about the time taken for each module to compile and how they are related.</p>
+<ol>
+<li>
+<p>Make sure you have the latest version of Next.js installed.</p>
+</li>
+<li>
+<p>Generate a Turbopack trace file:</p>
+<pre><code class="language-bash">NEXT_TURBOPACK_TRACING=1 pnpm dev
+</code></pre>
+<pre><code class="language-bash">NEXT_TURBOPACK_TRACING=1 npm run dev
+</code></pre>
+<pre><code class="language-bash">NEXT_TURBOPACK_TRACING=1 yarn dev
+</code></pre>
+<pre><code class="language-bash">NEXT_TURBOPACK_TRACING=1 bun dev
+</code></pre>
+</li>
+<li>
+<p>Navigate around your application or make edits to files to reproduce the problem.</p>
+</li>
+<li>
+<p>Stop the Next.js development server.</p>
+</li>
+<li>
+<p>A file called <code>trace-turbopack</code> will be available in the <code>.next/dev</code> folder.</p>
+</li>
+<li>
+<p>You can interpret the file using <code>npx next internal trace [path-to-file]</code>:</p>
+<pre><code class="language-bash">npx next internal trace .next/dev/trace-turbopack
+</code></pre>
+<p>On versions where <code>trace</code> is not available, the command was named <code>turbo-trace-server</code>:</p>
+<pre><code class="language-bash">npx next internal turbo-trace-server .next/dev/trace-turbopack
+</code></pre>
+</li>
+<li>
+<p>Once the trace server is running you can view the trace at <a href="https://trace.nextjs.org/" target="_blank" rel="noopener">https://trace.nextjs.org/</a>.</p>
+</li>
+<li>
+<p>By default the trace viewer will aggregate timings, in order to see each individual time you can switch from “Aggregated in order” to “Spans in order” at the top right of the viewer.</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Good to know</strong>: The trace file is placed under the development server directory, which defaults to <code>.next/dev</code>.</p>
+</blockquote>
+<h3 id="still-having-problems">Still having problems?</h3>
+<p>Share the trace file generated in the <a href="#turbopack-tracing">Turbopack Tracing</a> section and share it on <a href="https://github.com/vercel/next.js/discussions" target="_blank" rel="noopener">GitHub Discussions</a> or <a href="https://nextjs.org/discord" target="_blank" rel="noopener">Discord</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>loading — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-loading">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#parameters">Parameters</a></li></ul><li><a href="#behavior">Behavior</a></li><ul><li><a href="#navigation">Navigation</a></li><li><a href="#instant-loading-states">Instant Loading States</a></li><li><a href="#seo">SEO</a></li><li><a href="#status-codes">Status Codes</a></li><li><a href="#browser-limits">Browser limits</a></li></ul><li><a href="#platform-support">Platform Support</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#streaming-with-suspense">Streaming with Suspense</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">loading</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the loading.js file.</td></tr></table><p>{/* AI agent hint: loading.js provides fallback UI but does not guarantee instant client-side navigations. To ensure navigations are instant, also export <code>unstable_instant</code> from the route. See docs/01-app/02-guides/instant-navigation.mdx */}</p>
+<p>The special file <code>loading.js</code> helps you create meaningful Loading UI with <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener">React Suspense</a>. With this convention, you can show an <a href="#instant-loading-states">instant loading state</a> from the server while the content of a route segment streams in. The new content is automatically swapped in once complete.</p>
+<p><Image
+  alt="Loading UI"
+  srcLight="/docs/light/loading-ui.png"
+  srcDark="/docs/dark/loading-ui.png"
+  width="1600"
+  height="691"
+/></p>
+<pre><code class="language-tsx">export default function Loading() {
+  // Or a custom loading skeleton component
+  return &lt;p&gt;Loading...&lt;/p&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Loading() {
+  // Or a custom loading skeleton component
+  return &lt;p&gt;Loading...&lt;/p&gt;
+}
+</code></pre>
+<p>Inside the <code>loading.js</code> file, you can add any light-weight loading UI. You may find it helpful to use the <a href="https://react.dev/learn/react-developer-tools" target="_blank" rel="noopener">React Developer Tools</a> to manually toggle Suspense boundaries.</p>
+<p>By default, this file is a <a href="/docs/app/getting-started/server-and-client-components">Server Component</a> - but can also be used as a Client Component through the <code>&quot;use client&quot;</code> directive.</p>
+<h2 id="reference">Reference</h2>
+<h3 id="parameters">Parameters</h3>
+<p>Loading UI components do not accept any parameters.</p>
+<h2 id="behavior">Behavior</h2>
+<h3 id="navigation">Navigation</h3>
+<ul>
+<li>The Fallback UI is <a href="/docs/app/getting-started/linking-and-navigating#prefetching">prefetched</a>, making navigation immediate unless prefetching hasn’t completed.</li>
+<li>Navigation is interruptible, meaning changing routes does not need to wait for the content of the route to fully load before navigating to another route.</li>
+<li>Shared layouts remain interactive while new route segments load.</li>
+</ul>
+<h3 id="instant-loading-states">Instant Loading States</h3>
+<p>An instant loading state is fallback UI that is shown immediately upon navigation. You can prerender loading indicators such as skeletons and spinners, or a small but meaningful part of future screens such as a cover photo, title, etc. This helps users understand the app is responding and provides a better user experience.</p>
+<p>Create a loading state by adding a <code>loading.js</code> file inside a folder.</p>
+<p><Image
+  alt="loading.js special file"
+  srcLight="/docs/light/loading-special-file.png"
+  srcDark="/docs/dark/loading-special-file.png"
+  width="1600"
+  height="606"
+/></p>
+<pre><code class="language-tsx">export default function Loading() {
+  // You can add any UI inside Loading, including a Skeleton.
+  return &lt;LoadingSkeleton /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Loading() {
+  // You can add any UI inside Loading, including a Skeleton.
+  return &lt;LoadingSkeleton /&gt;
+}
+</code></pre>
+<p>In the same folder, <code>loading.js</code> will be nested inside <code>layout.js</code>. It will automatically wrap the <code>page.js</code> file and any children below in a <code>&lt;Suspense&gt;</code> boundary.</p>
+<p><Image
+  alt="loading.js overview"
+  srcLight="/docs/light/loading-overview.png"
+  srcDark="/docs/dark/loading-overview.png"
+  width="1600"
+  height="768"
+/></p>
+<p>In the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, <code>loading.js</code> wraps <code>not-found.js</code>, <code>page.js</code>, and nested <code>layout.js</code> files in a <code>&lt;Suspense&gt;</code> boundary. It does <strong>not</strong> wrap the <code>layout.js</code>, <code>template.js</code>, or <code>error.js</code> in the same segment.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If the layout accesses uncached or runtime data (e.g. <code>cookies()</code>, <code>headers()</code>, or uncached fetches), <code>loading.js</code> will not show a fallback for it.</p>
+<ul>
+<li><strong>Without <a href="/docs/app/getting-started/caching">Cache Components</a>:</strong> Navigation blocks until the layout finishes rendering.</li>
+<li><strong>With <a href="/docs/app/getting-started/caching">Cache Components</a>:</strong> Uncached or runtime data access in the layout must be explicitly wrapped in <code>&lt;Suspense&gt;</code>, otherwise Next.js guides you with a build-time error. The static shell streams first, and the uncached content fills in.</li>
+</ul>
+<p>To ensure instant navigation, move uncached data fetching from <code>layout.js</code> into <code>page.js</code>, or wrap the runtime data access in your layout in its own <code>&lt;Suspense&gt;</code> boundary. See <a href="/docs/app/api-reference/file-conventions/layout#interaction-with-loadingjs">layout.js Caveats</a> for details and examples.</p>
+</blockquote>
+<h3 id="seo">SEO</h3>
+<ul>
+<li>For bots that only scrape static HTML, and cannot execute JavaScript like a full browser, such as Twitterbot, Next.js resolves <a href="/docs/app/api-reference/functions/generate-metadata"><code>generateMetadata</code></a> before streaming UI, and metadata is placed in the <code>&lt;head&gt;</code> of the initial HTML.</li>
+<li>Otherwise, <a href="/docs/app/api-reference/functions/generate-metadata#streaming-metadata">streaming metadata</a> may be used. Next.js automatically detects user agents to choose between blocking and streaming behavior.</li>
+<li>Since streaming is server-rendered, it does not impact SEO. You can use the <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Rich Results Test</a> tool from Google to see how your page appears to Google’s web crawlers and view the serialized HTML (<a href="https://web.dev/rendering-on-the-web/#seo-considerations" target="_blank" rel="noopener">source</a>).</li>
+</ul>
+<h3 id="status-codes">Status Codes</h3>
+<p>When streaming, a <code>200</code> status code will be returned to signal that the request was successful.</p>
+<p>The server can still communicate errors or issues to the client within the streamed content itself, for example, when using <a href="/docs/app/api-reference/functions/redirect"><code>redirect</code></a> or <a href="/docs/app/api-reference/functions/not-found"><code>notFound</code></a>. Because the response headers have already been sent to the client, the status code of the response cannot be updated.</p>
+<p>For example, when a 404 page is streamed to the client, Next.js includes a <code>&lt;meta name=&quot;robots&quot; content=&quot;noindex&quot;&gt;</code> tag in the streamed HTML. This prevents search engines from indexing that URL even if the HTTP status is 200. See Google’s guidance on the <a href="https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag" target="_blank" rel="noopener"><code>robots</code> meta tag</a>.</p>
+<p>Some crawlers may label these responses as “soft 404s”. In the streaming case, this does not lead to indexation because the page is explicitly marked <code>noindex</code> in the HTML.</p>
+<p>If you need a 404 status, for compliance or analytics, ensure the resource exists before the response body is streamed, so that the server can set the HTTP status code.</p>
+<p>You can run this check in <a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy</code></a> to rewrite missing slugs to a not-found route, or <a href="/docs/app/api-reference/file-conventions/proxy#producing-a-response">produce a 404 response</a>. Keep proxy checks fast, and avoid fetching full content there.</p>
+<details>
+<summary>When is the response body streamed?</summary>
+<p>The response body starts streaming when a Suspense fallback renders (for example, a <code>loading.tsx</code>) or when a Server Component suspends under a <code>Suspense</code> boundary. Place <code>notFound()</code> before those boundaries and before any <code>await</code> that may suspend.</p>
+<p>To start streaming, the response headers must be set. This is why it is not possible to change the status code after streaming started.</p>
+</details>
+<h3 id="browser-limits">Browser limits</h3>
+<p><a href="https://bugs.webkit.org/show_bug.cgi?id=252413" target="_blank" rel="noopener">Some browsers</a> buffer a streaming response. You may not see the streamed response until the response exceeds 1024 bytes. This typically only affects “hello world” applications, but not real applications.</p>
+<h2 id="platform-support">Platform Support</h2>
+<table>
+<thead>
+<tr>
+<th>Deployment Option</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#nodejs-server">Node.js server</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#docker">Docker container</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#static-export">Static export</a></td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#adapters">Adapters</a></td>
+<td>Platform-specific</td>
+</tr>
+</tbody>
+</table>
+<p>Learn how to <a href="/docs/app/guides/self-hosting#streaming-and-suspense">configure streaming</a> when self-hosting Next.js.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="streaming-with-suspense">Streaming with Suspense</h3>
+<p>In addition to <code>loading.js</code>, you can also manually create Suspense Boundaries for your own UI components. The App Router supports streaming with <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener">Suspense</a>. See the <a href="/docs/app/guides/streaming">Streaming guide</a> for more on how streaming works, including granular Suspense patterns, Route Handler streaming, and infrastructure considerations.</p>
+<p><code>&lt;Suspense&gt;</code> works by wrapping a component that performs an asynchronous action (e.g. fetch data), showing fallback UI (e.g. skeleton, spinner) while it’s happening, and then swapping in your component once the action completes.</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { PostFeed, Weather } from './Components'
+
+export default function Posts() {
+  return (
+    &lt;section&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading feed...&lt;/p&gt;}&gt;
+        &lt;PostFeed /&gt;
+      &lt;/Suspense&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading weather...&lt;/p&gt;}&gt;
+        &lt;Weather /&gt;
+      &lt;/Suspense&gt;
+    &lt;/section&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { PostFeed, Weather } from './Components'
+
+export default function Posts() {
+  return (
+    &lt;section&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading feed...&lt;/p&gt;}&gt;
+        &lt;PostFeed /&gt;
+      &lt;/Suspense&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading weather...&lt;/p&gt;}&gt;
+        &lt;Weather /&gt;
+      &lt;/Suspense&gt;
+    &lt;/section&gt;
+  )
+}
+</code></pre>
+<p>By using Suspense, you get the benefits of:</p>
+<ol>
+<li><strong>Streaming Server Rendering</strong> - Progressively rendering HTML from the server to the client.</li>
+<li><strong>Selective Hydration</strong> - React prioritizes what components to make interactive first based on user interaction.</li>
+</ol>
+<p>For more Suspense examples and use cases, please see the <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener">React Documentation</a>.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>loading</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

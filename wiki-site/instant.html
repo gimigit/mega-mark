@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>instant — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-instant">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#prefetch">prefetch</a></li><li><a href="#disabling-instant">Disabling instant</a></li></ul><li><a href="#how-validation-works">How validation works</a></li><li><a href="#inspecting-loading-states">Inspecting loading states</a></li><li><a href="#testing-instant-navigation">Testing instant navigation</a></li><li><a href="#known-issue-shared-cookie-across-projects">Known issue: shared cookie across projects</a></li><li><a href="#typescript">TypeScript</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">instant</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use instant navigations in practice.</td></tr><tr><th>version</th><td>draft</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>unstable_instant</code> route segment config opts a route into validation for instant client-side navigations. Next.js checks, during development and at build time, that the caching structure produces an instant <a href="/docs/app/glossary#static-shell">static shell</a> at every possible entry point into the route.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The <code>unstable_instant</code> export only works when <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> is enabled.</li>
+<li><code>unstable_instant</code> cannot be used in Client Components. It will throw an error.</li>
+</ul>
+</blockquote>
+<pre><code class="language-tsx">export const unstable_instant = {
+  prefetch: 'static',
+}
+
+export default function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export const unstable_instant = {
+  prefetch: 'static',
+}
+
+export default function Page() {
+  return &lt;div&gt;...&lt;/div&gt;
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="prefetch"><code>prefetch</code></h3>
+<p>Controls the validation and prefetching mode.</p>
+<pre><code class="language-tsx">export const unstable_instant = {
+  prefetch: 'static',
+}
+</code></pre>
+<ul>
+<li><strong><code>'static'</code></strong>: Enables validation. Prefetching behavior stays the same (static by default). Components that read cookies or headers are treated as dynamic and must be behind Suspense.</li>
+</ul>
+<h3 id="disabling-instant">Disabling instant</h3>
+<p>Set <code>false</code> to exempt a segment from validation:</p>
+<pre><code class="language-tsx">export const unstable_instant = false
+</code></pre>
+<h2 id="how-validation-works">How validation works</h2>
+<p><code>unstable_instant</code> triggers validation at every shared layout boundary in the route. Validation runs during development (on page loads and HMR updates) and at build time. Errors appear in the dev error overlay or fail the build.</p>
+<p>Each error identifies the component that would block navigation. The fix is usually to cache the data with <code>use cache</code> or wrap it in a <code>&lt;Suspense&gt;</code> boundary.</p>
+<h2 id="inspecting-loading-states">Inspecting loading states</h2>
+<p>Enable the DevTools toggle with the experimental flag:</p>
+<pre><code class="language-js">module.exports = {
+  experimental: {
+    instantNavigationDevToolsToggle: true,
+  },
+}
+</code></pre>
+<p>Open the Next.js DevTools and select <strong>Instant Navs</strong>. Two options are available:</p>
+<ul>
+<li><strong>Page load</strong>: click <strong>Reload</strong> to refresh the page and freeze it at the initial static UI that was generated for this route, before any dynamic data streams in.</li>
+<li><strong>Client navigation</strong>: once enabled, clicking any link in your app shows the prefetched UI for that page instead of the full result.</li>
+</ul>
+<p>Use both to check that your loading states look right on first visit and on navigation.</p>
+<h2 id="testing-instant-navigation">Testing instant navigation</h2>
+<p>The <code>@next/playwright</code> package exports an <code>instant()</code> helper that holds back dynamic content while the callback runs against the static shell. See the <a href="/docs/app/guides/instant-navigation#prevent-regressions-with-e2e-tests">guide</a> for a full example.</p>
+<pre><code class="language-typescript">import { instant } from '@next/playwright'
+</code></pre>
+<p>{/* TODO: remove when fixed and from prod-docs-release */}</p>
+<h2 id="known-issue-shared-cookie-across-projects">Known issue: shared cookie across projects</h2>
+<p>The DevTools use a <code>next-instant-navigation-testing</code> cookie to freeze the UI at the static shell. Because cookies are scoped to the domain and not the port, running multiple projects on the same domain (typically <code>localhost</code>) means the cookie is shared across them and can cause unexpected behavior. Clear the cookie or close the Instant Navs panel when switching between projects to avoid issues.</p>
+<blockquote>
+<p><strong>Good to know:</strong> This will be fixed as part of stabilizing the feature.</p>
+</blockquote>
+<h2 id="typescript">TypeScript</h2>
+<pre><code class="language-tsx">type RuntimeSample = {
+  cookies?: Array&lt;{ name: string; value: string }&gt;
+  headers?: Array&lt;[string, string]&gt;
+  params?: Record&lt;string, string | string[]&gt;
+  searchParams?: Record&lt;string, string | string[]&gt;
+}
+
+type InstantConfig =
+  | false
+  | {
+      prefetch: 'static'
+      from?: string[]
+      unstable_disableValidation?: boolean
+    }
+  | {
+      prefetch: 'runtime'
+      samples: RuntimeSample[]
+      from?: string[]
+      unstable_disableValidation?: boolean
+    }
+
+export const unstable_instant: InstantConfig = {
+  prefetch: 'static',
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.x.x</code></td>
+<td><code>unstable_instant</code> export introduced (Cache Components only)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

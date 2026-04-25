@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>head — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-head">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#avoid-duplicated-tags">Avoid duplicated tags</a></li><li><a href="#use-minimal-nesting">Use minimal nesting</a></li><li><a href="#use-nextscript-for-scripts">Use next/script for scripts</a></li><li><a href="#no-html-or-body-tags">No html or body tags</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">head</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Add custom elements to the `head` of your page with the built-in Head component.</td></tr></table><p>We expose a built-in component for appending elements to the <code>head</code> of the page:</p>
+<pre><code class="language-jsx">import Head from 'next/head'
+
+function IndexPage() {
+  return (
+    &lt;div&gt;
+      &lt;Head&gt;
+        &lt;title&gt;My page title&lt;/title&gt;
+      &lt;/Head&gt;
+      &lt;p&gt;Hello world!&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default IndexPage
+</code></pre>
+<h2 id="avoid-duplicated-tags">Avoid duplicated tags</h2>
+<p>To avoid duplicate tags in your <code>head</code> you can use the <code>key</code> property, which will make sure the tag is only rendered once, as in the following example:</p>
+<pre><code class="language-jsx">import Head from 'next/head'
+
+function IndexPage() {
+  return (
+    &lt;div&gt;
+      &lt;Head&gt;
+        &lt;title&gt;My page title&lt;/title&gt;
+        &lt;meta property=&quot;og:title&quot; content=&quot;My page title&quot; key=&quot;title&quot; /&gt;
+      &lt;/Head&gt;
+      &lt;Head&gt;
+        &lt;meta property=&quot;og:title&quot; content=&quot;My new title&quot; key=&quot;title&quot; /&gt;
+      &lt;/Head&gt;
+      &lt;p&gt;Hello world!&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default IndexPage
+</code></pre>
+<p>In this case only the second <code>&lt;meta property=&quot;og:title&quot; /&gt;</code> is rendered. <code>meta</code> tags with duplicate <code>key</code> attributes are automatically handled.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>&lt;title&gt;</code> and <code>&lt;base&gt;</code> tags are automatically checked for duplicates by Next.js, so using key is not necessary for these tags.</p>
+</blockquote>
+<blockquote>
+<p>The contents of <code>head</code> get cleared upon unmounting the component, so make sure each page completely defines what it needs in <code>head</code>, without making assumptions about what other pages added.</p>
+</blockquote>
+<h2 id="use-minimal-nesting">Use minimal nesting</h2>
+<p><code>title</code>, <code>meta</code> or any other elements (e.g. <code>script</code>) need to be contained as <strong>direct</strong> children of the <code>Head</code> element,
+or wrapped into maximum one level of <code>&lt;React.Fragment&gt;</code> or arrays—otherwise the tags won’t be correctly picked up on client-side navigations.</p>
+<h2 id="use-nextscript-for-scripts">Use <code>next/script</code> for scripts</h2>
+<p>We recommend using <a href="/docs/pages/guides/scripts"><code>next/script</code></a> in your component instead of manually creating a <code>&lt;script&gt;</code> in <code>next/head</code>.</p>
+<h2 id="no-html-or-body-tags">No <code>html</code> or <code>body</code> tags</h2>
+<p>You <strong>cannot</strong> use <code>&lt;Head&gt;</code> to set attributes on <code>&lt;html&gt;</code> or <code>&lt;body&gt;</code> tags. This will result in an <code>next-head-count is missing</code> error. <code>next/head</code> can only handle tags inside the HTML <code>&lt;head&gt;</code> tag.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

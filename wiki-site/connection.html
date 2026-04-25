@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>connection — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-connection">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#type">Type</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li></ul><li><a href="#good-to-know">Good to know</a></li><ul><li><a href="#version-history">Version History</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">connection</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the connection function.</td></tr></table><p>The <code>connection()</code> function allows you to indicate rendering should wait for an incoming user request before continuing.</p>
+<p>It’s useful when a component doesn’t use <a href="/docs/app/glossary#request-time-apis">Request-time APIs</a>, but you want it to be rendered at runtime and not prerendered at build time. This usually occurs when you access external information that you intentionally want to change the result of a render, such as <code>Math.random()</code> or <code>new Date()</code>.</p>
+<pre><code class="language-ts">import { connection } from 'next/server'
+
+export default async function Page() {
+  await connection()
+  // Everything below will be excluded from prerendering
+  const rand = Math.random()
+  return &lt;span&gt;{rand}&lt;/span&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { connection } from 'next/server'
+
+export default async function Page() {
+  await connection()
+  // Everything below will be excluded from prerendering
+  const rand = Math.random()
+  return &lt;span&gt;{rand}&lt;/span&gt;
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="type">Type</h3>
+<pre><code class="language-jsx">function connection(): Promise&lt;void&gt;
+</code></pre>
+<h3 id="parameters">Parameters</h3>
+<ul>
+<li>The function does not accept any parameters.</li>
+</ul>
+<h3 id="returns">Returns</h3>
+<ul>
+<li>The function returns a <code>void</code> Promise. It is not meant to be consumed.</li>
+</ul>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li><code>connection</code> replaces <a href="/docs/app/api-reference/functions/unstable_noStore"><code>unstable_noStore</code></a> to better align with the future of Next.js.</li>
+<li>The function is only necessary when dynamic rendering is required and common Request-time APIs are not used.</li>
+</ul>
+<h3 id="version-history">Version History</h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0</code></td>
+<td><code>connection</code> stabilized.</td>
+</tr>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td><code>connection</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

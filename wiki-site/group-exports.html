@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/group-exports — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-group-exports">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#valid">Valid</a></li><li><a href="#invalid">Invalid</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/group-exports</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Reports when named exports are not grouped together in a single <code>export</code> declaration or when multiple assignments to CommonJS <code>module.exports</code> or <code>exports</code> object are present in a single file.</p>
+<p><strong>Rationale:</strong> An <code>export</code> declaration or <code>module.exports</code> assignment can appear anywhere in the code. By requiring a single export declaration all your exports will remain at one place, making it easier to see what exports a module provides.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule warns whenever a single file contains multiple named export declarations or multiple assignments to <code>module.exports</code> (or <code>exports</code>).</p>
+<h3 id="valid">Valid</h3>
+<pre><code class="language-js">// A single named export declaration -&gt; ok
+export const valid = true
+</code></pre>
+<pre><code class="language-js">const first = true
+const second = true
+
+// A single named export declaration -&gt; ok
+export {
+  first,
+  second,
+}
+</code></pre>
+<pre><code class="language-js">// Aggregating exports -&gt; ok
+export { default as module1 } from 'module-1'
+export { default as module2 } from 'module-2'
+</code></pre>
+<pre><code class="language-js">// A single exports assignment -&gt; ok
+module.exports = {
+  first: true,
+  second: true
+}
+</code></pre>
+<pre><code class="language-js">const first = true
+const second = true
+
+// A single exports assignment -&gt; ok
+module.exports = {
+  first,
+  second,
+}
+</code></pre>
+<pre><code class="language-js">function test() {}
+test.property = true
+test.another = true
+
+// A single exports assignment -&gt; ok
+module.exports = test
+</code></pre>
+<pre><code class="language-ts">const first = true;
+type firstType = boolean
+
+// A single named export declaration (type exports handled separately) -&gt; ok
+export {first}
+export type {firstType}
+</code></pre>
+<h3 id="invalid">Invalid</h3>
+<pre><code class="language-js">// Multiple named export statements -&gt; not ok!
+export const first = true
+export const second = true
+</code></pre>
+<pre><code class="language-js">// Aggregating exports from the same module -&gt; not ok!
+export { module1 } from 'module-1'
+export { module2 } from 'module-1'
+</code></pre>
+<pre><code class="language-js">// Multiple exports assignments -&gt; not ok!
+exports.first = true
+exports.second = true
+</code></pre>
+<pre><code class="language-js">// Multiple exports assignments -&gt; not ok!
+module.exports = {}
+module.exports.first = true
+</code></pre>
+<pre><code class="language-js">// Multiple exports assignments -&gt; not ok!
+module.exports = () =&gt; {}
+module.exports.first = true
+module.exports.second = true
+</code></pre>
+<pre><code class="language-ts">type firstType = boolean
+type secondType = any
+
+// Multiple named type export statements -&gt; not ok!
+export type {firstType}
+export type {secondType}
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you do not mind having your exports spread across the file, you can safely turn this rule off.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

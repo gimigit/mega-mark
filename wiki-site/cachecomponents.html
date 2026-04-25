@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cachecomponents — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-cachecomponents">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#navigation-with-activity">Navigation with Activity</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">cachecomponents</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to enable the cacheComponents flag in Next.js.</td></tr></table><p>The <code>cacheComponents</code> flag is a feature in Next.js that causes data fetching operations in the App Router to be excluded from prerenders unless they are explicitly cached. This can be useful for optimizing the performance of uncached data fetching in Server Components.</p>
+<p>It is useful if your application requires fresh data fetching during runtime rather than serving from a prerendered cache.</p>
+<p>It is expected to be used in conjunction with <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> so that your data fetching happens at runtime by default unless you define specific parts of your application to be cached with <code>use cache</code> at the page, function, or component level.</p>
+<h2 id="usage">Usage</h2>
+<p>To enable the <code>cacheComponents</code> flag, set it to <code>true</code> in your <code>next.config.ts</code> file:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<p>When <code>cacheComponents</code> is enabled, you can use the following cache functions and configurations:</p>
+<ul>
+<li>The <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code> directive</a></li>
+<li>The <a href="/docs/app/api-reference/config/next-config-js/cacheLife"><code>cacheLife</code> function</a> with <code>use cache</code></li>
+<li>The <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code> function</a></li>
+</ul>
+<h2 id="navigation-with-activity">Navigation with Activity</h2>
+<p>When <code>cacheComponents</code> is enabled, Next.js uses React’s <a href="https://react.dev/reference/react/Activity" target="_blank" rel="noopener"><code>&lt;Activity&gt;</code></a> component to preserve component state during client-side navigation.</p>
+<p>Rather than unmounting the previous route when you navigate away, Next.js sets the Activity mode to <a href="https://react.dev/reference/react/Activity#activity" target="_blank" rel="noopener"><code>&quot;hidden&quot;</code></a>. This means:</p>
+<ul>
+<li>Component state is preserved when navigating between routes</li>
+<li>When you navigate back, the previous route reappears with its state intact</li>
+<li>Effects are cleaned up when a route is hidden, and recreated when it becomes visible again</li>
+</ul>
+<p>This behavior improves the navigation experience by maintaining UI state (form inputs, or expanded sections) when users navigate back and forth between routes.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Next.js uses heuristics to keep a few recently visited routes <code>&quot;hidden&quot;</code>, while older routes are removed from the DOM to prevent excessive growth.</p>
+</blockquote>
+<p>Some UI patterns behave differently when components stay mounted instead of unmounting. See the <a href="/docs/app/guides/preserving-ui-state">Preserving UI state guide</a> for handling common patterns like dropdowns, dialogs, and testing.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16.0.0</td>
+<td><code>cacheComponents</code> introduced. This flag controls the <code>ppr</code>, <code>useCache</code>, and <code>dynamicIO</code> flags as a single, unified configuration.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

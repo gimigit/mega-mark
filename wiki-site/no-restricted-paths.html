@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-restricted-paths — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-restricted-paths">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#examples">Examples</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-restricted-paths</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Some projects contain files which are not always meant to be executed in the same environment.
+For example consider a web application that contains specific code for the server and some specific code for the browser/client. In this case you don’t want to import server-only files in your client code.</p>
+<p>In order to prevent such scenarios this rule allows you to define restricted zones where you can forbid files from being imported if they match a specific path.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule has one option, which is an object containing all <code>zones</code> where restrictions will be applied, plus an optional <code>basePath</code> used to resolve relative paths within each zone.
+The default for <code>basePath</code> is the current working directory.</p>
+<p>Each zone consists of a <code>target</code>, a <code>from</code>, and optional <code>except</code> and <code>message</code> attributes.</p>
+<ul>
+<li><code>target</code> - Identifies which files are part of the zone. It can be expressed as:
+<ul>
+<li>A simple directory path, matching all files contained recursively within it</li>
+<li>A glob pattern</li>
+<li>An array of any of the two types above</li>
+<li><em>Example: <code>target: './client'</code> - this zone consists of all files under the ‘client’ dir</em></li>
+</ul>
+</li>
+<li><code>from</code> - Identifies folders from which the zone is not allowed to import. It can be expressed as:
+<ul>
+<li>A simple directory path, matching all files contained recursively within it</li>
+<li>A glob pattern</li>
+<li>An array of only simple directories, or of only glob patterns (mixing both types within the array is not allowed)</li>
+<li><em>Example: <code>from: './server'</code> - this zone is not allowed to import anything from the ‘server’ dir</em></li>
+</ul>
+</li>
+<li><code>except</code> - Optional. Allows exceptions that would otherwise violate the related <code>from</code>. Note that it does not alter the behaviour of <code>target</code> in any way.
+<ul>
+<li>If <code>from</code> is an array of glob patterns, <code>except</code> must be an array of glob patterns as well.</li>
+<li>If <code>from</code> is an array of simple directories, <code>except</code> is relative to <code>from</code> and cannot backtrack to a parent directory.</li>
+<li><em>Example: <code>except: './server/config'</code> this zone is allowed to import server config, even if it can’t import other server code</em></li>
+</ul>
+</li>
+<li><code>message</code> - Optional. Displayed in case of rule violation.</li>
+</ul>
+<p><em>Note: The <code>from</code> attribute is NOT matched literally against the import path string as it appears in the code. Instead, it’s matched against the path to the imported file after it’s been resolved against <code>basePath</code>.</em></p>
+<h3 id="examples">Examples</h3>
+<p>Given this folder structure:</p>
+<pre><code class="language-pt">.
+├── client
+│   ├── foo.js
+│   └── baz.js
+└── server
+    └── bar.js
+</code></pre>
+<p>And this configuration:</p>
+<pre><code class="language-json">{
+  &quot;zones&quot;: [
+    {
+      &quot;target&quot;: &quot;./client&quot;,
+      &quot;from&quot;: &quot;./server&quot;
+    }
+  ]
+}
+</code></pre>
+<p>:x: The following is considered incorrect:</p>
+<pre><code class="language-js">// client/foo.js
+import bar from '../server/bar';
+</code></pre>
+<p>:white_check_mark: The following is considered correct:</p>
+<pre><code class="language-js">// server/bar.js
+import baz from '../client/baz';
+</code></pre>
+<hr>
+<p>Given this folder structure:</p>
+<pre><code class="language-pt">.
+├── client
+│   └── ...
+└── server
+    ├── one
+    │   ├── a.js
+    │   └── b.js
+    └── two
+        └── a.js
+</code></pre>
+<p>And this configuration:</p>
+<pre><code class="language-json">{
+  &quot;zones&quot;: [
+    {
+      &quot;target&quot;: &quot;./server/one&quot;,
+      &quot;from&quot;: &quot;./server&quot;,
+      &quot;except&quot;: [&quot;./one&quot;]
+    }
+  ]
+}
+</code></pre>
+<p>:x: The following is considered incorrect:</p>
+<pre><code class="language-js">// server/one/a.js
+import a from '../two/a'
+</code></pre>
+<p>:white_check_mark: The following is considered correct:</p>
+<pre><code class="language-js">// server/one/a.js
+import b from './b'
+</code></pre>
+<hr>
+<p>Given this folder structure:</p>
+<pre><code class="language-pt">.
+└── client
+    ├── foo.js
+    └── sub-module
+        ├── bar.js
+        └── baz.js
+</code></pre>
+<p>And this configuration:</p>
+<pre><code class="language-json">{
+  &quot;zones&quot;: [
+    {
+      &quot;target&quot;: &quot;./client/!(sub-module)/**/*&quot;,
+      &quot;from&quot;: &quot;./client/sub-module/**/*&quot;,
+    }
+  ]
+}
+</code></pre>
+<p>:x: The following is considered incorrect:</p>
+<pre><code class="language-js">// client/foo.js
+import a from './sub-module/baz'
+</code></pre>
+<p>:white_check_mark: The following is considered correct:</p>
+<pre><code class="language-js">// client/sub-module/bar.js
+import b from './baz'
+</code></pre>
+<hr>
+<p>Given this folder structure:</p>
+<pre><code class="language-pt">.
+├── one
+│   ├── a.js
+│   └── b.js
+├── two
+│   ├── a.js
+│   └── b.js
+└── three
+    ├── a.js
+    └── b.js
+</code></pre>
+<p>And this configuration:</p>
+<pre><code class="language-json">{
+  &quot;zones&quot;: [
+    {
+      &quot;target&quot;: [
+        &quot;./two/*&quot;,
+        &quot;./three/*&quot;
+      ],
+      &quot;from&quot;: [
+        &quot;./one&quot;,
+        &quot;./three&quot;
+      ]
+    }
+  ]
+}
+</code></pre>
+<p>:white_check_mark: The following is considered correct:</p>
+<pre><code class="language-js">// one/b.js
+import a from '../three/a'
+import a from './a'
+</code></pre>
+<pre><code class="language-js">// two/b.js
+import a from './a'
+</code></pre>
+<p>:x: The following is considered incorrect:</p>
+<pre><code class="language-js">// two/a.js
+import a from '../one/a'
+import a from '../three/a'
+</code></pre>
+<pre><code class="language-js">// three/b.js
+import a from '../one/a'
+import a from './a'
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

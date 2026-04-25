@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-unassigned-import — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-unassigned-import">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#options">Options</a></li><li><a href="#fail">Fail</a></li><li><a href="#pass">Pass</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-unassigned-import</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>With both CommonJS’ <code>require</code> and the ES6 modules’ <code>import</code> syntax, it is possible to import a module but not to use its result. This can be done explicitly by not assigning the module to as variable. Doing so can mean either of the following things:</p>
+<ul>
+<li>The module is imported but not used</li>
+<li>The module has side-effects (like <a href="https://www.npmjs.com/package/should" target="_blank" rel="noopener"><code>should</code></a>). Having side-effects, makes it hard to know whether the module is actually used or can be removed. It can also make it harder to test or mock parts of your application.</li>
+</ul>
+<p>This rule aims to remove modules with side-effects by reporting when a module is imported but not assigned.</p>
+<h2 id="options">Options</h2>
+<p>This rule supports the following option:</p>
+<p><code>allow</code>: An Array of globs. The files that match any of these patterns would be ignored/allowed by the linter. This can be useful for some build environments (e.g. css-loader in webpack).</p>
+<p>Note that the globs start from the where the linter is executed (usually project root), but not from each file that includes the source. Learn more in both the pass and fail examples below.</p>
+<h2 id="fail">Fail</h2>
+<pre><code class="language-js">import 'should'
+require('should')
+
+// In &lt;PROJECT_ROOT&gt;/src/app.js
+import '../styles/app.css'
+// {&quot;allow&quot;: [&quot;styles/*.css&quot;]}
+</code></pre>
+<h2 id="pass">Pass</h2>
+<pre><code class="language-js">import _ from 'foo'
+import _, {foo} from 'foo'
+import _, {foo as bar} from 'foo'
+import {foo as bar} from 'foo'
+import * as _ from 'foo'
+
+const _ = require('foo')
+const {foo} = require('foo')
+const {foo: bar} = require('foo')
+const [a, b] = require('foo')
+const _ = require('foo')
+
+// Module is not assigned, but it is used
+bar(require('foo'))
+require('foo').bar
+require('foo').bar()
+require('foo')()
+
+// With allow option set
+import './style.css' // {&quot;allow&quot;: [&quot;**/*.css&quot;]}
+import 'babel-register' // {&quot;allow&quot;: [&quot;babel-register&quot;]}
+
+// In &lt;PROJECT_ROOT&gt;/src/app.js
+import './styles/app.css'
+import '../scripts/register.js'
+// {&quot;allow&quot;: [&quot;src/styles/**&quot;, &quot;**/scripts/*.js&quot;]}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

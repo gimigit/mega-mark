@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>babel — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-babel">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#adding-presets-and-plugins">Adding Presets and Plugins</a></li><li><a href="#customizing-presets-and-plugins">Customizing Presets and Plugins</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">babel</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Babel</td></tr><tr><th>description</th><td>Extend the babel preset added by Next.js with your own configs.</td></tr></table><details>
+  <summary>Examples</summary>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-custom-babel-config" target="_blank" rel="noopener">Customizing babel configuration</a></li>
+</ul>
+</details>
+<p>Next.js includes the <code>next/babel</code> preset to your app, which includes everything needed to compile React applications and server-side code. But if you want to extend the default Babel configs, it’s also possible.</p>
+<h2 id="adding-presets-and-plugins">Adding Presets and Plugins</h2>
+<p>To start, you only need to define a <code>.babelrc</code> file (or <code>babel.config.js</code>) in the root directory of your project. If such a file is found, it will be considered as the <em>source of truth</em>, and therefore it needs to define what Next.js needs as well, which is the <code>next/babel</code> preset.</p>
+<p>Here’s an example <code>.babelrc</code> file:</p>
+<pre><code class="language-json">{
+  &quot;presets&quot;: [&quot;next/babel&quot;],
+  &quot;plugins&quot;: []
+}
+</code></pre>
+<p>You can <a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/build/babel/preset.ts" target="_blank" rel="noopener">take a look at this file</a> to learn about the presets included by <code>next/babel</code>.</p>
+<p>To add presets/plugins <strong>without configuring them</strong>, you can do it this way:</p>
+<pre><code class="language-json">{
+  &quot;presets&quot;: [&quot;next/babel&quot;],
+  &quot;plugins&quot;: [&quot;@babel/plugin-proposal-do-expressions&quot;]
+}
+</code></pre>
+<h2 id="customizing-presets-and-plugins">Customizing Presets and Plugins</h2>
+<p>To add presets/plugins <strong>with custom configuration</strong>, do it on the <code>next/babel</code> preset like so:</p>
+<pre><code class="language-json">{
+  &quot;presets&quot;: [
+    [
+      &quot;next/babel&quot;,
+      {
+        &quot;preset-env&quot;: {},
+        &quot;transform-runtime&quot;: {},
+        &quot;styled-jsx&quot;: {},
+        &quot;class-properties&quot;: {}
+      }
+    ]
+  ],
+  &quot;plugins&quot;: []
+}
+</code></pre>
+<p>To learn more about the available options for each config, visit babel’s <a href="https://babeljs.io/docs/" target="_blank" rel="noopener">documentation</a> site.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Next.js uses the <a href="https://github.com/nodejs/release#release-schedule" target="_blank" rel="noopener"><strong>current</strong> Node.js version</a> for server-side compilations.</li>
+<li>The <code>modules</code> option on <code>&quot;preset-env&quot;</code> should be kept to <code>false</code>, otherwise webpack code splitting is turned off.</li>
+</ul>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

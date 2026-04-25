@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { uploadListingImage, deleteListingImage, uploadListingVideo } from '@/lib/upload'
+import PriceEstimateButton from '@/components/PriceEstimateButton'
 
 type Category = { id: string; slug: string; name: string; icon: string | null }
 type Manufacturer = { id: string; slug: string; name: string }
@@ -73,6 +74,7 @@ export default function CreateListingPage() {
     title: '',
     category_id: '',
     manufacturer_id: '',
+    model: '',
     listing_type: 'sale',
     price: '',
     price_type: 'fixed',
@@ -418,6 +420,18 @@ export default function CreateListingPage() {
                   </select>
                 </div>
               </div>
+
+              {/* Price Estimate - only show if category selected */}
+            {form.category_id && (
+              <PriceEstimateButton
+                category={categories.find(c => c.id === form.category_id)?.slug || ''}
+                manufacturer={manufacturers.find(m => m.id === form.manufacturer_id)?.slug}
+                model={form.model}
+                year={form.year ? Number(form.year) : undefined}
+                hours={form.hours ? Number(form.hours) : undefined}
+                condition={form.condition}
+              />
+            )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>

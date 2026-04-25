@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>streaming — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-streaming">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#what-is-streaming">What is streaming?</a></li><li><a href="#example">Example</a></li><li><a href="#how-the-app-router-delivers-a-page">How the App Router delivers a page</a></li><ul><li><a href="#the-html-stream">The HTML stream</a></li><li><a href="#the-component-payload">The component payload</a></li><li><a href="#the-static-shell">The static shell</a></li></ul><li><a href="#page-level-streaming-with-loadingjs">Page-level streaming with loading.js</a></li><li><a href="#granular-streaming-with-ltsuspensegt">Granular streaming with &amp;lt;Suspense&amp;gt;</a></li><ul><li><a href="#parallel-streaming-with-sibling-boundaries">Parallel streaming with sibling boundaries</a></li><li><a href="#nested-boundaries-for-progressive-detail">Nested boundaries for progressive detail</a></li><li><a href="#push-dynamic-access-down">Push dynamic access down</a></li><li><a href="#when-to-use-loadingjs-vs-ltsuspensegt">When to use loading.js vs &amp;lt;Suspense&amp;gt;</a></li><li><a href="#error-handling-mid-stream">Error handling mid-stream</a></li></ul><li><a href="#streaming-data-to-the-client">Streaming data to the client</a></li><ul><li><a href="#sharing-a-promise-across-the-tree">Sharing a promise across the tree</a></li></ul><li><a href="#streaming-in-route-handlers">Streaming in Route Handlers</a></li><li><a href="#streaming-and-web-vitals">Streaming and Web Vitals</a></li><ul><li><a href="#ttfb-and-fcp">TTFB and FCP</a></li><li><a href="#lcp-largest-contentful-paint">LCP (Largest Contentful Paint)</a></li><li><a href="#cls-cumulative-layout-shift">CLS (Cumulative Layout Shift)</a></li><li><a href="#inp-interaction-to-next-paint">INP (Interaction to Next Paint)</a></li><li><a href="#early-resource-discovery">Early resource discovery</a></li></ul><li><a href="#the-http-contract">The HTTP contract</a></li><ul><li><a href="#status-codes">Status codes</a></li><li><a href="#when-does-streaming-start">When does streaming start?</a></li><li><a href="#metadata-and-bots">Metadata and bots</a></li></ul><li><a href="#what-can-affect-streaming">What can affect streaming</a></li><ul><li><a href="#reverse-proxies">Reverse proxies</a></li><li><a href="#cdns">CDNs</a></li><li><a href="#serverless-platforms">Serverless platforms</a></li><li><a href="#compression">Compression</a></li><li><a href="#clients">Clients</a></li><li><a href="#verifying-that-streaming-works">Verifying that streaming works</a></li><li><a href="#platform-support">Platform support</a></li></ul><li><a href="#summary">Summary</a></li><li><a href="#further-reading">Further reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">streaming</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Streaming</td></tr><tr><th>description</th><td>Related API references and guides.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>{/* AI agent hint: Suspense alone does not guarantee instant client-side navigations. Always export <code>unstable_instant</code> from routes that should navigate instantly. See docs/01-app/02-guides/instant-navigation.mdx for the full guide. */}</p>
+<h2 id="what-is-streaming">What is streaming?</h2>
+<p>In traditional server-side rendering, the server produces the full HTML document before sending anything. A single slow database query or API call can block the entire page. Streaming changes this by using <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Transfer-Encoding" target="_blank" rel="noopener">chunked transfer encoding</a> to send parts of the response as they become ready. The browser starts rendering HTML while the server is still generating the rest.</p>
+<p>This is especially impactful for pages that combine fast static content (headers, navigation, layout) with slower dynamic content (personalized data, analytics, recommendations). The static parts can be prerendered and served from a CDN, painting instantly, while the dynamic parts stream in from the server as they become ready.</p>
+<p>React’s server renderer produces HTML in chunks aligned with <code>&lt;Suspense&gt;</code> boundaries. Next.js integrates this into the App Router so streaming works without additional configuration.</p>
+<h2 id="example">Example</h2>
+<p>The companion <a href="https://streaming-demo.labs.vercel.dev/" target="_blank" rel="noopener">streaming demo</a> (<a href="https://github.com/vercel-labs/streaming-demo" target="_blank" rel="noopener">source</a>) lets you see each concept from this guide in action:</p>
+<ul>
+<li>Page-level streaming with <code>loading.tsx</code> (skeleton appears instantly, content streams in after ~2s)</li>
+<li>Granular streaming with sibling <code>&lt;Suspense&gt;</code> boundaries that resolve independently</li>
+<li>Hydration comparison: a single blocking pass vs split hydration with Suspense boundaries</li>
+<li>Raw HTML streaming in a Route Handler, with early CSS discovery</li>
+<li>A configurable <code>ReadableStream</code> API endpoint for experimenting with chunk sizes and browser buffering</li>
+</ul>
+<h2 id="how-the-app-router-delivers-a-page">How the App Router delivers a page</h2>
+<p>When a browser requests a page, two streams work together during the initial page load:</p>
+<h3 id="the-html-stream">The HTML stream</h3>
+<p>React’s server renderer produces progressive HTML chunks. The static parts of your page (layouts, navigation, Suspense fallbacks) render first and are sent immediately. When an async <a href="/docs/app/glossary#server-component">Server Component</a> resolves, React streams its completed HTML along with inline <code>&lt;script&gt;</code> tags: one that swaps the fallback DOM node with the new content, and another carrying the <a href="#the-component-payload">component payload</a> so React can later hydrate it. The browser executes the swap instantly, without waiting for the page’s JavaScript bundle to load or hydration to complete. This is what the user <em>sees</em>: the page painting progressively, section by section.</p>
+<h3 id="the-component-payload">The component payload</h3>
+<p>The component payload is a serialized representation of the component tree that React uses to <a href="/docs/app/glossary#hydration">hydrate</a> the page and handle client-side updates. On initial load, it arrives embedded in the HTML stream (as described above). On <strong>client-side navigation</strong>, only the component payload is fetched (with an <code>rsc: 1</code> request header) and no HTML is transferred at all. React uses it to update the component tree in place.</p>
+<h3 id="the-static-shell">The static shell</h3>
+<p>Everything that renders before any async work resolves is called the <strong>static shell</strong>: your layouts, navigation, and the fallback UI defined by your <code>&lt;Suspense&gt;</code> boundaries. It is sent immediately, giving the user something to see and interact with while dynamic content streams in. With <a href="/docs/app/getting-started/caching">Cache Components</a>, the static shell is prerendered at build time and served instantly from the edge.</p>
+<p><Image
+  alt="How Server Rendering with Streaming Works"
+  srcLight="/docs/light/server-rendering-with-streaming.png"
+  srcDark="/docs/dark/server-rendering-with-streaming.png"
+  width="1600"
+  height="785"
+/></p>
+<p>Each <code>&lt;Suspense&gt;</code> boundary is an independent streaming point. Components inside different boundaries resolve and stream in independently. They don’t block each other.</p>
+<h2 id="page-level-streaming-with-loadingjs">Page-level streaming with <code>loading.js</code></h2>
+<p>The simplest way to add streaming is with a <code>loading.js</code> file. Place it alongside your <code>page.js</code> and Next.js automatically wraps the page content in a <code>&lt;Suspense&gt;</code> boundary, using your loading component as the fallback.</p>
+<p><Image
+  alt="loading.js special file"
+  srcLight="/docs/light/loading-special-file.png"
+  srcDark="/docs/dark/loading-special-file.png"
+  width="1600"
+  height="606"
+/></p>
+<pre><code class="language-tsx">export default function Loading() {
+  return (
+    &lt;div className=&quot;animate-pulse&quot;&gt;
+      &lt;div className=&quot;h-8 w-48 bg-gray-200 rounded mb-4&quot; /&gt;
+      &lt;div className=&quot;h-4 w-full bg-gray-200 rounded mb-2&quot; /&gt;
+      &lt;div className=&quot;h-4 w-full bg-gray-200 rounded mb-2&quot; /&gt;
+      &lt;div className=&quot;h-4 w-2/3 bg-gray-200 rounded&quot; /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Loading() {
+  return (
+    &lt;div className=&quot;animate-pulse&quot;&gt;
+      &lt;div className=&quot;h-8 w-48 bg-gray-200 rounded mb-4&quot; /&gt;
+      &lt;div className=&quot;h-4 w-full bg-gray-200 rounded mb-2&quot; /&gt;
+      &lt;div className=&quot;h-4 w-full bg-gray-200 rounded mb-2&quot; /&gt;
+      &lt;div className=&quot;h-4 w-2/3 bg-gray-200 rounded&quot; /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Behind the scenes, <code>loading.js</code> is nested inside <code>layout.js</code> and wraps <code>page.js</code> in a <code>&lt;Suspense&gt;</code> boundary:</p>
+<p><Image
+  alt="loading.js overview"
+  srcLight="/docs/light/loading-overview.png"
+  srcDark="/docs/dark/loading-overview.png"
+  width="1600"
+  height="768"
+/></p>
+<p>This means:</p>
+<ul>
+<li>The layout renders immediately as part of the static shell.</li>
+<li>The loading skeleton is shown instantly as the Suspense fallback.</li>
+<li>When the page component finishes loading, its HTML replaces the skeleton.</li>
+</ul>
+<p><code>loading.js</code> is useful when there’s nothing meaningful to show until the page’s data resolves. If the page needs to await data before it can render anything, a full-page skeleton is a reasonable fallback.</p>
+<p>See the <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.js</code> API reference</a> for more details.</p>
+<h2 id="granular-streaming-with-ltsuspensegt">Granular streaming with <code>&lt;Suspense&gt;</code></h2>
+<p><code>&lt;Suspense&gt;</code> lets you control exactly which parts of the page stream independently. Instead of a full-page skeleton, you can push fallbacks down into specific sections so the static shell includes more real content.</p>
+<h3 id="parallel-streaming-with-sibling-boundaries">Parallel streaming with sibling boundaries</h3>
+<p>When multiple components perform async work (fetching data, reading from a database), wrap each one in its own <code>&lt;Suspense&gt;</code> boundary. Each boundary streams independently as its async work completes, in whatever order that happens, without blocking each other:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { Revenue } from './revenue'
+import { RecentOrders } from './recent-orders'
+import { Recommendations } from './recommendations'
+
+export default function Dashboard() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+      &lt;div className=&quot;grid grid-cols-2 gap-4&quot;&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading revenue...&lt;/p&gt;}&gt;
+          &lt;Revenue /&gt;
+        &lt;/Suspense&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading orders...&lt;/p&gt;}&gt;
+          &lt;RecentOrders /&gt;
+        &lt;/Suspense&gt;
+      &lt;/div&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading recommendations...&lt;/p&gt;}&gt;
+        &lt;Recommendations /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { Revenue } from './revenue'
+import { RecentOrders } from './recent-orders'
+import { Recommendations } from './recommendations'
+
+export default function Dashboard() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+      &lt;div className=&quot;grid grid-cols-2 gap-4&quot;&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading revenue...&lt;/p&gt;}&gt;
+          &lt;Revenue /&gt;
+        &lt;/Suspense&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading orders...&lt;/p&gt;}&gt;
+          &lt;RecentOrders /&gt;
+        &lt;/Suspense&gt;
+      &lt;/div&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading recommendations...&lt;/p&gt;}&gt;
+        &lt;Recommendations /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>In this example, if <code>Revenue</code> resolves in 200ms, <code>RecentOrders</code> in 1s, and <code>Recommendations</code> in 3s, the user sees each section appear as soon as its data is ready.</p>
+<h3 id="nested-boundaries-for-progressive-detail">Nested boundaries for progressive detail</h3>
+<p>You can nest <code>&lt;Suspense&gt;</code> boundaries to create a layered loading experience. For example, a product page might stream the header immediately, the product details next, and the reviews last:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { ProductDetails } from './product-details'
+import { Reviews } from './reviews'
+
+export async function generateStaticParams() {
+  const products = await getTopProducts()
+  return products.map((product) =&gt; ({ id: product.id }))
+}
+
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const { id } = await params
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Product&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading product details...&lt;/p&gt;}&gt;
+        &lt;ProductDetails id={id} /&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading reviews...&lt;/p&gt;}&gt;
+          &lt;Reviews productId={id} /&gt;
+        &lt;/Suspense&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { ProductDetails } from './product-details'
+import { Reviews } from './reviews'
+
+export async function generateStaticParams() {
+  const products = await getTopProducts()
+  return products.map((product) =&gt; ({ id: product.id }))
+}
+
+export default async function ProductPage({ params }) {
+  const { id } = await params
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Product&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading product details...&lt;/p&gt;}&gt;
+        &lt;ProductDetails id={id} /&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading reviews...&lt;/p&gt;}&gt;
+          &lt;Reviews productId={id} /&gt;
+        &lt;/Suspense&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>The outer boundary shows “Loading product details…” until <code>ProductDetails</code> resolves. Once it does, the inner boundary becomes visible, showing “Loading reviews…” until <code>Reviews</code> resolves. This creates a progressive reveal.</p>
+<h3 id="push-dynamic-access-down">Push dynamic access down</h3>
+<p>The key to maximizing what streams instantly is to defer dynamic data access to the component that actually needs it. This applies to <code>params</code>, <code>searchParams</code>, <code>cookies()</code>, <code>headers()</code>, and data fetches. If you <code>await</code> any of these at the top of a layout or page, everything below that point becomes dynamic and cannot be prerendered as part of the static shell.</p>
+<p>Instead, pass the promise down and let the consuming component resolve it inside a <code>&lt;Suspense&gt;</code> boundary:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { Nav } from './nav'
+import { UserMenu } from './user-menu'
+import { cookies } from 'next/headers'
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const cookieStore = cookies() // Start the work, but don't await
+
+  return (
+    &lt;div&gt;
+      &lt;Nav&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading user...&lt;/p&gt;}&gt;
+          &lt;UserMenu cookiePromise={cookieStore} /&gt;
+        &lt;/Suspense&gt;
+      &lt;/Nav&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { Nav } from './nav'
+import { UserMenu } from './user-menu'
+import { cookies } from 'next/headers'
+
+export default function DashboardLayout({ children }) {
+  const cookieStore = cookies() // Start the work, but don't await
+
+  return (
+    &lt;div&gt;
+      &lt;Nav&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading user...&lt;/p&gt;}&gt;
+          &lt;UserMenu cookiePromise={cookieStore} /&gt;
+        &lt;/Suspense&gt;
+      &lt;/Nav&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>In this example, <code>&lt;Nav&gt;</code> and <code>{children}</code> render as part of the static shell because nothing in the layout awaits. Only <code>&lt;UserMenu&gt;</code> suspends when it resolves the cookie promise. If the layout had called <code>await cookies()</code> at the top instead, the entire layout and all its children would be blocked from prerendering.</p>
+<p>The same principle applies to <code>params</code> and <code>searchParams</code>. Rather than destructuring them at the page level, pass the promise to the component that needs the value:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { Hero } from './hero'
+import { ProductGrid } from './product-grid'
+
+export async function generateStaticParams() {
+  const categories = await getCategories()
+  return categories.map((c) =&gt; ({ category: c.slug }))
+}
+
+export default function ShopPage({
+  params,
+}: {
+  params: Promise&lt;{ category: string }&gt;
+}) {
+  return (
+    &lt;div&gt;
+      &lt;Hero /&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading products...&lt;/p&gt;}&gt;
+        &lt;ProductGrid paramsPromise={params} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { Hero } from './hero'
+import { ProductGrid } from './product-grid'
+
+export async function generateStaticParams() {
+  const categories = await getCategories()
+  return categories.map((c) =&gt; ({ category: c.slug }))
+}
+
+export default function ShopPage({ params }) {
+  return (
+    &lt;div&gt;
+      &lt;Hero /&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading products...&lt;/p&gt;}&gt;
+        &lt;ProductGrid paramsPromise={params} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p><code>&lt;Hero /&gt;</code> paints as part of the static shell. <code>&lt;ProductGrid&gt;</code> resolves <code>params</code> when it needs the category, suspending only within its boundary.</p>
+<p>You can also unwrap the promise inline with <code>.then()</code>, so the child component receives a plain value instead of a promise:</p>
+<pre><code class="language-tsx">&lt;Suspense fallback={&lt;p&gt;Loading products...&lt;/p&gt;}&gt;
+  {params.then(({ category }) =&gt; (
+    &lt;ProductGrid category={category} /&gt;
+  ))}
+&lt;/Suspense&gt;
+</code></pre>
+<pre><code class="language-jsx">&lt;Suspense fallback={&lt;p&gt;Loading products...&lt;/p&gt;}&gt;
+  {params.then(({ category }) =&gt; (
+    &lt;ProductGrid category={category} /&gt;
+  ))}
+&lt;/Suspense&gt;
+</code></pre>
+<p>This keeps <code>ProductGrid</code> simple (it takes a <code>string</code>, not a <code>Promise</code>) while still deferring the <code>params</code> access to inside the Suspense boundary.</p>
+<h3 id="when-to-use-loadingjs-vs-ltsuspensegt">When to use <code>loading.js</code> vs <code>&lt;Suspense&gt;</code></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>loading.js</code></th>
+<th><code>&lt;Suspense&gt;</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Entire page</td>
+<td>Any component</td>
+</tr>
+<tr>
+<td><strong>Setup</strong></td>
+<td>Drop in a file</td>
+<td>Wrap components explicitly</td>
+</tr>
+<tr>
+<td><strong>Navigation</strong></td>
+<td>Prefetched as instant fallback</td>
+<td>Not prefetched by default</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>Pages where nothing renders without data</td>
+<td>Most pages, for granular control</td>
+</tr>
+</tbody>
+</table>
+<p>Prefer explicit <code>&lt;Suspense&gt;</code> boundaries close to the dynamic access. When the prerenderer encounters dynamic work, it walks up the tree looking for the nearest Suspense boundary. If none is found, the build fails with a <a href="/docs/messages/blocking-route">blocking route error</a>. A <code>loading.js</code> high in the tree is a valid boundary, so the framework finds it and stops, but now the entire page falls back to a full-page skeleton instead of streaming granularly.</p>
+<h3 id="error-handling-mid-stream">Error handling mid-stream</h3>
+<p>{/* TODO: catchError semantics - not landed on stable yet */}
+If a component throws an error after streaming has started, the nearest <a href="/docs/app/api-reference/file-conventions/error"><code>error.js</code></a> boundary catches it and renders the error UI in place of the failed component. The rest of the page remains intact, only the section that errored is replaced.</p>
+<p>Because the HTTP status code (<code>200 OK</code>) has already been sent with the first chunk, it cannot be changed to a <code>4xx</code> or <code>5xx</code>. The error is handled entirely within the streamed HTML. See <a href="#the-http-contract">The HTTP contract</a> for more on this constraint.</p>
+<h2 id="streaming-data-to-the-client">Streaming data to the client</h2>
+<p>You can start a fetch in a <a href="/docs/app/glossary#server-component">Server Component</a> and pass the unresolved promise as a prop to a <a href="/docs/app/glossary#client-component">Client Component</a>. The promise can be passed through as many layers as needed. Only the component that calls React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> API to read the value needs a <code>&lt;Suspense&gt;</code> boundary around it:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { StatsChart } from './stats-chart'
+
+type Stats = { revenue: number; orders: number }
+
+async function getStats(): Promise&lt;Stats&gt; {
+  const res = await fetch('https://api.example.com/stats')
+  return res.json()
+}
+
+export default function Dashboard() {
+  // Start the fetch during server render, don't await it
+  const statsPromise = getStats()
+
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading chart...&lt;/p&gt;}&gt;
+      &lt;StatsChart dataPromise={statsPromise} /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { StatsChart } from './stats-chart'
+
+async function getStats() {
+  const res = await fetch('https://api.example.com/stats')
+  return res.json()
+}
+
+export default function Dashboard() {
+  // Start the fetch during server render, don't await it
+  const statsPromise = getStats()
+
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading chart...&lt;/p&gt;}&gt;
+      &lt;StatsChart dataPromise={statsPromise} /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">'use client'
+
+import { use } from 'react'
+
+type Stats = { revenue: number; orders: number }
+
+export function StatsChart({ dataPromise }: { dataPromise: Promise&lt;Stats&gt; }) {
+  const stats = use(dataPromise)
+
+  return &lt;div&gt;{/* render chart with stats */}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { use } from 'react'
+
+export function StatsChart({ dataPromise }) {
+  const stats = use(dataPromise)
+
+  return &lt;div&gt;{/* render chart with stats */}&lt;/div&gt;
+}
+</code></pre>
+<p>The fallback is sent immediately with the static shell. When the promise resolves, React streams the completed HTML into the page.</p>
+<h3 id="sharing-a-promise-across-the-tree">Sharing a promise across the tree</h3>
+<p>When multiple components need the same data, start the fetch once and pass the promise through a context provider so any component in the subtree can resolve it with <code>use()</code>:</p>
+<pre><code class="language-tsx">import { getUser } from '@/lib/data'
+// Stores the promise in React context for the subtree
+import { UserProvider } from './user-provider'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const userPromise = getUser()
+
+  return &lt;UserProvider userPromise={userPromise}&gt;{children}&lt;/UserProvider&gt;
+}
+</code></pre>
+<p>See <a href="/docs/app/getting-started/fetching-data#sharing-data-with-context-and-reactcache">Sharing data with context and React.cache</a> for the full pattern including the provider and consumer components.</p>
+<h2 id="streaming-in-route-handlers">Streaming in Route Handlers</h2>
+<p>The patterns above rely on React and Suspense to stream UI. Outside of React rendering, <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> can stream raw responses using the Web Streams API. This is useful for Server-Sent Events, large file generation, or any response where you want data to arrive progressively:</p>
+<pre><code class="language-ts">export async function GET() {
+  const encoder = new TextEncoder()
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      for (let i = 0; i &lt; 10; i++) {
+        controller.enqueue(encoder.encode(`Chunk ${i + 1}\n`))
+        await new Promise((resolve) =&gt; setTimeout(resolve, 200))
+      }
+      controller.close()
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  })
+}
+</code></pre>
+<pre><code class="language-js">export async function GET() {
+  const encoder = new TextEncoder()
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      for (let i = 0; i &lt; 10; i++) {
+        controller.enqueue(encoder.encode(`Chunk ${i + 1}\n`))
+        await new Promise((resolve) =&gt; setTimeout(resolve, 200))
+      }
+      controller.close()
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  })
+}
+</code></pre>
+<p>Visit this route directly in the browser or with <code>curl</code> to see chunks arrive one at a time:</p>
+<pre><code class="language-bash">curl http://localhost:3000/api/stream
+</code></pre>
+<p>You can also stream files without loading them entirely into memory. Use <code>FileHandle.readableWebStream()</code> to get a Web <code>ReadableStream</code> directly from a file:</p>
+<pre><code class="language-ts">import { open } from 'node:fs/promises'
+
+export async function GET() {
+  const file = await open('/path/to/large-file.csv')
+
+  return new Response(file.readableWebStream(), {
+    headers: {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename=&quot;data.csv&quot;',
+    },
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { open } from 'node:fs/promises'
+
+export async function GET() {
+  const file = await open('/path/to/large-file.csv')
+
+  return new Response(file.readableWebStream(), {
+    headers: {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename=&quot;data.csv&quot;',
+    },
+  })
+}
+</code></pre>
+<p>See the <a href="/docs/app/api-reference/file-conventions/route">Route Handler API reference</a> for more details on building streaming endpoints.</p>
+<h2 id="streaming-and-web-vitals">Streaming and Web Vitals</h2>
+<p><a href="https://web.dev/articles/vitals" target="_blank" rel="noopener">Web Vitals</a> are the metrics Google uses to measure user experience. Streaming directly affects several of them.</p>
+<h3 id="ttfb-and-fcp">TTFB and FCP</h3>
+<p>Without streaming, the server waits for all data before sending any HTML, so TTFB equals the slowest query. With streaming, the server sends the static shell as soon as it’s ready. TTFB drops to the time it takes to render your layouts and fallbacks. The browser paints the static shell immediately, so FCP is decoupled from your data fetching time.</p>
+<h3 id="lcp-largest-contentful-paint">LCP (Largest Contentful Paint)</h3>
+<p>If your LCP element (a hero image, a main heading, a product photo) is inside a Suspense boundary, it can’t paint until that boundary resolves. To keep LCP fast:</p>
+<ul>
+<li>Keep LCP elements <strong>outside</strong> or <strong>above</strong> Suspense boundaries so they render as part of the static shell.</li>
+<li>Use the <a href="/docs/app/api-reference/components/image#preload"><code>preload</code></a> prop on <code>next/image</code> for LCP images. This injects a <code>&lt;link rel=&quot;preload&quot;&gt;</code> into the <code>&lt;head&gt;</code>, so the browser starts fetching the image from the very first chunk, before the <code>&lt;img&gt;</code> tag even appears in the HTML.</li>
+<li>For non-image LCP elements (text, headings), make sure they are not wrapped in a Suspense boundary that depends on slow data.</li>
+</ul>
+<h3 id="cls-cumulative-layout-shift">CLS (Cumulative Layout Shift)</h3>
+<p>When a Suspense fallback is replaced by the resolved content, the browser reflows the page. If the fallback and the resolved content are different sizes, the surrounding layout shifts. To minimize CLS:</p>
+<ul>
+<li>Design skeleton fallbacks that <strong>match the dimensions</strong> of the content they represent. A skeleton with the same height and width as the final card grid prevents shifts.</li>
+<li>Use fixed or min-height containers around Suspense boundaries so the space is reserved before content arrives.</li>
+</ul>
+<h3 id="inp-interaction-to-next-paint">INP (Interaction to Next Paint)</h3>
+<p>Streaming enables <a href="https://react.dev/reference/react-dom/client/hydrateRoot" target="_blank" rel="noopener">selective hydration</a>: React hydrates components independently as they stream in, and prioritizes hydrating whatever the user is interacting with. Each <code>&lt;Suspense&gt;</code> boundary is a hydration unit. Without them, React hydrates the entire page in one blocking pass. With them, hydration is broken into smaller tasks that yield to the browser, keeping the main thread responsive. The <a href="https://streaming-demo.labs.vercel.dev/hydration-single" target="_blank" rel="noopener">companion demo</a> lets you compare a single blocking hydration pass with <a href="https://streaming-demo.labs.vercel.dev/hydration-split" target="_blank" rel="noopener">split hydration</a> using Suspense boundaries.</p>
+<h3 id="early-resource-discovery">Early resource discovery</h3>
+<p>The static shell includes <code>&lt;link&gt;</code> and <code>&lt;script&gt;</code> tags in the very first HTML chunk. The browser discovers and starts fetching CSS, JavaScript, and fonts immediately, while the server is still generating content. Resources are fetched during server think time rather than after it.</p>
+<p>In the <a href="#parallel-streaming-with-sibling-boundaries">dashboard example</a> above, the <code>&lt;h1&gt;</code> renders in the shell (good for LCP), each data section streams independently behind its own Suspense boundary (good for INP since hydration is split), and the skeleton fallbacks reserve space (good for CLS).</p>
+<h2 id="the-http-contract">The HTTP contract</h2>
+<p>Once streaming begins, the HTTP response headers (including the status code) have already been sent to the client. <strong>You cannot change the status code or headers after streaming starts.</strong> Everything in this section flows from this fundamental constraint.</p>
+<h3 id="status-codes">Status codes</h3>
+<p>When a <code>&lt;Suspense&gt;</code> fallback renders or a component suspends, the server must commit to <code>200 OK</code> in order to start sending the HTML stream. If a <a href="/docs/app/api-reference/functions/not-found"><code>notFound()</code></a> fires mid-stream, Next.js cannot go back and change the status to 404. Instead, it injects <code>&lt;meta name=&quot;robots&quot; content=&quot;noindex&quot;&gt;</code> into the streamed HTML so that search engines don’t index the page. Similarly, a <a href="/docs/app/api-reference/functions/redirect"><code>redirect()</code></a> mid-stream becomes a client-side redirect rather than an HTTP redirect header.</p>
+<h3 id="when-does-streaming-start">When does streaming start?</h3>
+<p>The response body begins streaming when a Suspense fallback renders (for example, a <code>loading.tsx</code>) or when a component suspends under a <code>&lt;Suspense&gt;</code> boundary. To get a real HTTP status code for errors, place <code>notFound()</code> <strong>before</strong> any <code>await</code> or <code>&lt;Suspense&gt;</code> boundary:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import { PostContent } from './post-content'
+
+export async function generateStaticParams() {
+  const posts = await getPublishedPosts()
+  return posts.map((post) =&gt; ({ slug: post.slug }))
+}
+
+export default async function PostPage({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  const exists = await checkSlugExists(slug) // Fast existence check
+  if (!exists) notFound() // Real 404, before any Suspense boundary
+
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading post...&lt;/p&gt;}&gt;
+      &lt;PostContent slug={slug} /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import { PostContent } from './post-content'
+
+export async function generateStaticParams() {
+  const posts = await getPublishedPosts()
+  return posts.map((post) =&gt; ({ slug: post.slug }))
+}
+
+export default async function PostPage({ params }) {
+  const { slug } = await params
+  const exists = await checkSlugExists(slug) // Fast existence check
+  if (!exists) notFound() // Real 404, before any Suspense boundary
+
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading post...&lt;/p&gt;}&gt;
+      &lt;PostContent slug={slug} /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> You can also reject requests early using <a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy</code></a> (for redirects, rewrites, or returning a response) or <a href="/docs/app/api-reference/config/next-config-js/redirects"><code>next.config.js</code> redirects</a>. Both run before the page renders, so HTTP status codes are still available.</p>
+</blockquote>
+<h3 id="metadata-and-bots">Metadata and bots</h3>
+<p><a href="/docs/app/api-reference/functions/generate-metadata"><code>generateMetadata</code></a> resolves before streaming begins for bots that only scrape static HTML (such as Twitterbot or Slackbot). For full browsers and capable crawlers, metadata can <a href="/docs/app/api-reference/functions/generate-metadata#streaming-metadata">stream</a> alongside the page content.</p>
+<p>Next.js automatically detects user agents to choose the right behavior. You can customize which bots receive blocking metadata with the <a href="/docs/app/api-reference/config/next-config-js/htmlLimitedBots"><code>htmlLimitedBots</code></a> configuration option.</p>
+<p>See the <a href="/docs/app/api-reference/file-conventions/loading#seo"><code>loading.js</code> SEO section</a> for more details.</p>
+<h2 id="what-can-affect-streaming">What can affect streaming</h2>
+<p>Any layer between your server and the client that buffers the response can diminish the benefits of streaming. The HTML may be fully generated progressively on the server, but if a proxy, CDN, or even the client itself collects all the chunks before rendering them, the user sees a single delayed response instead of progressive rendering.</p>
+<h3 id="reverse-proxies">Reverse proxies</h3>
+<p>Nginx and similar reverse proxies buffer responses by default. Disable buffering by setting the <code>X-Accel-Buffering</code> header to <code>no</code>:</p>
+<pre><code class="language-js">module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/:path*{/}?',
+        headers: [
+          {
+            key: 'X-Accel-Buffering',
+            value: 'no',
+          },
+        ],
+      },
+    ]
+  },
+}
+</code></pre>
+<h3 id="cdns">CDNs</h3>
+<p>Content Delivery Networks may buffer entire responses before forwarding them to the client. Check your CDN provider’s documentation for streaming support. Some require specific configuration or plan tiers to pass through chunked responses.</p>
+<h3 id="serverless-platforms">Serverless platforms</h3>
+<p>Not all serverless environments support streaming. AWS Lambda, for example, requires <a href="https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html" target="_blank" rel="noopener">response streaming mode</a> to be explicitly enabled (it is not the default). Vercel supports streaming natively.</p>
+<h3 id="compression">Compression</h3>
+<p>Gzip and Brotli compression can buffer chunks internally before flushing, as the compression algorithm needs enough data to compress efficiently. This can add latency to the first visible chunk. If you notice streaming delays, check whether your compression layer is flushing aggressively enough.</p>
+<h3 id="clients">Clients</h3>
+<p>Buffering also happens at the client. <a href="https://bugs.webkit.org/show_bug.cgi?id=252413" target="_blank" rel="noopener">Safari/WebKit</a> buffers streaming responses until 1024 bytes have been received, so very small responses paint all at once instead of progressively. Real applications easily exceed this threshold (layouts, styles, scripts), so it only affects minimal demos or tiny Route Handler responses.</p>
+<p>Command-line tools like <code>curl</code> also buffer by default. The <code>-N</code> flag disables output buffering, but <code>curl</code> still relies on newline characters to flush lines to the terminal. A stream that sends chunks without newlines may appear to stall even with <code>-N</code>.</p>
+<h3 id="verifying-that-streaming-works">Verifying that streaming works</h3>
+<p>This section is about confirming the HTTP response is actually arriving in chunks through your infrastructure. For guidance on designing meaningful loading states and placing Suspense boundaries effectively, see <a href="#granular-streaming-with-suspense">Granular streaming with <code>&lt;Suspense&gt;</code></a> and the <a href="/docs/app/getting-started/caching">Cache Components</a> guide.</p>
+<p><strong>Check the Network tab.</strong> In Chrome DevTools, select the document request and look at the “Timing” breakdown. A long “Content Download” phase with an early “Time to First Byte” confirms the response is streaming rather than arriving all at once.</p>
+<p><strong>Observe raw chunks.</strong> To see exactly what the server sends and when, use a small script that reads the response as a stream. This is more reliable than <code>curl</code> for observing timed chunks, since <code>curl</code> has its own buffering behavior:</p>
+<pre><code class="language-js">const res = await fetch(
+  'https://streaming-demo.labs.vercel.dev/suspense-demo',
+  {
+    headers: { 'Accept-Encoding': 'identity' },
+  }
+)
+
+const reader = res.body.getReader()
+const decoder = new TextDecoder()
+let i = 0
+const start = Date.now()
+
+while (true) {
+  const { done, value } = await reader.read()
+  if (done) break
+  console.log(`\nchunk ${i++} (+${Date.now() - start}ms)\n`)
+  console.log(decoder.decode(value))
+}
+</code></pre>
+<p>Run with <code>node stream-observer.mjs</code>. For a page with two sibling Suspense boundaries (like the <a href="https://streaming-demo.labs.vercel.dev/suspense-demo" target="_blank" rel="noopener">companion demo’s Suspense page</a>), you will see output similar to:</p>
+<pre><code class="language-text">chunk 0 (+0ms)    # Static shell: &lt;head&gt;, CSS, nav, fallback skeletons,
+                  # &lt;template id=&quot;B:0&quot;&gt; and &lt;template id=&quot;B:1&quot;&gt; placeholders,
+                  # bootstrap scripts
+chunk 1 (+170ms)  # Component payload (self.__next_f.push) for hydration
+chunk 2 (+1000ms) # Weather widget: payload + &lt;div hidden id=&quot;S:0&quot;&gt; (swaps B:0)
+chunk 3 (+3000ms) # Analytics dashboard: payload + &lt;div hidden id=&quot;S:1&quot;&gt; (swaps B:1)
+</code></pre>
+<p>The <code>&lt;template id=&quot;B:0&quot;&gt;</code> markers are the Suspense fallback placeholders. When a boundary resolves, React streams a <code>&lt;div hidden id=&quot;S:0&quot;&gt;</code> containing the completed HTML and a script that swaps it into the page. The timestamps show each boundary resolving independently.</p>
+<blockquote>
+<p><strong>Good to know:</strong> The <code>Accept-Encoding: identity</code> header disables compression so chunks are not buffered by the compression layer.</p>
+</blockquote>
+<h3 id="platform-support">Platform support</h3>
+<table>
+<thead>
+<tr>
+<th>Deployment Option</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#nodejs-server">Node.js server</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#docker">Docker container</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#static-export">Static export</a></td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#adapters">Adapters</a></td>
+<td>Platform-specific</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="/docs/app/guides/self-hosting#streaming-and-suspense">Self-Hosting guide</a> for detailed configuration instructions.</p>
+<h2 id="summary">Summary</h2>
+<p>The trigger is <strong>your code</strong>: async work, non-deterministic output, or runtime data. When the framework encounters these, it walks up the tree looking for a <code>&lt;Suspense&gt;</code> boundary to use as a fallback. Everything above those boundaries forms the <a href="#the-static-shell">static shell</a>, which is sent immediately. As each boundary resolves, React streams the result into the page.</p>
+<p>The key decisions are <strong>what to cache</strong> and <strong>where to place Suspense boundaries</strong>. Cache what you can with <a href="/docs/app/api-reference/directives/use-cache"><code>&quot;use cache&quot;</code></a> to grow the static shell. Push dynamic access down to the components that need it, and wrap those in <code>&lt;Suspense&gt;</code>. Everything else becomes part of the shell.</p>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li><a href="https://rscexplorer.dev/" target="_blank" rel="noopener">RSC Explorer</a> - interactive tool to explore the component payload format and see how React reconstructs the tree from streamed chunks</li>
+<li><a href="https://web.dev/articles/streams" target="_blank" rel="noopener">Streams API on web.dev</a> - introduction to the Web Streams API that underpins streaming in Route Handlers</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Transfer-Encoding" target="_blank" rel="noopener">Chunked transfer encoding (MDN)</a> - the HTTP/1.1 mechanism that enables streaming responses</li>
+<li><a href="https://browser.engineering/" target="_blank" rel="noopener">browser.engineering</a> - deep dive into how browsers handle network responses, rendering, and progressive display</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

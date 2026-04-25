@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>not-found — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-not-found">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#not-foundjs">not-found.js</a></li><li><a href="#global-not-foundjs-experimental">global-not-found.js (experimental)</a></li><li><a href="#reference">Reference</a></li><ul><li><a href="#props">Props</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#data-fetching">Data Fetching</a></li><li><a href="#metadata">Metadata</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">not-found</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the not-found.js file.</td></tr></table><p>Next.js provides two conventions to handle not found cases:</p>
+<ul>
+<li><strong><code>not-found.js</code></strong>: Used when you call the <a href="/docs/app/api-reference/functions/not-found"><code>notFound</code></a> function in a route segment.</li>
+<li><strong><code>global-not-found.js</code></strong>: Used to define a global 404 page for unmatched routes across your entire app. This is handled at the routing level and doesn’t depend on rendering a layout or page.</li>
+</ul>
+<h2 id="not-foundjs"><code>not-found.js</code></h2>
+<p>The <strong>not-found</strong> file is used to render UI when the <a href="/docs/app/api-reference/functions/not-found"><code>notFound</code></a> function is thrown within a route segment. Along with serving a custom UI, Next.js will return a <code>200</code> HTTP status code for streamed responses, and <code>404</code> for non-streamed responses (see <a href="/docs/app/api-reference/file-conventions/loading#status-codes">Status Codes</a> for details about SEO).</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function NotFound() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Not Found&lt;/h2&gt;
+      &lt;p&gt;Could not find requested resource&lt;/p&gt;
+      &lt;Link href=&quot;/&quot;&gt;Return Home&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function NotFound() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Not Found&lt;/h2&gt;
+      &lt;p&gt;Could not find requested resource&lt;/p&gt;
+      &lt;Link href=&quot;/&quot;&gt;Return Home&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>In the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, <code>not-found.js</code> renders between <code>loading.js</code> and <code>page.js</code>. It is wrapped by the <code>&lt;Suspense&gt;</code> boundary from <code>loading.js</code> and the error boundary from <code>error.js</code> in the same segment.</p>
+<h2 id="global-not-foundjs-experimental"><code>global-not-found.js</code> (experimental)</h2>
+<p>The <code>global-not-found.js</code> file lets you define a 404 page for your entire application. Unlike <code>not-found.js</code>, which works at the route level, this is used when a requested URL doesn’t match any route at all. Next.js <strong>skips rendering</strong> and directly returns this global page.</p>
+<p>The <code>global-not-found.js</code> file bypasses your app’s normal rendering, which means you’ll need to import any global styles, fonts, or other dependencies that your 404 page requires.</p>
+<blockquote>
+<p><strong>Good to know</strong>: A smaller version of your global styles, and a simpler font family could improve performance of this page.</p>
+</blockquote>
+<p><code>global-not-found.js</code> is useful when you can’t build a 404 page using a combination of <code>layout.js</code> and <code>not-found.js</code>. This can happen in two cases:</p>
+<ul>
+<li>Your app has multiple root layouts (e.g. <code>app/(admin)/layout.tsx</code> and <code>app/(shop)/layout.tsx</code>), so there’s no single layout to compose a global 404 from.</li>
+<li>Your root layout is defined using top-level dynamic segments (e.g. <code>app/[country]/layout.tsx</code>), which makes composing a consistent 404 page harder.</li>
+</ul>
+<p>To enable it, add the <code>globalNotFound</code> flag in <code>next.config.ts</code>:</p>
+<pre><code class="language-tsx">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    globalNotFound: true,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<p>Then, create a file in the root of the <code>app</code> directory: <code>app/global-not-found.js</code>:</p>
+<pre><code class="language-tsx">// Import global styles and fonts
+import './globals.css'
+import { Inter } from 'next/font/google'
+import type { Metadata } from 'next'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: '404 - Page Not Found',
+  description: 'The page you are looking for does not exist.',
+}
+
+export default function GlobalNotFound() {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;
+        &lt;h1&gt;404 - Page Not Found&lt;/h1&gt;
+        &lt;p&gt;This page does not exist.&lt;/p&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">// Import global styles and fonts
+import './globals.css'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata = {
+  title: '404 - Page Not Found',
+  description: 'The page you are looking for does not exist.',
+}
+
+export default function GlobalNotFound() {
+  return (
+    &lt;html lang=&quot;en&quot; className={inter.className}&gt;
+      &lt;body&gt;
+        &lt;h1&gt;404 - Page Not Found&lt;/h1&gt;
+        &lt;p&gt;This page does not exist.&lt;/p&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>Unlike <code>not-found.js</code>, this file must return a full HTML document, including <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags.</p>
+<h2 id="reference">Reference</h2>
+<h3 id="props">Props</h3>
+<p><code>not-found.js</code> or <code>global-not-found.js</code> components do not accept any props.</p>
+<blockquote>
+<p><strong>Good to know</strong>: In addition to catching expected <code>notFound()</code> errors, the root <code>app/not-found.js</code> and <code>app/global-not-found.js</code> files handle any unmatched URLs for your whole application. This means users that visit a URL that is not handled by your app will be shown the exported UI.</p>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<h3 id="data-fetching">Data Fetching</h3>
+<p>By default, <code>not-found</code> is a Server Component. You can mark it as <code>async</code> to fetch and display data:</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+import { headers } from 'next/headers'
+
+export default async function NotFound() {
+  const headersList = await headers()
+  const domain = headersList.get('host')
+  const data = await getSiteData(domain)
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Not Found: {data.name}&lt;/h2&gt;
+      &lt;p&gt;Could not find requested resource&lt;/p&gt;
+      &lt;p&gt;
+        View &lt;Link href=&quot;/blog&quot;&gt;all posts&lt;/Link&gt;
+      &lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+import { headers } from 'next/headers'
+
+export default async function NotFound() {
+  const headersList = await headers()
+  const domain = headersList.get('host')
+  const data = await getSiteData(domain)
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Not Found: {data.name}&lt;/h2&gt;
+      &lt;p&gt;Could not find requested resource&lt;/p&gt;
+      &lt;p&gt;
+        View &lt;Link href=&quot;/blog&quot;&gt;all posts&lt;/Link&gt;
+      &lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>If you need to use Client Component hooks like <code>usePathname</code> to display content based on the path, you must fetch data on the client-side instead.</p>
+<h3 id="metadata">Metadata</h3>
+<p>For <code>global-not-found.js</code>, you can export a <code>metadata</code> object or a <a href="/docs/app/api-reference/functions/generate-metadata"><code>generateMetadata</code></a> function to customize the <code>&lt;title&gt;</code>, <code>&lt;meta&gt;</code>, and other head tags for your 404 page:</p>
+<blockquote>
+<p><strong>Good to know</strong>: Next.js automatically injects <code>&lt;meta name=&quot;robots&quot; content=&quot;noindex&quot; /&gt;</code> for pages that return a 404 status code, including <code>global-not-found.js</code> pages.</p>
+</blockquote>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Not Found',
+  description: 'The page you are looking for does not exist.',
+}
+
+export default function GlobalNotFound() {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        &lt;div&gt;
+          &lt;h1&gt;Not Found&lt;/h1&gt;
+          &lt;p&gt;The page you are looking for does not exist.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'Not Found',
+  description: 'The page you are looking for does not exist.',
+}
+
+export default function GlobalNotFound() {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        &lt;div&gt;
+          &lt;h1&gt;Not Found&lt;/h1&gt;
+          &lt;p&gt;The page you are looking for does not exist.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.4.0</code></td>
+<td><code>global-not-found.js</code> introduced (experimental).</td>
+</tr>
+<tr>
+<td><code>v13.3.0</code></td>
+<td>Root <code>app/not-found</code> handles global unmatched URLs.</td>
+</tr>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>not-found</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

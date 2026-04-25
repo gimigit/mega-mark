@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-search-params — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-search-params">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#behavior">Behavior</a></li><ul><li><a href="#prerendering">Prerendering</a></li><li><a href="#dynamic-rendering">Dynamic Rendering</a></li><li><a href="#server-components">Server Components</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#updating-searchparams">Updating searchParams</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-search-params</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the useSearchParams hook.</td></tr></table><p><code>useSearchParams</code> is a <strong>Client Component</strong> hook that lets you read the current URL’s <strong>query string</strong>.</p>
+<p><code>useSearchParams</code> returns a <strong>read-only</strong> version of the <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams" target="_blank" rel="noopener"><code>URLSearchParams</code></a> interface.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SearchBar() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  // URL -&gt; `/dashboard?search=my-project`
+  // `search` -&gt; 'my-project'
+  return &lt;&gt;Search: {search}&lt;/&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SearchBar() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  // URL -&gt; `/dashboard?search=my-project`
+  // `search` -&gt; 'my-project'
+  return &lt;&gt;Search: {search}&lt;/&gt;
+}
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">const searchParams = useSearchParams()
+</code></pre>
+<p><code>useSearchParams</code> does not take any parameters.</p>
+<h2 id="returns">Returns</h2>
+<p><code>useSearchParams</code> returns a <strong>read-only</strong> version of the <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams" target="_blank" rel="noopener"><code>URLSearchParams</code></a> interface, which includes utility methods for reading the URL’s query string:</p>
+<ul>
+<li>
+<p><a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/get" target="_blank" rel="noopener"><code>URLSearchParams.get()</code></a>: Returns the first value associated with the search parameter. For example:</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th><code>searchParams.get(&quot;a&quot;)</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/dashboard?a=1</code></td>
+<td><code>'1'</code></td>
+</tr>
+<tr>
+<td><code>/dashboard?a=</code></td>
+<td><code>''</code></td>
+</tr>
+<tr>
+<td><code>/dashboard?b=3</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>/dashboard?a=1&amp;a=2</code></td>
+<td><code>'1'</code> <em>- use <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/getAll" target="_blank" rel="noopener"><code>getAll()</code></a> to get all values</em></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/has" target="_blank" rel="noopener"><code>URLSearchParams.has()</code></a>: Returns a boolean value indicating if the given parameter exists. For example:</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th><code>searchParams.has(&quot;a&quot;)</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/dashboard?a=1</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>/dashboard?b=3</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Learn more about other <strong>read-only</strong> methods of <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams" target="_blank" rel="noopener"><code>URLSearchParams</code></a>, including the <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/getAll" target="_blank" rel="noopener"><code>getAll()</code></a>, <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/keys" target="_blank" rel="noopener"><code>keys()</code></a>, <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/values" target="_blank" rel="noopener"><code>values()</code></a>, <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/entries" target="_blank" rel="noopener"><code>entries()</code></a>, <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/forEach" target="_blank" rel="noopener"><code>forEach()</code></a>, and <a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams/toString" target="_blank" rel="noopener"><code>toString()</code></a>.</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>useSearchParams</code> is a <a href="/docs/app/getting-started/server-and-client-components">Client Component</a> hook and is <strong>not supported</strong> in <a href="/docs/app/getting-started/server-and-client-components">Server Components</a> to prevent stale values during <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">partial rendering</a>.</li>
+<li>If you want to fetch data in a Server Component based on search params, it’s often a better option to read the <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code> prop</a> of the corresponding Page. You can then pass it down by props to any component (Server or Client) within that Page.</li>
+<li>If an application includes the <code>/pages</code> directory, <code>useSearchParams</code> will return <code>ReadonlyURLSearchParams | null</code>. The <code>null</code> value is for compatibility during migration since search params cannot be known during prerendering of a page that doesn’t use <code>getServerSideProps</code></li>
+</ul>
+</blockquote>
+<h2 id="behavior">Behavior</h2>
+<h3 id="prerendering">Prerendering</h3>
+<p>If a route is <a href="/docs/app/glossary#prerendering">prerendered</a>, calling <code>useSearchParams</code> will cause the Client Component tree up to the closest <a href="/docs/app/api-reference/file-conventions/loading#examples"><code>Suspense</code> boundary</a> to be client-side rendered.</p>
+<p>This allows a part of the route to be prerendered while the dynamic part that uses <code>useSearchParams</code> is client-side rendered.</p>
+<p>We recommend wrapping the Client Component that uses <code>useSearchParams</code> in a <code>&lt;Suspense/&gt;</code> boundary. This will allow any Client Components above it to be prerendered and sent as part of initial HTML. <a href="/docs/app/api-reference/functions/use-search-params#prerendering">Example</a>.</p>
+<p>For example:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SearchBar() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  // This will not be logged on the server during prerendering
+  console.log(search)
+
+  return &lt;&gt;Search: {search}&lt;/&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SearchBar() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  // This will not be logged on the server during prerendering
+  console.log(search)
+
+  return &lt;&gt;Search: {search}&lt;/&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import SearchBar from './search-bar'
+
+// This component passed as a fallback to the Suspense boundary
+// will be rendered in place of the search bar in the initial HTML.
+// When the value is available during React hydration the fallback
+// will be replaced with the `&lt;SearchBar&gt;` component.
+function SearchBarFallback() {
+  return &lt;&gt;placeholder&lt;/&gt;
+}
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;Suspense fallback={&lt;SearchBarFallback /&gt;}&gt;
+          &lt;SearchBar /&gt;
+        &lt;/Suspense&gt;
+      &lt;/nav&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import SearchBar from './search-bar'
+
+// This component passed as a fallback to the Suspense boundary
+// will be rendered in place of the search bar in the initial HTML.
+// When the value is available during React hydration the fallback
+// will be replaced with the `&lt;SearchBar&gt;` component.
+function SearchBarFallback() {
+  return &lt;&gt;placeholder&lt;/&gt;
+}
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;Suspense fallback={&lt;SearchBarFallback /&gt;}&gt;
+          &lt;SearchBar /&gt;
+        &lt;/Suspense&gt;
+      &lt;/nav&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>In development, routes are rendered on-demand, so <code>useSearchParams</code> doesn’t suspend and things may appear to work without <code>Suspense</code>.</li>
+<li>During production builds, a static page that calls <code>useSearchParams</code> from a Client Component must be wrapped in a <code>Suspense</code> boundary, otherwise the build fails with the <a href="/docs/messages/missing-suspense-with-csr-bailout">Missing Suspense boundary with useSearchParams</a> error.</li>
+<li>If you intend the route to be dynamically rendered, prefer using the <a href="/docs/app/api-reference/functions/connection"><code>connection</code></a> function first in a Server Component to wait for an incoming request, this excludes everything below from prerendering. See what makes a route dynamic in the <a href="/docs/app/glossary#dynamic-rendering">Dynamic Rendering guide</a>.</li>
+<li>If you’re already in a Server Component Page, consider using the <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code> prop</a> and passing the values to Client Components.</li>
+<li>You can also pass the Page <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code> prop</a> directly to a Client Component and unwrap it with React’s <code>use()</code>. Although this will suspend, so the Client Component should be wrapped with a <code>Suspense</code> boundary.</li>
+</ul>
+</blockquote>
+<h3 id="dynamic-rendering">Dynamic Rendering</h3>
+<p>If a route is dynamically rendered, <code>useSearchParams</code> will be available on the server during the initial server render of the Client Component.</p>
+<p>For example:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SearchBar() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  // This will be logged on the server during the initial render
+  // and on the client on subsequent navigations.
+  console.log(search)
+
+  return &lt;&gt;Search: {search}&lt;/&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SearchBar() {
+  const searchParams = useSearchParams()
+
+  const search = searchParams.get('search')
+
+  // This will be logged on the server during the initial render
+  // and on the client on subsequent navigations.
+  console.log(search)
+
+  return &lt;&gt;Search: {search}&lt;/&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">import { connection } from 'next/server'
+import SearchBar from './search-bar'
+
+export default async function Page() {
+  await connection()
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;SearchBar /&gt;
+      &lt;/nav&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { connection } from 'next/server'
+import SearchBar from './search-bar'
+
+export default async function Page() {
+  await connection()
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;SearchBar /&gt;
+      &lt;/nav&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Previously, setting <code>export const dynamic = 'force-dynamic'</code> on the page was used to force dynamic rendering. Prefer using <a href="/docs/app/api-reference/functions/connection"><code>connection()</code></a> instead, as it semantically ties dynamic rendering to the incoming request.</li>
+</ul>
+</blockquote>
+<h3 id="server-components">Server Components</h3>
+<h4>Pages</h4>
+<p>To access search params in <a href="/docs/app/api-reference/file-conventions/page">Pages</a> (Server Components), use the <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code></a> prop.</p>
+<h4>Layouts</h4>
+<p>Unlike Pages, <a href="/docs/app/api-reference/file-conventions/layout">Layouts</a> (Server Components) <strong>do not</strong> receive the <code>searchParams</code> prop. This is because a shared layout is <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">not re-rendered during navigation</a> which could lead to stale <code>searchParams</code> between navigations. View <a href="/docs/app/api-reference/file-conventions/layout#query-params">detailed explanation</a>.</p>
+<p>Instead, use the Page <a href="/docs/app/api-reference/file-conventions/page"><code>searchParams</code></a> prop or the <a href="/docs/app/api-reference/functions/use-search-params"><code>useSearchParams</code></a> hook in a Client Component, which is re-rendered on the client with the latest <code>searchParams</code>.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="updating-searchparams">Updating <code>searchParams</code></h3>
+<p>You can use <a href="/docs/app/api-reference/functions/use-router"><code>useRouter</code></a> or <a href="/docs/app/api-reference/components/link"><code>Link</code></a> to set new <code>searchParams</code>. After a navigation is performed, the current <a href="/docs/app/api-reference/file-conventions/page"><code>page.js</code></a> will receive an updated <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code> prop</a>.</p>
+<pre><code class="language-tsx">'use client'
+
+export default function ExampleClientComponent() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // Get a new searchParams string by merging the current
+  // searchParams with a provided key/value pair
+  const createQueryString = useCallback(
+    (name: string, value: string) =&gt; {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+
+      return params.toString()
+    },
+    [searchParams]
+  )
+
+  return (
+    &lt;&gt;
+      &lt;p&gt;Sort By&lt;/p&gt;
+
+      {/* using useRouter */}
+      &lt;button
+        onClick={() =&gt; {
+          // &lt;pathname&gt;?sort=asc
+          router.push(pathname + '?' + createQueryString('sort', 'asc'))
+        }}
+      &gt;
+        ASC
+      &lt;/button&gt;
+
+      {/* using &lt;Link&gt; */}
+      &lt;Link
+        href={
+          // &lt;pathname&gt;?sort=desc
+          pathname + '?' + createQueryString('sort', 'desc')
+        }
+      &gt;
+        DESC
+      &lt;/Link&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+export default function ExampleClientComponent() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // Get a new searchParams string by merging the current
+  // searchParams with a provided key/value pair
+  const createQueryString = useCallback(
+    (name, value) =&gt; {
+      const params = new URLSearchParams(searchParams)
+      params.set(name, value)
+
+      return params.toString()
+    },
+    [searchParams]
+  )
+
+  return (
+    &lt;&gt;
+      &lt;p&gt;Sort By&lt;/p&gt;
+
+      {/* using useRouter */}
+      &lt;button
+        onClick={() =&gt; {
+          // &lt;pathname&gt;?sort=asc
+          router.push(pathname + '?' + createQueryString('sort', 'asc'))
+        }}
+      &gt;
+        ASC
+      &lt;/button&gt;
+
+      {/* using &lt;Link&gt; */}
+      &lt;Link
+        href={
+          // &lt;pathname&gt;?sort=desc
+          pathname + '?' + createQueryString('sort', 'desc')
+        }
+      &gt;
+        DESC
+      &lt;/Link&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>useSearchParams</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

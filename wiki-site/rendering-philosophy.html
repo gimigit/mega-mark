@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>rendering-philosophy — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-rendering-philosophy">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#static-and-dynamic-as-a-spectrum">Static and Dynamic as a Spectrum</a></li><li><a href="#what-this-enables">What This Enables</a></li><li><a href="#the-trade-off">The Trade-Off</a></li><ul><li><a href="#build-time-prerendering">Build-time prerendering</a></li><li><a href="#route-level-boundaries">Route-level boundaries</a></li><li><a href="#component-level-boundaries">Component-level boundaries</a></li></ul><li><a href="#infrastructure-implications">Infrastructure Implications</a></li><li><a href="#portability-and-fidelity">Portability and Fidelity</a></li><li><a href="#cdn-feature-compatibility">CDN Feature Compatibility</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">rendering-philosophy</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Rendering Philosophy</td></tr><tr><th>description</th><td>Learn more about the features discussed on this page.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><h2 id="static-and-dynamic-as-a-spectrum">Static and Dynamic as a Spectrum</h2>
+<p>Most web frameworks draw a hard line between static and dynamic at the route level. A page is either prerendered at build time or server-rendered at request time. This model is simple to understand and simple to deploy: you upload static files to a CDN and point dynamic routes at a server.</p>
+<p>Next.js takes a different approach: <strong>the boundary between static and dynamic is at the component level, not the route level.</strong> A single page can have a static shell that loads instantly and dynamic sections that stream in as they resolve. A cached function can live inside a dynamic route. A static page can be updated without a redeploy.</p>
+<p>This is what Partial Prerendering, <a href="/docs/app/getting-started/caching">Cache Components</a> (<code>use cache</code>), and <a href="/docs/app/api-reference/functions/revalidateTag">on-demand revalidation</a> enable. They are not incremental features: they represent a rendering model that treats static and dynamic as a spectrum rather than a binary choice.</p>
+<h2 id="what-this-enables">What This Enables</h2>
+<p>This model benefits developers and users in concrete ways:</p>
+<ul>
+<li><strong>Faster perceived load times.</strong> The static shell renders immediately while dynamic content streams in. Users see useful content right away instead of waiting for the entire page to render.</li>
+<li><strong>Incremental caching.</strong> Developers can add caching and revalidation incrementally, without deciding upfront at build time whether a route is static or dynamic. Any page can be revalidated on demand, and any function can be cached with <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a>.</li>
+<li><strong>Granular caching.</strong> Cache a function with <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a>, not a route. Revalidate a <a href="/docs/app/api-reference/functions/revalidateTag">tag</a>, not a deployment. This means an expensive database query can be cached independently of the rest of the page.</li>
+</ul>
+<h2 id="the-trade-off">The Trade-Off</h2>
+<p>Web frameworks differ in where they place the boundary between static and dynamic content. Each approach makes a different trade-off between developer flexibility and infrastructure complexity.</p>
+<h3 id="build-time-prerendering">Build-time prerendering</h3>
+<p>Every page is generated at build time. The output is static files that can be served from any CDN or file server with zero runtime infrastructure. Dynamic content, if any, requires client-side fetching after the page loads. This is the simplest model to deploy, but every content change requires a rebuild and redeploy.</p>
+<h3 id="route-level-boundaries">Route-level boundaries</h3>
+<p>Each route chooses whether it is static or dynamic. Static routes are prerendered at build time, dynamic routes are server-rendered per request. The infrastructure splits cleanly: static files go to a CDN, dynamic routes go to a server. This is straightforward to reason about but the choice is all-or-nothing per route. A mostly-static page with one dynamic element (a user greeting, a live price) must either be fully dynamic or fetch that element on the client after load.</p>
+<h3 id="component-level-boundaries">Component-level boundaries</h3>
+<p>This is the approach Next.js takes. Static and dynamic content coexist within a single streaming response. A page can have a static shell that loads instantly, a cached function that revalidates independently, and a dynamic section that streams in as it resolves, all without the developer splitting anything into separate routes or client-side fetches.</p>
+<p>The trade-off is infrastructure complexity. A finer-grained rendering boundary transfers complexity from application code into the hosting platform. The infrastructure requirements described below exist because of this choice.</p>
+<h2 id="infrastructure-implications">Infrastructure Implications</h2>
+<p>The component-level rendering model has direct implications for platforms hosting Next.js applications:</p>
+<ul>
+<li><strong>Streaming</strong> is required because static and dynamic content are served in a single response. The server sends initial content first, then streams dynamic portions as they resolve. See <a href="/docs/app/guides/streaming">Streaming</a> for details.</li>
+<li><strong>Cache coordination</strong> is required when running multiple instances because any cached content can be invalidated on demand via <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag()</code></a> or <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath()</code></a>. See <a href="/docs/app/guides/how-revalidation-works">How Revalidation Works</a> for the architecture.</li>
+<li><strong>Cache consistency</strong> matters because revalidation regenerates both the HTML response and the RSC payload (the serialized React Server Components data used for client-side navigation). If these get out of sync, users may see inconsistent data during navigation. See <a href="/docs/app/guides/how-revalidation-works">How Revalidation Works</a> for consistency requirements.</li>
+<li><strong>PPR shell delivery at CDN latency</strong> can require additional platform integration to store the static shell separately and resume dynamic rendering correctly. See <a href="/docs/app/guides/ppr-platform-guide">PPR Platform Guide</a> for implementation details.</li>
+</ul>
+<p>Each of these infrastructure requirements maps directly to a capability: streaming enables progressive delivery, cache coordination propagates invalidations across instances, cache consistency keeps HTML and RSC aligned, and PPR-at-edge often requires extra shell/resume integration.</p>
+<h2 id="portability-and-fidelity">Portability and Fidelity</h2>
+<p>Next.js runs as a Node.js server process, and a single process handles every feature correctly. Streaming support enables progressive delivery of Server Components and PPR; without it, responses are buffered but features still work. Additional infrastructure investments (CDN caching, edge compute, shared cache) improve performance and, in multi-instance deployments, reduce consistency gaps.</p>
+<p>To make this concrete, we distinguish between two types of platform support:</p>
+<p><strong>Functional fidelity</strong> means every Next.js feature works correctly on the platform. The <a href="/docs/app/api-reference/adapters/testing-adapters">adapter test suite</a> is the contract: if a platform’s adapter passes the tests, it has full functional fidelity. This is binary: it passes or it doesn’t. The test suite is open to contributions from platform partners to ensure it is fair and complete.</p>
+<p><strong>Performance fidelity</strong> means features achieve their optimal performance characteristics. For example, PPR’s static shell served at CDN latency rather than origin latency, or ISR serving stale content instantly while revalidating in the background with sub-second propagation. Performance fidelity is a spectrum: every platform will achieve different levels based on their architecture, and platforms will improve over time.</p>
+<p>A platform that achieves functional fidelity is a fully supported deployment target for Next.js. Performance fidelity is how platforms differentiate. See <a href="/docs/app/guides/deploying-to-platforms">Deploying to Platforms</a> for the full feature compatibility matrix.</p>
+<h2 id="cdn-feature-compatibility">CDN Feature Compatibility</h2>
+<p>Many CDNs have useful primitives for deeper Next.js integration (edge compute, key-value storage, blob storage), but end-to-end PPR resume support is still emerging and may require bespoke platform work. Most community adapters today deploy Next.js as a Node.js server without leveraging these CDN-specific primitives. See the <a href="/docs/app/getting-started/deploying#adapters">Deploying</a> page for the current list of adapters.</p>
+<p>See <a href="/docs/app/guides/deploying-to-platforms#cdn-infrastructure-compatibility">Deploying to Platforms</a> for the full CDN compatibility table and <a href="/docs/app/guides/cdn-caching">CDN Caching</a> for caching behavior details.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

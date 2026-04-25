@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>intercepting-routes — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-intercepting-routes">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#convention">Convention</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#modals">Modals</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">intercepting-routes</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to create modals with Intercepted and Parallel Routes.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Intercepting routes allows you to load a route from another part of your application within the current layout. This routing paradigm can be useful when you want to display the content of a route without the user switching to a different context.</p>
+<p>For example, when clicking on a photo in a feed, you can display the photo in a modal, overlaying the feed. In this case, Next.js intercepts the <code>/photo/123</code> route, masks the URL, and overlays it over <code>/feed</code>.</p>
+<p><Image
+  alt="Intercepting routes soft navigation"
+  srcLight="/docs/light/intercepting-routes-soft-navigate.png"
+  srcDark="/docs/dark/intercepting-routes-soft-navigate.png"
+  width="1600"
+  height="617"
+/></p>
+<p>However, when navigating to the photo by clicking a shareable URL or by refreshing the page, the entire photo page should render instead of the modal. No route interception should occur.</p>
+<p><Image
+  alt="Intercepting routes hard navigation"
+  srcLight="/docs/light/intercepting-routes-hard-navigate.png"
+  srcDark="/docs/dark/intercepting-routes-hard-navigate.png"
+  width="1600"
+  height="604"
+/></p>
+<h2 id="convention">Convention</h2>
+<p>Intercepting routes can be defined with the <code>(..)</code> convention, which is similar to relative path convention <code>../</code> but for route segments.</p>
+<p>You can use:</p>
+<ul>
+<li><code>(.)</code> to match segments on the <strong>same level</strong></li>
+<li><code>(..)</code> to match segments <strong>one level above</strong></li>
+<li><code>(..)(..)</code> to match segments <strong>two levels above</strong></li>
+<li><code>(...)</code> to match segments from the <strong>root</strong> <code>app</code> directory</li>
+</ul>
+<p>For example, you can intercept the <code>photo</code> segment from within the <code>feed</code> segment by creating a <code>(..)photo</code> directory.</p>
+<p><Image
+  alt="Intercepting routes folder structure"
+  srcLight="/docs/light/intercepted-routes-files.png"
+  srcDark="/docs/dark/intercepted-routes-files.png"
+  width="1600"
+  height="604"
+/></p>
+<blockquote>
+<p><strong>Good to know:</strong> The <code>(..)</code> convention is based on <em>route segments</em>, not the file-system. For example, it does not consider <code>@slot</code> folders in <a href="/docs/app/api-reference/file-conventions/parallel-routes">Parallel Routes</a>.</p>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<h3 id="modals">Modals</h3>
+<p>Intercepting Routes can be used together with <a href="/docs/app/api-reference/file-conventions/parallel-routes">Parallel Routes</a> to create modals. This allows you to solve common challenges when building modals, such as:</p>
+<ul>
+<li>Making the modal content <strong>shareable through a URL</strong>.</li>
+<li><strong>Preserving context</strong> when the page is refreshed, instead of closing the modal.</li>
+<li><strong>Closing the modal on backwards navigation</strong> rather than going to the previous route.</li>
+<li><strong>Reopening the modal on forwards navigation</strong>.</li>
+</ul>
+<p>Consider the following UI pattern, where a user can open a photo modal from a gallery using client-side navigation, or navigate to the photo page directly from a shareable URL:</p>
+<p><Image
+  alt="Intercepting routes modal example"
+  srcLight="/docs/light/intercepted-routes-modal-example.png"
+  srcDark="/docs/dark/intercepted-routes-modal-example.png"
+  width="1600"
+  height="976"
+/></p>
+<p>In the above example, the path to the <code>photo</code> segment can use the <code>(..)</code> matcher since <code>@modal</code> is a slot and <strong>not</strong> a segment. This means that the <code>photo</code> route is only one segment level higher, despite being two file-system levels higher.</p>
+<p>See the <a href="/docs/app/api-reference/file-conventions/parallel-routes#modals">Parallel Routes</a> documentation for a step-by-step example, or see our <a href="https://github.com/vercel-labs/nextgram" target="_blank" rel="noopener">image gallery example</a>.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>Other examples could include opening a login modal in a top navbar while also having a dedicated <code>/login</code> page, or opening a shopping cart in a side modal.</li>
+</ul>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

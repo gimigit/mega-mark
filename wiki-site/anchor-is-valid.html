@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/anchor-is-valid — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-anchor-is-valid">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-do-i-resolve-this-error">How do I resolve this error?</a></li><ul><li><a href="#case-i-want-to-perform-an-action-and-need-a-clickable-ui-element">Case: I want to perform an action and need a clickable UI element</a></li><li><a href="#case-i-want-navigable-links">Case: I want navigable links</a></li><li><a href="#case-i-need-the-html-to-be-interactive-dont-i-need-to-use-an-a-tag-for-that">Case: I need the HTML to be interactive, don’t I need to use an a tag for that?</a></li><li><a href="#case-i-use-nextjs-and-im-getting-this-error-inside-of-ltlinkgts">Case: I use Next.js and I’m getting this error inside of &amp;lt;Link&amp;gt;s</a></li><li><a href="#case-i-understand-the-previous-cases-but-still-need-an-element-resembling-a-link-that-is-purely-clickable">Case: I understand the previous cases but still need an element resembling a link that is purely clickable</a></li></ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/anchor-is-valid</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>The HTML <code>&lt;a&gt;</code> element, with a valid <code>href</code> attribute, is formally defined as representing a <strong>hyperlink</strong>. That is, a link between one HTML document and another, or between one location inside an HTML document and another location inside the same document.</p>
+<p>In fact, the interactive, underlined <code>&lt;a&gt;</code> element has become so synonymous with web navigation that this expectation has become entrenched inside browsers, assistive technologies such as screen readers and in how people generally expect the internet to behave. In short, anchors should navigate.</p>
+<p>The use of JavaScript frameworks and libraries, like <em>React</em>, has made it very easy to add or subtract functionality from the standard HTML elements. This has led to <em>anchors</em> often being used in applications based on how they look and function instead of what they represent.</p>
+<p>Whilst it is possible, for example, to turn the <code>&lt;a&gt;</code> element into a fully functional <code>&lt;button&gt;</code> element with ARIA, the native user agent implementations of HTML elements are to be preferred over custom ARIA solutions.</p>
+<h2 id="how-do-i-resolve-this-error">How do I resolve this error?</h2>
+<h3 id="case-i-want-to-perform-an-action-and-need-a-clickable-ui-element">Case: I want to perform an action and need a clickable UI element</h3>
+<p>The native user agent implementations of the <code>&lt;a&gt;</code> and <code>&lt;button&gt;</code> elements not only differ in how they look and how they act when activated, but also in how the user is expected to interact with them. Both are perfectly clickable when using a mouse, but keyboard users expect <code>&lt;a&gt;</code> to activate on <code>enter</code> only and <code>&lt;button&gt;</code> to activate on <em>both</em> <code>enter</code> and <code>space</code>.</p>
+<p>This is exacerbated by the expectation sighted users have of how <em>buttons</em> and <em>anchors</em> work based on their appearance. Therefore we find that using <em>anchors</em> as <em>buttons</em> can easily create confusion without a relatively complicated ARIA and CSS implementation that only serves to create an element HTML already offers and browsers already implement fully accessibly.</p>
+<p>We are aware that sometimes <em>anchors</em> are used instead of <em>buttons</em> to achieve a specific visual design. When using the <code>&lt;button&gt;</code> element this can still be achieved with styling but, due to the meaning many people attach to the standard underlined <code>&lt;a&gt;</code> due its appearance, please reconsider this in the design.</p>
+<p>Consider the following:</p>
+<pre><code class="language-jsx">&lt;a href=&quot;javascript:void(0)&quot; onClick={foo}&gt;Perform action&lt;/a&gt;
+&lt;a href=&quot;#&quot; onClick={foo}&gt;Perform action&lt;/a&gt;
+&lt;a onClick={foo}&gt;Perform action&lt;/a&gt;
+</code></pre>
+<p>All these <em>anchor</em> implementations indicate that the element is only used to execute JavaScript code. All the above should be replaced with:</p>
+<pre><code class="language-jsx">&lt;button onClick={foo}&gt;Perform action&lt;/button&gt;
+</code></pre>
+<h3 id="case-i-want-navigable-links">Case: I want navigable links</h3>
+<p>An <code>&lt;a&gt;</code> element without an <code>href</code> attribute no longer functions as a hyperlink. That means that it can no longer accept keyboard focus or be clicked on. The documentation for <a href="no-noninteractive-tabindex.md">no-noninteractive-tabindex</a> explores this further. Preferably use another element (such as <code>div</code> or <code>span</code>) for display of text.</p>
+<p>To properly function as a hyperlink, the <code>href</code> attribute should be present and also contain a valid <em>URL</em>. <em>JavaScript</em> strings, empty values or using only <strong>#</strong> are not considered valid <code>href</code> values.</p>
+<p>Valid <code>href</code> attributes values are:</p>
+<pre><code class="language-jsx">&lt;a href=&quot;/some/valid/uri&quot;&gt;Navigate to page&lt;/a&gt;
+&lt;a href=&quot;/some/valid/uri#top&quot;&gt;Navigate to page and location&lt;/a&gt;
+&lt;a href=&quot;#top&quot;&gt;Navigate to internal page location&lt;/a&gt;
+</code></pre>
+<h3 id="case-i-need-the-html-to-be-interactive-dont-i-need-to-use-an-a-tag-for-that">Case: I need the HTML to be interactive, don’t I need to use an a tag for that?</h3>
+<p>An <code>&lt;a&gt;</code> tag is not inherently interactive. Without an href attribute, it really is no different from a <code>&lt;span&gt;</code>.</p>
+<p>Let’s look at an example that is not accessible by all users:</p>
+<pre><code class="language-jsx">&lt;a
+  className=&quot;thing&quot;
+  onMouseEnter={() =&gt; this.setState({ showSomething: true })}
+&gt;
+  {label}
+&lt;/a&gt;
+</code></pre>
+<p>If you need to create an interface element that the user can click on, consider using a button:</p>
+<pre><code class="language-jsx">&lt;button
+  className=&quot;thing&quot;
+  onClick={() =&gt; this.setState({ showSomething: true })}
+&gt;
+  {label}
+&lt;/button&gt;
+</code></pre>
+<p>If you want to navigate while providing the user with extra functionality, for example in the <code>onMouseEnter</code> event, use an anchor with an <code>href</code> attribute containing a URL or path as its value.</p>
+<pre><code class="language-jsx">&lt;a
+  href={someValidPath}
+  className=&quot;thing&quot;
+  onMouseEnter={() =&gt; this.setState({ showSomething: true })}
+&gt;
+  {label}
+&lt;/a&gt;
+</code></pre>
+<p>If you need to create an interface element that the user can mouse over or mouse out of, consider using a div element. In this case, you may need to apply a role of presentation or an interactive role. Interactive ARIA roles include <code>button</code>, <code>link</code>, <code>checkbox</code>, <code>menuitem</code>, <code>menuitemcheckbox</code>, <code>menuitemradio</code>, <code>option</code>, <code>radio</code>, <code>searchbox</code>, <code>switch</code> and <code>textbox</code>.</p>
+<pre><code class="language-jsx">&lt;div
+  role=&quot;menuitem&quot;
+  className=&quot;thing&quot;
+  onClick={() =&gt; this.setState({ showSomething: true })}
+  onMouseEnter={() =&gt; this.setState({ showSomething: true })}
+&gt;
+  {label}
+&lt;/div&gt;
+</code></pre>
+<p>In the example immediately above an <code>onClick</code> event handler was added to provide the same experience mouse users enjoy to keyboard-only and touch-screen users. Never fully rely on mouse events alone to expose functionality.</p>
+<h3 id="case-i-use-nextjs-and-im-getting-this-error-inside-of-ltlinkgts">Case: I use Next.js and I’m getting this error inside of <code>&lt;Link&gt;</code>s</h3>
+<p>This is a <a href="https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/402" target="_blank" rel="noopener">known issue</a> with Next.js’s decision to construct internal links by nesting an href-free <code>&lt;a&gt;</code> tag inside of a <code>&lt;Link&gt;</code> component. Next.js is also <a href="https://github.com/vercel/next.js/issues/5533" target="_blank" rel="noopener">aware of the issue</a> and has an <a href="https://github.com/vercel/next.js/discussions/8207" target="_blank" rel="noopener">RFC</a> working towards a solution.</p>
+<p>Until the Next.js API can be updated to a more performant and standard setup, you have a few workaround options:</p>
+<ol>
+<li>
+<p>If you have only a few <code>Link</code>s, or they’re clustered in just a few files like <code>nav.tsx</code>, you can use disable macros like <code>{/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}</code> to turn off validation of this rule for those usages.</p>
+</li>
+<li>
+<p>You can use the <code>Link</code> component’s <code>passHref</code> prop to override a dummy <code>href</code> on the <code>&lt;a&gt;</code>:</p>
+</li>
+</ol>
+<pre><code class="language-typescript">&lt;Link href=&quot;/my-amazing-page&quot; passHref&gt;
+  &lt;a href=&quot;replace&quot;&gt;Go to my amazing page&lt;/a&gt;
+&lt;/Link&gt;
+</code></pre>
+<ol start="3">
+<li>You can invest in a custom component that wraps the creation of the <code>Link</code> and <code>a</code>. You can then add your new custom component to the list of components to validate to ensure that your links are all created with a navigable href. A sample custom component is shared <a href="https://gist.github.com/zackdotcomputer/d7af9901e7db87364aad7fbfadb5c99b" target="_blank" rel="noopener">here</a> and it would be used like this:</li>
+</ol>
+<pre><code class="language-typescript">// Internally, LinkTo handles the making of the Link and A, collecting the
+// need for a lint workaround into a single file.
+// Externally, LinkTo can be linted using this rule, ensuring it will always
+// have a valid href prop.
+&lt;LinkTo href=&quot;/my-amazing-page&quot;&gt;Go to my amazing page&lt;/LinkTo&gt;
+</code></pre>
+<h3 id="case-i-understand-the-previous-cases-but-still-need-an-element-resembling-a-link-that-is-purely-clickable">Case: I understand the previous cases but still need an element resembling a link that is purely clickable</h3>
+<p>We recommend, without reserve, that elements resembling anchors should navigate. This will provide a superior user experience to a larger group of users out there.</p>
+<p>However, we understand that developers are not always in total control of the visual design of web applications. In cases where it is imperative to provide an element resembling an anchor that purely acts as a click target with no navigation as result, we would like to recommend a compromise.</p>
+<p>Again change the element to a <code>&lt;button&gt;</code>:</p>
+<pre><code class="language-jsx">&lt;button
+  type=&quot;button&quot;
+  className=&quot;link-button&quot;
+  onClick={() =&gt; this.setState({ showSomething: true })}
+&gt;
+  Press me, I look like a link
+&lt;/button&gt;
+</code></pre>
+<p>Then use styling to change its appearance to that of a link:</p>
+<pre><code class="language-css">.link-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+</code></pre>
+<p>This button element can now also be used inline in text.</p>
+<p>Once again we stress that this is an inferior implementation and some users will encounter difficulty to use your website, however, it will allow a larger group of people to interact with your website than the alternative of ignoring the rule’s warning.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>This rule takes one optional object argument of type object:</p>
+<pre><code class="language-json">{
+  &quot;rules&quot;: {
+    &quot;jsx-a11y/anchor-is-valid&quot;: [
+      &quot;error&quot;,
+      {
+        &quot;components&quot;: [&quot;Link&quot;],
+        &quot;specialLink&quot;: [&quot;hrefLeft&quot;, &quot;hrefRight&quot;],
+        &quot;aspects&quot;: [&quot;noHref&quot;, &quot;invalidHref&quot;, &quot;preferButton&quot;]
+      }
+    ]
+  }
+}
+</code></pre>
+<p>For the <code>components</code> option, these strings determine which JSX elements (<strong>always including</strong> <code>&lt;a&gt;</code>) should be checked for the props designated in the <code>specialLink</code> options (<strong>always including</strong> <code>href</code>). This is a good use case when you have a wrapper component that simply renders an <code>&lt;a&gt;</code> element (like in React):</p>
+<pre><code class="language-js">// Link.js
+const Link = props =&gt; &lt;a {...props}&gt;A link&lt;/a&gt;;
+
+...
+
+// NavBar.js (for example)
+...
+return (
+  &lt;nav&gt;
+    &lt;Link href=&quot;/home&quot; /&gt;
+  &lt;/nav&gt;
+);
+</code></pre>
+<p>For the <code>aspects</code> option, these strings determine which sub-rules are run. This allows omission of certain error types in restrictive environments.</p>
+<ul>
+<li><code>noHref</code>: Checks whether an anchor contains an <code>href</code> attribute.</li>
+<li><code>invalidHref</code>: Checks if a given <code>href</code> value is valid.</li>
+<li><code>preferButton</code>: Checks if anchors have been used as buttons.</li>
+</ul>
+<p>The option can be used on its own or with the <code>components</code> and <code>specialLink</code> options.</p>
+<p>If omitted, all sub-rule aspects will be run by default. This is the recommended configuration for all cases except where the rule becomes unusable due to well founded restrictions.</p>
+<p>The option must contain at least one <code>aspect</code>.</p>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;a href=&quot;https://github.com&quot; /&gt;
+&lt;a href=&quot;#section&quot; /&gt;
+&lt;a href=&quot;foo&quot; /&gt;
+&lt;a href=&quot;/foo/bar&quot; /&gt;
+&lt;a href={someValidPath} /&gt;
+&lt;a href=&quot;https://github.com&quot; onClick={foo} /&gt;
+&lt;a href=&quot;#section&quot; onClick={foo} /&gt;
+&lt;a href=&quot;foo&quot; onClick={foo} /&gt;
+&lt;a href=&quot;/foo/bar&quot; onClick={foo} /&gt;
+&lt;a href={someValidPath} onClick={foo} /&gt;
+</code></pre>
+<h3 id="fail">Fail</h3>
+<p>Anchors should be a button:</p>
+<pre><code class="language-jsx">&lt;a onClick={foo} /&gt;
+&lt;a href=&quot;#&quot; onClick={foo} /&gt;
+&lt;a href={&quot;#&quot;} onClick={foo} /&gt;
+&lt;a href={`#`} onClick={foo} /&gt;
+&lt;a href=&quot;javascript:void(0)&quot; onClick={foo} /&gt;
+&lt;a href={&quot;javascript:void(0)&quot;} onClick={foo} /&gt;
+&lt;a href={`javascript:void(0)`} onClick={foo} /&gt;
+</code></pre>
+<p>Missing <code>href</code> attribute:</p>
+<pre><code class="language-jsx">&lt;a /&gt;
+&lt;a href={undefined} /&gt;
+&lt;a href={null} /&gt;
+</code></pre>
+<p>Invalid <code>href</code> attribute:</p>
+<pre><code class="language-jsx">&lt;a href=&quot;#&quot; /&gt;
+&lt;a href={&quot;#&quot;} /&gt;
+&lt;a href={`#`} /&gt;
+&lt;a href=&quot;javascript:void(0)&quot; /&gt;
+&lt;a href={&quot;javascript:void(0)&quot;} /&gt;
+&lt;a href={`javascript:void(0)`} /&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/keyboard" target="_blank" rel="noopener">WCAG 2.1.1</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://webaim.org/techniques/hypertext/" target="_blank" rel="noopener">WebAIM - Introduction to Links and Hypertext</a></li>
+<li><a href="https://marcysutton.com/links-vs-buttons-in-modern-web-applications/" target="_blank" rel="noopener">Links vs. Buttons in Modern Web Applications</a></li>
+<li><a href="https://www.w3.org/TR/using-aria/#NOTES" target="_blank" rel="noopener">Using ARIA - Notes on ARIA use in HTML</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

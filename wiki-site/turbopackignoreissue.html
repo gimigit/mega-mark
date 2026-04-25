@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>turbopackignoreissue — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-turbopackignoreissue">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#options">Options</a></li><ul><li><a href="#path">path</a></li><li><a href="#title">title</a></li><li><a href="#description">description</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#suppressing-warnings-for-optional-dependencies">Suppressing warnings for optional dependencies</a></li><li><a href="#combining-multiple-rules">Combining multiple rules</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">turbopackignoreissue</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about Turbopack configuration.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>turbopack.ignoreIssue</code> option allows you to filter out specific <a href="/docs/app/api-reference/turbopack">Turbopack</a> errors and warnings so they do not appear in the CLI output or the error overlay. This is useful for suppressing known warnings that do not affect your application, such as intentionally unresolved optional dependencies.</p>
+<p>This option is only available when using Turbopack (<code>next dev --turbopack</code>).</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  turbopack: {
+    ignoreIssue: [
+      {
+        path: '**/vendor/**',
+      },
+    ],
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  turbopack: {
+    ignoreIssue: [
+      {
+        path: '**/vendor/**',
+      },
+    ],
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h2 id="options">Options</h2>
+<p>Each rule in the <code>ignoreIssue</code> array is an object with the following fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#path"><code>path</code></a></td>
+<td><code>string | RegExp</code></td>
+<td>Yes</td>
+<td>Matches against the file path of the issue</td>
+</tr>
+<tr>
+<td><a href="#title"><code>title</code></a></td>
+<td><code>string | RegExp</code></td>
+<td>No</td>
+<td>Matches against the issue title</td>
+</tr>
+<tr>
+<td><a href="#description"><code>description</code></a></td>
+<td><code>string | RegExp</code></td>
+<td>No</td>
+<td>Matches against the issue description</td>
+</tr>
+</tbody>
+</table>
+<p>An issue is suppressed when it matches the <code>path</code> <strong>and</strong> all other specified fields in a rule. If only <code>path</code> is provided, any issue from a matching file is suppressed.</p>
+<blockquote>
+<p><strong>Good to know:</strong> Issue titles and descriptions may change between Turbopack versions. The <code>path</code> field is generally stable, but is not guaranteed to remain consistent for all issue types. When possible, prefer using more specific <code>path</code> patterns over <code>title</code> or <code>description</code> matching.</p>
+</blockquote>
+<h3 id="path"><code>path</code></h3>
+<p>A <strong>glob pattern</strong> (when a string) or <strong>regular expression</strong> that matches against the file path where the issue originated.</p>
+<pre><code class="language-js">module.exports = {
+  turbopack: {
+    ignoreIssue: [
+      // Glob pattern: suppress issues from any file under vendor/
+      { path: '**/vendor/**' },
+      // RegExp: suppress issues from files matching a pattern
+      { path: /node_modules\/legacy-lib/ },
+    ],
+  },
+}
+</code></pre>
+<h3 id="title"><code>title</code></h3>
+<p>An <strong>exact string match</strong> (when a string) or <strong>regular expression</strong> that matches against the issue title.</p>
+<pre><code class="language-js">module.exports = {
+  turbopack: {
+    ignoreIssue: [
+      {
+        path: '**/src/**',
+        title: 'Module not found',
+      },
+    ],
+  },
+}
+</code></pre>
+<h3 id="description"><code>description</code></h3>
+<p>An <strong>exact string match</strong> (when a string) or <strong>regular expression</strong> that matches against the issue description.</p>
+<pre><code class="language-js">module.exports = {
+  turbopack: {
+    ignoreIssue: [
+      {
+        path: '**/src/**',
+        description: /Cannot find module 'optional-dep'/,
+      },
+    ],
+  },
+}
+</code></pre>
+<h2 id="examples">Examples</h2>
+<h3 id="suppressing-warnings-for-optional-dependencies">Suppressing warnings for optional dependencies</h3>
+<p>If your code uses <code>try/catch</code> around an optional <code>require()</code> call, Turbopack may report a “Module not found” warning. You can suppress it:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  turbopack: {
+    ignoreIssue: [
+      {
+        path: '**/lib/optional-feature/**',
+        title: 'Module not found',
+      },
+    ],
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  turbopack: {
+    ignoreIssue: [
+      {
+        path: '**/lib/optional-feature/**',
+        title: 'Module not found',
+      },
+    ],
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="combining-multiple-rules">Combining multiple rules</h3>
+<p>You can specify multiple rules to suppress different issues:</p>
+<pre><code class="language-js">module.exports = {
+  turbopack: {
+    ignoreIssue: [
+      { path: '**/vendor/**' },
+      { path: '**/legacy/**', title: 'Module not found' },
+      { path: /generated\//, description: /expected identifier/ },
+    ],
+  },
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.2.0</code></td>
+<td><code>turbopack.ignoreIssue</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

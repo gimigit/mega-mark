@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>04-linking-and-navigating — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-04-linking-and-navigating">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-navigation-works">How navigation works</a></li><ul><li><a href="#server-rendering">Server Rendering</a></li><li><a href="#prefetching">Prefetching</a></li><li><a href="#streaming">Streaming</a></li><li><a href="#client-side-transitions">Client-side transitions</a></li></ul><li><a href="#what-can-make-transitions-slow">What can make transitions slow?</a></li><ul><li><a href="#dynamic-routes-without-loadingtsx">Dynamic routes without loading.tsx</a></li><li><a href="#dynamic-segments-without-generatestaticparams">Dynamic segments without generateStaticParams</a></li><li><a href="#slow-networks">Slow networks</a></li><li><a href="#disabling-prefetching">Disabling prefetching</a></li><li><a href="#hydration-not-completed">Hydration not completed</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#native-history-api">Native History API</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">04-linking-and-navigating</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how the built-in navigation optimizations work, including prefetching, prerendering, and client-side navigation, and how to optimize navigation for dynamic routes and slow networks.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>{/* AI agent hint: To ensure client-side navigations are instant, export <code>unstable_instant</code> from the route in addition to using Suspense. See docs/01-app/02-guides/instant-navigation.mdx */}</p>
+<p>In Next.js, routes are rendered on the server by default. This often means the client has to wait for a server response before a new route can be shown. Next.js comes with built-in <a href="#prefetching">prefetching</a>, <a href="#streaming">streaming</a>, and <a href="#client-side-transitions">client-side transitions</a> ensuring navigation stays fast and responsive.</p>
+<p>This guide explains how navigation works in Next.js and how you can optimize it for <a href="#dynamic-routes-without-loadingtsx">dynamic routes</a> and <a href="#slow-networks">slow networks</a>.</p>
+<h2 id="how-navigation-works">How navigation works</h2>
+<p>To understand how navigation works in Next.js, it helps to be familiar with the following concepts:</p>
+<ul>
+<li><a href="#server-rendering">Server Rendering</a></li>
+<li><a href="#prefetching">Prefetching</a></li>
+<li><a href="#streaming">Streaming</a></li>
+<li><a href="#client-side-transitions">Client-side transitions</a></li>
+</ul>
+<h3 id="server-rendering">Server Rendering</h3>
+<p>In Next.js, <a href="/docs/app/getting-started/layouts-and-pages">Layouts and Pages</a> are <a href="https://react.dev/reference/rsc/server-components" target="_blank" rel="noopener">React Server Components</a> by default. On initial and subsequent navigations, the <a href="/docs/app/getting-started/server-and-client-components#how-do-server-and-client-components-work-in-nextjs">Server Component Payload</a> is generated on the server before being sent to the client.</p>
+<p>There are two types of server rendering, based on <em>when</em> it happens:</p>
+<ul>
+<li><strong>Prerendering</strong> happens at build time or during <a href="/docs/app/getting-started/revalidating">revalidation</a> and the result is cached.</li>
+<li><strong>Dynamic Rendering</strong> happens at request time in response to a client request.</li>
+</ul>
+<p>The trade-off of server rendering is that the client must wait for the server to respond before the new route can be shown. Next.js addresses this delay by <a href="#prefetching">prefetching</a> routes the user is likely to visit and performing <a href="#client-side-transitions">client-side transitions</a>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: HTML is also generated for the initial visit.</p>
+</blockquote>
+<h3 id="prefetching">Prefetching</h3>
+<p>Prefetching is the process of loading a route in the background before the user navigates to it. This makes navigation between routes in your application feel instant, because by the time a user clicks on a link, the data to render the next route is already available client side.</p>
+<p>Next.js automatically prefetches routes linked with the <a href="/docs/app/api-reference/components/link"><code>&lt;Link&gt;</code> component</a> when they enter the user’s viewport.</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;nav&gt;
+          {/* Prefetched when the link is hovered or enters the viewport */}
+          &lt;Link href=&quot;/blog&quot;&gt;Blog&lt;/Link&gt;
+          {/* No prefetching */}
+          &lt;a href=&quot;/contact&quot;&gt;Contact&lt;/a&gt;
+        &lt;/nav&gt;
+        {children}
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Layout() {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;nav&gt;
+          {/* Prefetched when the link is hovered or enters the viewport */}
+          &lt;Link href=&quot;/blog&quot;&gt;Blog&lt;/Link&gt;
+          {/* No prefetching */}
+          &lt;a href=&quot;/contact&quot;&gt;Contact&lt;/a&gt;
+        &lt;/nav&gt;
+        {children}
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>How much of the route is prefetched depends on whether it’s static or dynamic:</p>
+<ul>
+<li><strong>Static Route</strong>: the full route is prefetched.</li>
+<li><strong>Dynamic Route</strong>: prefetching is skipped, or the route is partially prefetched if <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.tsx</code></a> is present.</li>
+</ul>
+<p>By skipping or partially prefetching dynamic routes, Next.js avoids unnecessary work on the server for routes the users may never visit. However, waiting for a server response before navigation can give the users the impression that the app is not responding.</p>
+<p><Image
+  alt="Server Rendering without Streaming"
+  srcLight="/docs/light/server-rendering-without-streaming.png"
+  srcDark="/docs/dark/server-rendering-without-streaming.png"
+  width="1600"
+  height="748"
+/></p>
+<p>To improve the navigation experience to dynamic routes, you can use <a href="#streaming">streaming</a>.</p>
+<h3 id="streaming">Streaming</h3>
+<p>Streaming allows the server to send parts of a dynamic route to the client as soon as they’re ready, rather than waiting for the entire route to be rendered. This means users see something sooner, even if parts of the page are still loading. See the <a href="/docs/app/guides/streaming">Streaming guide</a> for a deep dive into how streaming works in Next.js.</p>
+<p>For dynamic routes, it means they can be <strong>partially prefetched</strong>. That is, shared layouts and loading skeletons can be requested ahead of time.</p>
+<p><Image
+  alt="How Server Rendering with Streaming Works"
+  srcLight="/docs/light/server-rendering-with-streaming.png"
+  srcDark="/docs/dark/server-rendering-with-streaming.png"
+  width="1600"
+  height="785"
+/></p>
+<p>To use streaming, create a <code>loading.tsx</code> in your route folder:</p>
+<p><Image
+  alt="loading.js special file"
+  srcLight="/docs/light/loading-special-file.png"
+  srcDark="/docs/dark/loading-special-file.png"
+  width="1600"
+  height="606"
+/></p>
+<pre><code class="language-tsx">export default function Loading() {
+  // Add fallback UI that will be shown while the route is loading.
+  return &lt;LoadingSkeleton /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Loading() {
+  // Add fallback UI that will be shown while the route is loading.
+  return &lt;LoadingSkeleton /&gt;
+}
+</code></pre>
+<p>Behind the scenes, Next.js will automatically wrap the <code>page.tsx</code> contents in a <code>&lt;Suspense&gt;</code> boundary. The prefetched fallback UI will be shown while the route is loading, and swapped for the actual content once ready.</p>
+<blockquote>
+<p><strong>Good to know</strong>: You can also use <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener"><code>&lt;Suspense&gt;</code></a> to create loading UI for nested components.</p>
+</blockquote>
+<p>Benefits of <code>loading.tsx</code>:</p>
+<ul>
+<li>Immediate navigation and visual feedback for the user.</li>
+<li>Shared layouts remain interactive and navigation is interruptible.</li>
+<li>Improved Core Web Vitals: <a href="https://web.dev/articles/ttfb" target="_blank" rel="noopener">TTFB</a>, <a href="https://web.dev/articles/fcp" target="_blank" rel="noopener">FCP</a>, and <a href="https://web.dev/articles/tti" target="_blank" rel="noopener">TTI</a>.</li>
+</ul>
+<p>To further improve the navigation experience, Next.js performs a <a href="#client-side-transitions">client-side transition</a> with the <code>&lt;Link&gt;</code> component.</p>
+<h3 id="client-side-transitions">Client-side transitions</h3>
+<p>Traditionally, navigation to a server-rendered page triggers a full page load. This clears state, resets scroll position, and blocks interactivity.</p>
+<p>Next.js avoids this with client-side transitions using the <code>&lt;Link&gt;</code> component. Instead of reloading the page, it updates the content dynamically by:</p>
+<ul>
+<li>Keeping any shared layouts and UI.</li>
+<li>Replacing the current page with the prefetched loading state or a new page if available.</li>
+</ul>
+<p>Client-side transitions are what makes a server-rendered apps <em>feel</em> like client-rendered apps. And when paired with <a href="#prefetching">prefetching</a> and <a href="#streaming">streaming</a>, it enables fast transitions, even for dynamic routes.</p>
+<p>Next.js also handles <a href="/docs/app/api-reference/components/link#scroll">scrolling to the top of the page</a> during client-side transitions. If content scrolls behind a sticky or fixed header after navigation, you can fix this with CSS <a href="/docs/app/api-reference/components/link#scroll-offset-with-sticky-headers"><code>scroll-padding-top</code></a>.</p>
+<h2 id="what-can-make-transitions-slow">What can make transitions slow?</h2>
+<p>These Next.js optimizations make navigation fast and responsive. However, under certain conditions, transitions can still <em>feel</em> slow. Here are some common causes and how to improve the user experience:</p>
+<h3 id="dynamic-routes-without-loadingtsx">Dynamic routes without <code>loading.tsx</code></h3>
+<p>When navigating to a dynamic route, the client must wait for the server response before showing the result. This can give the users the impression that the app is not responding.</p>
+<p>We recommend adding <code>loading.tsx</code> to dynamic routes to enable partial prefetching, trigger immediate navigation, and display a loading UI while the route renders.</p>
+<pre><code class="language-tsx">export default function Loading() {
+  return &lt;LoadingSkeleton /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Loading() {
+  return &lt;LoadingSkeleton /&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: In development mode, you can use the Next.js Devtools to identify if the route is static or dynamic. See <a href="/docs/app/api-reference/config/next-config-js/devIndicators"><code>devIndicators</code></a> for more information.</p>
+</blockquote>
+<h3 id="dynamic-segments-without-generatestaticparams">Dynamic segments without <code>generateStaticParams</code></h3>
+<p>If a <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic segment</a> could be prerendered but isn’t because it’s missing <a href="/docs/app/api-reference/functions/generate-static-params"><code>generateStaticParams</code></a>, the route will fallback to dynamic rendering at request time.</p>
+<p>Ensure the route is statically generated at build time by adding <code>generateStaticParams</code>:</p>
+<pre><code class="language-tsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+
+export default async function Page({ params }) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<h3 id="slow-networks">Slow networks</h3>
+<p>On slow or unstable networks, prefetching may not finish before the user clicks a link. This can affect both static and dynamic routes. In these cases, the <code>loading.js</code> fallback may not appear immediately because it hasn’t been prefetched yet.</p>
+<p>To improve perceived performance, you can use the <a href="/docs/app/api-reference/functions/use-link-status"><code>useLinkStatus</code> hook</a> to show immediate feedback while the transition is in progress.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useLinkStatus } from 'next/link'
+
+export default function LoadingIndicator() {
+  const { pending } = useLinkStatus()
+  return (
+    &lt;span aria-hidden className={`link-hint ${pending ? 'is-pending' : ''}`} /&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useLinkStatus } from 'next/link'
+
+export default function LoadingIndicator() {
+  const { pending } = useLinkStatus()
+  return (
+    &lt;span aria-hidden className={`link-hint ${pending ? 'is-pending' : ''}`} /&gt;
+  )
+}
+</code></pre>
+<p>You can “debounce” the hint by adding an initial animation delay (e.g. 100ms) and starting as invisible (e.g. <code>opacity: 0</code>). This means the loading indicator will only be shown if the navigation takes longer than the specified delay. See the <a href="/docs/app/api-reference/functions/use-link-status#gracefully-handling-fast-navigation"><code>useLinkStatus</code> reference</a> for a CSS example.</p>
+<blockquote>
+<p><strong>Good to know</strong>: You can use other visual feedback patterns like a progress bar. View an example <a href="https://github.com/vercel/react-transition-progress" target="_blank" rel="noopener">here</a>.</p>
+</blockquote>
+<h3 id="disabling-prefetching">Disabling prefetching</h3>
+<p>You can opt out of prefetching by setting the <code>prefetch</code> prop to <code>false</code> on the <code>&lt;Link&gt;</code> component. This is useful to avoid unnecessary usage of resources when rendering large lists of links (e.g. an infinite scroll table).</p>
+<pre><code class="language-tsx">&lt;Link prefetch={false} href=&quot;/blog&quot;&gt;
+  Blog
+&lt;/Link&gt;
+</code></pre>
+<p>However, disabling prefetching comes with trade-offs:</p>
+<ul>
+<li><strong>Static routes</strong> will only be fetched when the user clicks the link.</li>
+<li><strong>Dynamic routes</strong> will need to be rendered on the server first before the client can navigate to it.</li>
+</ul>
+<p>To reduce resource usage without fully disabling prefetch, you can prefetch only on hover. This limits prefetching to routes the user is more <em>likely</em> to visit, rather than all links in the viewport.</p>
+<pre><code class="language-tsx">'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+
+function HoverPrefetchLink({
+  href,
+  children,
+}: {
+  href: string
+  children: React.ReactNode
+}) {
+  const [active, setActive] = useState(false)
+
+  return (
+    &lt;Link
+      href={href}
+      prefetch={active ? null : false}
+      onMouseEnter={() =&gt; setActive(true)}
+    &gt;
+      {children}
+    &lt;/Link&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+
+function HoverPrefetchLink({ href, children }) {
+  const [active, setActive] = useState(false)
+
+  return (
+    &lt;Link
+      href={href}
+      prefetch={active ? null : false}
+      onMouseEnter={() =&gt; setActive(true)}
+    &gt;
+      {children}
+    &lt;/Link&gt;
+  )
+}
+</code></pre>
+<h3 id="hydration-not-completed">Hydration not completed</h3>
+<p><code>&lt;Link&gt;</code> is a Client Component and must be hydrated before it can prefetch routes. On the initial visit, large JavaScript bundles can delay hydration, preventing prefetching from starting right away.</p>
+<p>React mitigates this with Selective Hydration and you can further improve this by:</p>
+<ul>
+<li>Using the <a href="/docs/app/guides/package-bundling#nextbundle-analyzer-for-webpack"><code>@next/bundle-analyzer</code></a> plugin to identify and reduce bundle size by removing large dependencies.</li>
+<li>Moving logic from the client to the server where possible. See the <a href="/docs/app/getting-started/server-and-client-components">Server and Client Components</a> docs for guidance.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="native-history-api">Native History API</h3>
+<p>Next.js allows you to use the native <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/pushState" target="_blank" rel="noopener"><code>window.history.pushState</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState" target="_blank" rel="noopener"><code>window.history.replaceState</code></a> methods to update the browser’s history stack without reloading the page.</p>
+<p><code>pushState</code> and <code>replaceState</code> calls integrate into the Next.js Router, allowing you to sync with <a href="/docs/app/api-reference/functions/use-pathname"><code>usePathname</code></a> and <a href="/docs/app/api-reference/functions/use-search-params"><code>useSearchParams</code></a>.</p>
+<h4><code>window.history.pushState</code></h4>
+<p>Use it to add a new entry to the browser’s history stack. The user can navigate back to the previous state. For example, to sort a list of products:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SortProducts() {
+  const searchParams = useSearchParams()
+
+  function updateSorting(sortOrder: string) {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('sort', sortOrder)
+    window.history.pushState(null, '', `?${params.toString()}`)
+  }
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; updateSorting('asc')}&gt;Sort Ascending&lt;/button&gt;
+      &lt;button onClick={() =&gt; updateSorting('desc')}&gt;Sort Descending&lt;/button&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+export default function SortProducts() {
+  const searchParams = useSearchParams()
+
+  function updateSorting(sortOrder) {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('sort', sortOrder)
+    window.history.pushState(null, '', `?${params.toString()}`)
+  }
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; updateSorting('asc')}&gt;Sort Ascending&lt;/button&gt;
+      &lt;button onClick={() =&gt; updateSorting('desc')}&gt;Sort Descending&lt;/button&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h4><code>window.history.replaceState</code></h4>
+<p>Use it to replace the current entry on the browser’s history stack. The user is not able to navigate back to the previous state. For example, to switch the application’s locale:</p>
+<pre><code class="language-tsx">'use client'
+
+import { usePathname } from 'next/navigation'
+
+export function LocaleSwitcher() {
+  const pathname = usePathname()
+
+  function switchLocale(locale: string) {
+    // e.g. '/en/about' or '/fr/contact'
+    const newPath = `/${locale}${pathname}`
+    window.history.replaceState(null, '', newPath)
+  }
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; switchLocale('en')}&gt;English&lt;/button&gt;
+      &lt;button onClick={() =&gt; switchLocale('fr')}&gt;French&lt;/button&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { usePathname } from 'next/navigation'
+
+export function LocaleSwitcher() {
+  const pathname = usePathname()
+
+  function switchLocale(locale) {
+    // e.g. '/en/about' or '/fr/contact'
+    const newPath = `/${locale}${pathname}`
+    window.history.replaceState(null, '', newPath)
+  }
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; switchLocale('en')}&gt;English&lt;/button&gt;
+      &lt;button onClick={() =&gt; switchLocale('fr')}&gt;French&lt;/button&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

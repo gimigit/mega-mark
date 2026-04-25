@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>refresh — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-refresh">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#error-when-used-outside-server-actions">Error when used outside Server Actions</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">refresh</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the refresh function.</td></tr></table><p><code>refresh</code> allows you to refresh the client router from within a <a href="/docs/app/getting-started/mutating-data">Server Action</a>.</p>
+<h2 id="usage">Usage</h2>
+<p><code>refresh</code> can <strong>only</strong> be called from within Server Actions. It cannot be used in Route Handlers, Client Components, or any other context.</p>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">refresh(): void;
+</code></pre>
+<h2 id="returns">Returns</h2>
+<p><code>refresh</code> does not return a value.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-ts">'use server'
+
+import { refresh } from 'next/cache'
+
+export async function createPost(formData: FormData) {
+  const title = formData.get('title')
+  const content = formData.get('content')
+
+  // Create the post in your database
+  const post = await db.post.create({
+    data: { title, content },
+  })
+
+  refresh()
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { refresh } from 'next/cache'
+
+export async function createPost(formData) {
+  const title = formData.get('title')
+  const content = formData.get('content')
+
+  // Create the post in your database
+  const post = await db.post.create({
+    data: { title, content },
+  })
+
+  refresh()
+}
+</code></pre>
+<h3 id="error-when-used-outside-server-actions">Error when used outside Server Actions</h3>
+<pre><code class="language-ts">import { refresh } from 'next/cache'
+
+export async function POST() {
+  // This will throw an error
+  refresh()
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

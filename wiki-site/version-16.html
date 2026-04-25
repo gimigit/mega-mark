@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rename your middleware file — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-version-16">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#upgrading-from-15-to-16">Upgrading from 15 to 16</a></li><ul><li><a href="#using-ai-agents-with-nextjs-devtools-mcp">Using AI Agents with Next.js DevTools MCP</a></li><li><a href="#using-the-codemod">Using the Codemod</a></li></ul><li><a href="#nodejs-runtime-and-browser-support">Node.js runtime and browser support</a></li><li><a href="#turbopack-by-default">Turbopack by default</a></li><ul><li><a href="#opting-out-of-turbopack">Opting out of Turbopack</a></li><li><a href="#turbopack-configuration-location">Turbopack configuration location</a></li><li><a href="#resolve-alias-fallback">Resolve alias fallback</a></li><li><a href="#sass-node_modules-imports">Sass node_modules imports</a></li><li><a href="#turbopack-file-system-caching-beta">Turbopack File System Caching (beta)</a></li></ul><li><a href="#async-request-apis-breaking-change">Async Request APIs (Breaking change)</a></li><ul><li><a href="#migrating-types-for-async-request-time-apis">Migrating types for async Request-time APIs</a></li></ul><li><a href="#async-parameters-for-icon-and-open-graph-image-breaking-change">Async parameters for icon, and open-graph Image (Breaking change)</a></li><li><a href="#async-id-parameter-for-sitemap-breaking-change">Async id parameter for sitemap (Breaking change)</a></li><li><a href="#react-192">React 19.2</a></li><li><a href="#react-compiler-support">React Compiler Support</a></li><li><a href="#caching-apis">Caching APIs</a></li><ul><li><a href="#revalidatetag">revalidateTag</a></li><li><a href="#updatetag">updateTag</a></li><li><a href="#refresh">refresh</a></li><li><a href="#cachelife-and-cachetag">cacheLife and cacheTag</a></li></ul><li><a href="#enhanced-routing-and-navigation">Enhanced Routing and Navigation</a></li><li><a href="#partial-prerendering-ppr">Partial Prerendering (PPR)</a></li><li><a href="#middleware-to-proxy">middleware to proxy</a></li><li><a href="#nextimage-changes">next/image changes</a></li><ul><li><a href="#local-images-with-query-strings-breaking-change">Local Images with Query Strings (Breaking change)</a></li><li><a href="#minimumcachettl-default-breaking-change">minimumCacheTTL Default (Breaking change)</a></li><li><a href="#imagesizes-default-breaking-change">imageSizes Default (Breaking change)</a></li><li><a href="#qualities-default-breaking-change">qualities Default (Breaking change)</a></li><li><a href="#local-ip-restriction-breaking-change">Local IP Restriction (Breaking change)</a></li><li><a href="#maximum-redirects-breaking-change">Maximum Redirects (Breaking change)</a></li><li><a href="#nextlegacyimage-component-deprecated">next/legacy/image Component (deprecated)</a></li><li><a href="#imagesdomains-configuration-deprecated">images.domains Configuration (deprecated)</a></li></ul><li><a href="#concurrent-dev-and-build">Concurrent dev and build</a></li><li><a href="#parallel-routes-defaultjs-requirement">Parallel Routes default.js requirement</a></li><li><a href="#eslint-flat-config">ESLint Flat Config</a></li><li><a href="#scroll-behavior-override">Scroll Behavior Override</a></li><li><a href="#performance-improvements">Performance Improvements</a></li><ul><li><a href="#next-dev-config-load">next dev config load</a></li></ul><li><a href="#build-adapters-api-alpha">Build Adapters API (alpha)</a></li><li><a href="#modern-sass-api">Modern Sass API</a></li><li><a href="#removals">Removals</a></li><ul><li><a href="#amp-support">AMP Support</a></li><li><a href="#next-lint-command">next lint Command</a></li><li><a href="#runtime-configuration">Runtime Configuration</a></li><li><a href="#devindicators-options">devIndicators Options</a></li><li><a href="#experimentaldynamicio">experimental.dynamicIO</a></li><li><a href="#unstable_rootparams">unstable_rootParams</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Rename your middleware file</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Version 16</td></tr><tr><th>description</th><td>Upgrade your Next.js Application from Version 15 to 16.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<h2 id="upgrading-from-15-to-16">Upgrading from 15 to 16</h2>
+<h3 id="using-ai-agents-with-nextjs-devtools-mcp">Using AI Agents with Next.js DevTools MCP</h3>
+<p>If you’re using an AI coding assistant that supports the <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol (MCP)</a>, you can use the <strong>Next.js DevTools MCP</strong> to automate the upgrade process and migration tasks.</p>
+<h4>Setup</h4>
+<p>Add the following configuration to your MCP client, for each coding agent you can read <a href="https://github.com/vercel/next-devtools-mcp#mcp-client-configuration" target="_blank" rel="noopener">this section</a> for configuration details.</p>
+<p><strong>example:</strong></p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;next-devtools&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;next-devtools-mcp@latest&quot;]
+    }
+  }
+}
+</code></pre>
+<p>For more information, visit the <a href="https://github.com/vercel/next-devtools-mcp" target="_blank" rel="noopener"><code>next-devtools-mcp</code></a> documentation to configure with your MCP client.</p>
+<blockquote>
+<p><strong>Note:</strong> Using <code>next-devtools-mcp@latest</code> ensures that your MCP client will always use the latest version of the Next.js DevTools MCP server.</p>
+</blockquote>
+<h4>Example Prompts</h4>
+<p>Once configured, you can use natural language prompts to upgrade your Next.js app:</p>
+<p><strong>To upgrade to Next.js 16:</strong></p>
+<p>Connect to your coding agent and then prompt:</p>
+<pre><code class="language-txt">Next Devtools, help me upgrade my Next.js app to version 16
+</code></pre>
+<p><strong>To migrate to Cache Components (after upgrading to v16):</strong></p>
+<p>Connect to your coding agent and then prompt:</p>
+<pre><code class="language-txt">Next Devtools, migrate my Next.js app to cache components
+</code></pre>
+<p>Learn more in the documentation <a href="/docs/app/guides/mcp">here</a>.</p>
+<h3 id="using-the-codemod">Using the Codemod</h3>
+<p>To update to Next.js version 16, you can use the <code>upgrade</code> <a href="/docs/app/guides/upgrading/codemods#160">codemod</a>:</p>
+<pre><code class="language-bash">pnpm dlx @next/codemod@canary upgrade latest
+</code></pre>
+<pre><code class="language-bash">npx @next/codemod@canary upgrade latest
+</code></pre>
+<pre><code class="language-bash">yarn dlx @next/codemod@canary upgrade latest
+</code></pre>
+<pre><code class="language-bash">bunx @next/codemod@canary upgrade latest
+</code></pre>
+<p>The <a href="/docs/app/guides/upgrading/codemods#160">codemod</a> is able to:</p>
+<ul>
+<li>Update <code>next.config.js</code> to use the new <code>turbopack</code> configuration</li>
+<li>Migrate from <code>next lint</code> to the ESLint CLI</li>
+<li>Migrate from deprecated <code>middleware</code> convention to <code>proxy</code></li>
+<li>Remove <code>unstable_</code> prefix from stabilized APIs</li>
+<li>Remove <code>experimental_ppr</code> Route Segment Config from pages and layouts</li>
+</ul>
+<p>If you prefer to do it manually, install the latest Next.js and React versions:</p>
+<pre><code class="language-bash">pnpm add next@latest react@latest react-dom@latest
+</code></pre>
+<pre><code class="language-bash">npm install next@latest react@latest react-dom@latest
+</code></pre>
+<pre><code class="language-bash">yarn add next@latest react@latest react-dom@latest
+</code></pre>
+<pre><code class="language-bash">bun add next@latest react@latest react-dom@latest
+</code></pre>
+<p>If you are using TypeScript, ensure you also upgrade <code>@types/react</code> and <code>@types/react-dom</code> to their latest versions.</p>
+<h2 id="nodejs-runtime-and-browser-support">Node.js runtime and browser support</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Change / Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node.js 20.9+</td>
+<td>Minimum version now <code>20.9.0</code> (LTS); Node.js 18 no longer supported</td>
+</tr>
+<tr>
+<td>TypeScript 5+</td>
+<td>Minimum version now <code>5.1.0</code></td>
+</tr>
+<tr>
+<td>Browsers</td>
+<td>Chrome 111+, Edge 111+, Firefox 111+, Safari 16.4+</td>
+</tr>
+</tbody>
+</table>
+<h2 id="turbopack-by-default">Turbopack by default</h2>
+<p>Starting with <strong>Next.js 16</strong>, Turbopack is stable and used by default with <code>next dev</code> and <code>next build</code></p>
+<p>Previously you had to enable Turbopack using <code>--turbopack</code>, or <code>--turbo</code>.</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev --turbopack&quot;,
+    &quot;build&quot;: &quot;next build --turbopack&quot;,
+    &quot;start&quot;: &quot;next start&quot;
+  }
+}
+</code></pre>
+<p>This is no longer necessary. You can update your <code>package.json</code> scripts:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;
+  }
+}
+</code></pre>
+<p>If your project has a <a href="/docs/app/api-reference/config/next-config-js/webpack">custom <code>webpack</code></a> configuration and you run <code>next build</code> (which now uses Turbopack by default), the build will <strong>fail</strong> to prevent misconfiguration issues.</p>
+<p>You have a few different ways to address this:</p>
+<ul>
+<li><strong>Use Turbopack anyway:</strong> Run with <code>next build --turbopack</code> to build using Turbopack and ignore your <code>webpack</code> config.</li>
+<li><strong>Switch to Turbopack fully:</strong> Migrate your <code>webpack</code> config to Turbopack-compatible options.</li>
+<li><strong>Keep using Webpack:</strong> Use the <code>--webpack</code> flag to opt out of Turbopack and build with Webpack.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>: If you see failing builds because a <code>webpack</code> configuration was found, but you don’t define one yourself, it is likely that a plugin is adding a <code>webpack</code> option</p>
+</blockquote>
+<h3 id="opting-out-of-turbopack">Opting out of Turbopack</h3>
+<p>If you need to continue using Webpack, you can opt out with the <code>--webpack</code> flag. For example, to use Turbopack in development but Webpack for production builds:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build --webpack&quot;,
+    &quot;start&quot;: &quot;next start&quot;
+  }
+}
+</code></pre>
+<p>We recommend using Turbopack for development and production. Submit a comment to this <a href="https://github.com/vercel/next.js/discussions/77721" target="_blank" rel="noopener">thread</a>, if you are unable to switch to Turbopack.</p>
+<h3 id="turbopack-configuration-location">Turbopack configuration location</h3>
+<p>The <code>experimental.turbopack</code> configuration is out of experimental.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+// Next.js 15 - experimental.turbopack
+const nextConfig: NextConfig = {
+  experimental: {
+    turbopack: {
+      // options
+    },
+  },
+}
+
+export default nextConfig
+</code></pre>
+<p>You can use it as a top-level <code>turbopack</code> option:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+// Next.js 16 - turbopack at the top level of nextConfig
+const nextConfig: NextConfig = {
+  turbopack: {
+    // options
+  },
+}
+
+export default nextConfig
+</code></pre>
+<p>Make sure to review the <code>Turbopack</code> configuration <a href="/docs/app/api-reference/config/next-config-js/turbopack">options</a>. <strong>Next.js 16</strong> introduces various improvements and new options, for example:</p>
+<ul>
+<li><a href="/docs/app/api-reference/config/next-config-js/turbopack#advanced-webpack-loader-conditions">Advanced Webpack loader conditions</a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/turbopack#debug-ids">debugIds</a></li>
+</ul>
+<h3 id="resolve-alias-fallback">Resolve alias fallback</h3>
+<p>In some projects, client-side code may import files containing Node.js native modules. This will cause <code>Module not found: Can't resolve 'fs'</code> type of errors.</p>
+<p>When this happens, you should refactor your code so that your client-side bundles do not reference these Node.js native modules.</p>
+<p>However, in some cases, this might not be possible. In Webpack the <code>resolve.fallback</code> option was typically used to <strong>silence</strong> the error. Turbopack offers a similar option, using <code>turbopack.resolveAlias</code>. In this case, tell Turbopack to load an empty module when <code>fs</code> is requested for the browser.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  turbopack: {
+    resolveAlias: {
+      fs: {
+        browser: './empty.ts', // We recommend to fix code imports before using this method
+      },
+    },
+  },
+}
+
+export default nextConfig
+</code></pre>
+<p>It is preferable to refactor your modules so that client code doesn’t ever import from modules using Node.js native modules.</p>
+<h3 id="sass-node_modules-imports">Sass node_modules imports</h3>
+<p>Turbopack fully supports importing Sass files from <code>node_modules</code>. Note that while Webpack allowed the legacy tilde (<code>~</code>) prefix, Turbopack does not support this syntax.</p>
+<p>In Webpack:</p>
+<pre><code class="language-scss">@import '~bootstrap/dist/css/bootstrap.min.css';
+</code></pre>
+<p>In Turbopack:</p>
+<pre><code class="language-scss">@import 'bootstrap/dist/css/bootstrap.min.css';
+</code></pre>
+<p>If changing the imports is not possible, you can use <code>turbopack.resolveAlias</code>. For example:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  turbopack: {
+    resolveAlias: {
+      '~*': '*',
+    },
+  },
+}
+
+export default nextConfig
+</code></pre>
+<h3 id="turbopack-file-system-caching-beta">Turbopack File System Caching (beta)</h3>
+<p>Turbopack now supports filesystem caching in development, storing compiler artifacts on disk between runs for significantly faster compile times across restarts.</p>
+<p>Enable filesystem caching in your configuration:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h2 id="async-request-apis-breaking-change">Async Request APIs (Breaking change)</h2>
+<p>Version 15 introduced <a href="https://nextjs.org/docs/app/guides/upgrading/version-15#async-request-apis-breaking-change" target="_blank" rel="noopener">Async Request APIs</a> as a breaking change, with <strong>temporary</strong> synchronous compatibility.</p>
+<p>Starting with <strong>Next.js 16</strong>, synchronous access is fully removed. These APIs can only be accessed asynchronously.</p>
+<ul>
+<li><a href="/docs/app/api-reference/functions/cookies"><code>cookies</code></a></li>
+<li><a href="/docs/app/api-reference/functions/headers"><code>headers</code></a></li>
+<li><a href="/docs/app/api-reference/functions/draft-mode"><code>draftMode</code></a></li>
+<li><code>params</code> in <a href="/docs/app/api-reference/file-conventions/layout"><code>layout.js</code></a>, <a href="/docs/app/api-reference/file-conventions/page"><code>page.js</code></a>, <a href="/docs/app/api-reference/file-conventions/route"><code>route.js</code></a>, <a href="/docs/app/api-reference/file-conventions/default"><code>default.js</code></a>, <a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#opengraph-image"><code>opengraph-image</code></a>, <a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#twitter-image"><code>twitter-image</code></a>, <a href="/docs/app/api-reference/file-conventions/metadata/app-icons#icon"><code>icon</code></a>, and <a href="/docs/app/api-reference/file-conventions/metadata/app-icons#apple-icon"><code>apple-icon</code></a>.</li>
+<li><code>searchParams</code> in <a href="/docs/app/api-reference/file-conventions/page"><code>page.js</code></a></li>
+</ul>
+<p>Use the <a href="/docs/app/guides/upgrading/codemods#migrate-to-async-dynamic-apis">codemod</a> to migrate to async Request-time APIs.</p>
+<h3 id="migrating-types-for-async-request-time-apis">Migrating types for async Request-time APIs</h3>
+<p>To help migrate to async <code>params</code> and <code>searchParams</code>, you can run <a href="/docs/app/api-reference/cli/next#next-typegen-options"><code>npx next typegen</code></a> to automatically generate these globally available types helpers:</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/page#page-props-helper"><code>PageProps</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper"><code>LayoutProps</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/route#route-context-helper"><code>RouteContext</code></a></li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>: <code>typegen</code> was introduced in Next.js 15.5</p>
+</blockquote>
+<p>This simplifies type-safe migration to the new async API pattern, and enables you to update your components with full type safety, for example:</p>
+<pre><code class="language-tsx">export default async function Page(props: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await props.params
+  const query = await props.searchParams
+  return &lt;h1&gt;Blog Post: {slug}&lt;/h1&gt;
+}
+</code></pre>
+<p>This approach gives you fully type-safe access to <code>props.params</code>, including the <code>slug</code>, and to <code>searchParams</code>, directly within your page.</p>
+<h2 id="async-parameters-for-icon-and-open-graph-image-breaking-change">Async parameters for icon, and open-graph Image (Breaking change)</h2>
+<blockquote>
+<p>The props passed to the image generating functions in <code>opengraph-image</code>, <code>twitter-image</code>, <code>icon</code>, and <code>apple-icon</code>, are now Promises.</p>
+</blockquote>
+<p>In previous versions, both the <code>Image</code> (image generation function), and the <code>generateImageMetadata</code> received a <code>params</code> object. The <code>id</code> returned by <code>generateImageMetadata</code> was passed as a string to the image generation function.</p>
+<pre><code class="language-js">// Next.js 15 - synchronous params access
+export function generateImageMetadata({ params }) {
+  const { slug } = params
+  return [{ id: '1' }, { id: '2' }]
+}
+
+// Next.js 15 - synchronous params and id access
+export default function Image({ params, id }) {
+  const slug = params.slug
+  const imageId = id // string
+  // ...
+}
+</code></pre>
+<p>Starting with <strong>Next.js 16</strong>, to align with the <a href="#async-request-apis-breaking-change">Async Request APIs</a> change, the image generating function now receives <code>params</code> and <code>id</code> as promises. The <code>generateImageMetadata</code> function continues to receive synchronous <code>params</code>.</p>
+<pre><code class="language-js">export async function generateImageMetadata({ params }) {
+  const { slug } = params
+  return [{ id: '1' }, { id: '2' }]
+}
+
+// Next.js 16 - asynchronous params and id access
+export default async function Image({ params, id }) {
+  const { slug } = await params // params now async
+  const imageId = await id // id is now Promise&lt;string&gt; when using generateImageMetadata
+  // ...
+}
+</code></pre>
+<h2 id="async-id-parameter-for-sitemap-breaking-change">Async <code>id</code> parameter for <code>sitemap</code> (Breaking change)</h2>
+<p>Previously, the <code>id</code> values returned from <a href="/docs/app/api-reference/functions/generate-sitemaps"><code>generateSitemaps</code></a> were passed directly to the <code>sitemap</code> generating function.</p>
+<pre><code class="language-js">export async function generateSitemaps() {
+  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }]
+}
+
+// Next.js 15 - synchronous id access
+export default async function sitemap({ id }) {
+  const start = id * 50000 // id is a number
+  // ...
+}
+</code></pre>
+<p>Starting with <strong>Next.js 16</strong>, the <code>sitemap</code> generating function now receives <code>id</code> as a promise.</p>
+<pre><code class="language-js">export async function generateSitemaps() {
+  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }]
+}
+
+// Next.js 16 - asynchronous id access
+export default async function sitemap({ id }) {
+  const resolvedId = await id // id is now Promise&lt;string&gt;
+  const start = Number(resolvedId) * 50000
+  // ...
+}
+</code></pre>
+<h2 id="react-192">React 19.2</h2>
+<p>The App Router in <strong>Next.js 16</strong> uses the latest React <a href="https://react.dev/blog/2023/05/03/react-canaries" target="_blank" rel="noopener">Canary release</a>, which includes the newly released React 19.2 features and other features being incrementally stabilized. Highlights include:</p>
+<ul>
+<li><strong><a href="https://react.dev/reference/react/ViewTransition" target="_blank" rel="noopener">View Transitions</a></strong>: Animate elements that update inside a Transition or navigation</li>
+<li><strong><a href="https://react.dev/reference/react/useEffectEvent" target="_blank" rel="noopener"><code>useEffectEvent</code></a></strong>: Extract non-reactive logic from Effects into reusable Effect Event functions</li>
+<li><strong><a href="https://react.dev/reference/react/Activity" target="_blank" rel="noopener">Activity</a></strong>: Render “background activity” by hiding UI with <code>display: none</code> while maintaining state and cleaning up Effects</li>
+</ul>
+<p>Learn more in the <a href="https://react.dev/blog/2025/10/01/react-19-2" target="_blank" rel="noopener">React 19.2 announcement</a>.</p>
+<h2 id="react-compiler-support">React Compiler Support</h2>
+<p>Built-in support for the React Compiler is now stable in <strong>Next.js 16</strong> following the React Compiler’s 1.0 release. The React Compiler automatically memoizes components, reducing unnecessary re-renders with zero manual code changes.</p>
+<p>The <code>reactCompiler</code> configuration option has been promoted from <code>experimental</code> to stable. It is not enabled by default as we continue gathering build performance data across different application types.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactCompiler: true,
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Install the latest version of the React Compiler plugin:</p>
+<pre><code class="language-bash">pnpm add -D babel-plugin-react-compiler
+</code></pre>
+<pre><code class="language-bash">npm install -D babel-plugin-react-compiler
+</code></pre>
+<pre><code class="language-bash">yarn add -D babel-plugin-react-compiler
+</code></pre>
+<pre><code class="language-bash">bun add -D babel-plugin-react-compiler
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> Expect compile times in development and during builds to be higher when enabling this option as the React Compiler relies on Babel.</p>
+</blockquote>
+<h2 id="caching-apis">Caching APIs</h2>
+<h3 id="revalidatetag">revalidateTag</h3>
+<p><a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> now requires a second argument specifying a <a href="/docs/app/api-reference/functions/cacheLife#reference"><code>cacheLife</code></a> profile. The single-argument form is deprecated and will produce a TypeScript error.</p>
+<pre><code class="language-ts">// Before
+revalidateTag('posts')
+
+// After
+revalidateTag('posts', 'max')
+</code></pre>
+<p>If you need immediate expiration rather than stale-while-revalidate, use <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a> in Server Actions instead.</p>
+<pre><code class="language-ts">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export async function updateArticle(articleId: string) {
+  // Mark article data as stale - article readers see stale data while it revalidates
+  revalidateTag(`article-${articleId}`, 'max')
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export async function updateArticle(articleId) {
+  // Mark article data as stale - article readers see stale data while it revalidates
+  revalidateTag(`article-${articleId}`, 'max')
+}
+</code></pre>
+<p>Use <code>revalidateTag</code> for content where a slight delay in updates is acceptable, such as blog posts, product catalogs, or documentation. Users receive stale content while fresh data loads in the background.</p>
+<h3 id="updatetag">updateTag</h3>
+<p><a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a> is a new <a href="/docs/app/getting-started/mutating-data#what-are-server-functions">Server Actions</a>-only API that provides <strong>read-your-writes</strong> semantics, where a user makes a change and the UI immediately shows the change, rather than stale data.</p>
+<p>It does this by expiring and immediately refreshing data within the same request.</p>
+<pre><code class="language-ts">'use server'
+
+import { updateTag } from 'next/cache'
+
+export async function updateUserProfile(userId: string, profile: Profile) {
+  await db.users.update(userId, profile)
+
+  // Expire cache and refresh immediately - user sees their changes right away
+  updateTag(`user-${userId}`)
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { updateTag } from 'next/cache'
+
+export async function updateUserProfile(userId, profile) {
+  await db.users.update(userId, profile)
+
+  // Expire cache and refresh immediately - user sees their changes right away
+  updateTag(`user-${userId}`)
+}
+</code></pre>
+<p>This ensures interactive features reflect changes immediately. Perfect for forms, user settings, and any workflow where users expect to see their updates instantly.</p>
+<p>Learn more about when to use <code>updateTag</code> or <code>revalidateTag</code> <a href="/docs/app/api-reference/functions/updateTag#when-to-use-updatetag">here</a>.</p>
+<h3 id="refresh">refresh</h3>
+<p><a href="/docs/app/api-reference/functions/refresh"><code>refresh</code></a> allows you to refresh the client router from within a Server Action.</p>
+<pre><code class="language-ts">'use server'
+
+import { refresh } from 'next/cache'
+
+export async function markNotificationAsRead(notificationId: string) {
+  // Update the notification in the database
+  await db.notifications.markAsRead(notificationId)
+
+  // Refresh the notification count displayed in the header
+  refresh()
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { refresh } from 'next/cache'
+
+export async function markNotificationAsRead(notificationId) {
+  // Update the notification in the database
+  await db.notifications.markAsRead(notificationId)
+
+  // Refresh the notification count displayed in the header
+  refresh()
+}
+</code></pre>
+<p>Use it when you need to refresh the client router after performing an action.</p>
+<h3 id="cachelife-and-cachetag">cacheLife and cacheTag</h3>
+<p><a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife</code></a> and <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code></a> are now stable. The <code>unstable_</code> prefix is no longer needed.</p>
+<p>Wherever you had aliased imports like:</p>
+<pre><code class="language-ts">import {
+  unstable_cacheLife as cacheLife,
+  unstable_cacheTag as cacheTag,
+} from 'next/cache'
+</code></pre>
+<p>You can update your imports to:</p>
+<pre><code class="language-ts">import { cacheLife, cacheTag } from 'next/cache'
+</code></pre>
+<h2 id="enhanced-routing-and-navigation">Enhanced Routing and Navigation</h2>
+<p><strong>Next.js 16</strong> includes a complete overhaul of the routing and navigation system, making page transitions leaner and faster. This optimizes how Next.js prefetches and caches navigation data:</p>
+<ul>
+<li><strong>Layout deduplication</strong>: When prefetching multiple URLs with a shared layout, the layout is downloaded once.</li>
+<li><strong>Incremental prefetching</strong>: Next.js only prefetches parts not already in cache, rather than entire pages.</li>
+</ul>
+<p>These changes require <strong>no code modifications</strong> and are designed to improve performance across all apps.</p>
+<p>However, you may see more individual prefetch requests with much lower total transfer sizes. We believe this is the right trade-off for nearly all applications.</p>
+<p>If the increased request count causes issues, please let us know by creating an <a href="https://github.com/vercel/next.js/issues" target="_blank" rel="noopener">issue</a> or <a href="https://github.com/vercel/next.js/discussions" target="_blank" rel="noopener">discussion</a> item.</p>
+<h2 id="partial-prerendering-ppr">Partial Prerendering (PPR)</h2>
+<p><strong>Next.js 16</strong> removes the experimental <strong>Partial Prerendering (PPR)</strong> flag and configuration options, including the route level segment <code>experimental_ppr</code>.</p>
+<p>Starting with <strong>Next.js 16</strong>, you can opt into PPR using the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> configuration.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  cacheComponents: true,
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>PPR in <strong>Next.js 16</strong> works differently than in <strong>Next.js 15</strong> canaries. If you are using PPR today, stay in the current Next.js 15 canary you are using. See <a href="/docs/app/guides/migrating-to-cache-components">Migrating to Cache Components</a> for migration patterns.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // If you are using PPR today
+  // stay in the current Next.js 15 canary
+  experimental: {
+    ppr: true,
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h2 id="middleware-to-proxy"><code>middleware</code> to <code>proxy</code></h2>
+<p>The <code>middleware</code> filename is deprecated, and has been renamed to <code>proxy</code> to clarify network boundary and routing focus.</p>
+<p>The <code>edge</code> runtime is <strong>NOT</strong> supported in <code>proxy</code>. The <code>proxy</code> runtime is <code>nodejs</code>, and it cannot be configured. If you want to continue using the <code>edge</code> runtime, keep using <code>middleware</code>. We will follow up on a minor release with further <code>edge</code> runtime instructions.</p>
+<pre><code class="language-bash"># Rename your middleware file
+mv middleware.ts proxy.ts
+# or
+mv middleware.js proxy.js
+</code></pre>
+<p>The named export <code>middleware</code> is also deprecated. Rename your function to <code>proxy</code>.</p>
+<pre><code class="language-ts">export function proxy(request: Request) {}
+</code></pre>
+<pre><code class="language-js">export function proxy(request) {}
+</code></pre>
+<p>We recommend changing the function name to <code>proxy</code>, even if you are using a default export.</p>
+<p>Configuration flags that contained the <code>middleware</code> name are also renamed. For example, <code>skipMiddlewareUrlNormalize</code> is now <code>skipProxyUrlNormalize</code></p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  skipProxyUrlNormalize: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  skipProxyUrlNormalize: true,
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>The version 16 <a href="/docs/app/guides/upgrading/codemods#160">codemod</a> is able to update these flags too.</p>
+<h2 id="nextimage-changes"><code>next/image</code> changes</h2>
+<h3 id="local-images-with-query-strings-breaking-change">Local Images with Query Strings (Breaking change)</h3>
+<p>Local image sources with query strings now require <code>images.localPatterns.search</code> configuration to prevent enumeration attacks.</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image src=&quot;/assets/photo?v=1&quot; alt=&quot;Photo&quot; width=&quot;100&quot; height=&quot;100&quot; /&gt;
+}
+</code></pre>
+<p>If you need to use query strings with local images, add the pattern to your configuration:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    localPatterns: [
+      {
+        pathname: '/assets/**',
+        search: '?v=1',
+      },
+    ],
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    localPatterns: [
+      {
+        pathname: '/assets/**',
+        search: '?v=1',
+      },
+    ],
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="minimumcachettl-default-breaking-change"><code>minimumCacheTTL</code> Default (Breaking change)</h3>
+<p>The default value for <code>images.minimumCacheTTL</code> has changed from <code>60 seconds</code> to <code>4 hours</code> (14400 seconds). This reduces revalidation cost for images without cache-control headers.</p>
+<p>For some Next.js users, image revalidation was happening frequently, often because the upstream source images missed a <code>cache-control</code> header. This caused revalidation to happen every <code>60</code> seconds, which increased CPU usage and cost.</p>
+<p>Since most images do not change often, this short interval is not ideal. Setting the default to 4 hours offers a more durable cache by default, while still allowing images to update a few times per day if needed.</p>
+<p>If you need the previous behavior, change <code>minimumCacheTTL</code> to a lower value, for example back to <code>60</code> seconds:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    minimumCacheTTL: 60,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    minimumCacheTTL: 60,
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="imagesizes-default-breaking-change"><code>imageSizes</code> Default (Breaking change)</h3>
+<p>The value <code>16</code> has been removed from the default <code>images.imageSizes</code> array.</p>
+<p>We have looked at request analytics and found out that very few projects ever serve 16 pixels width images. Removing this setting reduces the size of the <code>srcset</code> attribute shipped to the browser by <code>next/image</code>.</p>
+<p>If you need to support 16px images:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Rather than lack of developer usage, we believe 16 pixels width images have become less common, because <code>devicePixelRatio: 2</code> actually fetches a 32px image to prevent blurriness in retina displays.</p>
+<h3 id="qualities-default-breaking-change"><code>qualities</code> Default (Breaking change)</h3>
+<p>The default value for <code>images.qualities</code> has changed from allowing all qualities to only <code>[75]</code>.</p>
+<p>If you need to support multiple quality levels:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    qualities: [50, 75, 100],
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    qualities: [50, 75, 100],
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>If you specify a <code>quality</code> prop not included in the <code>image.qualities</code> array, the quality will be coerced to the closest value in <code>images.qualities</code>. For example, given the configuration above, a <code>quality</code> prop of 80, is coerced to 75.</p>
+<h3 id="local-ip-restriction-breaking-change">Local IP Restriction (Breaking change)</h3>
+<p>A new security restriction blocks local IP optimization by default. Set <code>images.dangerouslyAllowLocalIP</code> to <code>true</code> only for private networks.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    dangerouslyAllowLocalIP: true, // Only for private networks
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    dangerouslyAllowLocalIP: true, // Only for private networks
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="maximum-redirects-breaking-change">Maximum Redirects (Breaking change)</h3>
+<p>The default for <code>images.maximumRedirects</code> has changed from unlimited to 3 redirects maximum.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    maximumRedirects: 0, // Disable redirects
+    // or
+    maximumRedirects: 5, // Increase for edge cases
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    maximumRedirects: 0, // Disable redirects
+    // or
+    maximumRedirects: 5, // Increase for edge cases
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="nextlegacyimage-component-deprecated"><code>next/legacy/image</code> Component (deprecated)</h3>
+<p>The <code>next/legacy/image</code> component is deprecated. Use <code>next/image</code> instead:</p>
+<pre><code class="language-tsx">// Before
+import Image from 'next/legacy/image'
+
+// After
+import Image from 'next/image'
+</code></pre>
+<h3 id="imagesdomains-configuration-deprecated"><code>images.domains</code> Configuration (deprecated)</h3>
+<p>The <code>images.domains</code> config is deprecated.</p>
+<pre><code class="language-js">// image.domains is deprecated
+module.exports = {
+  images: {
+    domains: ['example.com'],
+  },
+}
+</code></pre>
+<p>Use <code>images.remotePatterns</code> instead for improved security:</p>
+<pre><code class="language-js">// Use image.remotePatterns instead
+module.exports = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+      },
+    ],
+  },
+}
+</code></pre>
+<h2 id="concurrent-dev-and-build">Concurrent <code>dev</code> and <code>build</code></h2>
+<p><code>next dev</code> and <code>next build</code> now use separate output directories, enabling concurrent execution. The <code>next dev</code> command outputs to <code>.next/dev</code>.</p>
+<p>Additionally, a lockfile mechanism prevents multiple <code>next dev</code> or <code>next build</code> instances on the same project.</p>
+<p>Since the development server outputs to <code>.next/dev</code>, the <a href="/docs/app/guides/local-development#turbopack-tracing">Turbopack tracing command</a> should be:</p>
+<pre><code class="language-bash">pnpm next internal trace .next/dev/trace-turbopack
+</code></pre>
+<pre><code class="language-bash">npx next internal trace .next/dev/trace-turbopack
+</code></pre>
+<pre><code class="language-bash">yarn next internal trace .next/dev/trace-turbopack
+</code></pre>
+<pre><code class="language-bash">bunx next internal trace .next/dev/trace-turbopack
+</code></pre>
+<h2 id="parallel-routes-defaultjs-requirement">Parallel Routes <code>default.js</code> requirement</h2>
+<p>All <a href="/docs/app/api-reference/file-conventions/parallel-routes">parallel route</a> slots now require explicit <code>default.js</code> files. Builds will fail without them.</p>
+<p>To maintain previous behavior, create a <a href="/docs/app/api-reference/file-conventions/default"><code>default.js</code></a> file that calls <code>notFound()</code> or returns <code>null</code>.</p>
+<pre><code class="language-tsx">import { notFound } from 'next/navigation'
+
+export default function Default() {
+  notFound()
+}
+</code></pre>
+<p>Or return <code>null</code>:</p>
+<pre><code class="language-tsx">export default function Default() {
+  return null
+}
+</code></pre>
+<h2 id="eslint-flat-config">ESLint Flat Config</h2>
+<p><code>@next/eslint-plugin-next</code> now defaults to ESLint Flat Config format, aligning with ESLint v10 which will drop legacy config support.</p>
+<p>Make sure to review our API reference for the <a href="/docs/app/api-reference/config/eslint#setup-eslint"><code>@next/eslint-plugin-next</code></a> plugin.</p>
+<p>If you’re using the legacy <code>.eslintrc</code> format, consider migrating to the flat config format. See the <a href="https://eslint.org/docs/latest/use/configure/migration-guide" target="_blank" rel="noopener">ESLint migration guide</a> for details.</p>
+<h2 id="scroll-behavior-override">Scroll Behavior Override</h2>
+<p>In <strong>previous versions of Next.js</strong>, if you had set <code>scroll-behavior: smooth</code> globally on your <code>&lt;html&gt;</code> element via CSS, Next.js would override this during SPA route transitions, as follows:</p>
+<ol>
+<li>Temporarily set <code>scroll-behavior</code> to <code>auto</code></li>
+<li>Perform the navigation (causing instant scroll to top)</li>
+<li>Restore your original <code>scroll-behavior</code> value</li>
+</ol>
+<p>This ensured that page navigation always felt snappy and instant, even when you had smooth scrolling enabled for in-page navigation. However, this manipulation could be expensive, especially at the start of every navigation.</p>
+<p>In <strong>Next.js 16</strong>, this behavior has changed. By default, Next.js will <strong>no longer override</strong> your <code>scroll-behavior</code> setting during navigation.</p>
+<p><strong>If you want Next.js to perform this override</strong> (the previous default behavior), add the <code>data-scroll-behavior=&quot;smooth&quot;</code> attribute to your <code>&lt;html&gt;</code> element:</p>
+<pre><code class="language-tsx">export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot; data-scroll-behavior=&quot;smooth&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h2 id="performance-improvements">Performance Improvements</h2>
+<p>Significant performance optimizations for <code>next dev</code> and <code>next start</code> commands, along with improved terminal output with clearer formatting, better error messages, and improved performance metrics.</p>
+<p><strong>Next.js 16</strong> removes the <code>size</code> and <code>First Load JS</code> metrics from the <code>next build</code> output. We found these to be inaccurate in server-driven architectures using React Server Components. Both our Turbopack and Webpack implementations had issues, and disagreed on how to account for Client Components payload.</p>
+<p>The most effective way to measure actual route performance is through tools such as <a href="https://developer.chrome.com/docs/lighthouse/overview" target="_blank" rel="noopener">Chrome Lighthouse</a> or Vercel Analytics, which focus on Core Web Vitals and downloaded resource sizes.</p>
+<h3 id="next-dev-config-load"><code>next dev</code> config load</h3>
+<p>In previous versions the Next config file was loaded twice during development:</p>
+<ul>
+<li>When running the <code>next dev</code> command</li>
+<li>When the <code>next dev</code> command started the Next.js server</li>
+</ul>
+<p>This was inefficient because the <code>next dev</code> command doesn’t need the config file to start the Next.js server.</p>
+<p>A consequence of this change is that, when running <code>next dev</code> checking if <code>process.argv</code> includes <code>'dev'</code>, in your Next.js config file, will return <code>false</code>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: The <code>typegen</code>, and <code>build</code> commands, are still visible in <code>process.argv</code>.</p>
+</blockquote>
+<p>This is specially important for plugins that trigger side-effects on <code>next dev</code>. If that’s the case, it might be enough to check if <code>NODE_ENV</code> is set to <code>development</code>.</p>
+<pre><code class="language-js">import { startServer } from 'docs-lib/dev-server'
+
+const isDev = process.env.NODE_ENV === 'development'
+
+if (isDev) {
+  startServer()
+}
+
+const nextConfig = {
+  /* Your config options */
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Alternatively, use the <a href="/docs/app/api-reference/config/next-config-js#phase"><code>phase</code></a> in which the configuration is loaded.</p>
+<h2 id="build-adapters-api-alpha">Build Adapters API (alpha)</h2>
+<p>Following the <a href="https://github.com/vercel/next.js/discussions/77740" target="_blank" rel="noopener">Build Adapters RFC</a>, the first alpha version of the Build Adapters API is now available.</p>
+<p>Build Adapters allow you to create custom adapters that hook into the build process, enabling deployment platforms and custom build integrations to modify Next.js configuration or process build output.</p>
+<pre><code class="language-js">const nextConfig = {
+  experimental: {
+    adapterPath: require.resolve('./my-adapter.js'),
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p><code>adapterPath</code> was promoted to a stable, top-level option in 16.2.0. See <a href="/docs/app/api-reference/config/next-config-js/adapterPath"><code>adapterPath</code></a> for the current API reference.</p>
+<h2 id="modern-sass-api">Modern Sass API</h2>
+<p><code>sass-loader</code> has been bumped to v16, which supports <a href="https://sass-lang.com/documentation/js-api/#md:usage" target="_blank" rel="noopener">modern Sass syntax</a> and new features.</p>
+<h2 id="removals">Removals</h2>
+<p>These features were previously deprecated and are now removed:</p>
+<h3 id="amp-support">AMP Support</h3>
+<p>AMP adoption has declined significantly, and maintaining this feature adds complexity to the framework. All AMP APIs and configurations have been removed:</p>
+<ul>
+<li><code>amp</code> configuration from your Next config file</li>
+<li><code>next/amp</code> hook imports and usage (<code>useAmp</code>)</li>
+</ul>
+<pre><code class="language-tsx">// Removed
+import { useAmp } from 'next/amp'
+
+// Removed
+export const config = { amp: true }
+</code></pre>
+<ul>
+<li><code>export const config = { amp: true }</code> from pages</li>
+</ul>
+<pre><code class="language-js">const nextConfig = {
+  // Removed
+  amp: {
+    canonicalBase: 'https://example.com',
+  },
+}
+
+export default nextConfig
+</code></pre>
+<p>Evaluate if AMP is still necessary for your use case. Most performance benefits can now be achieved through Next.js’s built-in optimizations and modern web standards.</p>
+<h3 id="next-lint-command"><code>next lint</code> Command</h3>
+<p>The <code>next lint</code> command has been removed. Use Biome or ESLint directly. <code>next build</code> no longer runs linting.</p>
+<p>A codemod is available to automate migration:</p>
+<pre><code class="language-bash">pnpm dlx @next/codemod@canary next-lint-to-eslint-cli .
+</code></pre>
+<pre><code class="language-bash">npx @next/codemod@canary next-lint-to-eslint-cli .
+</code></pre>
+<pre><code class="language-bash">yarn dlx @next/codemod@canary next-lint-to-eslint-cli .
+</code></pre>
+<pre><code class="language-bash">bunx @next/codemod@canary next-lint-to-eslint-cli .
+</code></pre>
+<p>The <code>eslint</code> option in the Next.js config file is also removed.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // No longer supported
+  // eslint: {},
+}
+
+export default nextConfig
+</code></pre>
+<h3 id="runtime-configuration">Runtime Configuration</h3>
+<p><code>serverRuntimeConfig</code> and <code>publicRuntimeConfig</code> have been removed. Use environment variables instead.</p>
+<p><strong>Before (Next.js 15):</strong></p>
+<pre><code class="language-js">module.exports = {
+  serverRuntimeConfig: {
+    dbUrl: process.env.DATABASE_URL,
+  },
+  publicRuntimeConfig: {
+    apiUrl: '/api',
+  },
+}
+</code></pre>
+<pre><code class="language-tsx">import getConfig from 'next/config'
+
+export default function Page() {
+  const { publicRuntimeConfig } = getConfig()
+  return &lt;p&gt;API URL: {publicRuntimeConfig.apiUrl}&lt;/p&gt;
+}
+</code></pre>
+<p><strong>After (Next.js 16):</strong></p>
+<p>For server-only values, access environment variables directly in Server Components:</p>
+<pre><code class="language-tsx">async function fetchData() {
+  const dbUrl = process.env.DATABASE_URL
+  // Use for server-side operations only
+  return await db.query(dbUrl, 'SELECT * FROM users')
+}
+
+export default async function Page() {
+  const data = await fetchData()
+  return &lt;div&gt;{/* render data */}&lt;/div&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Use the <a href="/docs/app/api-reference/config/next-config-js/taint">taint API</a> to prevent accidentally passing sensitive server values to Client Components.</p>
+</blockquote>
+<p>For client-accessible values, use the <code>NEXT_PUBLIC_</code> prefix:</p>
+<pre><code class="language-bash">NEXT_PUBLIC_API_URL=&quot;/api&quot;
+</code></pre>
+<pre><code class="language-tsx">'use client'
+
+export default function ClientComponent() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  return &lt;p&gt;API URL: {apiUrl}&lt;/p&gt;
+}
+</code></pre>
+<p>To ensure environment variables are read at runtime (not bundled at build time), use the <a href="/docs/app/api-reference/functions/connection"><code>connection()</code></a> function before reading from <code>process.env</code>:</p>
+<pre><code class="language-tsx">import { connection } from 'next/server'
+
+export default async function Page() {
+  await connection()
+  const config = process.env.RUNTIME_CONFIG
+  return &lt;p&gt;{config}&lt;/p&gt;
+}
+</code></pre>
+<p>Learn more about <a href="/docs/app/guides/environment-variables">environment variables</a>.</p>
+<h3 id="devindicators-options"><code>devIndicators</code> Options</h3>
+<p>The following options have been removed from <a href="/docs/app/api-reference/config/next-config-js/devIndicators"><code>devIndicators</code></a>:</p>
+<ul>
+<li><code>appIsrStatus</code></li>
+<li><code>buildActivity</code></li>
+<li><code>buildActivityPosition</code></li>
+</ul>
+<p>The indicator itself remains available.</p>
+<h3 id="experimentaldynamicio"><code>experimental.dynamicIO</code></h3>
+<p>The <code>experimental.dynamicIO</code> flag has been renamed to <code>cacheComponents</code>:</p>
+<p>Update your Next config file, by removing the <code>dynamicIO</code> flag.</p>
+<pre><code class="language-js">// Next.js 15 - experimental.dynamicIO is now removed
+module.exports = {
+  experimental: {
+    dynamicIO: true,
+  },
+}
+</code></pre>
+<p>Add the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> flag set to true.</p>
+<pre><code class="language-js">// Next.js 16 - use cacheComponents instead
+module.exports = {
+  cacheComponents: true,
+}
+</code></pre>
+<h3 id="unstable_rootparams"><code>unstable_rootParams</code></h3>
+<p>The <code>unstable_rootParams</code> function has been removed. We are working on an alternative API that we will ship in an upcoming minor release.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deploying-to-platforms — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-deploying-to-platforms">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#minimum-requirements">Minimum Requirements</a></li><li><a href="#functional-fidelity-vs-performance-fidelity">Functional Fidelity vs. Performance Fidelity</a></li><li><a href="#feature-support-matrix">Feature Support Matrix</a></li><li><a href="#cdn-infrastructure-compatibility">CDN Infrastructure Compatibility</a></li><li><a href="#adapters">Adapters</a></li><ul><li><a href="#verified-adapters">Verified Adapters</a></li></ul><li><a href="#a-note-on-infrastructure-requirements">A Note on Infrastructure Requirements</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">deploying-to-platforms</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Deploying to Platforms</td></tr><tr><th>description</th><td>Related guides and references.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Next.js <a href="/docs/app/guides/rendering-philosophy">treats static and dynamic content as a spectrum</a> at the component level. Different features in this model require different platform capabilities. This page helps you understand what your platform needs to support and how to configure your deployment.</p>
+<h2 id="minimum-requirements">Minimum Requirements</h2>
+<p>To run Next.js, your platform needs <strong>a Node.js server</strong>. That’s it.</p>
+<p>A single <code>next start</code> process handles every Next.js feature correctly: Server Components, ISR, PPR, Cache Components, Server Actions, Proxy, and <code>after()</code>. Streaming support is needed for features like PPR and Server Components to deliver content progressively (without it, responses are buffered and sent as a whole, which still works but loses the streaming performance benefit). Additional infrastructure (CDN caching, edge compute, shared cache) primarily improves performance and multi-instance consistency. In multi-instance deployments, shared cache and tag coordination reduce stale divergence between instances. The only additional dependency is the <code>sharp</code> package, which is required for <a href="/docs/app/api-reference/components/image">Image Optimization</a>.</p>
+<h2 id="functional-fidelity-vs-performance-fidelity">Functional Fidelity vs. Performance Fidelity</h2>
+<p>When evaluating platform support for Next.js, it helps to distinguish between two levels:</p>
+<p><strong>Functional fidelity</strong> means every Next.js feature works correctly. The <a href="/docs/app/api-reference/adapters/testing-adapters">adapter test suite</a> is the contract: if a platform’s adapter passes the tests, it supports Next.js. This is binary: it passes or it doesn’t.</p>
+<p><strong>Performance fidelity</strong> means features achieve their optimal performance characteristics. Examples include PPR’s static shell served at CDN latency rather than origin latency, or ISR serving stale content instantly with sub-second revalidation propagation. Performance fidelity is a spectrum that every platform will achieve differently based on their architecture.</p>
+<p>A platform that achieves functional fidelity is a fully supported deployment target for Next.js. Performance fidelity is how platforms differentiate, and it improves incrementally over time.</p>
+<p>Use the feature matrix below through this lens: “Streaming Required” and “Shared Cache Recommended” describe what is needed for functional fidelity. “Edge Stitching” is a performance fidelity optimization.</p>
+<h2 id="feature-support-matrix">Feature Support Matrix</h2>
+<p>Different features require different infrastructure capabilities. The “Edge Stitching” column is a <strong>performance optimization</strong>, not a correctness requirement. All features work correctly from a single origin server.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Streaming</th>
+<th>Shared Cache</th>
+<th>Edge Stitching</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server Components</td>
+<td>Required</td>
+<td>No</td>
+<td>No</td>
+<td>Basic streaming support</td>
+</tr>
+<tr>
+<td>ISR (time-based)</td>
+<td>No</td>
+<td>Recommended</td>
+<td>No</td>
+<td>Works per-instance without shared cache</td>
+</tr>
+<tr>
+<td>ISR (on-demand)</td>
+<td>No</td>
+<td>Recommended</td>
+<td>No</td>
+<td><a href="/docs/app/guides/how-revalidation-works">Tag propagation</a> needs shared cache for multi-instance</td>
+</tr>
+<tr>
+<td>Partial Prerendering</td>
+<td>Required</td>
+<td>Recommended</td>
+<td>Optional</td>
+<td><a href="/docs/app/guides/ppr-platform-guide">See PPR Platform Guide</a></td>
+</tr>
+<tr>
+<td>Cache Components (<code>use cache</code>)</td>
+<td>Required</td>
+<td>Recommended</td>
+<td>No</td>
+<td>Shared cache enables cross-instance consistency</td>
+</tr>
+<tr>
+<td>Proxy / Middleware</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Runs at edge or origin</td>
+</tr>
+<tr>
+<td>Server Actions</td>
+<td>Required</td>
+<td>No</td>
+<td>No</td>
+<td>POST requests with streaming response</td>
+</tr>
+<tr>
+<td><code>after()</code></td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Requires <a href="/docs/app/guides/self-hosting#after">graceful shutdown</a> support</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Streaming Required</strong> means the platform must support chunked transfer encoding or HTTP/2 streaming and must not buffer the response before sending it to the client.</p>
+<p><strong>Shared Cache Recommended</strong> means multiple server instances benefit from shared cache backends to coordinate. For ISR and server response caching, use <a href="/docs/app/api-reference/config/next-config-js/incrementalCacheHandlerPath"><code>cacheHandler</code></a>. For <code>'use cache'</code> entries, use <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers"><code>cacheHandlers</code></a>. Without shared cache, each instance maintains its own cache independently — features still work correctly on each instance, but revalidation events don’t propagate across instances.</p>
+<h2 id="cdn-infrastructure-compatibility">CDN Infrastructure Compatibility</h2>
+<p>The following table maps infrastructure primitives for each major CDN. These are available building blocks, not finished integrations:</p>
+<table>
+<thead>
+<tr>
+<th>CDN</th>
+<th>Edge Compute</th>
+<th>Key-Value / Tags</th>
+<th>Blob Storage</th>
+<th>PPR Resuming</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloudflare</td>
+<td>Workers</td>
+<td>KV</td>
+<td>R2</td>
+<td>Yes (worker)</td>
+</tr>
+<tr>
+<td>Akamai</td>
+<td>EdgeWorkers</td>
+<td>EdgeKV</td>
+<td>Object Storage</td>
+<td>Yes (worker)</td>
+</tr>
+<tr>
+<td>Amazon CloudFront</td>
+<td>Lambda@Edge</td>
+<td>KeyValueStore</td>
+<td>S3</td>
+<td>Yes (Lambda)</td>
+</tr>
+<tr>
+<td>Fastly</td>
+<td>Compute</td>
+<td>KV Store</td>
+<td>Object Storage</td>
+<td>Yes (WASM)</td>
+</tr>
+<tr>
+<td>Azure</td>
+<td>Functions</td>
+<td>Managed Redis</td>
+<td>Blob Storage</td>
+<td>Yes (server)</td>
+</tr>
+<tr>
+<td>Google Cloud</td>
+<td>Cloud Run</td>
+<td>Various KV</td>
+<td>Cloud Storage</td>
+<td>Yes (server)</td>
+</tr>
+</tbody>
+</table>
+<p>These are available building blocks, not finished integrations. Most community adapters today deploy Next.js as a Docker container or Node.js server without leveraging CDN-specific primitives like edge KV or PPR resuming. See the <a href="/docs/app/getting-started/deploying#adapters">Deploying</a> page for the current list of adapters. For CDN-specific caching considerations (including known limitations with <code>Vary</code> on custom headers), see <a href="/docs/app/guides/cdn-caching">CDN Caching</a>.</p>
+<h2 id="adapters">Adapters</h2>
+<p>Next.js provides a <a href="/docs/app/api-reference/config/next-config-js/adapterPath">Deployment Adapter API</a> that lets platforms customize how Next.js applications are built and deployed for their infrastructure. Adapters run at build time and produce platform-specific output from the standard Next.js build. Anyone can build an adapter using the public API with no special access required.</p>
+<p>The adapter API plus Next.js caching interfaces form the complete platform integration surface. The adapter handles build-time output, while <code>cacheHandler</code> and <code>cacheHandlers</code> cover different runtime caching paths. <code>cacheHandler</code> (singular) covers server cache paths like ISR, route handlers, patched <code>fetch</code>/<code>unstable_cache</code>, and image optimization. <code>cacheHandlers</code> (plural) configures <code>'use cache'</code> directive backends.</p>
+<h3 id="verified-adapters">Verified Adapters</h3>
+<p>A <strong>verified adapter</strong> is one that meets two requirements:</p>
+<ol>
+<li><strong>Open source.</strong> The adapter source code is publicly available so the community and the Next.js team can inspect, contribute to, and verify it.</li>
+<li><strong>Runs the compatibility test suite.</strong> The platform provides a way to run the full <a href="/docs/app/api-reference/adapters/testing-adapters">Next.js compatibility test suite</a> against their adapter. This gives visibility into which features work, which are in progress, and where gaps remain.</li>
+</ol>
+<p>Verified adapters are hosted under the <a href="https://github.com/nextjs" target="_blank" rel="noopener">Next.js GitHub organization</a>, listed as supported deployment targets in the Next.js documentation, and maintained by their respective platform teams. There are no private framework hooks or integration paths: Vercel’s adapter uses the same public API as every other adapter.</p>
+<p>For verified adapters and platforms working toward verified status through the <a href="https://nextjs.org/ecosystem-working-group" target="_blank" rel="noopener">Ecosystem Working Group</a>, the Next.js team commits to:</p>
+<ul>
+<li><strong>Coordinated testing.</strong> Before major releases, we work with platform teams to run the compatibility test suite and surface issues early.</li>
+<li><strong>Early access.</strong> Adapter authors receive early access to API changes during RFCs and release candidates.</li>
+<li><strong>Direct support.</strong> When the adapter contract needs updating, we work directly with adapter teams.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know:</strong> Platforms can build closed-source adapters on the same public API and test suite. However, closed-source adapters will not be listed as verified, since the Next.js team cannot verify what it cannot inspect.</p>
+</blockquote>
+<h2 id="a-note-on-infrastructure-requirements">A Note on Infrastructure Requirements</h2>
+<p>Next.js’s <a href="/docs/app/guides/rendering-philosophy">rendering model</a> places the static/dynamic boundary at the component level rather than the route level. Finer-grained boundaries provide more flexibility for developers at the cost of broader requirements for hosting platforms. This is a deliberate trade-off: the infrastructure requirements on this page exist because of what the rendering model delivers.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

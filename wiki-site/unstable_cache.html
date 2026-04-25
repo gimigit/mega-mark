@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>unstable_cache — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-unstable_cache">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#example">Example</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">unstable_cache</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the unstable_cache function.</td></tr></table><blockquote>
+<p><strong>Note:</strong>
+This API has been replaced by <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> in Next.js 16.
+We recommend opting into <a href="/docs/app/getting-started/caching">Cache Components</a> and replacing <code>unstable_cache</code> with the <code>use cache</code> directive.</p>
+</blockquote>
+<p><code>unstable_cache</code> allows you to cache the results of expensive operations, like database queries, and reuse them across multiple requests.</p>
+<pre><code class="language-jsx">import { getUser } from './data';
+import { unstable_cache } from 'next/cache';
+
+const getCachedUser = unstable_cache(
+  async (id) =&gt; getUser(id),
+  ['my-app-user']
+);
+
+export default async function Component({ userID }) {
+  const user = await getCachedUser(userID);
+  ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Accessing uncached data sources such as <code>headers</code> or <code>cookies</code> inside a cache scope is not supported. If you need this data inside a cached function use <code>headers</code> outside of the cached function and pass the required uncached data in as an argument.</li>
+<li>This API uses Next.js’ built-in cache to persist the result across requests and deployments. See <a href="/docs/app/getting-started/caching">Caching and Revalidating</a>.</li>
+</ul>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-jsx">const data = unstable_cache(fetchData, keyParts, options)()
+</code></pre>
+<ul>
+<li><code>fetchData</code>: This is an asynchronous function that fetches the data you want to cache. It must be a function that returns a <code>Promise</code>.</li>
+<li><code>keyParts</code>: This is an extra array of keys that further adds identification to the cache. By default, <code>unstable_cache</code> already uses the arguments and the stringified version of your function as the cache key. It is optional in most cases; the only time you need to use it is when you use external variables without passing them as parameters. However, it is important to add closures used within the function if you do not pass them as parameters.</li>
+<li><code>options</code>: This is an object that controls how the cache behaves. It can contain the following properties:
+<ul>
+<li><code>tags</code>: An array of tags that can be used to control cache invalidation. Next.js will not use this to uniquely identify the function.</li>
+<li><code>revalidate</code>: The number of seconds after which the cache should be revalidated. Omit or pass <code>false</code> to cache indefinitely or until matching <code>revalidateTag()</code> or <code>revalidatePath()</code> methods are called.</li>
+</ul>
+</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p><code>unstable_cache</code> returns a function that when invoked, returns a Promise that resolves to the cached data. If the data is not in the cache, the provided function will be invoked, and its result will be cached and returned.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-tsx">import { unstable_cache } from 'next/cache'
+
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ userId: string }&gt;
+}) {
+  const { userId } = await params
+  const getCachedUser = unstable_cache(
+    async () =&gt; {
+      return { id: userId }
+    },
+    [userId], // add the user ID to the cache key
+    {
+      tags: ['users'],
+      revalidate: 60,
+    }
+  )
+
+  //...
+}
+</code></pre>
+<pre><code class="language-jsx">import { unstable_cache } from 'next/cache';
+
+export default async function Page({ params } }) {
+  const { userId } = await params
+  const getCachedUser = unstable_cache(
+    async () =&gt; {
+      return { id: userId };
+    },
+    [userId], // add the user ID to the cache key
+    {
+      tags: [&quot;users&quot;],
+      revalidate: 60,
+    }
+  );
+
+  //...
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v14.0.0</code></td>
+<td><code>unstable_cache</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

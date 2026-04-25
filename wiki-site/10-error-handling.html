@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-error-handling — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-10-error-handling">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#handling-expected-errors">Handling expected errors</a></li><ul><li><a href="#server-functions">Server Functions</a></li><li><a href="#server-components">Server Components</a></li><li><a href="#not-found">Not found</a></li></ul><li><a href="#handling-uncaught-exceptions">Handling uncaught exceptions</a></li><ul><li><a href="#nested-error-boundaries">Nested error boundaries</a></li><li><a href="#global-errors">Global errors</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">10-error-handling</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about the features mentioned in this page by reading the API Reference.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Errors can be divided into two categories: <a href="#handling-expected-errors">expected errors</a> and <a href="#handling-uncaught-exceptions">uncaught exceptions</a>. This page will walk you through how you can handle these errors in your Next.js application.</p>
+<h2 id="handling-expected-errors">Handling expected errors</h2>
+<p>Expected errors are those that can occur during the normal operation of the application, such as those from <a href="/docs/app/guides/forms">server-side form validation</a> or failed requests. These errors should be handled explicitly and returned to the client.</p>
+<h3 id="server-functions">Server Functions</h3>
+<p>You can use the <a href="https://react.dev/reference/react/useActionState" target="_blank" rel="noopener"><code>useActionState</code></a> hook to handle expected errors in <a href="https://react.dev/reference/rsc/server-functions" target="_blank" rel="noopener">Server Functions</a>.</p>
+<p>For these errors, avoid using <code>try</code>/<code>catch</code> blocks and throw errors. Instead, model expected errors as return values.</p>
+<pre><code class="language-ts">'use server'
+
+export async function createPost(prevState: any, formData: FormData) {
+  const title = formData.get('title')
+  const content = formData.get('content')
+
+  const res = await fetch('https://api.vercel.app/posts', {
+    method: 'POST',
+    body: { title, content },
+  })
+  const json = await res.json()
+
+  if (!res.ok) {
+    return { message: 'Failed to create post' }
+  }
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+export async function createPost(prevState, formData) {
+  const title = formData.get('title')
+  const content = formData.get('content')
+
+  const res = await fetch('https://api.vercel.app/posts', {
+    method: 'POST',
+    body: { title, content },
+  })
+  const json = await res.json()
+
+  if (!res.ok) {
+    return { message: 'Failed to create post' }
+  }
+}
+</code></pre>
+<p>You can pass your action to the <code>useActionState</code> hook and use the returned <code>state</code> to display an error message.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useActionState } from 'react'
+import { createPost } from '@/app/actions'
+
+const initialState = {
+  message: '',
+}
+
+export function Form() {
+  const [state, formAction, pending] = useActionState(createPost, initialState)
+
+  return (
+    &lt;form action={formAction}&gt;
+      &lt;label htmlFor=&quot;title&quot;&gt;Title&lt;/label&gt;
+      &lt;input type=&quot;text&quot; id=&quot;title&quot; name=&quot;title&quot; required /&gt;
+      &lt;label htmlFor=&quot;content&quot;&gt;Content&lt;/label&gt;
+      &lt;textarea id=&quot;content&quot; name=&quot;content&quot; required /&gt;
+      {state?.message &amp;&amp; &lt;p aria-live=&quot;polite&quot;&gt;{state.message}&lt;/p&gt;}
+      &lt;button disabled={pending}&gt;Create Post&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useActionState } from 'react'
+import { createPost } from '@/app/actions'
+
+const initialState = {
+  message: '',
+}
+
+export function Form() {
+  const [state, formAction, pending] = useActionState(createPost, initialState)
+
+  return (
+    &lt;form action={formAction}&gt;
+      &lt;label htmlFor=&quot;title&quot;&gt;Title&lt;/label&gt;
+      &lt;input type=&quot;text&quot; id=&quot;title&quot; name=&quot;title&quot; required /&gt;
+      &lt;label htmlFor=&quot;content&quot;&gt;Content&lt;/label&gt;
+      &lt;textarea id=&quot;content&quot; name=&quot;content&quot; required /&gt;
+      {state?.message &amp;&amp; &lt;p aria-live=&quot;polite&quot;&gt;{state.message}&lt;/p&gt;}
+      &lt;button disabled={pending}&gt;Create Post&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<h3 id="server-components">Server Components</h3>
+<p>When fetching data inside of a Server Component, you can use the response to conditionally render an error message or <a href="/docs/app/api-reference/functions/redirect"><code>redirect</code></a>.</p>
+<pre><code class="language-tsx">export default async function Page() {
+  const res = await fetch(`https://...`)
+  const data = await res.json()
+
+  if (!res.ok) {
+    return 'There was an error.'
+  }
+
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page() {
+  const res = await fetch(`https://...`)
+  const data = await res.json()
+
+  if (!res.ok) {
+    return 'There was an error.'
+  }
+
+  return '...'
+}
+</code></pre>
+<h3 id="not-found">Not found</h3>
+<p>You can call the <a href="/docs/app/api-reference/functions/not-found"><code>notFound</code></a> function within a route segment and use the <a href="/docs/app/api-reference/file-conventions/not-found"><code>not-found.js</code></a> file to show a 404 UI.</p>
+<pre><code class="language-tsx">import { notFound } from 'next/navigation'
+import { getPostBySlug } from '@/lib/posts'
+
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
+
+  if (!post) {
+    notFound()
+  }
+
+  return &lt;div&gt;{post.title}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { notFound } from 'next/navigation'
+import { getPostBySlug } from '@/lib/posts'
+
+export default async function Page({ params }) {
+  const { slug } = await params
+  const post = getPostBySlug(slug)
+
+  if (!post) {
+    notFound()
+  }
+
+  return &lt;div&gt;{post.title}&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">export default function NotFound() {
+  return &lt;div&gt;404 - Page Not Found&lt;/div&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function NotFound() {
+  return &lt;div&gt;404 - Page Not Found&lt;/div&gt;
+}
+</code></pre>
+<h2 id="handling-uncaught-exceptions">Handling uncaught exceptions</h2>
+<p>Uncaught exceptions are unexpected errors that indicate bugs or issues that should not occur during the normal flow of your application. These should be handled by throwing errors, which will then be caught by error boundaries.</p>
+<h3 id="nested-error-boundaries">Nested error boundaries</h3>
+<p>Next.js uses error boundaries to handle uncaught exceptions. Error boundaries catch errors in their child components and display a fallback UI instead of the component tree that crashed.</p>
+<p>Create an error boundary by adding an <a href="/docs/app/api-reference/file-conventions/error"><code>error.js</code></a> file inside a route segment and exporting a React component:</p>
+<pre><code class="language-tsx">'use client' // Error boundaries must be Client Components
+
+import { useEffect } from 'react'
+
+export default function ErrorPage({
+  error,
+  unstable_retry,
+}: {
+  error: Error &amp; { digest?: string }
+  unstable_retry: () =&gt; void
+}) {
+  useEffect(() =&gt; {
+    // Log the error to an error reporting service
+    console.error(error)
+  }, [error])
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+      &lt;button
+        onClick={
+          // Attempt to recover by re-fetching and re-rendering the segment
+          () =&gt; unstable_retry()
+        }
+      &gt;
+        Try again
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client' // Error boundaries must be Client Components
+
+import { useEffect } from 'react'
+
+export default function ErrorPage({ error, unstable_retry }) {
+  useEffect(() =&gt; {
+    // Log the error to an error reporting service
+    console.error(error)
+  }, [error])
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+      &lt;button
+        onClick={
+          // Attempt to recover by re-fetching and re-rendering the segment
+          () =&gt; unstable_retry()
+        }
+      &gt;
+        Try again
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Errors will bubble up to the nearest parent error boundary. This allows for granular error handling by placing <code>error.tsx</code> files at different levels in the <a href="/docs/app/getting-started/project-structure#component-hierarchy">route hierarchy</a>.</p>
+<p><Image
+  alt="Nested Error Component Hierarchy"
+  srcLight="/docs/light/nested-error-component-hierarchy.png"
+  srcDark="/docs/dark/nested-error-component-hierarchy.png"
+  width="1600"
+  height="687"
+/></p>
+<p>For component-level error recovery, the <a href="/docs/app/api-reference/functions/catchError"><code>unstable_catchError</code></a> function lets you create error boundaries that can wrap any part of your component tree:</p>
+<pre><code class="language-tsx">'use client'
+
+import { unstable_catchError as catchError, type ErrorInfo } from 'next/error'
+
+function ErrorFallback(
+  props: { title: string },
+  { error, unstable_retry }: ErrorInfo
+) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{props.title}&lt;/h2&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default catchError(ErrorFallback)
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { unstable_catchError as catchError } from 'next/error'
+
+function ErrorFallback(props, { error, unstable_retry }) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{props.title}&lt;/h2&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default catchError(ErrorFallback)
+</code></pre>
+<p>Then use the returned component as a wrapper in any layout or page:</p>
+<pre><code class="language-tsx">import ErrorBoundary from './custom-error-boundary'
+
+export default function Component({ children }: { children: React.ReactNode }) {
+  return &lt;ErrorBoundary title=&quot;Dashboard Error&quot;&gt;{children}&lt;/ErrorBoundary&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import ErrorBoundary from './custom-error-boundary'
+
+export default function Component({ children }) {
+  return &lt;ErrorBoundary title=&quot;Dashboard Error&quot;&gt;{children}&lt;/ErrorBoundary&gt;
+}
+</code></pre>
+<p>Error boundaries don’t catch errors inside event handlers. They’re designed to catch errors <a href="https://react.dev/reference/react/Component#static-getderivedstatefromerror" target="_blank" rel="noopener">during rendering</a> to show a <strong>fallback UI</strong> instead of crashing the whole app.</p>
+<p>In general, errors in event handlers or async code aren’t handled by error boundaries because they run after rendering.</p>
+<p>To handle these cases, catch the error manually and store it using <code>useState</code> or <code>useReducer</code>, then update the UI to inform the user.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useState } from 'react'
+
+export function Button() {
+  const [error, setError] = useState(null)
+
+  const handleClick = () =&gt; {
+    try {
+      // do some work that might fail
+      throw new Error('Exception')
+    } catch (reason) {
+      setError(reason)
+    }
+  }
+
+  if (error) {
+    /* render fallback UI */
+  }
+
+  return (
+    &lt;button type=&quot;button&quot; onClick={handleClick}&gt;
+      Click me
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<p>Note that unhandled errors inside <code>startTransition</code> from <code>useTransition</code>, will bubble up to the nearest error boundary.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useTransition } from 'react'
+
+export function Button() {
+  const [pending, startTransition] = useTransition()
+
+  const handleClick = () =&gt;
+    startTransition(() =&gt; {
+      throw new Error('Exception')
+    })
+
+  return (
+    &lt;button type=&quot;button&quot; onClick={handleClick}&gt;
+      Click me
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<h3 id="global-errors">Global errors</h3>
+<p>While less common, you can handle errors in the root layout using the <a href="/docs/app/api-reference/file-conventions/error#global-error"><code>global-error.js</code></a> file, located in the root app directory, even when leveraging <a href="/docs/app/guides/internationalization">internationalization</a>. Global error UI must define its own <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags, since it is replacing the root layout or template when active.</p>
+<pre><code class="language-tsx">'use client' // Error boundaries must be Client Components
+
+export default function GlobalError({
+  error,
+  unstable_retry,
+}: {
+  error: Error &amp; { digest?: string }
+  unstable_retry: () =&gt; void
+}) {
+  return (
+    // global-error must include html and body tags
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+        &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client' // Error boundaries must be Client Components
+
+export default function GlobalError({ error, unstable_retry }) {
+  return (
+    // global-error must include html and body tags
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;h2&gt;Something went wrong!&lt;/h2&gt;
+        &lt;button onClick={() =&gt; unstable_retry()}&gt;Try again&lt;/button&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/prefer-default-export — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-prefer-default-export">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#rule-schema">rule schema</a></li><li><a href="#config-options">Config Options</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/prefer-default-export</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>In exporting files, this rule checks if there is default export or not.</p>
+<h2 id="rule-details">Rule Details</h2>
+<h3 id="rule-schema">rule schema</h3>
+<pre><code class="language-javascript">&quot;import/prefer-default-export&quot;: [
+    ( &quot;off&quot; | &quot;warn&quot; | &quot;error&quot; ),
+    { &quot;target&quot;: &quot;single&quot; | &quot;any&quot; } // default is &quot;single&quot;
+]
+</code></pre>
+<h3 id="config-options">Config Options</h3>
+<p>There are two options available: <code>single</code> and <code>any</code>. By default, if you do not specify the option, rule will assume it is <code>single</code>.</p>
+<h4>single</h4>
+<p><strong>Definition</strong>: When there is only a single export from a module, prefer using default export over named export.</p>
+<p>How to setup config file for this rule:</p>
+<pre><code class="language-javascript">// you can manually specify it
+&quot;rules&quot;: {
+    &quot;import/prefer-default-export&quot;: [
+        ( &quot;off&quot; | &quot;warn&quot; | &quot;error&quot; ),
+        { &quot;target&quot;: &quot;single&quot; }
+    ]
+}
+
+// config setup below will also work
+&quot;rules&quot;: {
+    &quot;import/prefer-default-export&quot;: &quot;off&quot; | &quot;warn&quot; | &quot;error&quot;
+}
+</code></pre>
+<p>The following patterns are considered warnings:</p>
+<pre><code class="language-javascript">// bad.js
+
+// There is only a single module export and it's a named export.
+export const foo = 'foo';
+
+</code></pre>
+<p>The following patterns are not warnings:</p>
+<pre><code class="language-javascript">// good1.js
+
+// There is a default export.
+export const foo = 'foo';
+const bar = 'bar';
+export default bar;
+</code></pre>
+<pre><code class="language-javascript">// good2.js
+
+// There is more than one named export in the module.
+export const foo = 'foo';
+export const bar = 'bar';
+</code></pre>
+<pre><code class="language-javascript">// good3.js
+
+// There is more than one named export in the module
+const foo = 'foo';
+const bar = 'bar';
+export { foo, bar }
+</code></pre>
+<pre><code class="language-javascript">// good4.js
+
+// There is a default export.
+const foo = 'foo';
+export { foo as default }
+</code></pre>
+<pre><code class="language-javascript">// export-star.js
+
+// Any batch export will disable this rule. The remote module is not inspected.
+export * from './other-module'
+</code></pre>
+<h4>any</h4>
+<p><strong>Definition</strong>: any exporting file must contain a default export.</p>
+<p>How to setup config file for this rule:</p>
+<pre><code class="language-javascript">// you have to manually specify it
+&quot;rules&quot;: {
+    &quot;import/prefer-default-export&quot;: [
+        ( &quot;off&quot; | &quot;warn&quot; | &quot;error&quot; ),
+        { &quot;target&quot;: &quot;any&quot; }
+    ]
+}
+</code></pre>
+<p>The following patterns are <em>not</em> considered warnings:</p>
+<pre><code class="language-javascript">// good1.js
+
+//has default export
+export default function bar() {};
+</code></pre>
+<pre><code class="language-javascript">// good2.js
+
+// has default export
+let foo;
+export { foo as default }
+</code></pre>
+<pre><code class="language-javascript">// good3.js
+
+//contains multiple exports AND default export
+export const a = 5;
+export function bar(){};
+let foo;
+export { foo as default }
+</code></pre>
+<pre><code class="language-javascript">// good4.js
+
+// does not contain any exports =&gt; file is not checked by the rule
+import * as foo from './foo';﻿
+</code></pre>
+<pre><code class="language-javascript">// export-star.js
+
+// Any batch export will disable this rule. The remote module is not inspected.
+export * from './other-module'
+</code></pre>
+<p>The following patterns are considered warnings:</p>
+<pre><code class="language-javascript">// bad1.js
+
+//has 2 named exports, but no default export
+export const foo = 'foo';
+export const bar = 'bar';
+</code></pre>
+<pre><code class="language-javascript">// bad2.js
+
+// does not have default export
+let foo, bar;
+export { foo, bar }
+</code></pre>
+<pre><code class="language-javascript">// bad3.js
+
+// does not have default export
+export { a, b } from &quot;foo.js&quot;﻿
+</code></pre>
+<pre><code class="language-javascript">// bad4.js
+
+// does not have default export
+let item;
+export const foo = item;
+export { item };
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

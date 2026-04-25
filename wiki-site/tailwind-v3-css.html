@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tailwind-v3-css — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-tailwind-v3-css">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#installing-tailwind-v3">Installing Tailwind v3</a></li><li><a href="#configuring-tailwind-v3">Configuring Tailwind v3</a></li><li><a href="#using-classes">Using classes</a></li><li><a href="#usage-with-turbopack">Usage with Turbopack</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">tailwind-v3-css</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Tailwind CSS v3</td></tr><tr><th>description</th><td>Style your Next.js Application using Tailwind CSS v3 for broader browser support.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>This guide will walk you through how to install <a href="https://v3.tailwindcss.com/" target="_blank" rel="noopener">Tailwind CSS v3</a> in your Next.js application.</p>
+<blockquote>
+<p><strong>Good to know:</strong> For the latest Tailwind 4 setup, see the <a href="/docs/app/getting-started/css#tailwind-css">Tailwind CSS setup instructions</a>.</p>
+</blockquote>
+<h2 id="installing-tailwind-v3">Installing Tailwind v3</h2>
+<p>Install Tailwind CSS and its peer dependencies, then run the <code>init</code> command to generate both <code>tailwind.config.js</code> and <code>postcss.config.js</code> files:</p>
+<pre><code class="language-bash">pnpm add -D tailwindcss@^3 postcss autoprefixer
+npx tailwindcss init -p
+</code></pre>
+<pre><code class="language-bash">npm install -D tailwindcss@^3 postcss autoprefixer
+npx tailwindcss init -p
+</code></pre>
+<pre><code class="language-bash">yarn add -D tailwindcss@^3 postcss autoprefixer
+npx tailwindcss init -p
+</code></pre>
+<pre><code class="language-bash">bun add -D tailwindcss@^3 postcss autoprefixer
+bunx tailwindcss init -p
+</code></pre>
+<h2 id="configuring-tailwind-v3">Configuring Tailwind v3</h2>
+<p>Configure your template paths in your <code>tailwind.config.js</code> file:</p>
+<AppOnly>
+<pre><code class="language-js">/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</code></pre>
+<p>Add the Tailwind directives to your global CSS file:</p>
+<pre><code class="language-css">@tailwind base;
+@tailwind components;
+@tailwind utilities;
+</code></pre>
+<p>Import the CSS file in your root layout:</p>
+<pre><code class="language-tsx">import './globals.css'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import './globals.css'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-js">/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</code></pre>
+<p>Add the Tailwind directives to your global CSS file:</p>
+<pre><code class="language-css">@tailwind base;
+@tailwind components;
+@tailwind utilities;
+</code></pre>
+<p>Import the CSS file in your <code>pages/_app.js</code> file:</p>
+<pre><code class="language-jsx">import '@/styles/globals.css'
+
+export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+</PagesOnly>
+<h2 id="using-classes">Using classes</h2>
+<p>After installing Tailwind CSS and adding the global styles, you can use Tailwind’s utility classes in your application.</p>
+<AppOnly>
+<pre><code class="language-tsx">export default function Page() {
+  return &lt;h1 className=&quot;text-3xl font-bold underline&quot;&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return &lt;h1 className=&quot;text-3xl font-bold underline&quot;&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">export default function Page() {
+  return &lt;h1 className=&quot;text-3xl font-bold underline&quot;&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return &lt;h1 className=&quot;text-3xl font-bold underline&quot;&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+</PagesOnly>
+<h2 id="usage-with-turbopack">Usage with Turbopack</h2>
+<p>As of Next.js 13.1, Tailwind CSS and PostCSS are supported with <a href="https://turbo.build/pack/docs/features/css#tailwind-css" target="_blank" rel="noopener">Turbopack</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

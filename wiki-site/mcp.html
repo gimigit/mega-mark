@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mcp — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-mcp">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#getting-started">Getting started</a></li><li><a href="#capabilities">Capabilities</a></li><ul><li><a href="#application-runtime-access">Application Runtime Access</a></li><li><a href="#development-tools">Development Tools</a></li></ul><li><a href="#development-workflow">Development workflow</a></li><ul><li><a href="#available-tools">Available tools</a></li></ul><li><a href="#using-with-agents">Using with agents</a></li><ul><li><a href="#benefits-for-agent-assisted-development">Benefits for agent-assisted development</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#error-detection-and-diagnosis">Error detection and diagnosis</a></li><li><a href="#upgrading-and-best-practices">Upgrading and best practices</a></li></ul><li><a href="#how-it-works">How it works</a></li><li><a href="#troubleshooting">Troubleshooting</a></li><ul><li><a href="#mcp-server-not-connecting">MCP server not connecting</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">mcp</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Next.js MCP Server</td></tr><tr><th>description</th><td>Learn how to use Next.js MCP support to allow coding agents access to your application state</td></tr></table><p>The <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol (MCP)</a> is an open standard that allows AI agents and coding assistants to interact with your applications through a standardized interface.</p>
+<p>Next.js 16+ includes MCP support that enables coding agents to access your application’s internals in real-time. To use this functionality, install the <a href="https://www.npmjs.com/package/next-devtools-mcp" target="_blank" rel="noopener"><code>next-devtools-mcp</code></a> package.</p>
+<h2 id="getting-started">Getting started</h2>
+<p><strong>Requirements:</strong> Next.js 16 or above</p>
+<p>Add <code>next-devtools-mcp</code> to the <code>.mcp.json</code> file at the root of your project:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;next-devtools&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;next-devtools-mcp@latest&quot;]
+    }
+  }
+}
+</code></pre>
+<p>That’s it! When you start your development server, <code>next-devtools-mcp</code> will automatically discover and connect to your running Next.js instance.</p>
+<p>For more configuration options, see the <a href="https://github.com/vercel/next-devtools-mcp" target="_blank" rel="noopener">next-devtools-mcp repository</a>.</p>
+<h2 id="capabilities">Capabilities</h2>
+<p><code>next-devtools-mcp</code> provides coding agents with a growing set of capabilities:</p>
+<h3 id="application-runtime-access">Application Runtime Access</h3>
+<ul>
+<li><strong>Error Detection</strong>: Retrieve current build errors, runtime errors, and type errors from your dev server</li>
+<li><strong>Live State Queries</strong>: Access real-time application state and runtime information</li>
+<li><strong>Page Metadata</strong>: Query page routes, components, and rendering details</li>
+<li><strong>Server Actions</strong>: Inspect Server Actions and component hierarchies</li>
+<li><strong>Development Logs</strong>: Access development server logs and console output</li>
+</ul>
+<h3 id="development-tools">Development Tools</h3>
+<ul>
+<li><strong>Next.js Knowledge Base</strong>: Query comprehensive Next.js documentation and best practices</li>
+<li><strong>Migration and Upgrade Tools</strong>: Automated helpers for upgrading to Next.js 16 with codemods</li>
+<li><strong>Caching Guide</strong>: Setup and configuration assistance for Cache Components</li>
+<li><strong>Browser Testing</strong>: <a href="https://github.com/microsoft/playwright-mcp" target="_blank" rel="noopener">Playwright MCP</a> integration for verifying pages in the browser</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> The Next.js team is actively expanding these capabilities. New tools and features are added regularly to improve the agent development experience.</p>
+</blockquote>
+<h2 id="development-workflow">Development workflow</h2>
+<ol>
+<li>Start your Next.js development server:</li>
+</ol>
+<pre><code class="language-bash">pnpm dev
+</code></pre>
+<pre><code class="language-bash">npm run dev
+</code></pre>
+<pre><code class="language-bash">yarn dev
+</code></pre>
+<pre><code class="language-bash">bun dev
+</code></pre>
+<ol start="2">
+<li>
+<p>Your Coding Agent will automatically connect to the running Next.js instance via <code>next-devtools-mcp</code></p>
+</li>
+<li>
+<p>Open your application in the browser to view pages</p>
+</li>
+<li>
+<p>Query your agent for insights and diagnostics (see examples below)</p>
+</li>
+</ol>
+<h3 id="available-tools">Available tools</h3>
+<p>Through <code>next-devtools-mcp</code>, agents can use the following tools:</p>
+<ul>
+<li><strong><code>get_errors</code></strong>: Retrieve current build errors, runtime errors, and type errors from your dev server</li>
+<li><strong><code>get_logs</code></strong>: Get the path to the development log file containing browser console logs and server output</li>
+<li><strong><code>get_page_metadata</code></strong>: Get metadata about specific pages including routes, components, and rendering information</li>
+<li><strong><code>get_project_metadata</code></strong>: Retrieve project structure, configuration, and dev server URL</li>
+<li><strong><code>get_routes</code></strong>: Get all routes that will become entry points by scanning the filesystem. Returns routes grouped by router type (appRouter, pagesRouter). Dynamic segments appear as <code>[param]</code> or <code>[...slug]</code> patterns</li>
+<li><strong><code>get_server_action_by_id</code></strong>: Look up Server Actions by their ID to find the source file and function name</li>
+</ul>
+<h2 id="using-with-agents">Using with agents</h2>
+<p>MCP-compatible Coding Agents can automatically discover and connect to your Next.js development server, providing them with rich context about your project.</p>
+<h3 id="benefits-for-agent-assisted-development">Benefits for agent-assisted development</h3>
+<p>Agents can:</p>
+<ul>
+<li><strong>Make context-aware suggestions</strong>: Recommend the right place to add new features based on your existing structure</li>
+<li><strong>Query live application state</strong>: Check current configuration, routes, and middleware during development</li>
+<li><strong>Understand your app router pages layout</strong>: Know exactly which page and layout are rendered</li>
+<li><strong>Provide accurate implementations</strong>: Generate code that follows your project’s patterns and conventions</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="error-detection-and-diagnosis">Error detection and diagnosis</h3>
+<p>Ask your agent about errors in real-time:</p>
+<pre><code class="language-bash">User: &quot;What errors are currently in my application?&quot;
+</code></pre>
+<p>The agent will:</p>
+<ul>
+<li>Query your running Next.js application via <code>next-devtools-mcp</code></li>
+<li>Retrieve current build errors, runtime errors, and type errors</li>
+<li>Analyze the errors and provide actionable fixes</li>
+</ul>
+<details>
+<summary>Agent response (click to expand)</summary>
+<pre><code class="language-bash">&gt; fix errors on the page
+
+⏺ I'll help you fix the errors on the page. Let me first check what errors exist by looking at the
+  current state of the project.
+
+⏺ next-devtools - nextjs_runtime (MCP)(action: &quot;discover_servers&quot;)
+⏺ next-devtools - nextjs_runtime (MCP)(action: &quot;call_tool&quot;, toolName: &quot;get_errors&quot;)
+
+⏺ I found a hydration error on the /about page. The error shows that the server is rendering
+  &quot;server&quot; but the client is rendering &quot;client&quot;, causing a mismatch. Let me create a todo list and fix
+   this issue.
+
+⏺ Perfect! Now let me check for errors on the page.           01:14 PM  claude-sonnet-4-5-20250929
+
+⏺ next-devtools - nextjs_runtime (MCP)(action: &quot;call_tool&quot;, toolName: &quot;get_errors&quot;)
+  ⎿ {
+      &quot;success&quot;: true,
+      &quot;port&quot;: 3000,
+      &quot;toolName&quot;: &quot;get_errors&quot;,
+      &quot;result&quot;: {
+        &quot;content&quot;: [
+          {
+            &quot;type&quot;: &quot;text&quot;,
+            &quot;text&quot;: &quot;# Found errors in 1 browser session(s)\n\n## Session: /about\n\n**1 error(s)
+     found**\n\n### Runtime Errors\n\n#### Error 1 (Type: recoverable)\n\n**Error**: Hydration failed
+</code></pre>
+</details>
+<h3 id="upgrading-and-best-practices">Upgrading and best practices</h3>
+<p>Get help with Next.js concepts and migrations:</p>
+<pre><code class="language-bash">User: &quot;Help me upgrade my Next.js app to version 16&quot;
+</code></pre>
+<p>The agent will analyze your current version, guide you through automated migrations with codemods, and provide step-by-step instructions for handling breaking changes.</p>
+<p>Ask conceptual questions:</p>
+<pre><code class="language-bash">User: &quot;When should I use 'use client' in App Router?&quot;
+</code></pre>
+<p>The agent will query the Next.js knowledge base and provide documentation-backed explanations with examples from your codebase.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>Next.js 16+ includes a built-in MCP endpoint at <code>/_next/mcp</code> that runs within your development server. The <code>next-devtools-mcp</code> package automatically discovers and communicates with these endpoints, allowing it to:</p>
+<ul>
+<li>Connect to multiple Next.js instances running on different ports</li>
+<li>Forward tool calls to the appropriate Next.js dev server</li>
+<li>Provide a unified interface for coding agents</li>
+</ul>
+<p>This architecture decouples the agent interface from the internal implementation, enabling <code>next-devtools-mcp</code> to work seamlessly across different Next.js projects.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="mcp-server-not-connecting">MCP server not connecting</h3>
+<ul>
+<li>Ensure you’re using Next.js v16 or above</li>
+<li>Verify <code>next-devtools-mcp</code> is configured in your <code>.mcp.json</code></li>
+<li>Start your development server: <code>npm run dev</code></li>
+<li>Restart your development server if it was already running</li>
+<li>Check that your coding agent has loaded the MCP server configuration</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

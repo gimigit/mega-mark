@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>manifest — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-manifest">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#static-manifest-file">Static Manifest file</a></li><li><a href="#generate-a-manifest-file">Generate a Manifest file</a></li><ul><li><a href="#manifest-object">Manifest Object</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">manifest</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for manifest.json file.</td></tr></table><p>Add or generate a <code>manifest.(json|webmanifest)</code> file that matches the <a href="https://developer.mozilla.org/docs/Web/Manifest" target="_blank" rel="noopener">Web Manifest Specification</a> in the <strong>root</strong> of <code>app</code> directory to provide information about your web application for the browser.</p>
+<h2 id="static-manifest-file">Static Manifest file</h2>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;My Next.js Application&quot;,
+  &quot;short_name&quot;: &quot;Next.js App&quot;,
+  &quot;description&quot;: &quot;An application built with Next.js&quot;,
+  &quot;start_url&quot;: &quot;/&quot;
+  // ...
+}
+</code></pre>
+<h2 id="generate-a-manifest-file">Generate a Manifest file</h2>
+<p>Add a <code>manifest.js</code> or <code>manifest.ts</code> file that returns a <a href="#manifest-object"><code>Manifest</code> object</a>.</p>
+<blockquote>
+<p>Good to know: <code>manifest.js</code> is a special Route Handlers that is cached by default unless it uses a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> or <a href="/docs/app/guides/caching-without-cache-components#dynamic">dynamic config</a> option.</p>
+</blockquote>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Next.js App',
+    short_name: 'Next.js App',
+    description: 'Next.js App',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#fff',
+    theme_color: '#fff',
+    icons: [
+      {
+        src: '/favicon.ico',
+        sizes: 'any',
+        type: 'image/x-icon',
+      },
+    ],
+  }
+}
+</code></pre>
+<pre><code class="language-js">export default function manifest() {
+  return {
+    name: 'Next.js App',
+    short_name: 'Next.js App',
+    description: 'Next.js App',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#fff',
+    theme_color: '#fff',
+    icons: [
+      {
+        src: '/favicon.ico',
+        sizes: 'any',
+        type: 'image/x-icon',
+      },
+    ],
+  }
+}
+</code></pre>
+<h3 id="manifest-object">Manifest Object</h3>
+<p>The manifest object contains an extensive list of options that may be updated due to new web standards. For information on all the current options, refer to the <code>MetadataRoute.Manifest</code> type in your code editor if using <a href="/docs/app/api-reference/config/typescript#ide-plugin">TypeScript</a> or see the <a href="https://developer.mozilla.org/docs/Web/Manifest" target="_blank" rel="noopener">MDN</a> docs.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

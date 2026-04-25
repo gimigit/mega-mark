@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>opengraph-image — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-opengraph-image">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#image-files-jpg-png-gif">Image files (.jpg, .png, .gif)</a></li><ul><li><a href="#opengraph-image">opengraph-image</a></li><li><a href="#twitter-image">twitter-image</a></li><li><a href="#opengraph-imagealttxt">opengraph-image.alt.txt</a></li><li><a href="#twitter-imagealttxt">twitter-image.alt.txt</a></li></ul><li><a href="#generate-images-using-code-js-ts-tsx">Generate images using code (.js, .ts, .tsx)</a></li><ul><li><a href="#props">Props</a></li><li><a href="#returns">Returns</a></li><li><a href="#config-exports">Config exports</a></li><li><a href="#examples">Examples</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">opengraph-image</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the Open Graph Image and Twitter Image file conventions.</td></tr></table><p>The <code>opengraph-image</code> and <code>twitter-image</code> file conventions allow you to set Open Graph and Twitter images for a route segment.</p>
+<p>They are useful for setting the images that appear on social networks and messaging apps when a user shares a link to your site.</p>
+<p>There are two ways to set Open Graph and Twitter images:</p>
+<ul>
+<li><a href="#image-files-jpg-png-gif">Using image files (.jpg, .png, .gif)</a></li>
+<li><a href="#generate-images-using-code-js-ts-tsx">Using code to generate images (.js, .ts, .tsx)</a></li>
+</ul>
+<h2 id="image-files-jpg-png-gif">Image files (.jpg, .png, .gif)</h2>
+<p>Use an image file to set a route segment’s shared image by placing an <code>opengraph-image</code> or <code>twitter-image</code> image file in the segment.</p>
+<p>Next.js will evaluate the file and automatically add the appropriate tags to your app’s <code>&lt;head&gt;</code> element.</p>
+<table>
+<thead>
+<tr>
+<th>File convention</th>
+<th>Supported file types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#opengraph-image"><code>opengraph-image</code></a></td>
+<td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.gif</code></td>
+</tr>
+<tr>
+<td><a href="#twitter-image"><code>twitter-image</code></a></td>
+<td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.gif</code></td>
+</tr>
+<tr>
+<td><a href="#opengraph-imagealttxt"><code>opengraph-image.alt</code></a></td>
+<td><code>.txt</code></td>
+</tr>
+<tr>
+<td><a href="#twitter-imagealttxt"><code>twitter-image.alt</code></a></td>
+<td><code>.txt</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<p>The <code>twitter-image</code> file size must not exceed <a href="https://developer.x.com/en/docs/x-for-websites/cards/overview/summary" target="_blank" rel="noopener">5MB</a>, and the <code>opengraph-image</code> file size must not exceed <a href="https://developers.facebook.com/docs/sharing/webmasters/images" target="_blank" rel="noopener">8MB</a>. If the image file size exceeds these limits, the build will fail.</p>
+</blockquote>
+<h3 id="opengraph-image"><code>opengraph-image</code></h3>
+<p>Add an <code>opengraph-image.(jpg|jpeg|png|gif)</code> image file to any route segment.</p>
+<pre><code class="language-html">&lt;meta property=&quot;og:image&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta property=&quot;og:image:type&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta property=&quot;og:image:width&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta property=&quot;og:image:height&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+</code></pre>
+<h3 id="twitter-image"><code>twitter-image</code></h3>
+<p>Add a <code>twitter-image.(jpg|jpeg|png|gif)</code> image file to any route segment.</p>
+<pre><code class="language-html">&lt;meta name=&quot;twitter:image&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta name=&quot;twitter:image:type&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta name=&quot;twitter:image:width&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta name=&quot;twitter:image:height&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+</code></pre>
+<h3 id="opengraph-imagealttxt"><code>opengraph-image.alt.txt</code></h3>
+<p>Add an accompanying <code>opengraph-image.alt.txt</code> file in the same route segment as the <code>opengraph-image.(jpg|jpeg|png|gif)</code> image it’s alt text.</p>
+<pre><code class="language-txt">About Acme
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:image:alt&quot; content=&quot;About Acme&quot; /&gt;
+</code></pre>
+<h3 id="twitter-imagealttxt"><code>twitter-image.alt.txt</code></h3>
+<p>Add an accompanying <code>twitter-image.alt.txt</code> file in the same route segment as the <code>twitter-image.(jpg|jpeg|png|gif)</code> image it’s alt text.</p>
+<pre><code class="language-txt">About Acme
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;twitter:image:alt&quot; content=&quot;About Acme&quot; /&gt;
+</code></pre>
+<h2 id="generate-images-using-code-js-ts-tsx">Generate images using code (.js, .ts, .tsx)</h2>
+<p>In addition to using <a href="#image-files-jpg-png-gif">literal image files</a>, you can programmatically <strong>generate</strong> images using code.</p>
+<p>Generate a route segment’s shared image by creating an <code>opengraph-image</code> or <code>twitter-image</code> route that default exports a function.</p>
+<table>
+<thead>
+<tr>
+<th>File convention</th>
+<th>Supported file types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>opengraph-image</code></td>
+<td><code>.js</code>, <code>.ts</code>, <code>.tsx</code></td>
+</tr>
+<tr>
+<td><code>twitter-image</code></td>
+<td><code>.js</code>, <code>.ts</code>, <code>.tsx</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>By default, generated images are <a href="/docs/app/glossary#prerendering"><strong>statically optimized</strong></a> (generated at build time and cached) unless they use <a href="/docs/app/glossary#request-time-apis">Request-time APIs</a> or uncached data.</li>
+<li>You can generate multiple Images in the same file using <a href="/docs/app/api-reference/functions/generate-image-metadata"><code>generateImageMetadata</code></a>.</li>
+<li><code>opengraph-image.js</code> and <code>twitter-image.js</code> are special Route Handlers that is cached by default unless it uses a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> or <a href="/docs/app/guides/caching-without-cache-components#dynamic">dynamic config</a> option.</li>
+</ul>
+</blockquote>
+<p>The easiest way to generate an image is to use the <a href="/docs/app/api-reference/functions/image-response">ImageResponse</a> API from <code>next/og</code>.</p>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
+// Image metadata
+export const alt = 'About Acme'
+export const size = {
+  width: 1200,
+  height: 630,
+}
+
+export const contentType = 'image/png'
+
+// Image generation
+export default async function Image() {
+  // Font loading, process.cwd() is Next.js project directory
+  const interSemiBold = await readFile(
+    join(process.cwd(), 'assets/Inter-SemiBold.ttf')
+  )
+
+  return new ImageResponse(
+    (
+      // ImageResponse JSX element
+      &lt;div
+        style={{
+          fontSize: 128,
+          background: 'white',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        About Acme
+      &lt;/div&gt;
+    ),
+    // ImageResponse options
+    {
+      // For convenience, we can re-use the exported opengraph-image
+      // size config to also set the ImageResponse's width and height.
+      ...size,
+      fonts: [
+        {
+          name: 'Inter',
+          data: interSemiBold,
+          style: 'normal',
+          weight: 400,
+        },
+      ],
+    }
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
+// Image metadata
+export const alt = 'About Acme'
+export const size = {
+  width: 1200,
+  height: 630,
+}
+
+export const contentType = 'image/png'
+
+// Image generation
+export default async function Image() {
+  // Font loading, process.cwd() is Next.js project directory
+  const interSemiBold = await readFile(
+    join(process.cwd(), 'assets/Inter-SemiBold.ttf')
+  )
+
+  return new ImageResponse(
+    (
+      // ImageResponse JSX element
+      &lt;div
+        style={{
+          fontSize: 128,
+          background: 'white',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        About Acme
+      &lt;/div&gt;
+    ),
+    // ImageResponse options
+    {
+      // For convenience, we can re-use the exported opengraph-image
+      // size config to also set the ImageResponse's width and height.
+      ...size,
+      fonts: [
+        {
+          name: 'Inter',
+          data: interSemiBold,
+          style: 'normal',
+          weight: 400,
+        },
+      ],
+    }
+  )
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:image&quot; content=&quot;&lt;generated&gt;&quot; /&gt;
+&lt;meta property=&quot;og:image:alt&quot; content=&quot;About Acme&quot; /&gt;
+&lt;meta property=&quot;og:image:type&quot; content=&quot;image/png&quot; /&gt;
+&lt;meta property=&quot;og:image:width&quot; content=&quot;1200&quot; /&gt;
+&lt;meta property=&quot;og:image:height&quot; content=&quot;630&quot; /&gt;
+</code></pre>
+<h3 id="props">Props</h3>
+<p>The default export function receives the following props:</p>
+<h4><code>params</code> (optional)</h4>
+<p>A promise that resolves to an object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> object from the root segment down to the segment <code>opengraph-image</code> or <code>twitter-image</code> is colocated in.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If you use <a href="/docs/app/api-reference/functions/generate-image-metadata"><code>generateImageMetadata</code></a>, the function will also receive an <code>id</code> prop that is a promise resolving to the <code>id</code> value from one of the items returned by <code>generateImageMetadata</code>.</p>
+</blockquote>
+<pre><code class="language-tsx">export default async function Image({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Image({ params }) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/opengraph-image.js</code></td>
+<td><code>/shop</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[slug]/opengraph-image.js</code></td>
+<td><code>/shop/1</code></td>
+<td><code>Promise&lt;{ slug: '1' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[tag]/[item]/opengraph-image.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>Promise&lt;{ tag: '1', item: '2' }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="returns">Returns</h3>
+<p>The default export function should return a <code>Blob</code> | <code>ArrayBuffer</code> | <code>TypedArray</code> | <code>DataView</code> | <code>ReadableStream</code> | <code>Response</code>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>ImageResponse</code> satisfies this return type.</p>
+</blockquote>
+<h3 id="config-exports">Config exports</h3>
+<p>You can optionally configure the image’s metadata by exporting <code>alt</code>, <code>size</code>, and <code>contentType</code> variables from <code>opengraph-image</code> or <code>twitter-image</code> route.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#alt"><code>alt</code></a></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><a href="#size"><code>size</code></a></td>
+<td><code>{ width: number; height: number }</code></td>
+</tr>
+<tr>
+<td><a href="#contenttype"><code>contentType</code></a></td>
+<td><code>string</code> - <a href="https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types#image_types" target="_blank" rel="noopener">image MIME type</a></td>
+</tr>
+</tbody>
+</table>
+<h4><code>alt</code></h4>
+<pre><code class="language-tsx">export const alt = 'My images alt text'
+
+export default function Image() {}
+</code></pre>
+<pre><code class="language-jsx">export const alt = 'My images alt text'
+
+export default function Image() {}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:image:alt&quot; content=&quot;My images alt text&quot; /&gt;
+</code></pre>
+<h4><code>size</code></h4>
+<pre><code class="language-tsx">export const size = { width: 1200, height: 630 }
+
+export default function Image() {}
+</code></pre>
+<pre><code class="language-jsx">export const size = { width: 1200, height: 630 }
+
+export default function Image() {}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:image:width&quot; content=&quot;1200&quot; /&gt;
+&lt;meta property=&quot;og:image:height&quot; content=&quot;630&quot; /&gt;
+</code></pre>
+<h4><code>contentType</code></h4>
+<pre><code class="language-tsx">export const contentType = 'image/png'
+
+export default function Image() {}
+</code></pre>
+<pre><code class="language-jsx">export const contentType = 'image/png'
+
+export default function Image() {}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:image:type&quot; content=&quot;image/png&quot; /&gt;
+</code></pre>
+<h4>Route Segment Config</h4>
+<p><code>opengraph-image</code> and <code>twitter-image</code> are specialized <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> that can use the same <a href="/docs/app/api-reference/file-conventions/route-segment-config">route segment configuration</a> options as Pages and Layouts.</p>
+<h3 id="examples">Examples</h3>
+<h4>Using external data</h4>
+<p>This example uses the <code>params</code> object and external data to generate the image.</p>
+<blockquote>
+<p><strong>Good to know</strong>:
+By default, this generated image will be statically optimized. You can configure the individual <code>fetch</code> <a href="/docs/app/api-reference/functions/fetch"><code>options</code></a> or route segments <a href="/docs/app/guides/caching-without-cache-components#route-segment-config-revalidate">options</a> to change this behavior.</p>
+</blockquote>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+
+export const alt = 'About Acme'
+export const size = {
+  width: 1200,
+  height: 630,
+}
+export const contentType = 'image/png'
+
+export default async function Image({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  const post = await fetch(`https://.../posts/${slug}`).then((res) =&gt;
+    res.json()
+  )
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          fontSize: 48,
+          background: 'white',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        {post.title}
+      &lt;/div&gt;
+    ),
+    {
+      ...size,
+    }
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+
+export const alt = 'About Acme'
+export const size = {
+  width: 1200,
+  height: 630,
+}
+export const contentType = 'image/png'
+
+export default async function Image({ params }) {
+  const { slug } = await params
+  const post = await fetch(`https://.../posts/${slug}`).then((res) =&gt;
+    res.json()
+  )
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          fontSize: 48,
+          background: 'white',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        {post.title}
+      &lt;/div&gt;
+    ),
+    {
+      ...size,
+    }
+  )
+}
+</code></pre>
+<h4>Using Node.js runtime with local assets</h4>
+<p>These examples use the Node.js runtime to fetch a local image from the file system and pass it to the <code>&lt;img&gt;</code> <code>src</code> attribute, either as a base64 string or an <code>ArrayBuffer</code>. Place the local asset relative to the project root, not the example source file.</p>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
+
+export default async function Image() {
+  const logoData = await readFile(join(process.cwd(), 'logo.png'), 'base64')
+  const logoSrc = `data:image/png;base64,${logoData}`
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        &lt;img src={logoSrc} height=&quot;100&quot; /&gt;
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
+
+export default async function Image() {
+  const logoData = await readFile(join(process.cwd(), 'logo.png'), 'base64')
+  const logoSrc = `data:image/png;base64,${logoData}`
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        &lt;img src={logoSrc} height=&quot;100&quot; /&gt;
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<p>Passing an <code>ArrayBuffer</code> to the <code>src</code> attribute of an <code>&lt;img&gt;</code> element is not part of the HTML spec. The rendering engine used by <code>next/og</code> supports it, but because TypeScript definitions follow the spec, you need a <code>@ts-expect-error</code> directive or similar to use this <a href="https://github.com/vercel/satori/issues/606#issuecomment-2144000453" target="_blank" rel="noopener">feature</a>.</p>
+<pre><code class="language-tsx">import { ImageResponse } from 'next/og'
+import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
+
+export default async function Image() {
+  const logoData = await readFile(join(process.cwd(), 'logo.png'))
+  const logoSrc = Uint8Array.from(logoData).buffer
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        {/* @ts-expect-error Satori accepts ArrayBuffer/typed arrays for &lt;img src&gt; at runtime */}
+        &lt;img src={logoSrc} height=&quot;100&quot; /&gt;
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { ImageResponse } from 'next/og'
+import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
+
+export default async function Image() {
+  const logoData = await readFile(join(process.cwd(), 'logo.png'))
+  const logoSrc = Uint8Array.from(logoData).buffer
+
+  return new ImageResponse(
+    (
+      &lt;div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      &gt;
+        &lt;img src={logoSrc} height=&quot;100&quot; /&gt;
+      &lt;/div&gt;
+    )
+  )
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>params</code> is now a promise that resolves to an object</td>
+</tr>
+<tr>
+<td><code>v13.3.0</code></td>
+<td><code>opengraph-image</code> and <code>twitter-image</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

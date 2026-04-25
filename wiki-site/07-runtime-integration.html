@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>07-runtime-integration — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-07-runtime-integration">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#handler-context">Handler Context</a></li><li><a href="#ppr-chain-headers">PPR Chain Headers</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">07-runtime-integration</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Understand how build-time adapters and runtime cache interfaces work together.</td></tr></table><p>The Deployment Adapter API is a <strong>build-time</strong> interface. It tells your platform what was built and how to route requests. <strong>Runtime</strong> behavior (request handling, streaming, caching) is handled by the Next.js server itself and by the cache interfaces <a href="/docs/app/api-reference/config/next-config-js/incrementalCacheHandlerPath"><code>cacheHandler</code></a> and <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers"><code>cacheHandlers</code></a>.</p>
+<p>Together, the adapter and cache interfaces form the complete platform integration surface:</p>
+<ul>
+<li><strong>Adapter</strong> (build-time): processes build outputs, configures routing, and sets up platform-specific infrastructure.</li>
+<li><strong>Cache Interfaces</strong> (runtime): <code>cacheHandler</code> manages ISR/server cache storage and revalidation across instances; <code>cacheHandlers</code> configures <code>'use cache'</code> directive backends and tag coordination.</li>
+</ul>
+<h2 id="handler-context">Handler Context</h2>
+<p>When invoking entrypoints, adapters pass a <code>ctx</code> object to the Next.js handler. Key fields include:</p>
+<ul>
+<li><strong><code>ctx.waitUntil</code></strong>: a function that accepts a promise. Use this to keep the serverless function alive after the response is sent, allowing background work like cache revalidation to complete.</li>
+<li><strong><code>requestMeta.onCacheEntryV2</code></strong> (set via <code>addRequestMeta</code>): a callback that fires when a cache entry is generated or looked up. Use this to observe all cache operations (not just PPR) and propagate cache updates to your platform’s storage backend. This callback fires on the instance that handled the request. For multi-instance deployments, your adapter should propagate updates to shared storage. See <a href="/docs/app/guides/how-revalidation-works">How Revalidation Works</a> for coordination patterns.</li>
+</ul>
+<h2 id="ppr-chain-headers">PPR Chain Headers</h2>
+<p>In the <a href="/docs/app/api-reference/adapters/output-types#prerenders-outputsprerenders">prerenders output type</a>, <code>pprChain.headers</code> contains the headers needed for the <a href="/docs/app/api-reference/adapters/implementing-ppr-in-an-adapter">resume protocol</a>. Specifically, it contains <code>{ 'next-resume': '1' }</code>.</p>
+<p>When your adapter detects a PPR-enabled route with a cached static shell:</p>
+<ol>
+<li>Set the <code>pprChain.headers</code> on the internal request to the Next.js handler.</li>
+<li>Send the request as a <strong>POST</strong> with the <code>postponedState</code> as the request body.</li>
+<li>The handler will render only the deferred Suspense boundaries and stream the result.</li>
+</ol>
+<blockquote>
+<p><strong>Good to know:</strong> In standard <code>next start</code>, the server handles both the shell and dynamic render in a single pass automatically. The resume protocol is useful for adapter-based deployments and CDN-to-origin architectures that want to serve the shell separately. See the <a href="/docs/app/guides/ppr-platform-guide">PPR Platform Guide</a> for the full implementation context.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

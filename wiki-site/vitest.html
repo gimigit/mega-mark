@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Using TypeScript — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-vitest">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#quickstart">Quickstart</a></li><li><a href="#manual-setup">Manual Setup</a></li><li><a href="#creating-your-first-vitest-unit-test">Creating your first Vitest Unit Test</a></li><li><a href="#running-your-tests">Running your tests</a></li><li><a href="#additional-resources">Additional Resources</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Using TypeScript</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Vitest</td></tr><tr><th>description</th><td>Learn how to set up Vitest with Next.js for Unit Testing.</td></tr></table><p>Vitest and React Testing Library are frequently used together for <strong>Unit Testing</strong>. This guide will show you how to setup Vitest with Next.js and write your first tests.</p>
+<blockquote>
+<p><strong>Good to know:</strong> Since <code>async</code> Server Components are new to the React ecosystem, Vitest currently does not support them. While you can still run <strong>unit tests</strong> for synchronous Server and Client Components, we recommend using <strong>E2E tests</strong> for <code>async</code> components.</p>
+</blockquote>
+<h2 id="quickstart">Quickstart</h2>
+<p>You can use <code>create-next-app</code> with the Next.js <a href="https://github.com/vercel/next.js/tree/canary/examples/with-vitest" target="_blank" rel="noopener">with-vitest</a> example to quickly get started:</p>
+<pre><code class="language-bash">pnpm create next-app --example with-vitest with-vitest-app
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest --example with-vitest with-vitest-app
+</code></pre>
+<pre><code class="language-bash">yarn create next-app --example with-vitest with-vitest-app
+</code></pre>
+<pre><code class="language-bash">bun create next-app --example with-vitest with-vitest-app
+</code></pre>
+<h2 id="manual-setup">Manual Setup</h2>
+<p>To manually set up Vitest, install <code>vitest</code> and the following packages as dev dependencies:</p>
+<pre><code class="language-bash"># Using TypeScript
+pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom vite-tsconfig-paths
+# Using JavaScript
+pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom
+</code></pre>
+<pre><code class="language-bash"># Using TypeScript
+npm install -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom vite-tsconfig-paths
+# Using JavaScript
+npm install -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom
+</code></pre>
+<pre><code class="language-bash"># Using TypeScript
+yarn add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom vite-tsconfig-paths
+# Using JavaScript
+yarn add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom
+</code></pre>
+<pre><code class="language-bash"># Using TypeScript
+bun add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom vite-tsconfig-paths
+# Using JavaScript
+bun add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom
+</code></pre>
+<p>Create a <code>vitest.config.mts|js</code> file in the root of your project, and add the following options:</p>
+<pre><code class="language-ts">import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
+
+export default defineConfig({
+  plugins: [tsconfigPaths(), react()],
+  test: {
+    environment: 'jsdom',
+  },
+})
+</code></pre>
+<pre><code class="language-js">import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+  },
+})
+</code></pre>
+<p>For more information on configuring Vitest, please refer to the <a href="https://vitest.dev/config/#configuration" target="_blank" rel="noopener">Vitest Configuration</a> docs.</p>
+<p>Then, add a <code>test</code> script to your <code>package.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;,
+    &quot;test&quot;: &quot;vitest&quot;
+  }
+}
+</code></pre>
+<p>When you run <code>npm run test</code>, Vitest will <strong>watch</strong> for changes in your project by default.</p>
+<h2 id="creating-your-first-vitest-unit-test">Creating your first Vitest Unit Test</h2>
+<p>Check that everything is working by creating a test to check if the <code>&lt;Page /&gt;</code> component successfully renders a heading:</p>
+<AppOnly>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { expect, test } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import Page from '../app/page'
+
+test('Page', () =&gt; {
+  render(&lt;Page /&gt;)
+  expect(screen.getByRole('heading', { level: 1, name: 'Home' })).toBeDefined()
+})
+</code></pre>
+<pre><code class="language-jsx">import { expect, test } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import Page from '../app/page'
+
+test('Page', () =&gt; {
+  render(&lt;Page /&gt;)
+  expect(screen.getByRole('heading', { level: 1, name: 'Home' })).toBeDefined()
+})
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: The example above uses the common <code>__tests__</code> convention, but test files can also be colocated inside the <code>app</code> router.</p>
+</blockquote>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { expect, test } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import Page from '../pages/index'
+
+test('Page', () =&gt; {
+  render(&lt;Page /&gt;)
+  expect(screen.getByRole('heading', { level: 1, name: 'Home' })).toBeDefined()
+})
+</code></pre>
+<pre><code class="language-jsx">import { expect, test } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import Page from '../pages/index'
+
+test('Page', () =&gt; {
+  render(&lt;Page /&gt;)
+  expect(screen.getByRole('heading', { level: 1, name: 'Home' })).toBeDefined()
+})
+</code></pre>
+</PagesOnly>
+<h2 id="running-your-tests">Running your tests</h2>
+<p>Then, run the following command to run your tests:</p>
+<pre><code class="language-bash">pnpm test
+</code></pre>
+<pre><code class="language-bash">npm run test
+</code></pre>
+<pre><code class="language-bash">yarn test
+</code></pre>
+<pre><code class="language-bash">bun run test
+</code></pre>
+<h2 id="additional-resources">Additional Resources</h2>
+<p>You may find these resources helpful:</p>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples/with-vitest" target="_blank" rel="noopener">Next.js with Vitest example</a></li>
+<li><a href="https://vitest.dev/guide/" target="_blank" rel="noopener">Vitest Docs</a></li>
+<li><a href="https://testing-library.com/docs/react-testing-library/intro/" target="_blank" rel="noopener">React Testing Library Docs</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

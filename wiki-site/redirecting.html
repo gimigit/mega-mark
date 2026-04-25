@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>redirecting — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-redirecting">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#redirect-function">redirect function</a></li><li><a href="#permanentredirect-function">permanentRedirect function</a></li><li><a href="#userouter-hook">useRouter() hook</a></li><li><a href="#redirects-in-nextconfigjs">redirects in next.config.js</a></li><li><a href="#nextresponseredirect-in-proxy">NextResponse.redirect in Proxy</a></li><li><a href="#managing-redirects-at-scale-advanced">Managing redirects at scale (advanced)</a></li><ul><li><a href="#1-creating-and-storing-a-redirect-map">1. Creating and storing a redirect map</a></li><li><a href="#2-optimizing-data-lookup-performance">2. Optimizing data lookup performance</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">redirecting</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Redirecting</td></tr><tr><th>description</th><td>Learn the different ways to handle redirects in Next.js.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>There are a few ways you can handle redirects in Next.js. This page will go through each available option, use cases, and how to manage large numbers of redirects.</p>
+<AppOnly>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Purpose</th>
+<th>Where</th>
+<th>Status Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#redirect-function"><code>redirect</code></a></td>
+<td>Redirect user after a mutation or event</td>
+<td>Server Components, Server Functions, Route Handlers</td>
+<td>307 (Temporary) or 303 (Server Action)</td>
+</tr>
+<tr>
+<td><a href="#permanentredirect-function"><code>permanentRedirect</code></a></td>
+<td>Redirect user after a mutation or event</td>
+<td>Server Components, Server Functions, Route Handlers</td>
+<td>308 (Permanent)</td>
+</tr>
+<tr>
+<td><a href="#userouter-hook"><code>useRouter</code></a></td>
+<td>Perform a client-side navigation</td>
+<td>Event Handlers in Client Components</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><a href="#redirects-in-nextconfigjs"><code>redirects</code> in <code>next.config.js</code></a></td>
+<td>Redirect an incoming request based on a path</td>
+<td><code>next.config.js</code> file</td>
+<td>307 (Temporary) or 308 (Permanent)</td>
+</tr>
+<tr>
+<td><a href="#nextresponseredirect-in-proxy"><code>NextResponse.redirect</code></a></td>
+<td>Redirect an incoming request based on a condition</td>
+<td>Proxy</td>
+<td>Any</td>
+</tr>
+</tbody>
+</table>
+</AppOnly>
+<PagesOnly>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Purpose</th>
+<th>Where</th>
+<th>Status Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#userouter-hook"><code>useRouter</code></a></td>
+<td>Perform a client-side navigation</td>
+<td>Components</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><a href="#redirects-in-nextconfigjs"><code>redirects</code> in <code>next.config.js</code></a></td>
+<td>Redirect an incoming request based on a path</td>
+<td><code>next.config.js</code> file</td>
+<td>307 (Temporary) or 308 (Permanent)</td>
+</tr>
+<tr>
+<td><a href="#nextresponseredirect-in-proxy"><code>NextResponse.redirect</code></a></td>
+<td>Redirect an incoming request based on a condition</td>
+<td>Proxy</td>
+<td>Any</td>
+</tr>
+</tbody>
+</table>
+</PagesOnly>
+<AppOnly>
+<h2 id="redirect-function"><code>redirect</code> function</h2>
+<p>The <code>redirect</code> function allows you to redirect the user to another URL. You can call <code>redirect</code> in <a href="/docs/app/getting-started/server-and-client-components">Server Components</a>, <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>, and <a href="/docs/app/getting-started/mutating-data">Server Functions</a>.</p>
+<p><code>redirect</code> is often used after a mutation or event. For example, creating a post:</p>
+<pre><code class="language-ts">'use server'
+
+import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+
+export async function createPost(id: string) {
+  try {
+    // Call database
+  } catch (error) {
+    // Handle errors
+  }
+
+  revalidatePath('/posts') // Update cached posts
+  redirect(`/post/${id}`) // Navigate to the new post page
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+
+export async function createPost(id) {
+  try {
+    // Call database
+  } catch (error) {
+    // Handle errors
+  }
+
+  revalidatePath('/posts') // Update cached posts
+  redirect(`/post/${id}`) // Navigate to the new post page
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>redirect</code> returns a 307 (Temporary Redirect) status code by default. When used in a Server Action, it returns a 303 (See Other), which is commonly used for redirecting to a success page as a result of a POST request.</li>
+<li><code>redirect</code> throws an error so it should be called <strong>outside</strong> the <code>try</code> block when using <code>try/catch</code> statements.</li>
+<li><code>redirect</code> can be called in Client Components during the rendering process but not in event handlers. You can use the <a href="#userouter-hook"><code>useRouter</code> hook</a> instead.</li>
+<li><code>redirect</code> also accepts absolute URLs and can be used to redirect to external links.</li>
+<li>If you’d like to redirect before the render process, use <a href="#redirects-in-nextconfigjs"><code>next.config.js</code></a> or <a href="#nextresponseredirect-in-proxy">Proxy</a>.</li>
+</ul>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/functions/redirect"><code>redirect</code> API reference</a> for more information.</p>
+<h2 id="permanentredirect-function"><code>permanentRedirect</code> function</h2>
+<p>The <code>permanentRedirect</code> function allows you to <strong>permanently</strong> redirect the user to another URL. You can call <code>permanentRedirect</code> in <a href="/docs/app/getting-started/server-and-client-components">Server Components</a>, <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>, and <a href="/docs/app/getting-started/mutating-data">Server Functions</a>.</p>
+<p><code>permanentRedirect</code> is often used after a mutation or event that changes an entity’s canonical URL, such as updating a user’s profile URL after they change their username:</p>
+<pre><code class="language-ts">'use server'
+
+import { permanentRedirect } from 'next/navigation'
+import { revalidateTag } from 'next/cache'
+
+export async function updateUsername(username: string, formData: FormData) {
+  try {
+    // Call database
+  } catch (error) {
+    // Handle errors
+  }
+
+  revalidateTag('username') // Update all references to the username
+  permanentRedirect(`/profile/${username}`) // Navigate to the new user profile
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { permanentRedirect } from 'next/navigation'
+import { revalidateTag } from 'next/cache'
+
+export async function updateUsername(username, formData) {
+  try {
+    // Call database
+  } catch (error) {
+    // Handle errors
+  }
+
+  revalidateTag('username') // Update all references to the username
+  permanentRedirect(`/profile/${username}`) // Navigate to the new user profile
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>permanentRedirect</code> returns a 308 (permanent redirect) status code by default.</li>
+<li><code>permanentRedirect</code> also accepts absolute URLs and can be used to redirect to external links.</li>
+<li>If you’d like to redirect before the render process, use <a href="#redirects-in-nextconfigjs"><code>next.config.js</code></a> or <a href="#nextresponseredirect-in-proxy">Proxy</a>.</li>
+</ul>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/functions/permanentRedirect"><code>permanentRedirect</code> API reference</a> for more information.</p>
+</AppOnly>
+<h2 id="userouter-hook"><code>useRouter()</code> hook</h2>
+<AppOnly>
+<p>If you need to redirect inside an event handler in a Client Component, you can use the <code>push</code> method from the <code>useRouter</code> hook. For example:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useRouter } from 'next/navigation'
+
+export default function Page() {
+  const router = useRouter()
+
+  return (
+    &lt;button type=&quot;button&quot; onClick={() =&gt; router.push('/dashboard')}&gt;
+      Dashboard
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useRouter } from 'next/navigation'
+
+export default function Page() {
+  const router = useRouter()
+
+  return (
+    &lt;button type=&quot;button&quot; onClick={() =&gt; router.push('/dashboard')}&gt;
+      Dashboard
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>If you need to redirect inside a component, you can use the <code>push</code> method from the <code>useRouter</code> hook. For example:</p>
+<pre><code class="language-tsx">import { useRouter } from 'next/router'
+
+export default function Page() {
+  const router = useRouter()
+
+  return (
+    &lt;button type=&quot;button&quot; onClick={() =&gt; router.push('/dashboard')}&gt;
+      Dashboard
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { useRouter } from 'next/router'
+
+export default function Page() {
+  const router = useRouter()
+
+  return (
+    &lt;button type=&quot;button&quot; onClick={() =&gt; router.push('/dashboard')}&gt;
+      Dashboard
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If you don’t need to programmatically navigate a user, you should use a <a href="/docs/app/api-reference/components/link"><code>&lt;Link&gt;</code></a> component.</li>
+</ul>
+</blockquote>
+<AppOnly>
+<p>See the <a href="/docs/app/api-reference/functions/use-router"><code>useRouter</code> API reference</a> for more information.</p>
+</AppOnly>
+<PagesOnly>
+<p>See the <a href="/docs/pages/api-reference/functions/use-router"><code>useRouter</code> API reference</a> for more information.</p>
+</PagesOnly>
+<h2 id="redirects-in-nextconfigjs"><code>redirects</code> in <code>next.config.js</code></h2>
+<p>The <code>redirects</code> option in the <code>next.config.js</code> file allows you to redirect an incoming request path to a different destination path. This is useful when you change the URL structure of pages or have a list of redirects that are known ahead of time.</p>
+<p><code>redirects</code> supports <a href="/docs/app/api-reference/config/next-config-js/redirects#path-matching">path</a>, <a href="/docs/app/api-reference/config/next-config-js/redirects#header-cookie-and-query-matching">header, cookie, and query matching</a>, giving you the flexibility to redirect users based on an incoming request.</p>
+<p>To use <code>redirects</code>, add the option to your <code>next.config.js</code> file:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Basic redirect
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      // Wildcard path matching
+      {
+        source: '/blog/:slug',
+        destination: '/news/:slug',
+        permanent: true,
+      },
+    ]
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  async redirects() {
+    return [
+      // Basic redirect
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      // Wildcard path matching
+      {
+        source: '/blog/:slug',
+        destination: '/news/:slug',
+        permanent: true,
+      },
+    ]
+  },
+}
+</code></pre>
+<p>See the <a href="/docs/app/api-reference/config/next-config-js/redirects"><code>redirects</code> API reference</a> for more information.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>redirects</code> can return a 307 (Temporary Redirect) or 308 (Permanent Redirect) status code with the <code>permanent</code> option.</li>
+<li><code>redirects</code> may have a limit on platforms. For example, on Vercel, there’s a limit of 1,024 redirects. To manage a large number of redirects (1000+), consider creating a custom solution using <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>. See <a href="#managing-redirects-at-scale-advanced">managing redirects at scale</a> for more.</li>
+<li><code>redirects</code> runs <strong>before</strong> Proxy.</li>
+</ul>
+</blockquote>
+<h2 id="nextresponseredirect-in-proxy"><code>NextResponse.redirect</code> in Proxy</h2>
+<p>Proxy allows you to run code before a request is completed. Then, based on the incoming request, redirect to a different URL using <code>NextResponse.redirect</code>. This is useful if you want to redirect users based on a condition (e.g. authentication, session management, etc) or have <a href="#managing-redirects-at-scale-advanced">a large number of redirects</a>.</p>
+<p>For example, to redirect the user to a <code>/login</code> page if they are not authenticated:</p>
+<pre><code class="language-ts">import { NextResponse, NextRequest } from 'next/server'
+import { authenticate } from 'auth-provider'
+
+export function proxy(request: NextRequest) {
+  const isAuthenticated = authenticate(request)
+
+  // If the user is authenticated, continue as normal
+  if (isAuthenticated) {
+    return NextResponse.next()
+  }
+
+  // Redirect to login page if not authenticated
+  return NextResponse.redirect(new URL('/login', request.url))
+}
+
+export const config = {
+  matcher: '/dashboard/:path*',
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+import { authenticate } from 'auth-provider'
+
+export function proxy(request) {
+  const isAuthenticated = authenticate(request)
+
+  // If the user is authenticated, continue as normal
+  if (isAuthenticated) {
+    return NextResponse.next()
+  }
+
+  // Redirect to login page if not authenticated
+  return NextResponse.redirect(new URL('/login', request.url))
+}
+
+export const config = {
+  matcher: '/dashboard/:path*',
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Proxy runs <strong>after</strong> <code>redirects</code> in <code>next.config.js</code> and <strong>before</strong> rendering.</li>
+</ul>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a> documentation for more information.</p>
+<h2 id="managing-redirects-at-scale-advanced">Managing redirects at scale (advanced)</h2>
+<p>To manage a large number of redirects (1000+), you may consider creating a custom solution using Proxy. This allows you to handle redirects programmatically without having to redeploy your application.</p>
+<p>To do this, you’ll need to consider:</p>
+<ol>
+<li>Creating and storing a redirect map.</li>
+<li>Optimizing data lookup performance.</li>
+</ol>
+<blockquote>
+<p><strong>Next.js Example</strong>: See our <a href="https://redirects-bloom-filter.vercel.app/" target="_blank" rel="noopener">Proxy with Bloom filter</a> example for an implementation of the recommendations below.</p>
+</blockquote>
+<h3 id="1-creating-and-storing-a-redirect-map">1. Creating and storing a redirect map</h3>
+<p>A redirect map is a list of redirects that you can store in a database (usually a key-value store) or JSON file.</p>
+<p>Consider the following data structure:</p>
+<pre><code class="language-json">{
+  &quot;/old&quot;: {
+    &quot;destination&quot;: &quot;/new&quot;,
+    &quot;permanent&quot;: true
+  },
+  &quot;/blog/post-old&quot;: {
+    &quot;destination&quot;: &quot;/blog/post-new&quot;,
+    &quot;permanent&quot;: true
+  }
+}
+</code></pre>
+<p>In <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>, you can read from a database such as Vercel’s <a href="https://vercel.com/docs/edge-config/get-started" target="_blank" rel="noopener">Edge Config</a> or <a href="https://vercel.com/docs/redis" target="_blank" rel="noopener">Redis</a>, and redirect the user based on the incoming request:</p>
+<pre><code class="language-ts">import { NextResponse, NextRequest } from 'next/server'
+import { get } from '@vercel/edge-config'
+
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+
+export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const redirectData = await get(pathname)
+
+  if (redirectData &amp;&amp; typeof redirectData === 'string') {
+    const redirectEntry: RedirectEntry = JSON.parse(redirectData)
+    const statusCode = redirectEntry.permanent ? 308 : 307
+    return NextResponse.redirect(redirectEntry.destination, statusCode)
+  }
+
+  // No redirect found, continue without redirecting
+  return NextResponse.next()
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+import { get } from '@vercel/edge-config'
+
+export async function proxy(request) {
+  const pathname = request.nextUrl.pathname
+  const redirectData = await get(pathname)
+
+  if (redirectData) {
+    const redirectEntry = JSON.parse(redirectData)
+    const statusCode = redirectEntry.permanent ? 308 : 307
+    return NextResponse.redirect(redirectEntry.destination, statusCode)
+  }
+
+  // No redirect found, continue without redirecting
+  return NextResponse.next()
+}
+</code></pre>
+<h3 id="2-optimizing-data-lookup-performance">2. Optimizing data lookup performance</h3>
+<p>Reading a large dataset for every incoming request can be slow and expensive. There are two ways you can optimize data lookup performance:</p>
+<ul>
+<li>Use a database that is optimized for fast reads</li>
+<li>Use a data lookup strategy such as a <a href="https://en.wikipedia.org/wiki/Bloom_filter" target="_blank" rel="noopener">Bloom filter</a> to efficiently check if a redirect exists <strong>before</strong> reading the larger redirects file or database.</li>
+</ul>
+<p>Considering the previous example, you can import a generated bloom filter file into Proxy, then, check if the incoming request pathname exists in the bloom filter.</p>
+<p>If it does, forward the request to a <AppOnly><a href="/docs/app/api-reference/file-conventions/route">Route Handler</a></AppOnly> <PagesOnly><a href="/docs/pages/building-your-application/routing/api-routes">API Routes</a></PagesOnly> which will check the actual file and redirect the user to the appropriate URL. This avoids importing a large redirects file into Proxy, which can slow down every incoming request.</p>
+<pre><code class="language-ts">import { NextResponse, NextRequest } from 'next/server'
+import { ScalableBloomFilter } from 'bloom-filters'
+import GeneratedBloomFilter from './redirects/bloom-filter.json'
+
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+
+// Initialize bloom filter from a generated JSON file
+const bloomFilter = ScalableBloomFilter.fromJSON(GeneratedBloomFilter as any)
+
+export async function proxy(request: NextRequest) {
+  // Get the path for the incoming request
+  const pathname = request.nextUrl.pathname
+
+  // Check if the path is in the bloom filter
+  if (bloomFilter.has(pathname)) {
+    // Forward the pathname to the Route Handler
+    const api = new URL(
+      `/api/redirects?pathname=${encodeURIComponent(request.nextUrl.pathname)}`,
+      request.nextUrl.origin
+    )
+
+    try {
+      // Fetch redirect data from the Route Handler
+      const redirectData = await fetch(api)
+
+      if (redirectData.ok) {
+        const redirectEntry: RedirectEntry | undefined =
+          await redirectData.json()
+
+        if (redirectEntry) {
+          // Determine the status code
+          const statusCode = redirectEntry.permanent ? 308 : 307
+
+          // Redirect to the destination
+          return NextResponse.redirect(redirectEntry.destination, statusCode)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // No redirect found, continue the request without redirecting
+  return NextResponse.next()
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+import { ScalableBloomFilter } from 'bloom-filters'
+import GeneratedBloomFilter from './redirects/bloom-filter.json'
+
+// Initialize bloom filter from a generated JSON file
+const bloomFilter = ScalableBloomFilter.fromJSON(GeneratedBloomFilter)
+
+export async function proxy(request) {
+  // Get the path for the incoming request
+  const pathname = request.nextUrl.pathname
+
+  // Check if the path is in the bloom filter
+  if (bloomFilter.has(pathname)) {
+    // Forward the pathname to the Route Handler
+    const api = new URL(
+      `/api/redirects?pathname=${encodeURIComponent(request.nextUrl.pathname)}`,
+      request.nextUrl.origin
+    )
+
+    try {
+      // Fetch redirect data from the Route Handler
+      const redirectData = await fetch(api)
+
+      if (redirectData.ok) {
+        const redirectEntry = await redirectData.json()
+
+        if (redirectEntry) {
+          // Determine the status code
+          const statusCode = redirectEntry.permanent ? 308 : 307
+
+          // Redirect to the destination
+          return NextResponse.redirect(redirectEntry.destination, statusCode)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // No redirect found, continue the request without redirecting
+  return NextResponse.next()
+}
+</code></pre>
+<AppOnly>
+<p>Then, in the Route Handler:</p>
+<pre><code class="language-ts">import { NextRequest, NextResponse } from 'next/server'
+import redirects from '@/app/redirects/redirects.json'
+
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+
+export function GET(request: NextRequest) {
+  const pathname = request.nextUrl.searchParams.get('pathname')
+  if (!pathname) {
+    return new Response('Bad Request', { status: 400 })
+  }
+
+  // Get the redirect entry from the redirects.json file
+  const redirect = (redirects as Record&lt;string, RedirectEntry&gt;)[pathname]
+
+  // Account for bloom filter false positives
+  if (!redirect) {
+    return new Response('No redirect', { status: 400 })
+  }
+
+  // Return the redirect entry
+  return NextResponse.json(redirect)
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+import redirects from '@/app/redirects/redirects.json'
+
+export function GET(request) {
+  const pathname = request.nextUrl.searchParams.get('pathname')
+  if (!pathname) {
+    return new Response('Bad Request', { status: 400 })
+  }
+
+  // Get the redirect entry from the redirects.json file
+  const redirect = redirects[pathname]
+
+  // Account for bloom filter false positives
+  if (!redirect) {
+    return new Response('No redirect', { status: 400 })
+  }
+
+  // Return the redirect entry
+  return NextResponse.json(redirect)
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>Then, in the API Route:</p>
+<pre><code class="language-ts">import type { NextApiRequest, NextApiResponse } from 'next'
+import redirects from '@/app/redirects/redirects.json'
+
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const pathname = req.query.pathname
+  if (!pathname) {
+    return res.status(400).json({ message: 'Bad Request' })
+  }
+
+  // Get the redirect entry from the redirects.json file
+  const redirect = (redirects as Record&lt;string, RedirectEntry&gt;)[pathname]
+
+  // Account for bloom filter false positives
+  if (!redirect) {
+    return res.status(400).json({ message: 'No redirect' })
+  }
+
+  // Return the redirect entry
+  return res.json(redirect)
+}
+</code></pre>
+<pre><code class="language-js">import redirects from '@/app/redirects/redirects.json'
+
+export default function handler(req, res) {
+  const pathname = req.query.pathname
+  if (!pathname) {
+    return res.status(400).json({ message: 'Bad Request' })
+  }
+
+  // Get the redirect entry from the redirects.json file
+  const redirect = redirects[pathname]
+
+  // Account for bloom filter false positives
+  if (!redirect) {
+    return res.status(400).json({ message: 'No redirect' })
+  }
+
+  // Return the redirect entry
+  return res.json(redirect)
+}
+</code></pre>
+</PagesOnly>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>To generate a bloom filter, you can use a library like <a href="https://www.npmjs.com/package/bloom-filters" target="_blank" rel="noopener"><code>bloom-filters</code></a>.</li>
+<li>You should validate requests made to your Route Handler to prevent malicious requests.</li>
+</ul>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

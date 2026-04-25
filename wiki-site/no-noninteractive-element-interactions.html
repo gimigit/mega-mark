@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/no-noninteractive-element-interactions — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-noninteractive-element-interactions">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-do-i-resolve-this-error">How do I resolve this error?</a></li><ul><li><a href="#case-this-element-acts-like-a-button-link-menuitem-etc">Case: This element acts like a button, link, menuitem, etc</a></li><li><a href="#case-this-element-is-catching-bubbled-events-from-elements-that-it-contains">Case: This element is catching bubbled events from elements that it contains</a></li><li><a href="#case-this-is-a-heading-that-expandscollapses-content-on-the-package">Case: This is a heading that expands/collapses content on the package</a></li><li><a href="#case-this-element-is-a-table-cell">Case: This element is a table cell</a></li></ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/no-noninteractive-element-interactions</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Non-interactive HTML elements and non-interactive ARIA roles indicate <em>content</em> and <em>containers</em> in the user interface. A non-interactive element does not support event handlers (mouse and key handlers). Non-interactive elements include <code>&lt;main&gt;</code>, <code>&lt;area&gt;</code>, <code>&lt;h1&gt;</code> (,<code>&lt;h2&gt;</code>, etc), <code>&lt;p&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;ul&gt;</code> and <code>&lt;ol&gt;</code>. Non-interactive <a href="https://www.w3.org/TR/wai-aria-1.1/#usage_intro" target="_blank" rel="noopener">WAI-ARIA roles</a> include <code>article</code>, <code>banner</code>, <code>complementary</code>, <code>img</code>, <code>listitem</code>, <code>main</code>, <code>region</code> and <code>tooltip</code>.</p>
+<h2 id="how-do-i-resolve-this-error">How do I resolve this error?</h2>
+<h3 id="case-this-element-acts-like-a-button-link-menuitem-etc">Case: This element acts like a button, link, menuitem, etc</h3>
+<p>Move the event handler function to an inner element that is either a semantically interactive element (<code>&lt;button&gt;</code>, <code>&lt;a href&gt;</code>) or that has an interactive role. This leaves the <em>content</em> or <em>container</em> semantic value of this element intact.</p>
+<p>Common interactive roles include:</p>
+<ol>
+<li><code>button</code></li>
+<li><code>link</code></li>
+<li><code>checkbox</code></li>
+<li><code>menuitem</code></li>
+<li><code>menuitemcheckbox</code></li>
+<li><code>menuitemradio</code></li>
+<li><code>option</code></li>
+<li><code>radio</code></li>
+<li><code>searchbox</code></li>
+<li><code>switch</code></li>
+<li><code>textbox</code></li>
+</ol>
+<p>Note: Adding a role to your element does <strong>not</strong> add behavior. When a semantic HTML element like <code>&lt;button&gt;</code> is used, then it will also respond to Enter key presses when it has focus. The developer is responsible for providing the expected behavior of an element that the role suggests it would have: focusability and key press support.
+see <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#aria_ex" target="_blank" rel="noopener">WAI-ARIA Authoring Practices Guide - Design Patterns and Widgets</a>.</p>
+<h3 id="case-this-element-is-catching-bubbled-events-from-elements-that-it-contains">Case: This element is catching bubbled events from elements that it contains</h3>
+<p>Move the event handler function to an inner element like <code>&lt;div&gt;</code> and give that element a role of <code>presentation</code>. This leaves the <em>content</em> or <em>container</em> semantic value of this element intact.</p>
+<pre><code class="language-jsx">&lt;div role=&quot;article&quot;&gt;
+  &lt;div
+    onClick=&quot;onClickHandler&quot;
+    onKeyPress={onKeyPressHandler}
+    role=&quot;presentation&quot;&gt;
+    {this.props.children}
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Marking an element with the role <code>presentation</code> indicates to assistive technology that this element should be ignored; it exists to support the web application and is not meant for humans to interact with directly.</p>
+<h3 id="case-this-is-a-heading-that-expandscollapses-content-on-the-package">Case: This is a heading that expands/collapses content on the package</h3>
+<p>Headers often double as expand/collapse controls for the content they headline. An accordion component is a common example of this pattern. Rather than assign the interaction handling code to the heading itself, put a button inside the heading instead. This pattern retains the role of the heading and the role of the button.</p>
+<pre><code class="language-jsx">&lt;h3&gt;
+  &lt;button onClick={this._expandSection}&gt;News&lt;/button&gt;
+&lt;/h3&gt;
+&lt;ul id=&quot;articles-list&quot;&gt;
+  &lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<h3 id="case-this-element-is-a-table-cell">Case: This element is a table cell</h3>
+<p>Table cells (and tables in general) are meant to contain data. ARIA provides us with a construct called a <a href="https://w3c.github.io/aria-practices/#grid" target="_blank" rel="noopener">Grid</a> that is essentially a 2 dimensional logical container for content and interactive elements.</p>
+<p>You have two options in this case.</p>
+<h4>Option 1, move the interactive content inside the table cells</h4>
+<p>For instance, move the button inside the cell:</p>
+<pre><code class="language-jsx">&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;button&gt;Sort&lt;/button&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<p>This preserves the table cell semantics and the button semantics; the two are not conflated on the cell.</p>
+<h4>Option 2, convert the table into an ARIA grid</h4>
+<p>If your user interface has a table-like layout, but is filled with interactive components in the cells, consider converting the table into a grid.</p>
+<pre><code class="language-jsx">&lt;table role=&quot;grid&quot;&gt;
+  &lt;tr&gt;
+    &lt;td role=&quot;gridcell&quot; onClick={this.sort}&gt;Sort&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<p>You can also put the interactive content inside the grid cell. This maintains the semantic distinction between the cell and the interaction content, although a grid cell can be interactive.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>You may configure which handler props should be taken into account when applying this rule. The recommended configuration includes the following 6 handlers.</p>
+<pre><code class="language-javascript">'jsx-a11y/no-noninteractive-element-interactions': [
+  'error',
+  {
+    handlers: [
+      'onClick',
+      'onMouseDown',
+      'onMouseUp',
+      'onKeyPress',
+      'onKeyDown',
+      'onKeyUp',
+    ],
+  },
+],
+</code></pre>
+<p>Adjust the list of handler prop names in the handlers array to increase or decrease the coverage surface of this rule in your codebase.</p>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;div onClick={() =&gt; void 0} role=&quot;button&quot; /&gt;
+&lt;div onClick={() =&gt; void 0} role=&quot;presentation&quot; /&gt;
+&lt;input type=&quot;text&quot; onClick={() =&gt; void 0} /&gt; // Interactive element does not require role.
+&lt;button onClick={() =&gt; void 0} className=&quot;foo&quot; /&gt; // button is interactive.
+&lt;div onClick={() =&gt; void 0} role=&quot;button&quot; aria-hidden /&gt; // This is hidden from screen reader.
+&lt;Input onClick={() =&gt; void 0} type=&quot;hidden&quot; /&gt; // This is a higher-level DOM component
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;li onClick={() =&gt; void 0} /&gt;
+&lt;div onClick={() =&gt; void 0} role=&quot;listitem&quot; /&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/name-role-value" target="_blank" rel="noopener">WCAG 4.1.2</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://www.w3.org/TR/wai-aria-1.1/#usage_intro" target="_blank" rel="noopener">WAI-ARIA roles</a></li>
+<li><a href="https://www.w3.org/TR/wai-aria-practices-1.1/#aria_ex" target="_blank" rel="noopener">WAI-ARIA Authoring Practices Guide - Design Patterns and Widgets</a></li>
+<li><a href="https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_generalnav" target="_blank" rel="noopener">Fundamental Keyboard Navigation Conventions</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_button_role#Keyboard_and_focus" target="_blank" rel="noopener">Mozilla Developer Network - ARIA Techniques</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

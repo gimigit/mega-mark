@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/dynamic-import-chunkname — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-dynamic-import-chunkname">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#invalid">invalid</a></li><li><a href="#valid">valid</a></li><li><a href="#allowempty-true">allowEmpty: true</a></li><li><a href="#valid-1">valid</a></li><li><a href="#invalid-1">invalid</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/dynamic-import-chunkname</h1>
+
+</div>
+<div class="article-body">
+<p>💡 This rule is manually fixable by <a href="https://eslint.org/docs/latest/use/core-concepts#rule-suggestions" target="_blank" rel="noopener">editor suggestions</a>.</p>
+<!-- end auto-generated rule header -->
+<p>This rule reports any dynamic imports without a webpackChunkName specified in a leading block comment in the proper format.</p>
+<p>This rule enforces naming of webpack chunks in dynamic imports. When you don’t explicitly name chunks, webpack will autogenerate chunk names that are not consistent across builds, which prevents long-term browser caching.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule runs against <code>import()</code> by default, but can be configured to also run against an alternative dynamic-import function, e.g. ‘dynamicImport.’
+You can also configure the regex format you’d like to accept for the webpackChunkName - for example, if we don’t want the number 6 to show up in our chunk names:</p>
+<pre><code class="language-javascript">{
+ &quot;import/dynamic-import-chunkname&quot;: [2, {
+   importFunctions: [&quot;dynamicImport&quot;],
+   webpackChunknameFormat: &quot;[a-zA-Z0-57-9-/_]+&quot;,
+   allowEmpty: false
+ }]
+}
+</code></pre>
+<h3 id="invalid">invalid</h3>
+<p>The following patterns are invalid:</p>
+<pre><code class="language-javascript">// no leading comment
+import('someModule');
+
+// incorrectly formatted comment
+import(
+  /*webpackChunkName:&quot;someModule&quot;*/
+  'someModule',
+);
+import(
+  /* webpackChunkName : &quot;someModule&quot; */
+  'someModule',
+);
+
+// chunkname contains a 6 (forbidden by rule config)
+import(
+  /* webpackChunkName: &quot;someModule6&quot; */
+  'someModule',
+);
+
+// invalid syntax for webpack comment
+import(
+  /* totally not webpackChunkName: &quot;someModule&quot; */
+  'someModule',
+);
+
+// single-line comment, not a block-style comment
+import(
+  // webpackChunkName: &quot;someModule&quot;
+  'someModule',
+);
+
+// chunk names are disallowed when eager mode is set
+import(
+  /* webpackMode: &quot;eager&quot; */
+  /* webpackChunkName: &quot;someModule&quot; */
+  'someModule',
+)
+</code></pre>
+<h3 id="valid">valid</h3>
+<p>The following patterns are valid:</p>
+<pre><code class="language-javascript">  import(
+    /* webpackChunkName: &quot;someModule&quot; */
+    'someModule',
+  );
+  import(
+    /* webpackChunkName: &quot;someOtherModule12345789&quot; */
+    'someModule',
+  );
+  import(
+    /* webpackChunkName: &quot;someModule&quot; */
+    /* webpackPrefetch: true */
+    'someModule',
+  );
+  import(
+    /* webpackChunkName: &quot;someModule&quot;, webpackPrefetch: true */
+    'someModule',
+  );
+
+  // using single quotes instead of double quotes
+  import(
+    /* webpackChunkName: 'someModule' */
+    'someModule',
+  );
+</code></pre>
+<h3 id="allowempty-true"><code>allowEmpty: true</code></h3>
+<p>If you want to allow dynamic imports without a webpackChunkName, you can set <code>allowEmpty: true</code> in the rule config. This will allow dynamic imports without a leading comment, or with a leading comment that does not contain a webpackChunkName.</p>
+<p>Given <code>{ &quot;allowEmpty&quot;: true }</code>:</p>
+<!-- markdownlint-disable-next-line MD024 -- duplicate header -->
+<h3 id="valid-1">valid</h3>
+<p>The following patterns are valid:</p>
+<pre><code class="language-javascript">import('someModule');
+
+import(
+  /* webpackChunkName: &quot;someModule&quot; */
+  'someModule',
+);
+</code></pre>
+<!-- markdownlint-disable-next-line MD024 -- duplicate header -->
+<h3 id="invalid-1">invalid</h3>
+<p>The following patterns are invalid:</p>
+<pre><code class="language-javascript">// incorrectly formatted comment
+import(
+  /*webpackChunkName:&quot;someModule&quot;*/
+  'someModule',
+);
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you don’t care that webpack will autogenerate chunk names and may blow up browser caches and bundle size reports.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

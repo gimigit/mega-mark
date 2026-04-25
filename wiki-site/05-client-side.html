@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>05-client-side — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-05-client-side">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#client-side-data-fetching-with-useeffect">Client-side data fetching with useEffect</a></li><li><a href="#client-side-data-fetching-with-swr">Client-side data fetching with SWR</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">05-client-side</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn about client-side data fetching, and how to use SWR, a data fetching React Hook library that handles caching, revalidation, focus tracking, refetching on interval and more.</td></tr></table><p>Client-side data fetching is useful when your page doesn’t require SEO indexing, when you don’t need to prerender your data, or when the content of your pages needs to update frequently. Unlike the server-side rendering APIs, you can use client-side data fetching at the component level.</p>
+<p>If done at the page level, the data is fetched at runtime, and the content of the page is updated as the data changes. When used at the component level, the data is fetched at the time of the component mount, and the content of the component is updated as the data changes.</p>
+<p>It’s important to note that using client-side data fetching can affect the performance of your application and the load speed of your pages. This is because the data fetching is done at the time of the component or pages mount, and the data is not cached.</p>
+<h2 id="client-side-data-fetching-with-useeffect">Client-side data fetching with useEffect</h2>
+<p>The following example shows how you can fetch data on the client side using the useEffect hook.</p>
+<pre><code class="language-jsx">import { useState, useEffect } from 'react'
+
+function Profile() {
+  const [data, setData] = useState(null)
+  const [isLoading, setLoading] = useState(true)
+
+  useEffect(() =&gt; {
+    fetch('/api/profile-data')
+      .then((res) =&gt; res.json())
+      .then((data) =&gt; {
+        setData(data)
+        setLoading(false)
+      })
+  }, [])
+
+  if (isLoading) return &lt;p&gt;Loading...&lt;/p&gt;
+  if (!data) return &lt;p&gt;No profile data&lt;/p&gt;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{data.name}&lt;/h1&gt;
+      &lt;p&gt;{data.bio}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="client-side-data-fetching-with-swr">Client-side data fetching with SWR</h2>
+<p>The team behind Next.js has created a React Hook library for data fetching called <a href="https://swr.vercel.app/" target="_blank" rel="noopener"><strong>SWR</strong></a>. It is <strong>highly recommended</strong> if you are fetching data on the client-side. It handles caching, revalidation, focus tracking, refetching on intervals, and more.</p>
+<p>Using the same example as above, we can now use SWR to fetch the profile data. SWR will automatically cache the data for us and will revalidate the data if it becomes stale.</p>
+<p>For more information on using SWR, check out the <a href="https://swr.vercel.app/docs/getting-started" target="_blank" rel="noopener">SWR docs</a>.</p>
+<pre><code class="language-jsx">import useSWR from 'swr'
+
+const fetcher = (...args) =&gt; fetch(...args).then((res) =&gt; res.json())
+
+function Profile() {
+  const { data, error } = useSWR('/api/profile-data', fetcher)
+
+  if (error) return &lt;div&gt;Failed to load&lt;/div&gt;
+  if (!data) return &lt;div&gt;Loading...&lt;/div&gt;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{data.name}&lt;/h1&gt;
+      &lt;p&gt;{data.bio}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

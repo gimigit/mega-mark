@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>accessibility — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-accessibility">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#route-announcements">Route Announcements</a></li><li><a href="#linting">Linting</a></li><li><a href="#accessibility-resources">Accessibility Resources</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">accessibility</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>The built-in accessibility features of Next.js.</td></tr></table><p>The Next.js team is committed to making Next.js accessible to all developers (and their end-users). By adding accessibility features to Next.js by default, we aim to make the Web more inclusive for everyone.</p>
+<h2 id="route-announcements">Route Announcements</h2>
+<p>When transitioning between pages rendered on the server (e.g. using the <code>&lt;a href&gt;</code> tag) screen readers and other assistive technology announce the page title when the page loads so that users understand that the page has changed.</p>
+<p>In addition to traditional page navigations, Next.js also supports client-side transitions for improved performance (using <code>next/link</code>). To ensure that client-side transitions are also announced to assistive technology, Next.js includes a route announcer by default.</p>
+<p>The Next.js route announcer looks for the page name to announce by first inspecting <code>document.title</code>, then the <code>&lt;h1&gt;</code> element, and finally the URL pathname. For the most accessible user experience, ensure that each page in your application has a unique and descriptive title.</p>
+<h2 id="linting">Linting</h2>
+<p>Next.js provides an <a href="/docs/pages/api-reference/config/eslint">integrated ESLint experience</a> out of the box, including custom rules for Next.js. By default, Next.js includes <code>eslint-plugin-jsx-a11y</code> to help catch accessibility issues early, including warning on:</p>
+<ul>
+<li><a href="https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/aria-props.md?rgh-link-date=2021-06-04T02%3A10%3A36Z" target="_blank" rel="noopener">aria-props</a></li>
+<li><a href="https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/aria-proptypes.md?rgh-link-date=2021-06-04T02%3A10%3A36Z" target="_blank" rel="noopener">aria-proptypes</a></li>
+<li><a href="https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/aria-unsupported-elements.md?rgh-link-date=2021-06-04T02%3A10%3A36Z" target="_blank" rel="noopener">aria-unsupported-elements</a></li>
+<li><a href="https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/role-has-required-aria-props.md?rgh-link-date=2021-06-04T02%3A10%3A36Z" target="_blank" rel="noopener">role-has-required-aria-props</a></li>
+<li><a href="https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/role-supports-aria-props.md?rgh-link-date=2021-06-04T02%3A10%3A36Z" target="_blank" rel="noopener">role-supports-aria-props</a></li>
+</ul>
+<p>For example, this plugin helps ensure you add alt text to <code>img</code> tags, use correct <code>aria-*</code> attributes, use correct <code>role</code> attributes, and more.</p>
+<h2 id="accessibility-resources">Accessibility Resources</h2>
+<ul>
+<li><a href="https://webaim.org/standards/wcag/checklist" target="_blank" rel="noopener">WebAIM WCAG checklist</a></li>
+<li><a href="https://www.w3.org/TR/WCAG22/" target="_blank" rel="noopener">WCAG 2.2 Guidelines</a></li>
+<li><a href="https://www.a11yproject.com/" target="_blank" rel="noopener">The A11y Project</a></li>
+<li>Check <a href="https://developer.mozilla.org/docs/Web/Accessibility/Understanding_WCAG/Perceivable/Color_contrast" target="_blank" rel="noopener">color contrast ratios</a> between foreground and background elements</li>
+<li>Use <a href="https://web.dev/prefers-reduced-motion/" target="_blank" rel="noopener"><code>prefers-reduced-motion</code></a> when working with animations</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

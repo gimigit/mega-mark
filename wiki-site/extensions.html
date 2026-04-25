@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/extensions — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-extensions">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#pathgroupoverride">PathGroupOverride</a></li><li><a href="#exception">Exception</a></li><li><a href="#examples">Examples</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/extensions</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Some file resolve algorithms allow you to omit the file extension within the import source path. For example the <code>node</code> resolver (which does not yet support ESM/<code>import</code>) can resolve <code>./foo/bar</code> to the absolute path <code>/User/someone/foo/bar.js</code> because the <code>.js</code> extension is resolved automatically by default in CJS. Depending on the resolver you can configure more extensions to get resolved automatically.</p>
+<p>In order to provide a consistent use of file extensions across your code base, this rule can enforce or disallow the use of certain file extensions.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule either takes one string option, one object option, or a string and an object option. If it is the string <code>&quot;never&quot;</code> (the default value), then the rule forbids the use for any extension. If it is the string <code>&quot;always&quot;</code>, then the rule enforces the use of extensions for all import statements. If it is the string <code>&quot;ignorePackages&quot;</code>, then the rule enforces the use of extensions for all import statements except package imports.</p>
+<pre><code class="language-jsonc">&quot;import/extensions&quot;: [&lt;severity&gt;, &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;]
+</code></pre>
+<p>By providing an object you can configure each extension separately.</p>
+<pre><code class="language-jsonc">&quot;import/extensions&quot;: [&lt;severity&gt;, {
+  &lt;extension&gt;: &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;
+}]
+</code></pre>
+<p>For example <code>{ &quot;js&quot;: &quot;always&quot;, &quot;json&quot;: &quot;never&quot; }</code> would always enforce the use of the <code>.js</code> extension but never allow the use of the <code>.json</code> extension.</p>
+<p>By providing both a string and an object, the string will set the default setting for all extensions, and the object can be used to set granular overrides for specific extensions.</p>
+<pre><code class="language-jsonc">&quot;import/extensions&quot;: [
+  &lt;severity&gt;,
+  &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;,
+  {
+    &lt;extension&gt;: &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;
+  }
+]
+</code></pre>
+<p>For example, <code>[&quot;error&quot;, &quot;never&quot;, { &quot;svg&quot;: &quot;always&quot; }]</code> would require that all extensions are omitted, except for “svg”.</p>
+<p><code>ignorePackages</code> can be set as a separate boolean option like this:</p>
+<pre><code class="language-jsonc">&quot;import/extensions&quot;: [
+  &lt;severity&gt;,
+  &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;,
+  {
+    ignorePackages: true | false,
+    pattern: {
+      &lt;extension&gt;: &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;
+    }
+  }
+]
+</code></pre>
+<p>In that case, if you still want to specify extensions, you can do so inside the <strong>pattern</strong> property.
+Default value of <code>ignorePackages</code> is <code>false</code>.</p>
+<p>By default, <code>import type</code> and <code>export type</code> style imports/exports are ignored. If you want to check them as well, you can set the <code>checkTypeImports</code> option to <code>true</code>.</p>
+<p>Unfortunately, in more advanced linting setups, such as when employing custom specifier aliases (e.g. you’re using <code>eslint-import-resolver-alias</code>, <code>paths</code> in <code>tsconfig.json</code>, etc), this rule can be too coarse-grained when determining which imports to ignore and on which to enforce the config.
+This is especially troublesome if you have import specifiers that <a href="./order.md#how-imports-are-grouped">look like externals or builtins</a>.</p>
+<p>Set <code>pathGroupOverrides</code> to force this rule to always ignore certain imports and never ignore others.
+<code>pathGroupOverrides</code> accepts an array of one or more <a href="#pathgroupoverride"><code>PathGroupOverride</code></a> objects.</p>
+<p>For example:</p>
+<pre><code class="language-jsonc">&quot;import/extensions&quot;: [
+  &lt;severity&gt;,
+  &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;,
+  {
+    ignorePackages: true | false,
+    pattern: {
+      &lt;extension&gt;: &quot;never&quot; | &quot;always&quot; | &quot;ignorePackages&quot;
+    },
+    pathGroupOverrides: [
+      {
+        pattern: &quot;package-name-to-ignore&quot;,
+        action: &quot;ignore&quot;,
+      },
+      {
+        pattern: &quot;bespoke+alias:{*,*/**}&quot;,
+        action: &quot;enforce&quot;,
+      }
+    ]
+  }
+]
+</code></pre>
+<blockquote>
+<p>[!NOTE]</p>
+<p><code>pathGroupOverrides</code> is inspired by <a href="./order.md#pathgroups"><code>pathGroups</code> in <code>'import/order'</code></a> and shares a similar interface.
+If you’re using <code>pathGroups</code> already, you may find <code>pathGroupOverrides</code> very useful.</p>
+</blockquote>
+<h3 id="pathgroupoverride"><code>PathGroupOverride</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">property</th>
+<th style="text-align:center">required</th>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>pattern</code></td>
+<td style="text-align:center">☑️</td>
+<td style="text-align:center"><code>string</code></td>
+<td><a href="https://www.npmjs.com/package/minimatch#features" target="_blank" rel="noopener">Minimatch pattern</a> for specifier matching</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>patternOptions</code></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"><code>object</code></td>
+<td><a href="https://www.npmjs.com/package/minimatch#options" target="_blank" rel="noopener">Minimatch options</a>; default: <code>{nocomment: true}</code></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>action</code></td>
+<td style="text-align:center">☑️</td>
+<td style="text-align:center"><code>&quot;enforce&quot; | &quot;ignore&quot;</code></td>
+<td>What action to take on imports whose specifiers match <code>pattern</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="exception">Exception</h3>
+<p>When disallowing the use of certain extensions this rule makes an exception and allows the use of extension when the file would not be resolvable without extension.</p>
+<p>For example, given the following folder structure:</p>
+<pre><code class="language-pt">├── foo
+│   ├── bar.js
+│   ├── bar.json
+</code></pre>
+<p>and this import statement:</p>
+<pre><code class="language-js">import bar from './foo/bar.json';
+</code></pre>
+<p>then the extension can’t be omitted because it would then resolve to <code>./foo/bar.js</code>.</p>
+<h3 id="examples">Examples</h3>
+<p>The following patterns are considered problems when configuration set to “never”:</p>
+<pre><code class="language-js">import foo from './foo.js';
+
+import bar from './bar.json';
+
+import Component from './Component.jsx';
+
+import express from 'express/index.js';
+</code></pre>
+<p>The following patterns are not considered problems when configuration set to “never”:</p>
+<pre><code class="language-js">import foo from './foo';
+
+import bar from './bar';
+
+import Component from './Component';
+
+import express from 'express/index';
+
+import * as path from 'path';
+</code></pre>
+<p>The following patterns are considered problems when the configuration is set to “never” and the option “checkTypeImports” is set to <code>true</code>:</p>
+<pre><code class="language-js">import type { Foo } from './foo.ts';
+
+export type { Foo } from './foo.ts';
+</code></pre>
+<p>The following patterns are considered problems when configuration set to “always”:</p>
+<pre><code class="language-js">import foo from './foo';
+
+import bar from './bar';
+
+import Component from './Component';
+
+import foo from '@/foo';
+</code></pre>
+<p>The following patterns are not considered problems when configuration set to “always”:</p>
+<pre><code class="language-js">import foo from './foo.js';
+
+import bar from './bar.json';
+
+import Component from './Component.jsx';
+
+import * as path from 'path';
+
+import foo from '@/foo.js';
+</code></pre>
+<p>The following patterns are considered problems when configuration set to “ignorePackages”:</p>
+<pre><code class="language-js">import foo from './foo';
+
+import bar from './bar';
+
+import Component from './Component';
+
+</code></pre>
+<p>The following patterns are not considered problems when configuration set to “ignorePackages”:</p>
+<pre><code class="language-js">import foo from './foo.js';
+
+import bar from './bar.json';
+
+import Component from './Component.jsx';
+
+import express from 'express';
+
+import foo from '@/foo'
+</code></pre>
+<p>The following patterns are not considered problems when configuration set to <code>['error', 'always', {ignorePackages: true} ]</code>:</p>
+<pre><code class="language-js">import Component from './Component.jsx';
+
+import baz from 'foo/baz.js';
+
+import express from 'express';
+
+import foo from '@/foo';
+</code></pre>
+<p>The following patterns are considered problems when the configuration is set to “always” and the option “checkTypeImports” is set to <code>true</code>:</p>
+<pre><code class="language-js">import type { Foo } from './foo';
+
+export type { Foo } from './foo';
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you are not concerned about a consistent usage of file extension.</p>
+<p>In the future, when this rule supports native node ESM resolution, and the plugin is configured to use native rather than transpiled ESM (a config option that is not yet available) - setting this to <code>always</code> will have no effect.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

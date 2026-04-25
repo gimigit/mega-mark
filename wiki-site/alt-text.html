@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/alt-text — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-alt-text">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-to-resolve">How to resolve</a></li><ul><li><a href="#ltimggt">&amp;lt;img&amp;gt;</a></li><li><a href="#ltobjectgt">&amp;lt;object&amp;gt;</a></li><li><a href="#ltinput-typequotimagequotgt">&amp;lt;input type=&amp;quot;image&amp;quot;&amp;gt;</a></li><li><a href="#ltareagt">&amp;lt;area&amp;gt;</a></li></ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/alt-text</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Enforce that all elements that require alternative text have meaningful information to relay back to the end user. This is a critical component of accessibility for screen reader users in order for them to understand the content’s purpose on the page. By default, this rule checks for alternative text on the following elements: <code>&lt;img&gt;</code>, <code>&lt;area&gt;</code>, <code>&lt;input type=&quot;image&quot;&gt;</code>, and <code>&lt;object&gt;</code>.</p>
+<h2 id="how-to-resolve">How to resolve</h2>
+<h3 id="ltimggt"><code>&lt;img&gt;</code></h3>
+<p>An <code>&lt;img&gt;</code> must have the <code>alt</code> prop set with meaningful text or as an empty string to indicate that it is an image for decoration.</p>
+<p>For images that are being used as icons for a button or control, the <code>alt</code> prop should be set to an empty string (<code>alt=&quot;&quot;</code>).</p>
+<pre><code class="language-jsx">&lt;button&gt;
+  &lt;img src=&quot;icon.png&quot; alt=&quot;&quot; /&gt;
+  Save
+
+&lt;/button&gt;
+</code></pre>
+<p>The content of an <code>alt</code> attribute is used to calculate the accessible label of an element, whereas the text content is used to produce a label for the element. For this reason, adding a label to an icon can produce a confusing or duplicated label on a control that already has appropriate text content.</p>
+<h3 id="ltobjectgt"><code>&lt;object&gt;</code></h3>
+<p>Add alternative text to all embedded <code>&lt;object&gt;</code> elements using either inner text, setting the <code>title</code> prop, or using the <code>aria-label</code> or <code>aria-labelledby</code> props.</p>
+<h3 id="ltinput-typequotimagequotgt"><code>&lt;input type=&quot;image&quot;&gt;</code></h3>
+<p>All <code>&lt;input type=&quot;image&quot;&gt;</code> elements must have a non-empty <code>alt</code> prop set with a meaningful description of the image or have the <code>aria-label</code> or <code>aria-labelledby</code> props set.</p>
+<h3 id="ltareagt"><code>&lt;area&gt;</code></h3>
+<p>All clickable <code>&lt;area&gt;</code> elements within an image map have an <code>alt</code>, <code>aria-label</code> or <code>aria-labelledby</code> prop that describes the purpose of the link.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>This rule takes one optional object argument of type object:</p>
+<pre><code class="language-json">{
+    &quot;rules&quot;: {
+        &quot;jsx-a11y/alt-text&quot;: [ 2, {
+            &quot;elements&quot;: [ &quot;img&quot;, &quot;object&quot;, &quot;area&quot;, &quot;input[type=\&quot;image\&quot;]&quot; ],
+            &quot;img&quot;: [&quot;Image&quot;],
+            &quot;object&quot;: [&quot;Object&quot;],
+            &quot;area&quot;: [&quot;Area&quot;],
+            &quot;input[type=\&quot;image\&quot;]&quot;: [&quot;InputImage&quot;]
+          }],
+    }
+}
+</code></pre>
+<p>The <code>elements</code> option is a whitelist for DOM elements to check for alternative text. If an element is removed from the default set of elements (noted above), any custom components for that component will also be ignored. In order to indicate any custom wrapper components that should be checked, you can map the DOM element to an array of JSX custom components. This is a good use case when you have a wrapper component that simply renders an <code>img</code> element, for instance (like in React):</p>
+<pre><code class="language-jsx">// Image.js
+const Image = props =&gt; {
+  const {
+    alt,
+    ...otherProps
+  } = props;
+
+  return (
+    &lt;img alt={alt} {...otherProps} /&gt;
+  );
+}
+
+...
+
+// Header.js (for example)
+...
+return (
+  &lt;header&gt;
+    &lt;Image alt=&quot;Logo&quot; src=&quot;logo.jpg&quot; /&gt;
+  &lt;/header&gt;
+
+);
+</code></pre>
+<p>Note that passing props as spread attribute without explicitly the necessary accessibility props defined will cause this rule to fail. Explicitly pass down the set of props needed for rule to pass. Use <code>Image</code> component above as a reference for destructuring and applying the prop. <strong>It is a good thing to explicitly pass props that you expect to be passed for self-documentation.</strong> For example:</p>
+<h4>Bad</h4>
+<pre><code class="language-jsx">function Foo(props) {
+  return &lt;img {...props} /&gt;
+}
+</code></pre>
+<h4>Good</h4>
+<pre><code class="language-jsx">function Foo({ alt, ...props}) {
+    return &lt;img alt={alt} {...props} /&gt;
+}
+
+// OR
+
+function Foo(props) {
+    const {
+        alt,
+
+        ...otherProps
+    } = props;
+
+   return &lt;img alt={alt} {...otherProps} /&gt;
+}
+</code></pre>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;img src=&quot;foo&quot; alt=&quot;Foo eating a sandwich.&quot; /&gt;
+&lt;img src=&quot;foo&quot; alt={&quot;Foo eating a sandwich.&quot;} /&gt;
+&lt;img src=&quot;foo&quot; alt={altText} /&gt;
+&lt;img src=&quot;foo&quot; alt={`${person} smiling`} /&gt;
+&lt;img src=&quot;foo&quot; alt=&quot;&quot; /&gt;
+
+&lt;object aria-label=&quot;foo&quot; /&gt;
+&lt;object aria-labelledby=&quot;id1&quot; /&gt;
+&lt;object&gt;Meaningful description&lt;/object&gt;
+&lt;object title=&quot;An object&quot; /&gt;
+
+&lt;area aria-label=&quot;foo&quot; /&gt;
+&lt;area aria-labelledby=&quot;id1&quot; /&gt;
+
+&lt;area alt=&quot;This is descriptive!&quot; /&gt;
+
+&lt;input type=&quot;image&quot; alt=&quot;This is descriptive!&quot; /&gt;
+&lt;input type=&quot;image&quot; aria-label=&quot;foo&quot; /&gt;
+&lt;input type=&quot;image&quot; aria-labelledby=&quot;id1&quot; /&gt;
+
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;img src=&quot;foo&quot; /&gt;
+&lt;img {...props} /&gt;
+&lt;img {...props} alt /&gt; // Has no value
+&lt;img {...props} alt={undefined} /&gt; // Has no value
+&lt;img {...props} alt={`${undefined}`} /&gt; // Has no value
+&lt;img src=&quot;foo&quot; role=&quot;presentation&quot; /&gt; // Avoid ARIA if it can be achieved without
+
+&lt;img src=&quot;foo&quot; role=&quot;none&quot; /&gt; // Avoid ARIA if it can be achieved without
+
+&lt;object {...props} /&gt;
+
+
+&lt;area {...props} /&gt;
+
+&lt;input type=&quot;image&quot; {...props} /&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/non-text-content.html" target="_blank" rel="noopener">WCAG 1.1.1</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://dequeuniversity.com/rules/axe/3.2/object-alt" target="_blank" rel="noopener">axe-core, object-alt</a></li>
+<li><a href="https://dequeuniversity.com/rules/axe/3.2/image-alt" target="_blank" rel="noopener">axe-core, image-alt</a></li>
+<li><a href="https://dequeuniversity.com/rules/axe/3.2/input-image-alt" target="_blank" rel="noopener">axe-core, input-image-alt</a></li>
+<li><a href="https://dequeuniversity.com/rules/axe/3.2/area-alt" target="_blank" rel="noopener">axe-core, area-alt</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

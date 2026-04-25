@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CLAUDE.md — Mega-Mark Agricultural Marketplace — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-claude">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#proiect">Proiect</a></li><li><a href="#plan-detaliat">Plan detaliat</a></li><li><a href="#structura-proiectului">Structura proiectului</a></li><li><a href="#reguli-de-lucru">Reguli de lucru</a></li><ul><li><a href="#git-amp-commits">Git &amp;amp; Commits</a></li><li><a href="#cod">Cod</a></li><li><a href="#baza-de-date">Baza de date</a></li><li><a href="#design-system">Design System</a></li></ul><li><a href="#note-tehnice-gotchas">Note tehnice (gotchas)</a></li><li><a href="#environment-variables-vercel">Environment variables (Vercel)</a></li><li><a href="#db-schema-tabele">DB Schema (tabele)</a></li><li><a href="#cli-tools-disponibile-local">CLI Tools disponibile local</a></li><li><a href="#claude-code-tools-instalate-18-apr-2026">Claude Code Tools instalate (18 Apr 2026)</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">CLAUDE.md — Mega-Mark Agricultural Marketplace</h1>
+
+</div>
+<div class="article-body">
+<h2 id="proiect">Proiect</h2>
+<p><strong>Mega-Mark</strong> — Marketplace agricol premium pentru Romania si UE.</p>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/gimigit/mega-mark" target="_blank" rel="noopener">https://github.com/gimigit/mega-mark</a></li>
+<li><strong>Live:</strong> <a href="https://mega-mark-five.vercel.app" target="_blank" rel="noopener">https://mega-mark-five.vercel.app</a></li>
+<li><strong>Stack:</strong> Next.js 16 + TypeScript + Tailwind + shadcn/ui + Framer Motion + Zustand + Supabase + Stripe + Resend</li>
+<li><strong>Deploy:</strong> Vercel (auto-deploy la push pe <code>main</code>)</li>
+<li><strong>Supabase project:</strong> <code>4sale</code> (ref: <code>aexqwefkytwmppeyxlvg</code>, region: eu-west-1)</li>
+</ul>
+<h2 id="plan-detaliat">Plan detaliat</h2>
+<p>Citeste <code>PLAN.md</code> pentru toate fazele de dezvoltare si status curent.</p>
+<h2 id="structura-proiectului">Structura proiectului</h2>
+<pre><code>src/
+├── app/              # Next.js App Router (pages + API routes)
+├── components/       # Componente React reutilizabile
+│   └── ui/           # shadcn/ui components (button, card, input, etc.)
+├── hooks/            # React hooks custom (useMessages, useNotifications)
+├── emails/           # Template-uri email (React Email + Resend)
+├── store/            # Zustand stores (favorites, unread count, UI state)
+├── lib/
+│   ├── supabase/     # client.ts, server.ts, admin.ts, config.ts, middleware.ts
+│   ├── stripe.ts     # Lazy Proxy pattern
+│   ├── categories.ts # Lucide icon map + EU countries + manufacturers
+│   ├── email.ts      # Resend wrapper
+│   ├── upload.ts     # Supabase Storage upload
+│   └── utils.ts      # cn() helper
+└── types/
+    └── database.ts   # Tipuri TypeScript generate din Supabase
+supabase/
+├── migrations/       # Migratii SQL (prefix timestamp obligatoriu)
+├── schema.sql        # Schema completa (aplicata pe DB)
+└── config.toml       # Supabase CLI config
+</code></pre>
+<h2 id="reguli-de-lucru">Reguli de lucru</h2>
+<h3 id="git-amp-commits">Git &amp; Commits</h3>
+<ul>
+<li>Commit-uri in engleza, format conventional: <code>feat:</code>, <code>fix:</code>, <code>chore:</code>, <code>docs:</code></li>
+<li>Un commit per feature/fix</li>
+<li>NU comite <code>.env</code>, <code>.env.local</code>, chei API sau date sensibile</li>
+<li><code>git status</code> inainte de commit</li>
+<li><code>npm run build</code> inainte de push</li>
+</ul>
+<h3 id="cod">Cod</h3>
+<ul>
+<li>TypeScript strict — fara <code>any</code> fara motiv</li>
+<li>shadcn/ui pentru UI — nu reinventa butoane, inputs</li>
+<li>Lucide React pentru iconite — nu emoji</li>
+<li>Supabase client: <code>src/lib/supabase/client.ts</code>; server: <code>src/lib/supabase/server.ts</code>; admin: <code>admin.ts</code></li>
+<li>Imagini: <code>next/image</code> (nu <code>&lt;img&gt;</code>)</li>
+<li>Category icons: <code>src/lib/categories.ts</code> → <code>getCategoryIcon(slug)</code></li>
+<li>Animatii: Framer Motion (<code>motion.div</code>, <code>AnimatePresence</code>) — nu CSS keyframes pentru interactiuni complexe</li>
+<li>State global client: Zustand (<code>src/store/</code>) — favorites set, unread count, UI flags</li>
+<li>Fonturi: <code>next/font/google</code> (Fraunces = display/headings, DM Sans = body) — nu import CSS Google direct</li>
+</ul>
+<h3 id="baza-de-date">Baza de date</h3>
+<ul>
+<li>Schema completa in <code>supabase/schema.sql</code> — aplicata pe DB (16 Apr 2026)</li>
+<li>Schimbari schema → fisier nou in <code>supabase/migrations/</code> (format: <code>00N_descriere.sql</code>)</li>
+<li>NU modifica migratii existente — adauga fisiere noi</li>
+<li>RLS activ pe toate tabelele — policies definite</li>
+<li>Soft delete (<code>deleted_at</code>) — nu sterge date</li>
+<li>Conectare: pooler <code>aws-0-eu-west-1.pooler.supabase.com:6543</code></li>
+</ul>
+<h3 id="design-system">Design System</h3>
+<ul>
+<li>CSS variables in <code>globals.css</code> (shadcn standard: <code>--background</code>, <code>--foreground</code>, etc.)</li>
+<li>Tailwind semantic colors: <code>bg-background</code>, <code>text-foreground</code>, <code>bg-surface</code>, <code>text-muted-foreground</code></li>
+<li>Brand colors: green-700/800 (primary), amber-400/500 (accent)</li>
+<li>Dark mode: class-based (<code>dark:</code> prefix)</li>
+<li>Fonturi: <code>--font-display</code> (Fraunces) pe H1/H2/logo, <code>--font-body</code> (DM Sans) pe body/UI</li>
+<li>Animatii: staggered reveal pe grids (Framer Motion variants), hover Y-4 + shadow pe cards</li>
+</ul>
+<h2 id="note-tehnice-gotchas">Note tehnice (gotchas)</h2>
+<ol>
+<li><strong>Supabase la build time</strong> — <code>config.ts</code> returneaza placeholders daca env vars lipsesc. NU arunca erori la build.</li>
+<li><strong>Stripe lazy init</strong> — Proxy pattern in <code>src/lib/stripe.ts</code>. NU initializa Stripe la import time.</li>
+<li><strong><code>force-dynamic</code></strong> — toate paginile cu DB calls. Altfel build crapa pe Vercel.</li>
+<li><strong><code>generateStaticParams</code></strong> — NU apela DB acolo (ruleaza la build time).</li>
+<li><strong>Supabase Realtime</strong> — activeaza pe tabelele <code>messages</code> si <code>notifications</code> in Dashboard → Database → Replication.</li>
+<li><strong>Admin role</strong> — seteaza manual: <code>UPDATE profiles SET role='admin' WHERE email='...'</code></li>
+<li><strong>Stripe webhooks</strong> — in dev: <code>stripe listen --forward-to localhost:3000/api/stripe/webhook</code></li>
+<li><strong>Vercel IPv4 + Supabase IPv6</strong> — foloseste pooler connection string (<code>DATABASE_URL</code>)</li>
+<li><strong>Seed endpoint</strong> — <code>/api/seed</code> foloseste <code>createAdminClient()</code> (bypass RLS). Ruleaza o singura data.</li>
+<li><strong>DB schema</strong> — Schema veche 4sale a fost inlocuita complet cu schema Mega-Mark (16 Apr 2026). Migratia 009 (fix trigger mesaje) e in repo dar trebuie aplicata manual pe DB.</li>
+<li><strong>Conversations FK joins</strong> — Supabase nu rezolva ambiguitatea pe FK-uri duble spre aceeasi tabela. Foloseste sintaxa explicita: <code>buyer:profiles!conversations_buyer_id_fkey(...)</code>.</li>
+<li><strong><code>next/og</code></strong> — OG image dinamica per listing: <code>src/app/listings/[id]/opengraph-image.tsx</code> cu <code>ImageResponse</code>. Runtime: nodejs.</li>
+<li><strong>Zustand store</strong> — la creare: <code>src/store/useFavoritesStore.ts</code>, <code>src/store/useUIStore.ts</code>. Nu pune logica DB in store — doar state UI.</li>
+<li><strong>Next.js route exports</strong> — DOAR <code>GET POST PUT PATCH DELETE HEAD OPTIONS</code> sunt valide. Orice alt export (ex: <code>BUMP</code>) e ignorat silentios → 405. Endpoint-uri separate = fisiere separate (<code>/bump/route.ts</code>).</li>
+<li><strong>Supabase FK join column</strong> — Sintaxa <code>profiles:seller_id(...)</code> foloseste numele coloanei din tabel (nu numele tabelului). Verifica <code>supabase/schema.sql</code> inainte. <code>owner_id</code> NU exista — coloana e <code>seller_id</code>.</li>
+<li><strong>Supabase TypeScript join types</strong> — Joined rows au tip ambiguu. Foloseste <code>as unknown as MyType[]</code> cu interfata explicita care reflecta structura din query. Nu folosi <code>as any</code>.</li>
+<li><strong>Messages schema</strong> — <code>messages</code> table NU are <code>receiver_id</code> sau <code>listing_id</code>. Are: <code>conversation_id</code>, <code>sender_id</code>, <code>content</code>. Trimite mesaje via <code>/api/conversations</code> POST, nu direct in DB.</li>
+<li><strong><code>&lt;img&gt;</code> interzis</strong> — Foloseste <code>next/image</code> cu <code>fill</code> + <code>sizes</code> sau <code>width</code>/<code>height</code>. Singura exceptie: <code>opengraph-image.tsx</code> (ImageResponse context).</li>
+<li><strong>console.log in production</strong> — Nu lasa console.log in API routes. In catch blocks: <code>catch {}</code> fara parametru sau <code>catch (e) { return error response }</code> fara log.</li>
+</ol>
+<h2 id="environment-variables-vercel">Environment variables (Vercel)</h2>
+<pre><code># ✅ Setate
+NEXT_PUBLIC_SUPABASE_URL        # https://aexqwefkytwmppeyxlvg.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY   # anon JWT key
+SUPABASE_SERVICE_ROLE_KEY       # service_role JWT key
+NEXT_PUBLIC_APP_URL             # https://mega-mark-five.vercel.app
+
+# ⚠️ De setat (manual — actiuni owner)
+STRIPE_SECRET_KEY               # Stripe Dashboard → Developers → API Keys
+STRIPE_WEBHOOK_SECRET           # Stripe Dashboard → Webhooks → signing secret
+STRIPE_PRICE_7_DAYS             # Price ID produs &quot;Promovare 7 zile&quot;
+STRIPE_PRICE_30_DAYS            # Price ID produs &quot;Promovare 30 zile&quot;
+RESEND_API_KEY                  # resend.com → API Keys
+</code></pre>
+<h2 id="db-schema-tabele">DB Schema (tabele)</h2>
+<p>profiles, categories (11), manufacturers (20), listings, favorites, conversations, messages, reviews, notifications, search_history, api_keys</p>
+<h2 id="cli-tools-disponibile-local">CLI Tools disponibile local</h2>
+<ul>
+<li><code>supabase</code> CLI (v2.90.0) — linked la proiect</li>
+<li><code>vercel</code> CLI — linked la <code>gimigits-projects/mega-mark</code></li>
+<li><code>psql</code> — <code>/usr/local/opt/libpq/bin/psql</code></li>
+<li><code>gh</code> — GitHub CLI (user: <code>gimigit</code>)</li>
+<li><code>megamark-security-check</code> — alias ~/.zshrc: diff vs origin/main → Claude Code security review (fara API key in GitHub)</li>
+</ul>
+<h2 id="claude-code-tools-instalate-18-apr-2026">Claude Code Tools instalate (18 Apr 2026)</h2>
+<ul>
+<li><strong>gstack</strong> — <code>~/.claude/skills/gstack</code> (35 role-based skills: CEO, designer, QA, security etc.)</li>
+<li><strong>claude-mem</strong> — plugin <code>claude-mem@thedotmack</code> v12.1.6 (memorie persistenta, SQLite, port 37777)</li>
+<li><strong>frontend-design</strong> — built-in Claude Code (skill <code>frontend-design:frontend-design</code>)</li>
+<li><strong>code-review</strong> — built-in Claude Code (skill <code>review</code>)</li>
+<li><strong>superpowers</strong> — ⚠️ necesita actiune manuala: <code>/plugin install superpowers@claude-plugins-official</code></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

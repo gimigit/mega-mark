@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>get-server-side-props — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-get-server-side-props">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#context-parameter">Context parameter</a></li><li><a href="#getserversideprops-return-values">getServerSideProps return values</a></li><ul><li><a href="#props">props</a></li><li><a href="#notfound">notFound</a></li><li><a href="#redirect">redirect</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">get-server-side-props</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for `getServerSideProps`. Learn how to fetch data on each request with Next.js.</td></tr></table><p>When exporting a function called <code>getServerSideProps</code> (Server-Side Rendering) from a page, Next.js will prerender this page on each request using the data returned by <code>getServerSideProps</code>. This is useful if you want to fetch data that changes often, and have the page update to show the most current data.</p>
+<pre><code class="language-tsx">import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
+
+type Repo = {
+  name: string
+  stargazers_count: number
+}
+
+export const getServerSideProps = (async () =&gt; {
+  // Fetch data from external API
+  const res = await fetch('https://api.github.com/repos/vercel/next.js')
+  const repo: Repo = await res.json()
+  // Pass data to the page via props
+  return { props: { repo } }
+}) satisfies GetServerSideProps&lt;{ repo: Repo }&gt;
+
+export default function Page({
+  repo,
+}: InferGetServerSidePropsType&lt;typeof getServerSideProps&gt;) {
+  return (
+    &lt;main&gt;
+      &lt;p&gt;{repo.stargazers_count}&lt;/p&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch('https://api.github.com/repos/vercel/next.js')
+  const repo = await res.json()
+  // Pass data to the page via props
+  return { props: { repo } }
+}
+
+export default function Page({ repo }) {
+  return (
+    &lt;main&gt;
+      &lt;p&gt;{repo.stargazers_count}&lt;/p&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<p>You can import modules in top-level scope for use in <code>getServerSideProps</code>. Imports used will <strong>not be bundled for the client-side</strong>. This means you can write <strong>server-side code directly in <code>getServerSideProps</code></strong>, including fetching data from your database.</p>
+<h2 id="context-parameter">Context parameter</h2>
+<p>The <code>context</code> parameter is an object containing the following keys:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>params</code></td>
+<td>If this page uses a <a href="/docs/pages/building-your-application/routing/dynamic-routes">dynamic route</a>, <code>params</code> contains the route parameters. If the page name is <code>[id].js</code>, then <code>params</code> will look like <code>{ id: ... }</code>.</td>
+</tr>
+<tr>
+<td><code>req</code></td>
+<td><a href="https://nodejs.org/api/http.html#http_class_http_incomingmessage" target="_blank" rel="noopener">The <code>HTTP</code> IncomingMessage object</a>, with an additional <code>cookies</code> prop, which is an object with string keys mapping to string values of cookies.</td>
+</tr>
+<tr>
+<td><code>res</code></td>
+<td><a href="https://nodejs.org/api/http.html#http_class_http_serverresponse" target="_blank" rel="noopener">The <code>HTTP</code> response object</a>.</td>
+</tr>
+<tr>
+<td><code>query</code></td>
+<td>An object representing the query string, including dynamic route parameters.</td>
+</tr>
+<tr>
+<td><code>preview</code></td>
+<td>(Deprecated for <code>draftMode</code>) <code>preview</code> is <code>true</code> if the page is in the <a href="/docs/pages/guides/preview-mode">Preview Mode</a> and <code>false</code> otherwise.</td>
+</tr>
+<tr>
+<td><code>previewData</code></td>
+<td>(Deprecated for <code>draftMode</code>) The <a href="/docs/pages/guides/preview-mode">preview</a> data set by <code>setPreviewData</code>.</td>
+</tr>
+<tr>
+<td><code>draftMode</code></td>
+<td><code>draftMode</code> is <code>true</code> if the page is in the <a href="/docs/pages/guides/draft-mode">Draft Mode</a> and <code>false</code> otherwise.</td>
+</tr>
+<tr>
+<td><code>resolvedUrl</code></td>
+<td>A normalized version of the request <code>URL</code> that strips the <code>_next/data</code> prefix for client transitions and includes original query values.</td>
+</tr>
+<tr>
+<td><code>locale</code></td>
+<td>Contains the active locale (if enabled).</td>
+</tr>
+<tr>
+<td><code>locales</code></td>
+<td>Contains all supported locales (if enabled).</td>
+</tr>
+<tr>
+<td><code>defaultLocale</code></td>
+<td>Contains the configured default locale (if enabled).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="getserversideprops-return-values">getServerSideProps return values</h2>
+<p>The <code>getServerSideProps</code> function should return an object with <strong>any one of the following</strong> properties:</p>
+<h3 id="props"><code>props</code></h3>
+<p>The <code>props</code> object is a key-value pair, where each value is received by the page component. It should be a <a href="https://developer.mozilla.org/docs/Glossary/Serialization" target="_blank" rel="noopener">serializable object</a> so that any props passed, could be serialized with <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" target="_blank" rel="noopener"><code>JSON.stringify</code></a>.</p>
+<pre><code class="language-jsx">export async function getServerSideProps(context) {
+  return {
+    props: { message: `Next.js is awesome` }, // will be passed to the page component as props
+  }
+}
+</code></pre>
+<h3 id="notfound"><code>notFound</code></h3>
+<p>The <code>notFound</code> boolean allows the page to return a <code>404</code> status and <a href="/docs/pages/building-your-application/routing/custom-error#404-page">404 Page</a>. With <code>notFound: true</code>, the page will return a <code>404</code> even if there was a successfully generated page before. This is meant to support use cases like user-generated content getting removed by its author.</p>
+<pre><code class="language-js">export async function getServerSideProps(context) {
+  const res = await fetch(`https://.../data`)
+  const data = await res.json()
+
+  if (!data) {
+    return {
+      notFound: true,
+    }
+  }
+
+  return {
+    props: { data }, // will be passed to the page component as props
+  }
+}
+</code></pre>
+<h3 id="redirect"><code>redirect</code></h3>
+<p>The <code>redirect</code> object allows redirecting to internal and external resources. It should match the shape of <code>{ destination: string, permanent: boolean }</code>. In some rare cases, you might need to assign a custom status code for older <code>HTTP</code> clients to properly redirect. In these cases, you can use the <code>statusCode</code> property instead of the <code>permanent</code> property, but not both.</p>
+<pre><code class="language-js">export async function getServerSideProps(context) {
+  const res = await fetch(`https://.../data`)
+  const data = await res.json()
+
+  if (!data) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {}, // will be passed to the page component as props
+  }
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.4.0</code></td>
+<td><a href="/docs/app/getting-started/fetching-data">App Router</a> is now stable with simplified data fetching</td>
+</tr>
+<tr>
+<td><code>v10.0.0</code></td>
+<td><code>locale</code>, <code>locales</code>, <code>defaultLocale</code>, and <code>notFound</code> options added.</td>
+</tr>
+<tr>
+<td><code>v9.3.0</code></td>
+<td><code>getServerSideProps</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

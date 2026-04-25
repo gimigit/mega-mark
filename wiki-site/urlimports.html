@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>urlimports — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-urlimports">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#security-model">Security Model</a></li><li><a href="#lockfile">Lockfile</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#skypack">Skypack</a></li><li><a href="#static-image-imports">Static Image Imports</a></li><li><a href="#urls-in-css">URLs in CSS</a></li><li><a href="#asset-imports">Asset Imports</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">urlimports</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Configure Next.js to allow importing modules from external URLs.</td></tr><tr><th>version</th><td>experimental</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>URL imports are an experimental feature that allows you to import modules directly from external servers (instead of from the local disk).</p>
+<blockquote>
+<p><strong>Warning</strong>: Only use domains that you trust to download and execute on your machine. Please exercise discretion, and caution until the feature is flagged as stable.</p>
+</blockquote>
+<p>To opt-in, add the allowed URL prefixes inside <code>next.config.js</code>:</p>
+<pre><code class="language-js">module.exports = {
+  experimental: {
+    urlImports: ['https://example.com/assets/', 'https://cdn.skypack.dev'],
+  },
+}
+</code></pre>
+<p>Then, you can import modules directly from URLs:</p>
+<pre><code class="language-js">import { a, b, c } from 'https://example.com/assets/some/module.js'
+</code></pre>
+<p>URL Imports can be used everywhere normal package imports can be used.</p>
+<h2 id="security-model">Security Model</h2>
+<p>This feature is being designed with <strong>security as the top priority</strong>. To start, we added an experimental flag forcing you to explicitly allow the domains you accept URL imports from. We’re working to take this further by limiting URL imports to execute in the browser sandbox using the <a href="/docs/app/api-reference/edge">Edge Runtime</a>.</p>
+<h2 id="lockfile">Lockfile</h2>
+<p>When using URL imports, Next.js will create a <code>next.lock</code> directory containing a lockfile and fetched assets.
+This directory <strong>must be committed to Git</strong>, not ignored by <code>.gitignore</code>.</p>
+<ul>
+<li>When running <code>next dev</code>, Next.js will download and add all newly discovered URL Imports to your lockfile.</li>
+<li>When running <code>next build</code>, Next.js will use only the lockfile to build the application for production.</li>
+</ul>
+<p>Typically, no network requests are needed and any outdated lockfile will cause the build to fail.
+One exception is resources that respond with <code>Cache-Control: no-cache</code>.
+These resources will have a <code>no-cache</code> entry in the lockfile and will always be fetched from the network on each build.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="skypack">Skypack</h3>
+<pre><code class="language-js">import confetti from 'https://cdn.skypack.dev/canvas-confetti'
+import { useEffect } from 'react'
+
+export default () =&gt; {
+  useEffect(() =&gt; {
+    confetti()
+  })
+  return &lt;p&gt;Hello&lt;/p&gt;
+}
+</code></pre>
+<h3 id="static-image-imports">Static Image Imports</h3>
+<pre><code class="language-js">import Image from 'next/image'
+import logo from 'https://example.com/assets/logo.png'
+
+export default () =&gt; (
+  &lt;div&gt;
+    &lt;Image src={logo} placeholder=&quot;blur&quot; /&gt;
+  &lt;/div&gt;
+)
+</code></pre>
+<h3 id="urls-in-css">URLs in CSS</h3>
+<pre><code class="language-css">.className {
+  background: url('https://example.com/assets/hero.jpg');
+}
+</code></pre>
+<h3 id="asset-imports">Asset Imports</h3>
+<pre><code class="language-js">const logo = new URL('https://example.com/assets/file.txt', import.meta.url)
+
+console.log(logo.pathname)
+
+// prints &quot;/_next/static/media/file.a9727b5d.txt&quot;
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

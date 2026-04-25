@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>route-groups — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-route-groups">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#convention">Convention</a></li><li><a href="#use-cases">Use cases</a></li><li><a href="#caveats">Caveats</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">route-groups</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Route Groups can be used to partition your Next.js application into different sections.</td></tr></table><p>Route Groups are a folder convention that let you organize routes by category or team.</p>
+<h2 id="convention">Convention</h2>
+<p>A route group can be created by wrapping a folder’s name in parenthesis: <code>(folderName)</code>.</p>
+<p>This convention indicates the folder is for organizational purposes and should <strong>not be included</strong> in the route’s URL path.</p>
+<p><Image
+  alt="An example folder structure using route groups"
+  srcLight="/docs/light/project-organization-route-groups.png"
+  srcDark="/docs/dark/project-organization-route-groups.png"
+  width="1600"
+  height="849"
+/></p>
+<h2 id="use-cases">Use cases</h2>
+<ul>
+<li>Organizing routes by team, concern, or feature.</li>
+<li>Defining multiple <a href="/docs/app/api-reference/file-conventions/layout#root-layout">root layouts</a>.</li>
+<li>Opting specific route segments into sharing a layout, while keeping others out.</li>
+</ul>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li><strong>Full page load</strong>: If you navigate between routes that use different root layouts, it’ll trigger a full page reload. For example, navigating from <code>/cart</code> that uses <code>app/(shop)/layout.js</code> to <code>/blog</code> that uses <code>app/(marketing)/layout.js</code>. This <strong>only</strong> applies to multiple root layouts.</li>
+<li><strong>Conflicting paths</strong>: Routes in different groups should not resolve to the same URL path. For example, <code>(marketing)/about/page.js</code> and <code>(shop)/about/page.js</code> would both resolve to <code>/about</code> and cause an error.</li>
+<li><strong>Top-level root layout</strong>: If you use multiple root layouts without a top-level <code>layout.js</code> file, make sure your home route (/) is defined within one of the route groups, e.g. app/(marketing)/page.js.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

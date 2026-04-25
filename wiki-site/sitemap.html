@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>sitemap — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-sitemap">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><ul><li><a href="#sitemap-files-xml">Sitemap files (.xml)</a></li><li><a href="#generating-a-sitemap-using-code-js-ts">Generating a sitemap using code (.js, .ts)</a></li><li><a href="#image-sitemaps">Image Sitemaps</a></li><li><a href="#video-sitemaps">Video Sitemaps</a></li><li><a href="#generate-a-localized-sitemap">Generate a localized Sitemap</a></li><li><a href="#generating-multiple-sitemaps">Generating multiple sitemaps</a></li></ul><li><a href="#returns">Returns</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">sitemap</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use the generateSitemaps function.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p><code>sitemap.(xml|js|ts)</code> is a special file that matches the <a href="https://www.sitemaps.org/protocol.html" target="_blank" rel="noopener">Sitemaps XML format</a> to help search engine crawlers index your site more efficiently.</p>
+<h3 id="sitemap-files-xml">Sitemap files (.xml)</h3>
+<p>For smaller applications, you can create a <code>sitemap.xml</code> file and place it in the root of your <code>app</code> directory.</p>
+<pre><code class="language-xml">&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com&lt;/loc&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+    &lt;changefreq&gt;yearly&lt;/changefreq&gt;
+    &lt;priority&gt;1&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com/about&lt;/loc&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+    &lt;changefreq&gt;monthly&lt;/changefreq&gt;
+    &lt;priority&gt;0.8&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com/blog&lt;/loc&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+    &lt;priority&gt;0.5&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</code></pre>
+<h3 id="generating-a-sitemap-using-code-js-ts">Generating a sitemap using code (.js, .ts)</h3>
+<p>You can use the <code>sitemap.(js|ts)</code> file convention to programmatically <strong>generate</strong> a sitemap by exporting a default function that returns an array of URLs. If using TypeScript, a <a href="#returns"><code>Sitemap</code></a> type is available.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>sitemap.js</code> is a special Route Handler that is cached by default unless it uses a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> or <a href="/docs/app/guides/caching-without-cache-components#dynamic">dynamic config</a> option.</p>
+</blockquote>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://acme.com',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 1,
+    },
+    {
+      url: 'https://acme.com/about',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://acme.com/blog',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+  ]
+}
+</code></pre>
+<pre><code class="language-js">export default function sitemap() {
+  return [
+    {
+      url: 'https://acme.com',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 1,
+    },
+    {
+      url: 'https://acme.com/about',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://acme.com/blog',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+  ]
+}
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-xml">&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com&lt;/loc&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+    &lt;changefreq&gt;yearly&lt;/changefreq&gt;
+    &lt;priority&gt;1&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com/about&lt;/loc&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+    &lt;changefreq&gt;monthly&lt;/changefreq&gt;
+    &lt;priority&gt;0.8&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com/blog&lt;/loc&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+    &lt;priority&gt;0.5&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</code></pre>
+<h3 id="image-sitemaps">Image Sitemaps</h3>
+<p>You can use <code>images</code> property to create image sitemaps. Learn more details in the <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps" target="_blank" rel="noopener">Google Developer Docs</a>.</p>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://example.com',
+      lastModified: '2021-01-01',
+      changeFrequency: 'weekly',
+      priority: 0.5,
+      images: ['https://example.com/image.jpg'],
+    },
+  ]
+}
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset
+  xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+  xmlns:image=&quot;http://www.google.com/schemas/sitemap-image/1.1&quot;
+&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://example.com&lt;/loc&gt;
+    &lt;image:image&gt;
+      &lt;image:loc&gt;https://example.com/image.jpg&lt;/image:loc&gt;
+    &lt;/image:image&gt;
+    &lt;lastmod&gt;2021-01-01&lt;/lastmod&gt;
+    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+    &lt;priority&gt;0.5&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</code></pre>
+<h3 id="video-sitemaps">Video Sitemaps</h3>
+<p>You can use <code>videos</code> property to create video sitemaps. Learn more details in the <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/video-sitemaps" target="_blank" rel="noopener">Google Developer Docs</a>.</p>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://example.com',
+      lastModified: '2021-01-01',
+      changeFrequency: 'weekly',
+      priority: 0.5,
+      videos: [
+        {
+          title: 'example',
+          thumbnail_loc: 'https://example.com/image.jpg',
+          description: 'this is the description',
+        },
+      ],
+    },
+  ]
+}
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset
+  xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+  xmlns:video=&quot;http://www.google.com/schemas/sitemap-video/1.1&quot;
+&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://example.com&lt;/loc&gt;
+    &lt;video:video&gt;
+      &lt;video:title&gt;example&lt;/video:title&gt;
+      &lt;video:thumbnail_loc&gt;https://example.com/image.jpg&lt;/video:thumbnail_loc&gt;
+      &lt;video:description&gt;this is the description&lt;/video:description&gt;
+    &lt;/video:video&gt;
+    &lt;lastmod&gt;2021-01-01&lt;/lastmod&gt;
+    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+    &lt;priority&gt;0.5&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</code></pre>
+<h3 id="generate-a-localized-sitemap">Generate a localized Sitemap</h3>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://acme.com',
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: 'https://acme.com/es',
+          de: 'https://acme.com/de',
+        },
+      },
+    },
+    {
+      url: 'https://acme.com/about',
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: 'https://acme.com/es/about',
+          de: 'https://acme.com/de/about',
+        },
+      },
+    },
+    {
+      url: 'https://acme.com/blog',
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: 'https://acme.com/es/blog',
+          de: 'https://acme.com/de/blog',
+        },
+      },
+    },
+  ]
+}
+</code></pre>
+<pre><code class="language-js">export default function sitemap() {
+  return [
+    {
+      url: 'https://acme.com',
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: 'https://acme.com/es',
+          de: 'https://acme.com/de',
+        },
+      },
+    },
+    {
+      url: 'https://acme.com/about',
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: 'https://acme.com/es/about',
+          de: 'https://acme.com/de/about',
+        },
+      },
+    },
+    {
+      url: 'https://acme.com/blog',
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: 'https://acme.com/es/blog',
+          de: 'https://acme.com/de/blog',
+        },
+      },
+    },
+  ]
+}
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-xml">&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot; xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com&lt;/loc&gt;
+    &lt;xhtml:link
+      rel=&quot;alternate&quot;
+      hreflang=&quot;es&quot;
+      href=&quot;https://acme.com/es&quot;/&gt;
+    &lt;xhtml:link
+      rel=&quot;alternate&quot;
+      hreflang=&quot;de&quot;
+      href=&quot;https://acme.com/de&quot;/&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com/about&lt;/loc&gt;
+    &lt;xhtml:link
+      rel=&quot;alternate&quot;
+      hreflang=&quot;es&quot;
+      href=&quot;https://acme.com/es/about&quot;/&gt;
+    &lt;xhtml:link
+      rel=&quot;alternate&quot;
+      hreflang=&quot;de&quot;
+      href=&quot;https://acme.com/de/about&quot;/&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://acme.com/blog&lt;/loc&gt;
+    &lt;xhtml:link
+      rel=&quot;alternate&quot;
+      hreflang=&quot;es&quot;
+      href=&quot;https://acme.com/es/blog&quot;/&gt;
+    &lt;xhtml:link
+      rel=&quot;alternate&quot;
+      hreflang=&quot;de&quot;
+      href=&quot;https://acme.com/de/blog&quot;/&gt;
+    &lt;lastmod&gt;2023-04-06T15:02:24.021Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</code></pre>
+<h3 id="generating-multiple-sitemaps">Generating multiple sitemaps</h3>
+<p>While a single sitemap will work for most applications. For large web applications, you may need to split a sitemap into multiple files.</p>
+<p>There are two ways you can create multiple sitemaps:</p>
+<ul>
+<li>By nesting <code>sitemap.(xml|js|ts)</code> inside multiple route segments e.g. <code>app/sitemap.xml</code> and <code>app/products/sitemap.xml</code>.</li>
+<li>By using the <a href="/docs/app/api-reference/functions/generate-sitemaps"><code>generateSitemaps</code></a> function.</li>
+</ul>
+<p>For example, to split a sitemap using <code>generateSitemaps</code>, return an array of objects with the sitemap <code>id</code>. Then, use the <code>id</code> to generate the unique sitemaps.</p>
+<pre><code class="language-ts">import type { MetadataRoute } from 'next'
+import { BASE_URL } from '@/app/lib/constants'
+
+export async function generateSitemaps() {
+  // Fetch the total number of products and calculate the number of sitemaps needed
+  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }]
+}
+
+export default async function sitemap(props: {
+  id: Promise&lt;string&gt;
+}): Promise&lt;MetadataRoute.Sitemap&gt; {
+  const id = await props.id
+  // Google's limit is 50,000 URLs per sitemap
+  const start = id * 50000
+  const end = start + 50000
+  const products = await getProducts(
+    `SELECT id, date FROM products WHERE id BETWEEN ${start} AND ${end}`
+  )
+  return products.map((product) =&gt; ({
+    url: `${BASE_URL}/product/${product.id}`,
+    lastModified: product.date,
+  }))
+}
+</code></pre>
+<pre><code class="language-js">import { BASE_URL } from '@/app/lib/constants'
+
+export async function generateSitemaps() {
+  // Fetch the total number of products and calculate the number of sitemaps needed
+  return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }]
+}
+
+export default async function sitemap(props) {
+  const id = await props.id
+  // Google's limit is 50,000 URLs per sitemap
+  const start = id * 50000
+  const end = start + 50000
+  const products = await getProducts(
+    `SELECT id, date FROM products WHERE id BETWEEN ${start} AND ${end}`
+  )
+  return products.map((product) =&gt; ({
+    url: `${BASE_URL}/product/${product.id}`,
+    lastModified: product.date,
+  }))
+}
+</code></pre>
+<p>Your generated sitemaps will be available at <code>/.../sitemap/[id]</code>. For example, <code>/product/sitemap/1.xml</code>.</p>
+<p>See the <a href="/docs/app/api-reference/functions/generate-sitemaps"><code>generateSitemaps</code> API reference</a> for more information.</p>
+<h2 id="returns">Returns</h2>
+<p>The default function exported from <code>sitemap.(xml|ts|js)</code> should return an array of objects with the following properties:</p>
+<pre><code class="language-tsx">type Sitemap = Array&lt;{
+  url: string
+  lastModified?: string | Date
+  changeFrequency?:
+    | 'always'
+    | 'hourly'
+    | 'daily'
+    | 'weekly'
+    | 'monthly'
+    | 'yearly'
+    | 'never'
+  priority?: number
+  alternates?: {
+    languages?: Languages&lt;string&gt;
+  }
+}&gt;
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.0.0</code></td>
+<td><code>id</code> is now a promise that resolves to a <code>string</code>.</td>
+</tr>
+<tr>
+<td><code>v14.2.0</code></td>
+<td>Add localizations support.</td>
+</tr>
+<tr>
+<td><code>v13.4.14</code></td>
+<td>Add <code>changeFrequency</code> and <code>priority</code> attributes to sitemaps.</td>
+</tr>
+<tr>
+<td><code>v13.3.0</code></td>
+<td><code>sitemap</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

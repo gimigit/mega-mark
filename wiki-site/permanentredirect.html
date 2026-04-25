@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>permanentredirect — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-permanentredirect">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#example">Example</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">permanentredirect</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the permanentRedirect function.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>permanentRedirect</code> function allows you to redirect the user to another URL. <code>permanentRedirect</code> can be used in Server Components, Client Components, <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>, and <a href="/docs/app/getting-started/mutating-data">Server Functions</a>.</p>
+<p>When used in a streaming context, this will insert a meta tag to emit the redirect on the client side. When used in a server action, it will serve a 303 HTTP redirect response to the caller. Otherwise, it will serve a 308 (Permanent) HTTP redirect response to the caller.</p>
+<p>If a resource doesn’t exist, you can use the <a href="/docs/app/api-reference/functions/not-found"><code>notFound</code> function</a> instead.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If you prefer to return a 307 (Temporary) HTTP redirect instead of 308 (Permanent), you can use the <a href="/docs/app/api-reference/functions/redirect"><code>redirect</code> function</a> instead.</p>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<p>The <code>permanentRedirect</code> function accepts two arguments:</p>
+<pre><code class="language-js">permanentRedirect(path, type)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path</code></td>
+<td><code>string</code></td>
+<td>The URL to redirect to. Can be a relative or absolute path.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>'replace'</code> (default) or <code>'push'</code> (default in Server Actions)</td>
+<td>The type of redirect to perform.</td>
+</tr>
+</tbody>
+</table>
+<p>By default, <code>permanentRedirect</code> will use <code>push</code> (adding a new entry to the browser history stack) in <a href="/docs/app/getting-started/mutating-data">Server Actions</a> and <code>replace</code> (replacing the current URL in the browser history stack) everywhere else. You can override this behavior by specifying the <code>type</code> parameter.</p>
+<p>The <code>RedirectType</code> object contains the available options for the <code>type</code> parameter.</p>
+<pre><code class="language-ts">import { permanentRedirect, RedirectType } from 'next/navigation'
+
+permanentRedirect('/redirect-to', RedirectType.replace)
+// or
+permanentRedirect('/redirect-to', RedirectType.push)
+</code></pre>
+<p>The <code>type</code> parameter has no effect when used in Server Components.</p>
+<h2 id="returns">Returns</h2>
+<p><code>permanentRedirect</code> does not return a value.</p>
+<h2 id="example">Example</h2>
+<p>Invoking the <code>permanentRedirect()</code> function throws a <code>NEXT_REDIRECT</code> error and terminates rendering of the route segment in which it was thrown.</p>
+<pre><code class="language-jsx">import { permanentRedirect } from 'next/navigation'
+
+async function fetchTeam(id) {
+  const res = await fetch('https://...')
+  if (!res.ok) return undefined
+  return res.json()
+}
+
+export default async function Profile({ params }) {
+  const { id } = await params
+  const team = await fetchTeam(id)
+  if (!team) {
+    permanentRedirect('/login')
+  }
+
+  // ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: <code>permanentRedirect</code> does not require you to use <code>return permanentRedirect()</code> as it uses the TypeScript <a href="https://www.typescriptlang.org/docs/handbook/2/functions.html#never" target="_blank" rel="noopener"><code>never</code></a> type.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

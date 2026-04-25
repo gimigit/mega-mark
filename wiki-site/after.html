@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>after — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-after">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#parameters">Parameters</a></li><li><a href="#duration">Duration</a></li></ul><li><a href="#good-to-know">Good to know</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#with-request-apis">With request APIs</a></li></ul><li><a href="#platform-support">Platform Support</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">after</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the after function.</td></tr></table><p><code>after</code> allows you to schedule work to be executed after a response (or prerender) is finished. This is useful for tasks and other side effects that should not block the response, such as logging and analytics.</p>
+<p>It can be used in <a href="/docs/app/getting-started/server-and-client-components">Server Components</a> (including <a href="/docs/app/api-reference/functions/generate-metadata"><code>generateMetadata</code></a>), <a href="/docs/app/getting-started/mutating-data">Server Functions</a>, <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>, and <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>.</p>
+<p>The function accepts a callback that will be executed after the response (or prerender) is finished:</p>
+<pre><code class="language-tsx">import { after } from 'next/server'
+// Custom logging function
+import { log } from '@/app/utils'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  after(() =&gt; {
+    // Execute after the layout is rendered and sent to the user
+    log()
+  })
+  return &lt;&gt;{children}&lt;/&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { after } from 'next/server'
+// Custom logging function
+import { log } from '@/app/utils'
+
+export default function Layout({ children }) {
+  after(() =&gt; {
+    // Execute after the layout is rendered and sent to the user
+    log()
+  })
+  return &lt;&gt;{children}&lt;/&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> <code>after</code> is not a <a href="/docs/app/glossary#request-time-apis">Request-time API</a> and calling it does not cause a route to become dynamic. If it’s used within a static page, the callback will execute at build time, or whenever a page is revalidated.</p>
+</blockquote>
+<h2 id="reference">Reference</h2>
+<h3 id="parameters">Parameters</h3>
+<ul>
+<li>A callback function which will be executed after the response (or prerender) is finished.</li>
+</ul>
+<h3 id="duration">Duration</h3>
+<p><code>after</code> will run for the platform’s default or configured max duration of your route. If your platform supports it, you can configure the timeout limit using the <a href="/docs/app/api-reference/file-conventions/route-segment-config/maxDuration"><code>maxDuration</code></a> route segment config.</p>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li><code>after</code> will be executed even if the response didn’t complete successfully. Including when an error is thrown or when <code>notFound</code> or <code>redirect</code> is called.</li>
+<li>You can use React <code>cache</code> to deduplicate functions called inside <code>after</code>.</li>
+<li><code>after</code> can be nested inside other <code>after</code> calls, for example, you can create utility functions that wrap <code>after</code> calls to add additional functionality.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="with-request-apis">With request APIs</h3>
+<p>Whether you can use request APIs like <a href="/docs/app/api-reference/functions/cookies"><code>cookies</code></a> and <a href="/docs/app/api-reference/functions/headers"><code>headers</code></a> inside <code>after</code> depends on where <code>after</code> is called from.</p>
+<h4>In Route Handlers and Server Functions</h4>
+<p>You can call <code>cookies</code> and <code>headers</code> directly inside the <code>after</code> callback when used in <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> and <a href="/docs/app/getting-started/mutating-data">Server Functions</a>. This is useful for logging activity after a mutation or API request. For example:</p>
+<pre><code class="language-ts">import { after } from 'next/server'
+import { cookies, headers } from 'next/headers'
+import { logUserAction } from '@/app/utils'
+
+export async function POST(request: Request) {
+  // Perform mutation
+  // ...
+
+  // Log user activity for analytics
+  after(async () =&gt; {
+    const userAgent = (await headers()).get('user-agent') || 'unknown'
+    const sessionCookie =
+      (await cookies()).get('session-id')?.value || 'anonymous'
+
+    logUserAction({ sessionCookie, userAgent })
+  })
+
+  return new Response(JSON.stringify({ status: 'success' }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { after } from 'next/server'
+import { cookies, headers } from 'next/headers'
+import { logUserAction } from '@/app/utils'
+
+export async function POST(request) {
+  // Perform mutation
+  // ...
+
+  // Log user activity for analytics
+  after(async () =&gt; {
+    const userAgent = (await headers()).get('user-agent') || 'unknown'
+    const sessionCookie =
+      (await cookies()).get('session-id')?.value || 'anonymous'
+
+    logUserAction({ sessionCookie, userAgent })
+  })
+
+  return new Response(JSON.stringify({ status: 'success' }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+</code></pre>
+<h4>In Server Components (pages and layouts)</h4>
+<p><a href="/docs/app/getting-started/server-and-client-components">Server Components</a> (including pages, layouts, and <code>generateMetadata</code>) <strong>cannot</strong> use <code>cookies</code>, <code>headers</code>, or other Request-time APIs inside <code>after</code>. This is because Next.js needs to know which part of the component tree accesses request data to support <a href="/docs/app/glossary#partial-prerendering-ppr">Partial Prerendering</a> and <a href="/docs/app/getting-started/caching">Cache Components</a>, but <code>after</code> runs after React’s rendering lifecycle.</p>
+<p>If you need request data inside an <code>after</code> callback in a Server Component, read it beforehand and pass the values in:</p>
+<pre><code class="language-tsx">import { after } from 'next/server'
+import { cookies, headers } from 'next/headers'
+import { logUserAction } from '@/app/utils'
+
+export default async function Page() {
+  // Read request data before `after` — this is allowed
+  // These calls will be read during the component's rendering lifecycle
+  const userAgent = (await headers()).get('user-agent') || 'unknown'
+  const sessionCookie =
+    (await cookies()).get('session-id')?.value || 'anonymous'
+
+  after(() =&gt; {
+    // Use the values read above
+    logUserAction({ sessionCookie, userAgent })
+  })
+
+  return &lt;h1&gt;My Page&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { after } from 'next/server'
+import { cookies, headers } from 'next/headers'
+import { logUserAction } from '@/app/utils'
+
+export default async function Page() {
+  // Read request data before `after` — this is allowed
+  // These calls will be read during the component's rendering lifecycle
+  const userAgent = (await headers()).get('user-agent') || 'unknown'
+  const sessionCookie =
+    (await cookies()).get('session-id')?.value || 'anonymous'
+
+  after(() =&gt; {
+    // Use the values read above
+    logUserAction({ sessionCookie, userAgent })
+  })
+
+  return &lt;h1&gt;My Page&lt;/h1&gt;
+}
+</code></pre>
+<p>Calling <code>cookies()</code> or <code>headers()</code> inside the <code>after</code> callback in a Server Component will throw a runtime error.</p>
+<h4>With Cache Components</h4>
+<p>When using <a href="/docs/app/getting-started/caching">Cache Components</a>, components that access request data like <code>cookies</code> or <code>headers</code> must be wrapped in <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener"><code>&lt;Suspense&gt;</code></a> so the rest of the page can be prerendered into a static shell.</p>
+<p>You can combine this pattern with <code>after</code> by reading request data in a dynamic component and passing it into <code>after</code>:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { after } from 'next/server'
+import { cookies } from 'next/headers'
+import { logUserAction } from '@/app/utils'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Part of the static shell&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+        &lt;DynamicContent /&gt;
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  )
+}
+
+async function DynamicContent() {
+  const sessionCookie =
+    (await cookies()).get('session-id')?.value || 'anonymous'
+
+  // Schedule work after the response is sent
+  after(() =&gt; {
+    logUserAction({ sessionCookie })
+  })
+
+  return &lt;p&gt;Your session: {sessionCookie}&lt;/p&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { Suspense } from 'react'
+import { after } from 'next/server'
+import { cookies } from 'next/headers'
+import { logUserAction } from '@/app/utils'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Part of the static shell&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+        &lt;DynamicContent /&gt;
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  )
+}
+
+async function DynamicContent() {
+  const sessionCookie =
+    (await cookies()).get('session-id')?.value || 'anonymous'
+
+  // Schedule work after the response is sent
+  after(() =&gt; {
+    logUserAction({ sessionCookie })
+  })
+
+  return &lt;p&gt;Your session: {sessionCookie}&lt;/p&gt;
+}
+</code></pre>
+<p>In this example, <code>&lt;h1&gt;</code> and the <code>&lt;Suspense&gt;</code> fallback are included in the static shell. <code>DynamicContent</code> reads the cookie during rendering and passes it into <code>after</code> via closure. Since <code>cookies()</code> is called <em>outside</em> the <code>after</code> callback (during the component’s render), this works correctly.</p>
+<h2 id="platform-support">Platform Support</h2>
+<table>
+<thead>
+<tr>
+<th>Deployment Option</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#nodejs-server">Node.js server</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#docker">Docker container</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#static-export">Static export</a></td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#adapters">Adapters</a></td>
+<td>Platform-specific</td>
+</tr>
+</tbody>
+</table>
+<p>Learn how to <a href="/docs/app/guides/self-hosting#after">configure <code>after</code></a> when self-hosting Next.js.</p>
+<details id="after-serverless">
+  <summary>Reference: supporting `after` for serverless platforms</summary>
+<p>Using <code>after</code> in a serverless context requires waiting for asynchronous tasks to finish after the response has been sent. In Next.js and Vercel, this is achieved using a primitive called <code>waitUntil(promise)</code>, which extends the lifetime of a serverless invocation until all promises passed to <a href="https://vercel.com/docs/functions/functions-api-reference#waituntil" target="_blank" rel="noopener"><code>waitUntil</code></a> have settled.</p>
+<p>If you want your users to be able to run <code>after</code>, you will have to provide your implementation of <code>waitUntil</code> that behaves in an analogous way.</p>
+<p>When <code>after</code> is called, Next.js will access <code>waitUntil</code> like this:</p>
+<pre><code class="language-jsx">const RequestContext = globalThis[Symbol.for('@next/request-context')]
+const contextValue = RequestContext?.get()
+const waitUntil = contextValue?.waitUntil
+</code></pre>
+<p>Which means that <code>globalThis[Symbol.for('@next/request-context')]</code> is expected to contain an object like this:</p>
+<pre><code class="language-tsx">type NextRequestContext = {
+  get(): NextRequestContextValue | undefined
+}
+
+type NextRequestContextValue = {
+  waitUntil?: (promise: Promise&lt;any&gt;) =&gt; void
+}
+</code></pre>
+<p>Here is an example of the implementation.</p>
+<pre><code class="language-tsx">import { AsyncLocalStorage } from 'node:async_hooks'
+
+const RequestContextStorage = new AsyncLocalStorage&lt;NextRequestContextValue&gt;()
+
+// Define and inject the accessor that next.js will use
+const RequestContext: NextRequestContext = {
+  get() {
+    return RequestContextStorage.getStore()
+  },
+}
+globalThis[Symbol.for('@next/request-context')] = RequestContext
+
+const handler = (req, res) =&gt; {
+  const contextValue = { waitUntil: YOUR_WAITUNTIL }
+  // Provide the value
+  return RequestContextStorage.run(contextValue, () =&gt; nextJsHandler(req, res))
+}
+</code></pre>
+</details>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.1.0</code></td>
+<td><code>after</code> became stable.</td>
+</tr>
+<tr>
+<td><code>v15.0.0-rc</code></td>
+<td><code>unstable_after</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/consistent-type-specifier-style — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-consistent-type-specifier-style">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><li><a href="#options">Options</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#prefer-top-level">prefer-top-level</a></li><li><a href="#prefer-inline">prefer-inline</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/consistent-type-specifier-style</h1>
+
+</div>
+<div class="article-body">
+<p>🔧 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a>.</p>
+<!-- end auto-generated rule header -->
+<p>In both Flow and TypeScript you can mark an import as a type-only import by adding a “kind” marker to the import. Both languages support two positions for marker.</p>
+<p><strong>At the top-level</strong> which marks all names in the import as type-only and applies to named, default, and namespace (for TypeScript) specifiers:</p>
+<pre><code class="language-ts">import type Foo from 'Foo';
+import type {Bar} from 'Bar';
+// ts only
+import type * as Bam from 'Bam';
+// flow only
+import typeof Baz from 'Baz';
+</code></pre>
+<p><strong>Inline</strong> with to the named import, which marks just the specific name in the import as type-only. An inline specifier is only valid for named specifiers, and not for default or namespace specifiers:</p>
+<pre><code class="language-ts">import {type Foo} from 'Foo';
+// flow only
+import {typeof Bar} from 'Bar';
+</code></pre>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule either enforces or bans the use of inline type-only markers for named imports.</p>
+<p>This rule includes a fixer that will automatically convert your specifiers to the correct form - however the fixer will not respect your preferences around de-duplicating imports. If this is important to you, consider using the <a href="./no-duplicates.md"><code>import/no-duplicates</code></a> rule.</p>
+<h2 id="options">Options</h2>
+<p>The rule accepts a single string option which may be one of:</p>
+<ul>
+<li><code>'prefer-inline'</code> - enforces that named type-only specifiers are only ever written with an inline marker; and never as part of a top-level, type-only import.</li>
+<li><code>'prefer-top-level'</code> - enforces that named type-only specifiers only ever written as part of a top-level, type-only import; and never with an inline marker.</li>
+</ul>
+<p>By default the rule will use the <code>prefer-inline</code> option.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="prefer-top-level"><code>prefer-top-level</code></h3>
+<p>❌ Invalid with <code>[&quot;error&quot;, &quot;prefer-top-level&quot;]</code></p>
+<pre><code class="language-ts">import {type Foo} from 'Foo';
+import Foo, {type Bar} from 'Foo';
+// flow only
+import {typeof Foo} from 'Foo';
+</code></pre>
+<p>✅ Valid with <code>[&quot;error&quot;, &quot;prefer-top-level&quot;]</code></p>
+<pre><code class="language-ts">import type {Foo} from 'Foo';
+import type Foo, {Bar} from 'Foo';
+// flow only
+import typeof {Foo} from 'Foo';
+</code></pre>
+<h3 id="prefer-inline"><code>prefer-inline</code></h3>
+<p>❌ Invalid with <code>[&quot;error&quot;, &quot;prefer-inline&quot;]</code></p>
+<pre><code class="language-ts">import type {Foo} from 'Foo';
+import type Foo, {Bar} from 'Foo';
+// flow only
+import typeof {Foo} from 'Foo';
+</code></pre>
+<p>✅ Valid with <code>[&quot;error&quot;, &quot;prefer-inline&quot;]</code></p>
+<pre><code class="language-ts">import {type Foo} from 'Foo';
+import Foo, {type Bar} from 'Foo';
+// flow only
+import {typeof Foo} from 'Foo';
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you aren’t using Flow or TypeScript 4.5+, then this rule does not apply and need not be used.</p>
+<p>If you don’t care about, and don’t want to standardize how named specifiers are imported then you should not use this rule.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

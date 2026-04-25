@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03-api-reference — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-03-api-reference">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#async-modifyconfigconfig-context">async modifyConfig(config, context)</a></li><li><a href="#async-onbuildcompletecontext">async onBuildComplete(context)</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">03-api-reference</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Reference for `modifyConfig` and `onBuildComplete` in the `NextAdapter` interface.</td></tr></table><h2 id="async-modifyconfigconfig-context"><code>async modifyConfig(config, context)</code></h2>
+<p>Called for any CLI command that loads the <code>next.config.js</code> file to allow modification of the configuration.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>config</code>: The complete Next.js configuration object</li>
+<li><code>context.phase</code>: The current build phase (see <a href="/docs/app/api-reference/config/next-config-js#phase">phases</a>)</li>
+<li><code>context.nextVersion</code>: Version of Next.js being used</li>
+</ul>
+<p><strong>Returns:</strong> The modified configuration object (can be async)</p>
+<h2 id="async-onbuildcompletecontext"><code>async onBuildComplete(context)</code></h2>
+<p>Called after the build process completes with detailed information about routes and outputs.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>context.routing</code>: Object containing Next.js routing phases and metadata
+<ul>
+<li><code>routing.beforeMiddleware</code>: Routes executed before middleware (includes header and redirect handling)</li>
+<li><code>routing.beforeFiles</code>: Rewrite routes checked before filesystem route matching</li>
+<li><code>routing.afterFiles</code>: Rewrite routes checked after filesystem route matching</li>
+<li><code>routing.dynamicRoutes</code>: Dynamic route matching table</li>
+<li><code>routing.onMatch</code>: Routes applied after a successful match (for example immutable static asset cache headers)</li>
+<li><code>routing.fallback</code>: Final rewrite fallback routes</li>
+<li><code>routing.shouldNormalizeNextData</code>: Whether <code>/_next/data/&lt;buildId&gt;/...</code> URLs should be normalized during matching</li>
+<li><code>routing.rsc</code>: Route metadata used for React Server Components routing behavior</li>
+</ul>
+</li>
+<li><code>context.outputs</code>: Detailed information about all build outputs organized by type</li>
+<li><code>context.projectDir</code>: Absolute path to the Next.js project directory</li>
+<li><code>context.repoRoot</code>: Absolute path to the detected repository root</li>
+<li><code>context.distDir</code>: Absolute path to the build output directory</li>
+<li><code>context.config</code>: The final Next.js configuration (with <code>modifyConfig</code> applied)</li>
+<li><code>context.nextVersion</code>: Version of Next.js being used</li>
+<li><code>context.buildId</code>: Unique identifier for the current build</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

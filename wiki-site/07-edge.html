@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>07-edge — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-07-edge">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#caveats">Caveats</a></li><li><a href="#reference">Reference</a></li><ul><li><a href="#network-apis">Network APIs</a></li><li><a href="#encoding-apis">Encoding APIs</a></li><li><a href="#stream-apis">Stream APIs</a></li><li><a href="#crypto-apis">Crypto APIs</a></li><li><a href="#web-standard-apis">Web Standard APIs</a></li><li><a href="#nextjs-specific-polyfills">Next.js Specific Polyfills</a></li><li><a href="#environment-variables">Environment Variables</a></li><li><a href="#unsupported-apis">Unsupported APIs</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">07-edge</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the Edge Runtime.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>Next.js has two server runtimes you can use in your application:</p>
+<ul>
+<li>The <strong>Node.js Runtime</strong> (default), which has access to all Node.js APIs and is used for rendering your application.</li>
+<li>The <strong>Edge Runtime</strong> which contains a more limited <a href="#reference">set of APIs</a>, used in <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>.</li>
+</ul>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li>The Edge Runtime does not support all Node.js APIs. Some packages may not work as expected.</li>
+<li>The Edge Runtime does not support Incremental Static Regeneration (ISR).</li>
+<li>Both runtimes can support <a href="/docs/app/api-reference/file-conventions/loading">streaming</a> depending on your deployment adapter.</li>
+</ul>
+<h2 id="reference">Reference</h2>
+<p>The Edge Runtime supports the following APIs:</p>
+<h3 id="network-apis">Network APIs</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Blob" target="_blank" rel="noopener"><code>Blob</code></a></td>
+<td>Represents a blob</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Fetch_API" target="_blank" rel="noopener"><code>fetch</code></a></td>
+<td>Fetches a resource</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/FetchEvent" target="_blank" rel="noopener"><code>FetchEvent</code></a></td>
+<td>Represents a fetch event</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/File" target="_blank" rel="noopener"><code>File</code></a></td>
+<td>Represents a file</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/FormData" target="_blank" rel="noopener"><code>FormData</code></a></td>
+<td>Represents form data</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Headers" target="_blank" rel="noopener"><code>Headers</code></a></td>
+<td>Represents HTTP headers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener"><code>Request</code></a></td>
+<td>Represents an HTTP request</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Response" target="_blank" rel="noopener"><code>Response</code></a></td>
+<td>Represents an HTTP response</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams" target="_blank" rel="noopener"><code>URLSearchParams</code></a></td>
+<td>Represents URL search parameters</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/WebSocket" target="_blank" rel="noopener"><code>WebSocket</code></a></td>
+<td>Represents a websocket connection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="encoding-apis">Encoding APIs</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/atob" target="_blank" rel="noopener"><code>atob</code></a></td>
+<td>Decodes a base-64 encoded string</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/btoa" target="_blank" rel="noopener"><code>btoa</code></a></td>
+<td>Encodes a string in base-64</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/TextDecoder" target="_blank" rel="noopener"><code>TextDecoder</code></a></td>
+<td>Decodes a Uint8Array into a string</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/TextDecoderStream" target="_blank" rel="noopener"><code>TextDecoderStream</code></a></td>
+<td>Chainable decoder for streams</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/TextEncoder" target="_blank" rel="noopener"><code>TextEncoder</code></a></td>
+<td>Encodes a string into a Uint8Array</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/TextEncoderStream" target="_blank" rel="noopener"><code>TextEncoderStream</code></a></td>
+<td>Chainable encoder for streams</td>
+</tr>
+</tbody>
+</table>
+<h3 id="stream-apis">Stream APIs</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/ReadableStream" target="_blank" rel="noopener"><code>ReadableStream</code></a></td>
+<td>Represents a readable stream</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/ReadableStreamBYOBReader" target="_blank" rel="noopener"><code>ReadableStreamBYOBReader</code></a></td>
+<td>Represents a reader of a ReadableStream</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/ReadableStreamDefaultReader" target="_blank" rel="noopener"><code>ReadableStreamDefaultReader</code></a></td>
+<td>Represents a reader of a ReadableStream</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/TransformStream" target="_blank" rel="noopener"><code>TransformStream</code></a></td>
+<td>Represents a transform stream</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/WritableStream" target="_blank" rel="noopener"><code>WritableStream</code></a></td>
+<td>Represents a writable stream</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/WritableStreamDefaultWriter" target="_blank" rel="noopener"><code>WritableStreamDefaultWriter</code></a></td>
+<td>Represents a writer of a WritableStream</td>
+</tr>
+</tbody>
+</table>
+<h3 id="crypto-apis">Crypto APIs</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Window/crypto" target="_blank" rel="noopener"><code>crypto</code></a></td>
+<td>Provides access to the cryptographic functionality of the platform</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/CryptoKey" target="_blank" rel="noopener"><code>CryptoKey</code></a></td>
+<td>Represents a cryptographic key</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/SubtleCrypto" target="_blank" rel="noopener"><code>SubtleCrypto</code></a></td>
+<td>Provides access to common cryptographic primitives, like hashing, signing, encryption or decryption</td>
+</tr>
+</tbody>
+</table>
+<h3 id="web-standard-apis">Web Standard APIs</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/AbortController" target="_blank" rel="noopener"><code>AbortController</code></a></td>
+<td>Allows you to abort one or more DOM requests as and when desired</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener"><code>Array</code></a></td>
+<td>Represents an array of values</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer" target="_blank" rel="noopener"><code>ArrayBuffer</code></a></td>
+<td>Represents a generic, fixed-length raw binary data buffer</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Atomics" target="_blank" rel="noopener"><code>Atomics</code></a></td>
+<td>Provides atomic operations as static methods</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/BigInt" target="_blank" rel="noopener"><code>BigInt</code></a></td>
+<td>Represents a whole number with arbitrary precision</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/BigInt64Array" target="_blank" rel="noopener"><code>BigInt64Array</code></a></td>
+<td>Represents a typed array of 64-bit signed integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/BigUint64Array" target="_blank" rel="noopener"><code>BigUint64Array</code></a></td>
+<td>Represents a typed array of 64-bit unsigned integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean" target="_blank" rel="noopener"><code>Boolean</code></a></td>
+<td>Represents a logical entity and can have two values: <code>true</code> and <code>false</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval" target="_blank" rel="noopener"><code>clearInterval</code></a></td>
+<td>Cancels a timed, repeating action which was previously established by a call to <code>setInterval()</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout" target="_blank" rel="noopener"><code>clearTimeout</code></a></td>
+<td>Cancels a timed, repeating action which was previously established by a call to <code>setTimeout()</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Console" target="_blank" rel="noopener"><code>console</code></a></td>
+<td>Provides access to the browser’s debugging console</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/DataView" target="_blank" rel="noopener"><code>DataView</code></a></td>
+<td>Represents a generic view of an <code>ArrayBuffer</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" rel="noopener"><code>Date</code></a></td>
+<td>Represents a single moment in time in a platform-independent format</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/decodeURI" target="_blank" rel="noopener"><code>decodeURI</code></a></td>
+<td>Decodes a Uniform Resource Identifier (URI) previously created by <code>encodeURI</code> or by a similar routine</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent" target="_blank" rel="noopener"><code>decodeURIComponent</code></a></td>
+<td>Decodes a Uniform Resource Identifier (URI) component previously created by <code>encodeURIComponent</code> or by a similar routine</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/DOMException" target="_blank" rel="noopener"><code>DOMException</code></a></td>
+<td>Represents an error that occurs in the DOM</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/encodeURI" target="_blank" rel="noopener"><code>encodeURI</code></a></td>
+<td>Encodes a Uniform Resource Identifier (URI) by replacing each instance of certain characters by one, two, three, or four escape sequences representing the UTF-8 encoding of the character</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent" target="_blank" rel="noopener"><code>encodeURIComponent</code></a></td>
+<td>Encodes a Uniform Resource Identifier (URI) component by replacing each instance of certain characters by one, two, three, or four escape sequences representing the UTF-8 encoding of the character</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error" target="_blank" rel="noopener"><code>Error</code></a></td>
+<td>Represents an error when trying to execute a statement or accessing a property</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/EvalError" target="_blank" rel="noopener"><code>EvalError</code></a></td>
+<td>Represents an error that occurs regarding the global function <code>eval()</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array" target="_blank" rel="noopener"><code>Float32Array</code></a></td>
+<td>Represents a typed array of 32-bit floating point numbers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float64Array" target="_blank" rel="noopener"><code>Float64Array</code></a></td>
+<td>Represents a typed array of 64-bit floating point numbers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Function" target="_blank" rel="noopener"><code>Function</code></a></td>
+<td>Represents a function</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Infinity" target="_blank" rel="noopener"><code>Infinity</code></a></td>
+<td>Represents the mathematical Infinity value</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Int8Array" target="_blank" rel="noopener"><code>Int8Array</code></a></td>
+<td>Represents a typed array of 8-bit signed integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Int16Array" target="_blank" rel="noopener"><code>Int16Array</code></a></td>
+<td>Represents a typed array of 16-bit signed integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Int32Array" target="_blank" rel="noopener"><code>Int32Array</code></a></td>
+<td>Represents a typed array of 32-bit signed integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl" target="_blank" rel="noopener"><code>Intl</code></a></td>
+<td>Provides access to internationalization and localization functionality</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/isFinite" target="_blank" rel="noopener"><code>isFinite</code></a></td>
+<td>Determines whether a value is a finite number</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/isNaN" target="_blank" rel="noopener"><code>isNaN</code></a></td>
+<td>Determines whether a value is <code>NaN</code> or not</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/JSON" target="_blank" rel="noopener"><code>JSON</code></a></td>
+<td>Provides functionality to convert JavaScript values to and from the JSON format</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map" target="_blank" rel="noopener"><code>Map</code></a></td>
+<td>Represents a collection of values, where each value may occur only once</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Math" target="_blank" rel="noopener"><code>Math</code></a></td>
+<td>Provides access to mathematical functions and constants</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number" target="_blank" rel="noopener"><code>Number</code></a></td>
+<td>Represents a numeric value</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object" target="_blank" rel="noopener"><code>Object</code></a></td>
+<td>Represents the object that is the base of all JavaScript objects</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/parseFloat" target="_blank" rel="noopener"><code>parseFloat</code></a></td>
+<td>Parses a string argument and returns a floating point number</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/parseInt" target="_blank" rel="noopener"><code>parseInt</code></a></td>
+<td>Parses a string argument and returns an integer of the specified radix</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="noopener"><code>Promise</code></a></td>
+<td>Represents the eventual completion (or failure) of an asynchronous operation, and its resulting value</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy" target="_blank" rel="noopener"><code>Proxy</code></a></td>
+<td>Represents an object that is used to define custom behavior for fundamental operations (e.g. property lookup, assignment, enumeration, function invocation, etc)</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/queueMicrotask" target="_blank" rel="noopener"><code>queueMicrotask</code></a></td>
+<td>Queues a microtask to be executed</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RangeError" target="_blank" rel="noopener"><code>RangeError</code></a></td>
+<td>Represents an error when a value is not in the set or range of allowed values</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError" target="_blank" rel="noopener"><code>ReferenceError</code></a></td>
+<td>Represents an error when a non-existent variable is referenced</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Reflect" target="_blank" rel="noopener"><code>Reflect</code></a></td>
+<td>Provides methods for interceptable JavaScript operations</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp" target="_blank" rel="noopener"><code>RegExp</code></a></td>
+<td>Represents a regular expression, allowing you to match combinations of characters</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set" target="_blank" rel="noopener"><code>Set</code></a></td>
+<td>Represents a collection of values, where each value may occur only once</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/setInterval" target="_blank" rel="noopener"><code>setInterval</code></a></td>
+<td>Repeatedly calls a function, with a fixed time delay between each call</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/setTimeout" target="_blank" rel="noopener"><code>setTimeout</code></a></td>
+<td>Calls a function or evaluates an expression after a specified number of milliseconds</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer" target="_blank" rel="noopener"><code>SharedArrayBuffer</code></a></td>
+<td>Represents a generic, fixed-length raw binary data buffer</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" rel="noopener"><code>String</code></a></td>
+<td>Represents a sequence of characters</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/Web_Workers_API/Structured_clone_algorithm" target="_blank" rel="noopener"><code>structuredClone</code></a></td>
+<td>Creates a deep copy of a value</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank" rel="noopener"><code>Symbol</code></a></td>
+<td>Represents a unique and immutable data type that is used as the key of an object property</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError" target="_blank" rel="noopener"><code>SyntaxError</code></a></td>
+<td>Represents an error when trying to interpret syntactically invalid code</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/TypeError" target="_blank" rel="noopener"><code>TypeError</code></a></td>
+<td>Represents an error when a value is not of the expected type</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array" target="_blank" rel="noopener"><code>Uint8Array</code></a></td>
+<td>Represents a typed array of 8-bit unsigned integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray" target="_blank" rel="noopener"><code>Uint8ClampedArray</code></a></td>
+<td>Represents a typed array of 8-bit unsigned integers clamped to 0-255</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array" target="_blank" rel="noopener"><code>Uint32Array</code></a></td>
+<td>Represents a typed array of 32-bit unsigned integers</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/URIError" target="_blank" rel="noopener"><code>URIError</code></a></td>
+<td>Represents an error when a global URI handling function was used in a wrong way</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/URL" target="_blank" rel="noopener"><code>URL</code></a></td>
+<td>Represents an object providing static methods used for creating object URLs</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/URLPattern" target="_blank" rel="noopener"><code>URLPattern</code></a></td>
+<td>Represents a URL pattern</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/API/URLSearchParams" target="_blank" rel="noopener"><code>URLSearchParams</code></a></td>
+<td>Represents a collection of key/value pairs</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WeakMap" target="_blank" rel="noopener"><code>WeakMap</code></a></td>
+<td>Represents a collection of key/value pairs in which the keys are weakly referenced</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WeakSet" target="_blank" rel="noopener"><code>WeakSet</code></a></td>
+<td>Represents a collection of objects in which each object may occur only once</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly" target="_blank" rel="noopener"><code>WebAssembly</code></a></td>
+<td>Provides access to WebAssembly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nextjs-specific-polyfills">Next.js Specific Polyfills</h3>
+<ul>
+<li><a href="https://nodejs.org/api/async_context.html#class-asynclocalstorage" target="_blank" rel="noopener"><code>AsyncLocalStorage</code></a></li>
+</ul>
+<h3 id="environment-variables">Environment Variables</h3>
+<p>You can use <code>process.env</code> to access <a href="/docs/app/guides/environment-variables">Environment Variables</a> for both <code>next dev</code> and <code>next build</code>.</p>
+<h3 id="unsupported-apis">Unsupported APIs</h3>
+<p>The Edge Runtime has some restrictions including:</p>
+<ul>
+<li>Native Node.js APIs <strong>are not supported</strong>. For example, you can’t read or write to the filesystem.</li>
+<li><code>node_modules</code> <em>can</em> be used, as long as they implement ES Modules and do not use native Node.js APIs.</li>
+<li>Calling <code>require</code> directly is <strong>not allowed</strong>. Use ES Modules instead.</li>
+</ul>
+<p>The following JavaScript language features are disabled, and <strong>will not work:</strong></p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/eval" target="_blank" rel="noopener"><code>eval</code></a></td>
+<td>Evaluates JavaScript code represented as a string</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Function" target="_blank" rel="noopener"><code>new Function(evalString)</code></a></td>
+<td>Creates a new function with the code provided as an argument</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/compile" target="_blank" rel="noopener"><code>WebAssembly.compile</code></a></td>
+<td>Compiles a WebAssembly module from a buffer source</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate" target="_blank" rel="noopener"><code>WebAssembly.instantiate</code></a></td>
+<td>Compiles and instantiates a WebAssembly module from a buffer source</td>
+</tr>
+</tbody>
+</table>
+<p>In rare cases, your code could contain (or import) some dynamic code evaluation statements which <em>cannot be reached at runtime</em> and which cannot be removed by treeshaking.
+You can relax the check to allow specific files with your Proxy configuration:</p>
+<pre><code class="language-javascript">export const config = {
+  unstable_allowDynamic: [
+    // allows a single file
+    '/lib/utilities.js',
+    // use a glob to allow anything in the function-bind 3rd party module
+    '**/node_modules/function-bind/**',
+  ],
+}
+</code></pre>
+<p><code>unstable_allowDynamic</code> is a <a href="https://github.com/micromatch/micromatch#matching-features" target="_blank" rel="noopener">glob</a>, or an array of globs, ignoring dynamic code evaluation for specific files. The globs are relative to your application root folder.</p>
+<p>Be warned that if these statements are executed on the Edge, <em>they will throw and cause a runtime error</em>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

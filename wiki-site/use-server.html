@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-server — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-server">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#using-use-server-at-the-top-of-a-file">Using use server at the top of a file</a></li><ul><li><a href="#using-server-functions-in-a-client-component">Using Server Functions in a Client Component</a></li></ul><li><a href="#using-use-server-inline">Using use server inline</a></li><li><a href="#security-considerations">Security considerations</a></li><ul><li><a href="#authentication-and-authorization">Authentication and authorization</a></li><li><a href="#return-values">Return values</a></li></ul><li><a href="#reference">Reference</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-server</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use the use server directive to execute code on the server.</td></tr></table><p>The <code>use server</code> directive designates a function or file to be executed on the <strong>server side</strong>. It can be used at the top of a file to indicate that all functions in the file are server-side, or inline at the top of a function to mark the function as a <a href="https://19.react.dev/reference/rsc/server-functions" target="_blank" rel="noopener">Server Function</a>. This is a React feature.</p>
+<h2 id="using-use-server-at-the-top-of-a-file">Using <code>use server</code> at the top of a file</h2>
+<p>The following example shows a file with a <code>use server</code> directive at the top. All functions in the file are executed on the server.</p>
+<pre><code class="language-tsx">'use server'
+import { db } from '@/lib/db' // Your database client
+import { auth } from '@/lib/auth'
+
+export async function createUser(data: { name: string; email: string }) {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+
+  const user = await db.user.create({ data })
+  return { id: user.id, name: user.name }
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+import { db } from '@/lib/db' // Your database client
+import { auth } from '@/lib/auth'
+
+export async function createUser(data) {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+
+  const user = await db.user.create({ data })
+  return { id: user.id, name: user.name }
+}
+</code></pre>
+<h3 id="using-server-functions-in-a-client-component">Using Server Functions in a Client Component</h3>
+<p>To use Server Functions in Client Components you need to create your Server Functions in a dedicated file using the <code>use server</code> directive at the top of the file. These Server Functions can then be imported into Client and Server Components and executed.</p>
+<p>Assuming you have a <code>fetchUsers</code> Server Function in <code>actions.ts</code>:</p>
+<pre><code class="language-tsx">'use server'
+import { db } from '@/lib/db' // Your database client
+import { auth } from '@/lib/auth'
+
+export async function fetchUsers() {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+
+  const users = await db.user.findMany({
+    select: { id: true, name: true, email: true },
+  })
+  return users
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+import { db } from '@/lib/db' // Your database client
+import { auth } from '@/lib/auth'
+
+export async function fetchUsers() {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+
+  const users = await db.user.findMany({
+    select: { id: true, name: true, email: true },
+  })
+  return users
+}
+</code></pre>
+<p>Then you can import the <code>fetchUsers</code> Server Function into a Client Component and execute it on the client-side.</p>
+<pre><code class="language-tsx">'use client'
+import { fetchUsers } from '../actions'
+
+export default function MyButton() {
+  return &lt;button onClick={() =&gt; fetchUsers()}&gt;Fetch Users&lt;/button&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+import { fetchUsers } from '../actions'
+
+export default function MyButton() {
+  return &lt;button onClick={() =&gt; fetchUsers()}&gt;Fetch Users&lt;/button&gt;
+}
+</code></pre>
+<h2 id="using-use-server-inline">Using <code>use server</code> inline</h2>
+<p>In the following example, <code>use server</code> is used inline at the top of a function to mark it as a <a href="https://19.react.dev/reference/rsc/server-functions" target="_blank" rel="noopener">Server Function</a>:</p>
+<pre><code class="language-tsx">import { EditPost } from './edit-post'
+import { revalidatePath } from 'next/cache'
+
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const post = await getPost(params.id)
+
+  async function updatePost(formData: FormData) {
+    'use server'
+    // Verify auth before saving (e.g. inside savePost)
+    await savePost(params.id, formData)
+    revalidatePath(`/posts/${params.id}`)
+  }
+
+  return &lt;EditPost updatePostAction={updatePost} post={post} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { EditPost } from './edit-post'
+import { revalidatePath } from 'next/cache'
+
+export default async function PostPage({ params }) {
+  const post = await getPost(params.id)
+
+  async function updatePost(formData) {
+    'use server'
+    // Verify auth before saving (e.g. inside savePost)
+    await savePost(params.id, formData)
+    revalidatePath(`/posts/${params.id}`)
+  }
+
+  return &lt;EditPost updatePostAction={updatePost} post={post} /&gt;
+}
+</code></pre>
+<h2 id="security-considerations">Security considerations</h2>
+<p>Design your data access functions as secure primitives: validate inputs, check authentication and authorization, and constrain return types to only what the caller needs. When Server Functions delegate to a <a href="/docs/app/guides/data-security#using-a-data-access-layer-for-mutations">Data Access Layer</a>, these guarantees live in one place and apply consistently.</p>
+<p>{/* TODO: showcase input validation */}</p>
+<h3 id="authentication-and-authorization">Authentication and authorization</h3>
+<p>Always authenticate and authorize users before performing sensitive server-side operations. Read authentication from cookies or headers rather than accepting tokens as function parameters.</p>
+<pre><code class="language-tsx">'use server'
+
+import { db } from '@/lib/db' // Your database client
+import { auth } from '@/lib/auth' // Your authentication library
+
+export async function createUser(data: { name: string; email: string }) {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+  const newUser = await db.user.create({ data })
+  return { id: newUser.id, name: newUser.name }
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+
+import { db } from '@/lib/db' // Your database client
+import { auth } from '@/lib/auth' // Your authentication library
+
+export async function createUser(data) {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+  const newUser = await db.user.create({ data })
+  return { id: newUser.id, name: newUser.name }
+}
+</code></pre>
+<h3 id="return-values">Return values</h3>
+<p>Server Function return values are serialized and sent to the client. Only return data the UI needs, not raw database records. See the <a href="/docs/app/guides/data-security#controlling-return-values">Data Security guide</a> for more details.</p>
+<h2 id="reference">Reference</h2>
+<p>See the <a href="https://react.dev/reference/rsc/use-server" target="_blank" rel="noopener">React documentation</a> for more information on <code>use server</code>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

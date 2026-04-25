@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>next-request — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-next-request">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#cookies">cookies</a></li><ul><li><a href="#setname-value">set(name, value)</a></li><li><a href="#getname">get(name)</a></li><li><a href="#getall">getAll()</a></li><li><a href="#deletename">delete(name)</a></li><li><a href="#hasname">has(name)</a></li><li><a href="#clear">clear()</a></li></ul><li><a href="#nexturl">nextUrl</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">next-request</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for NextRequest.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>NextRequest extends the <a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener">Web Request API</a> with additional convenience methods.</p>
+<h2 id="cookies"><code>cookies</code></h2>
+<p>Read or mutate the <a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie" target="_blank" rel="noopener"><code>Set-Cookie</code></a> header of the request.</p>
+<h3 id="setname-value"><code>set(name, value)</code></h3>
+<p>Given a name, set a cookie with the given value on the request.</p>
+<pre><code class="language-ts">// Given incoming request /home
+// Set a cookie to hide the banner
+// request will have a `Set-Cookie:show-banner=false;path=/home` header
+request.cookies.set('show-banner', 'false')
+</code></pre>
+<h3 id="getname"><code>get(name)</code></h3>
+<p>Given a cookie name, return the value of the cookie. If the cookie is not found, <code>undefined</code> is returned. If multiple cookies are found, the first one is returned.</p>
+<pre><code class="language-ts">// Given incoming request /home
+// { name: 'show-banner', value: 'false', Path: '/home' }
+request.cookies.get('show-banner')
+</code></pre>
+<h3 id="getall"><code>getAll()</code></h3>
+<p>Given a cookie name, return the values of the cookie. If no name is given, return all cookies on the request.</p>
+<pre><code class="language-ts">// Given incoming request /home
+// [
+//   { name: 'experiments', value: 'new-pricing-page', Path: '/home' },
+//   { name: 'experiments', value: 'winter-launch', Path: '/home' },
+// ]
+request.cookies.getAll('experiments')
+// Alternatively, get all cookies for the request
+request.cookies.getAll()
+</code></pre>
+<h3 id="deletename"><code>delete(name)</code></h3>
+<p>Given a cookie name, delete the cookie from the request.</p>
+<pre><code class="language-ts">// Returns true for deleted, false is nothing is deleted
+request.cookies.delete('experiments')
+</code></pre>
+<h3 id="hasname"><code>has(name)</code></h3>
+<p>Given a cookie name, return <code>true</code> if the cookie exists on the request.</p>
+<pre><code class="language-ts">// Returns true if cookie exists, false if it does not
+request.cookies.has('experiments')
+</code></pre>
+<h3 id="clear"><code>clear()</code></h3>
+<p>Remove all cookies from the request.</p>
+<pre><code class="language-ts">request.cookies.clear()
+</code></pre>
+<h2 id="nexturl"><code>nextUrl</code></h2>
+<p>Extends the native <a href="https://developer.mozilla.org/docs/Web/API/URL" target="_blank" rel="noopener"><code>URL</code></a> API with additional convenience methods, including Next.js specific properties.</p>
+<pre><code class="language-ts">// Given a request to /home, pathname is /home
+request.nextUrl.pathname
+// Given a request to /home?name=lee, searchParams is { 'name': 'lee' }
+request.nextUrl.searchParams
+</code></pre>
+<p>The following options are available:</p>
+<PagesOnly>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>basePath</code></td>
+<td><code>string</code></td>
+<td>The <a href="/docs/pages/api-reference/config/next-config-js/basePath">base path</a> of the URL.</td>
+</tr>
+<tr>
+<td><code>buildId</code></td>
+<td><code>string</code> | <code>undefined</code></td>
+<td>The build identifier of the Next.js application. Can be <a href="/docs/pages/api-reference/config/next-config-js/generateBuildId">customized</a>.</td>
+</tr>
+<tr>
+<td><code>defaultLocale</code></td>
+<td><code>string</code> | <code>undefined</code></td>
+<td>The default locale for <a href="/docs/pages/guides/internationalization">internationalization</a>.</td>
+</tr>
+<tr>
+<td><code>domainLocale</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- <code>defaultLocale</code></td>
+<td><code>string</code></td>
+<td>The default locale within a domain.</td>
+</tr>
+<tr>
+<td>- <code>domain</code></td>
+<td><code>string</code></td>
+<td>The domain associated with a specific locale.</td>
+</tr>
+<tr>
+<td>- <code>http</code></td>
+<td><code>boolean</code> | <code>undefined</code></td>
+<td>Indicates if the domain is using HTTP.</td>
+</tr>
+<tr>
+<td><code>locales</code></td>
+<td><code>string[]</code> | <code>undefined</code></td>
+<td>An array of available locales.</td>
+</tr>
+<tr>
+<td><code>locale</code></td>
+<td><code>string</code> | <code>undefined</code></td>
+<td>The currently active locale.</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td><code>URL</code></td>
+<td>The URL object.</td>
+</tr>
+</tbody>
+</table>
+</PagesOnly>
+<AppOnly>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>basePath</code></td>
+<td><code>string</code></td>
+<td>The <a href="/docs/app/api-reference/config/next-config-js/basePath">base path</a> of the URL.</td>
+</tr>
+<tr>
+<td><code>buildId</code></td>
+<td><code>string</code> | <code>undefined</code></td>
+<td>The build identifier of the Next.js application. Can be <a href="/docs/app/api-reference/config/next-config-js/generateBuildId">customized</a>.</td>
+</tr>
+<tr>
+<td><code>pathname</code></td>
+<td><code>string</code></td>
+<td>The pathname of the URL.</td>
+</tr>
+<tr>
+<td><code>searchParams</code></td>
+<td><code>Object</code></td>
+<td>The search parameters of the URL.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> The internationalization properties from the Pages Router are not available for usage in the App Router. Learn more about <a href="/docs/app/guides/internationalization">internationalization with the App Router</a>.</p>
+</blockquote>
+</AppOnly>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0</code></td>
+<td><code>ip</code> and <code>geo</code> removed.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

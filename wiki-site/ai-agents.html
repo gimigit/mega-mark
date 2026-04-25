@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Next.js: ALWAYS read docs before coding — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-ai-agents">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-it-works">How it works</a></li><li><a href="#getting-started">Getting started</a></li><ul><li><a href="#new-projects">New projects</a></li><li><a href="#existing-projects">Existing projects</a></li></ul><li><a href="#understanding-agentsmd">Understanding AGENTS.md</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Next.js: ALWAYS read docs before coding</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>AI Coding Agents</td></tr><tr><th>description</th><td>Learn how to configure your Next.js project so AI coding agents use up-to-date documentation instead of outdated training data.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Next.js ships version-matched documentation inside the <code>next</code> package, allowing AI coding agents to reference accurate, up-to-date APIs and patterns. An <code>AGENTS.md</code> file at the root of your project directs agents to these bundled docs instead of their training data.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>When you install <code>next</code>, the Next.js documentation is bundled at <code>node_modules/next/dist/docs/</code>. The bundled docs mirror the structure of the <a href="https://nextjs.org/docs" target="_blank" rel="noopener">Next.js documentation site</a>:</p>
+<pre><code class="language-txt">node_modules/next/dist/docs/
+├── 01-app/
+│   ├── 01-getting-started/
+│   ├── 02-guides/
+│   └── 03-api-reference/
+├── 02-pages/
+├── 03-architecture/
+└── index.mdx
+</code></pre>
+<p>This means agents always have access to docs that match your installed version — no network request or external lookup required.</p>
+<p>The <code>AGENTS.md</code> file at the root of your project tells agents to read these bundled docs before writing any code. Most AI coding agents — including Claude Code, Cursor, GitHub Copilot, and others — automatically read <code>AGENTS.md</code> when they start a session.</p>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="new-projects">New projects</h3>
+<p><a href="/docs/app/api-reference/cli/create-next-app"><code>create-next-app</code></a> generates <code>AGENTS.md</code> and <code>CLAUDE.md</code> automatically. No additional setup is needed:</p>
+<pre><code class="language-bash">pnpm create next-app@canary
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@canary
+</code></pre>
+<pre><code class="language-bash">yarn create next-app@canary
+</code></pre>
+<pre><code class="language-bash">bun create next-app@canary
+</code></pre>
+<p>If you don’t want the agent files, pass <code>--no-agents-md</code>:</p>
+<pre><code class="language-bash">npx create-next-app@canary --no-agents-md
+</code></pre>
+<h3 id="existing-projects">Existing projects</h3>
+<p>Ensure you are on Next.js <code>v16.2.0-canary.37</code> or later, then add the following files to the root of your project.</p>
+<p><code>AGENTS.md</code> contains the instructions that agents will read:</p>
+<pre><code class="language-md">&lt;!-- BEGIN:nextjs-agent-rules --&gt;
+
+# Next.js: ALWAYS read docs before coding
+
+Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+
+&lt;!-- END:nextjs-agent-rules --&gt;
+</code></pre>
+<p><code>CLAUDE.md</code> uses the <code>@</code> import syntax to include <code>AGENTS.md</code>, so <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a> users get the same instructions without duplicating content:</p>
+<pre><code class="language-md">@AGENTS.md
+</code></pre>
+<details>
+<summary>For earlier versions</summary>
+<p>On version 16.1 and earlier, use the codemod to generate these files automatically:</p>
+<pre><code class="language-bash">npx @next/codemod@latest agents-md
+</code></pre>
+<p>The codemod outputs the bundled docs to <code>.next-docs/</code> in the project root instead of <code>node_modules/next/dist/docs/</code>, and the generated agent files will point to that directory.</p>
+</details>
+<h2 id="understanding-agentsmd">Understanding <a href="http://AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a></h2>
+<p>The default <code>AGENTS.md</code> contains a single, focused instruction: <strong>read the bundled docs before writing code</strong>. This is intentionally minimal — the goal is to redirect agents from stale training data to the accurate, version-matched documentation in <code>node_modules/next/dist/docs/</code>.</p>
+<p>The <code>&lt;!-- BEGIN:nextjs-agent-rules --&gt;</code> and <code>&lt;!-- END:nextjs-agent-rules --&gt;</code> comment markers delimit the Next.js-managed section. You can add your own project-specific instructions outside these markers without worrying about them being overwritten by future updates.</p>
+<p>The bundled docs include guides, API references, and file conventions for the App Router and Pages Router. When an agent encounters a task involving routing, data fetching, or any other Next.js feature, it can look up the correct API in the bundled docs rather than relying on potentially outdated training data.</p>
+<blockquote>
+<p><strong>Good to know:</strong> To see how bundled docs and <code>AGENTS.md</code> improve agent performance on real-world Next.js tasks, visit the <a href="https://nextjs.org/evals" target="_blank" rel="noopener">benchmark results</a>.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

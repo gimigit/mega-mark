@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>unstable_nostore — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-unstable_nostore">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">unstable_nostore</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the unstable_noStore function.</td></tr><tr><th>version</th><td>legacy</td></tr></table><p><strong>In version 15, we recommend using <a href="/docs/app/api-reference/functions/connection"><code>connection</code></a> instead of <code>unstable_noStore</code>.</strong></p>
+<p><code>unstable_noStore</code> can be used to declaratively opt out of prerendering and indicate a particular component should not be cached.</p>
+<pre><code class="language-jsx">import { unstable_noStore as noStore } from 'next/cache';
+
+export default async function ServerComponent() {
+  noStore();
+  const result = await db.query(...);
+  ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>unstable_noStore</code> is equivalent to <code>cache: 'no-store'</code> on a <code>fetch</code></li>
+<li><code>unstable_noStore</code> is preferred over <code>export const dynamic = 'force-dynamic'</code> as it is more granular and can be used on a per-component basis</li>
+</ul>
+</blockquote>
+<ul>
+<li>Using <code>unstable_noStore</code> inside <a href="/docs/app/api-reference/functions/unstable_cache"><code>unstable_cache</code></a> will not opt out of static generation. Instead, it will defer to the cache configuration to determine whether to cache the result or not.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>If you prefer not to pass additional options to <code>fetch</code>, like <code>cache: 'no-store'</code>, <code>next: { revalidate: 0 }</code> or in cases where <code>fetch</code> is not available, you can use <code>noStore()</code> as a replacement for all of these use cases.</p>
+<pre><code class="language-jsx">import { unstable_noStore as noStore } from 'next/cache';
+
+export default async function ServerComponent() {
+  noStore();
+  const result = await db.query(...);
+  ...
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0</code></td>
+<td><code>unstable_noStore</code> deprecated for <code>connection</code>.</td>
+</tr>
+<tr>
+<td><code>v14.0.0</code></td>
+<td><code>unstable_noStore</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

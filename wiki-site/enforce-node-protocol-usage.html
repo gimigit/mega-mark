@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/enforce-node-protocol-usage — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-enforce-node-protocol-usage">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><li><a href="#options">Options</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#always">'always'</a></li><li><a href="#never">'never'</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/enforce-node-protocol-usage</h1>
+
+</div>
+<div class="article-body">
+<p>🔧 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a>.</p>
+<!-- end auto-generated rule header -->
+<p>Enforce either using, or omitting, the <code>node:</code> protocol when importing Node.js builtin modules.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This rule enforces that builtins node imports are using, or omitting, the <code>node:</code> protocol.</p>
+<p>Determining whether a specifier is a core module depends on the node version being used to run <code>eslint</code>.
+This version can be specified in the configuration with the <a href="../../README.md#importnode-version"><code>import/node-version</code> setting</a>.</p>
+<p>Reasons to prefer using the protocol include:</p>
+<ul>
+<li>the code is more explicitly and clearly referencing a Node.js built-in module</li>
+</ul>
+<p>Reasons to prefer omitting the protocol include:</p>
+<ul>
+<li>some tools don’t support the <code>node:</code> protocol</li>
+<li>the code is more portable, because import maps and automatic polyfilling can be used</li>
+</ul>
+<h2 id="options">Options</h2>
+<p>The rule requires a single string option which may be one of:</p>
+<ul>
+<li><code>'always'</code> - enforces that builtins node imports are using the <code>node:</code> protocol.</li>
+<li><code>'never'</code> - enforces that builtins node imports are not using the <code>node:</code> protocol.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="always"><code>'always'</code></h3>
+<p>❌ Invalid</p>
+<pre><code class="language-js">import fs from 'fs';
+export { promises } from 'fs';
+// require
+const fs = require('fs/promises');
+</code></pre>
+<p>✅ Valid</p>
+<pre><code class="language-js">import fs from 'node:fs';
+export { promises } from 'node:fs';
+import * as test from 'node:test';
+// require
+const fs = require('node:fs/promises');
+</code></pre>
+<h3 id="never"><code>'never'</code></h3>
+<p>❌ Invalid</p>
+<pre><code class="language-js">import fs from 'node:fs';
+export { promises } from 'node:fs';
+// require
+const fs = require('node:fs/promises');
+</code></pre>
+<p>✅ Valid</p>
+<pre><code class="language-js">import fs from 'fs';
+export { promises } from 'fs';
+
+// require
+const fs = require('fs/promises');
+
+// This rule will not enforce not using `node:` protocol when the module is only available under the `node:` protocol.
+import * as test from 'node:test';
+</code></pre>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you don’t want to consistently enforce using, or omitting, the <code>node:</code> protocol when importing Node.js builtin modules.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

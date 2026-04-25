@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>forms — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-forms">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-it-works">How it works</a></li><li><a href="#passing-additional-arguments">Passing additional arguments</a></li><li><a href="#form-validation">Form validation</a></li><li><a href="#validation-errors">Validation errors</a></li><li><a href="#pending-states">Pending states</a></li><li><a href="#optimistic-updates">Optimistic updates</a></li><li><a href="#nested-form-elements">Nested form elements</a></li><li><a href="#programmatic-form-submission">Programmatic form submission</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">forms</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Forms</td></tr><tr><th>description</th><td>Learn how to create forms in Next.js with React Server Actions.</td></tr></table><p>React Server Actions are <a href="https://react.dev/reference/rsc/server-functions" target="_blank" rel="noopener">Server Functions</a> that execute on the server. They can be called in Server and Client Components to handle form submissions. This guide will walk you through how to create forms in Next.js with Server Actions.</p>
+<aside class="callout callout-warning"><span class="callout-title">WARNING</span><p>Always verify <a href="/docs/app/guides/authentication">authentication and authorization</a> inside each Server Action, even if the form is only rendered on an authenticated page. See the <a href="/docs/app/guides/data-security">Data Security guide</a> for more details.</p>
+</aside>
+<h2 id="how-it-works">How it works</h2>
+<p>React extends the HTML <a href="https://developer.mozilla.org/docs/Web/HTML/Element/form" target="_blank" rel="noopener"><code>&lt;form&gt;</code></a> element to allow Server Actions to be invoked with the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#action" target="_blank" rel="noopener"><code>action</code></a> attribute.</p>
+<p>When used in a form, the function automatically receives the <a href="https://developer.mozilla.org/docs/Web/API/FormData/FormData" target="_blank" rel="noopener"><code>FormData</code></a> object. You can then extract the data using the native <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData#instance_methods" target="_blank" rel="noopener"><code>FormData</code> methods</a>:</p>
+<pre><code class="language-tsx">import { auth } from '@/lib/auth'
+
+export default function Page() {
+  async function createInvoice(formData: FormData) {
+    'use server'
+
+    const session = await auth()
+    if (!session?.user) {
+      throw new Error('Unauthorized')
+    }
+
+    const rawFormData = {
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status'),
+    }
+
+    // mutate data
+    // revalidate the cache
+  }
+
+  return &lt;form action={createInvoice}&gt;...&lt;/form&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { auth } from '@/lib/auth'
+
+export default function Page() {
+  async function createInvoice(formData) {
+    'use server'
+
+    const session = await auth()
+    if (!session?.user) {
+      throw new Error('Unauthorized')
+    }
+
+    const rawFormData = {
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status'),
+    }
+
+    // mutate data
+    // revalidate the cache
+  }
+
+  return &lt;form action={createInvoice}&gt;...&lt;/form&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> When working with forms that have multiple fields, use JavaScript’s <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries" target="_blank" rel="noopener"><code>Object.fromEntries()</code></a>. For example: <code>const rawFormData = Object.fromEntries(formData)</code>. Note that this object will contain extra properties prefixed with <code>$ACTION_</code>.</p>
+</blockquote>
+<h2 id="passing-additional-arguments">Passing additional arguments</h2>
+<p>Outside of form fields, you can pass additional arguments to a Server Function using the JavaScript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind" target="_blank" rel="noopener"><code>bind</code></a> method. For example, to pass the <code>userId</code> argument to the <code>updateUser</code> Server Function:</p>
+<pre><code class="language-tsx">'use client'
+
+import { updateUser } from './actions'
+
+export function UserProfile({ userId }: { userId: string }) {
+  const updateUserWithId = updateUser.bind(null, userId)
+
+  return (
+    &lt;form action={updateUserWithId}&gt;
+      &lt;input type=&quot;text&quot; name=&quot;name&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Update User Name&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { updateUser } from './actions'
+
+export function UserProfile({ userId }) {
+  const updateUserWithId = updateUser.bind(null, userId)
+
+  return (
+    &lt;form action={updateUserWithId}&gt;
+      &lt;input type=&quot;text&quot; name=&quot;name&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Update User Name&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<p>The Server Function will receive the <code>userId</code> as an additional argument:</p>
+<pre><code class="language-ts">'use server'
+
+export async function updateUser(userId: string, formData: FormData) {}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+export async function updateUser(userId, formData) {}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>An alternative is to pass arguments as hidden input fields in the form (e.g. <code>&lt;input type=&quot;hidden&quot; name=&quot;userId&quot; value={userId} /&gt;</code>). However, the value will be part of the rendered HTML and will not be encoded.</li>
+<li><code>bind</code> works in both Server and Client Components and supports progressive enhancement.</li>
+</ul>
+</blockquote>
+<h2 id="form-validation">Form validation</h2>
+<p>Forms can be validated on the client or server.</p>
+<ul>
+<li>For <strong>client-side validation</strong>, you can use the HTML attributes like <code>required</code> and <code>type=&quot;email&quot;</code> for basic validation.</li>
+<li>For <strong>server-side validation</strong>, you can use a library like <a href="https://zod.dev/" target="_blank" rel="noopener">zod</a> to validate the form fields. For example:</li>
+</ul>
+<pre><code class="language-tsx">'use server'
+
+import { z } from 'zod'
+
+const schema = z.object({
+  email: z.string({
+    invalid_type_error: 'Invalid Email',
+  }),
+})
+
+export default async function createUser(formData: FormData) {
+  const validatedFields = schema.safeParse({
+    email: formData.get('email'),
+  })
+
+  // Return early if the form data is invalid
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  // Mutate data
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+
+import { z } from 'zod'
+
+const schema = z.object({
+  email: z.string({
+    invalid_type_error: 'Invalid Email',
+  }),
+})
+
+export default async function createUser(formData) {
+  const validatedFields = schema.safeParse({
+    email: formData.get('email'),
+  })
+
+  // Return early if the form data is invalid
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  // Mutate data
+}
+</code></pre>
+<h2 id="validation-errors">Validation errors</h2>
+<p>To display validation errors or messages, turn the component that defines the <code>&lt;form&gt;</code> into a Client Component and use React <a href="https://react.dev/reference/react/useActionState" target="_blank" rel="noopener"><code>useActionState</code></a>.</p>
+<p>When using <code>useActionState</code>, the Server function signature will change to receive a new <code>prevState</code> or <code>initialState</code> parameter as its first argument.</p>
+<pre><code class="language-tsx">'use server'
+
+import { z } from 'zod'
+
+export async function createUser(initialState: any, formData: FormData) {
+  const validatedFields = schema.safeParse({
+    email: formData.get('email'),
+  })
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+
+import { z } from 'zod'
+
+// ...
+
+export async function createUser(initialState, formData) {
+  const validatedFields = schema.safeParse({
+    email: formData.get('email'),
+  })
+  // ...
+}
+</code></pre>
+<p>You can then conditionally render the error message based on the <code>state</code> object.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useActionState } from 'react'
+import { createUser } from '@/app/actions'
+
+const initialState = {
+  message: '',
+}
+
+export function Signup() {
+  const [state, formAction, pending] = useActionState(createUser, initialState)
+
+  return (
+    &lt;form action={formAction}&gt;
+      &lt;label htmlFor=&quot;email&quot;&gt;Email&lt;/label&gt;
+      &lt;input type=&quot;text&quot; id=&quot;email&quot; name=&quot;email&quot; required /&gt;
+      {/* ... */}
+      &lt;p aria-live=&quot;polite&quot;&gt;{state?.message}&lt;/p&gt;
+      &lt;button disabled={pending}&gt;Sign up&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useActionState } from 'react'
+import { createUser } from '@/app/actions'
+
+const initialState = {
+  message: '',
+}
+
+export function Signup() {
+  const [state, formAction, pending] = useActionState(createUser, initialState)
+
+  return (
+    &lt;form action={formAction}&gt;
+      &lt;label htmlFor=&quot;email&quot;&gt;Email&lt;/label&gt;
+      &lt;input type=&quot;text&quot; id=&quot;email&quot; name=&quot;email&quot; required /&gt;
+      {/* ... */}
+      &lt;p aria-live=&quot;polite&quot;&gt;{state?.message}&lt;/p&gt;
+      &lt;button disabled={pending}&gt;Sign up&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<h2 id="pending-states">Pending states</h2>
+<p>The <a href="https://react.dev/reference/react/useActionState" target="_blank" rel="noopener"><code>useActionState</code></a> hook exposes a <code>pending</code> boolean that can be used to show a loading indicator or disable the submit button while the action is being executed.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useActionState } from 'react'
+import { createUser } from '@/app/actions'
+
+export function Signup() {
+  const [state, formAction, pending] = useActionState(createUser, initialState)
+
+  return (
+    &lt;form action={formAction}&gt;
+      {/* Other form elements */}
+      &lt;button disabled={pending}&gt;Sign up&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useActionState } from 'react'
+import { createUser } from '@/app/actions'
+
+export function Signup() {
+  const [state, formAction, pending] = useActionState(createUser, initialState)
+
+  return (
+    &lt;form action={formAction}&gt;
+      {/* Other form elements */}
+      &lt;button disabled={pending}&gt;Sign up&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<p>Alternatively, you can use the <a href="https://react.dev/reference/react-dom/hooks/useFormStatus" target="_blank" rel="noopener"><code>useFormStatus</code></a> hook to show a loading indicator while the action is being executed. When using this hook, you’ll need to create a separate component to render the loading indicator. For example, to disable the button when the action is pending:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useFormStatus } from 'react-dom'
+
+export function SubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    &lt;button disabled={pending} type=&quot;submit&quot;&gt;
+      Sign Up
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useFormStatus } from 'react-dom'
+
+export function SubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    &lt;button disabled={pending} type=&quot;submit&quot;&gt;
+      Sign Up
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<p>You can then nest the <code>SubmitButton</code> component inside the form:</p>
+<pre><code class="language-tsx">import { SubmitButton } from './button'
+import { createUser } from '@/app/actions'
+
+export function Signup() {
+  return (
+    &lt;form action={createUser}&gt;
+      {/* Other form elements */}
+      &lt;SubmitButton /&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { SubmitButton } from './button'
+import { createUser } from '@/app/actions'
+
+export function Signup() {
+  return (
+    &lt;form action={createUser}&gt;
+      {/* Other form elements */}
+      &lt;SubmitButton /&gt;
+    &lt;/form&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> In React 19, <code>useFormStatus</code> includes additional keys on the returned object, like data, method, and action. If you are not using React 19, only the <code>pending</code> key is available.</p>
+</blockquote>
+<h2 id="optimistic-updates">Optimistic updates</h2>
+<p>You can use the React <a href="https://react.dev/reference/react/useOptimistic" target="_blank" rel="noopener"><code>useOptimistic</code></a> hook to optimistically update the UI before the Server Function finishes executing, rather than waiting for the response:</p>
+<pre><code class="language-tsx">'use client'
+
+import { useOptimistic } from 'react'
+import { send } from './actions'
+
+type Message = {
+  message: string
+}
+
+export function Thread({ messages }: { messages: Message[] }) {
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic&lt;
+    Message[],
+    string
+  &gt;(messages, (state, newMessage) =&gt; [...state, { message: newMessage }])
+
+  const formAction = async (formData: FormData) =&gt; {
+    const message = formData.get('message') as string
+    addOptimisticMessage(message)
+    await send(message)
+  }
+
+  return (
+    &lt;div&gt;
+      {optimisticMessages.map((m, i) =&gt; (
+        &lt;div key={i}&gt;{m.message}&lt;/div&gt;
+      ))}
+      &lt;form action={formAction}&gt;
+        &lt;input type=&quot;text&quot; name=&quot;message&quot; /&gt;
+        &lt;button type=&quot;submit&quot;&gt;Send&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useOptimistic } from 'react'
+import { send } from './actions'
+
+export function Thread({ messages }) {
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+    messages,
+    (state, newMessage) =&gt; [...state, { message: newMessage }]
+  )
+
+  const formAction = async (formData) =&gt; {
+    const message = formData.get('message')
+    addOptimisticMessage(message)
+    await send(message)
+  }
+
+  return (
+    &lt;div&gt;
+      {optimisticMessages.map((m) =&gt; (
+        &lt;div&gt;{m.message}&lt;/div&gt;
+      ))}
+      &lt;form action={formAction}&gt;
+        &lt;input type=&quot;text&quot; name=&quot;message&quot; /&gt;
+        &lt;button type=&quot;submit&quot;&gt;Send&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="nested-form-elements">Nested form elements</h2>
+<p>You can call Server Actions in elements nested inside <code>&lt;form&gt;</code> such as <code>&lt;button&gt;</code>, <code>&lt;input type=&quot;submit&quot;&gt;</code>, and <code>&lt;input type=&quot;image&quot;&gt;</code>. These elements accept the <code>formAction</code> prop or event handlers.</p>
+<p>This is useful in cases where you want to call multiple Server Actions within a form. For example, you can create a specific <code>&lt;button&gt;</code> element for saving a post draft in addition to publishing it. See the <a href="https://react.dev/reference/react-dom/components/form#handling-multiple-submission-types" target="_blank" rel="noopener">React <code>&lt;form&gt;</code> docs</a> for more information.</p>
+<h2 id="programmatic-form-submission">Programmatic form submission</h2>
+<p>You can trigger a form submission programmatically using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/requestSubmit" target="_blank" rel="noopener"><code>requestSubmit()</code></a> method. For example, when the user submits a form using the <code>⌘</code> + <code>Enter</code> keyboard shortcut, you can listen for the <code>onKeyDown</code> event:</p>
+<pre><code class="language-tsx">'use client'
+
+export function Entry() {
+  const handleKeyDown = (e: React.KeyboardEvent&lt;HTMLTextAreaElement&gt;) =&gt; {
+    if (
+      (e.ctrlKey || e.metaKey) &amp;&amp;
+      (e.key === 'Enter' || e.key === 'NumpadEnter')
+    ) {
+      e.preventDefault()
+      e.currentTarget.form?.requestSubmit()
+    }
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;textarea name=&quot;entry&quot; rows={20} required onKeyDown={handleKeyDown} /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+export function Entry() {
+  const handleKeyDown = (e) =&gt; {
+    if (
+      (e.ctrlKey || e.metaKey) &amp;&amp;
+      (e.key === 'Enter' || e.key === 'NumpadEnter')
+    ) {
+      e.preventDefault()
+      e.currentTarget.form?.requestSubmit()
+    }
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;textarea name=&quot;entry&quot; rows={20} required onKeyDown={handleKeyDown} /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>This will trigger the submission of the nearest <code>&lt;form&gt;</code> ancestor, which will invoke the Server Function.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

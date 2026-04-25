@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>09-revalidating — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-09-revalidating">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#cachelife">cacheLife</a></li><li><a href="#cachetag">cacheTag</a></li><li><a href="#revalidatetag">revalidateTag</a></li><li><a href="#updatetag">updateTag</a></li><li><a href="#revalidatepath">revalidatePath</a></li><li><a href="#what-should-i-cache">What should I cache?</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">09-revalidating</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about the APIs mentioned on this page.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><blockquote>
+<p>This page covers revalidation with <a href="/docs/app/api-reference/config/next-config-js/cacheComponents">Cache Components</a>, enabled by setting <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents: true</code></a> in your <code>next.config.ts</code> file. If you’re not using Cache Components, see the <a href="/docs/app/guides/caching-without-cache-components">Caching and Revalidating (Previous Model)</a> guide.</p>
+</blockquote>
+<p>Revalidation is the process of updating cached data. It lets you keep serving fast, cached responses while ensuring content stays fresh. There are two strategies:</p>
+<ul>
+<li><strong>Time-based revalidation</strong>: Automatically refresh cached data after a set duration using <a href="#cachelife"><code>cacheLife</code></a>.</li>
+<li><strong>On-demand revalidation</strong>: Manually invalidate cached data after a mutation using <a href="#revalidatetag"><code>revalidateTag</code></a>, <a href="#updatetag"><code>updateTag</code></a>, or <a href="#revalidatepath"><code>revalidatePath</code></a>.</li>
+</ul>
+<h2 id="cachelife"><code>cacheLife</code></h2>
+<p><a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife</code></a> controls how long cached data remains valid. Use it inside a <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> scope to set the cache lifetime.</p>
+<pre><code class="language-tsx">import { cacheLife } from 'next/cache'
+
+export async function getProducts() {
+  'use cache'
+  cacheLife('hours')
+  return db.query('SELECT * FROM products')
+}
+</code></pre>
+<p><code>cacheLife</code> accepts a profile name or a custom configuration object:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th><code>stale</code></th>
+<th><code>revalidate</code></th>
+<th><code>expire</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seconds</code></td>
+<td>0</td>
+<td>1s</td>
+<td>60s</td>
+</tr>
+<tr>
+<td><code>minutes</code></td>
+<td>5m</td>
+<td>1m</td>
+<td>1h</td>
+</tr>
+<tr>
+<td><code>hours</code></td>
+<td>5m</td>
+<td>1h</td>
+<td>1d</td>
+</tr>
+<tr>
+<td><code>days</code></td>
+<td>5m</td>
+<td>1d</td>
+<td>1w</td>
+</tr>
+<tr>
+<td><code>weeks</code></td>
+<td>5m</td>
+<td>1w</td>
+<td>30d</td>
+</tr>
+<tr>
+<td><code>max</code></td>
+<td>5m</td>
+<td>30d</td>
+<td>~indefinite</td>
+</tr>
+</tbody>
+</table>
+<p>For fine-grained control, pass an object:</p>
+<pre><code class="language-tsx">'use cache'
+cacheLife({
+  stale: 3600, // 1 hour until considered stale
+  revalidate: 7200, // 2 hours until revalidated
+  expire: 86400, // 1 day until expired
+})
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> A cache is considered “short-lived” when it uses the <code>seconds</code> profile, <code>revalidate: 0</code>, or <code>expire</code> under 5 minutes. Short-lived caches are automatically excluded from prerenders and become dynamic holes instead. See <a href="/docs/app/api-reference/functions/cacheLife#prerendering-behavior">Prerendering behavior</a> for details.</p>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife</code> API reference</a> for all profiles and custom configuration options.</p>
+<h2 id="cachetag"><code>cacheTag</code></h2>
+<p><a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code></a> lets you tag cached data so it can be invalidated on-demand. Use it inside a <a href="/docs/app/api-reference/directives/use-cache"><code>use cache</code></a> scope:</p>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+export async function getProducts() {
+  'use cache'
+  cacheTag('products')
+  return db.query('SELECT * FROM products')
+}
+</code></pre>
+<pre><code class="language-jsx">import { cacheTag } from 'next/cache'
+
+export async function getProducts() {
+  'use cache'
+  cacheTag('products')
+  return db.query('SELECT * FROM products')
+}
+</code></pre>
+<p>Once tagged, invalidate the cache using <a href="#revalidatetag"><code>revalidateTag</code></a> or <a href="#updatetag"><code>updateTag</code></a>.</p>
+<p>See the <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code> API reference</a> to learn more.</p>
+<h2 id="revalidatetag"><code>revalidateTag</code></h2>
+<p><code>revalidateTag</code> invalidates cache entries by tag using stale-while-revalidate semantics — stale content is served immediately while fresh content loads in the background. This is ideal for content where a slight delay in updates is acceptable, like blog posts or product catalogs.</p>
+<pre><code class="language-tsx">import { revalidateTag } from 'next/cache'
+
+export async function updateUser(id: string) {
+  // Mutate data
+  revalidateTag('user', 'max') // Recommended: stale-while-revalidate
+}
+</code></pre>
+<pre><code class="language-jsx">import { revalidateTag } from 'next/cache'
+
+export async function updateUser(id) {
+  // Mutate data
+  revalidateTag('user', 'max') // Recommended: stale-while-revalidate
+}
+</code></pre>
+<p>You can reuse the same tag in multiple functions to revalidate them all at once. Call <code>revalidateTag</code> in a <a href="/docs/app/getting-started/mutating-data">Server Action</a> or <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a>.</p>
+<blockquote>
+<p><strong>Good to know:</strong> The second argument sets how long stale content can be served while fresh content generates in the background. Once it expires, subsequent requests block until fresh content is ready. Using <code>'max'</code> gives the longest stale window.</p>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code> API reference</a> to learn more.</p>
+<h2 id="updatetag"><code>updateTag</code></h2>
+<p><code>updateTag</code> immediately expires cached data for read-your-own-writes scenarios — the user sees their change right away instead of stale content. Unlike <code>revalidateTag</code>, it can only be used in <a href="/docs/app/getting-started/mutating-data">Server Actions</a>.</p>
+<pre><code class="language-tsx">import { updateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+export async function createPost(formData: FormData) {
+  const post = await db.post.create({
+    data: {
+      title: formData.get('title'),
+      content: formData.get('content'),
+    },
+  })
+
+  updateTag('posts')
+  redirect(`/posts/${post.id}`)
+}
+</code></pre>
+<pre><code class="language-jsx">import { updateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+export async function createPost(formData) {
+  const post = await db.post.create({
+    data: {
+      title: formData.get('title'),
+      content: formData.get('content'),
+    },
+  })
+
+  updateTag('posts')
+  redirect(`/posts/${post.id}`)
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>updateTag</code></th>
+<th><code>revalidateTag</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Where</strong></td>
+<td>Server Actions only</td>
+<td>Server Actions and Route Handlers</td>
+</tr>
+<tr>
+<td><strong>Behavior</strong></td>
+<td>Immediately expires cache</td>
+<td>Stale-while-revalidate</td>
+</tr>
+<tr>
+<td><strong>Use case</strong></td>
+<td>Read-your-own-writes (user sees their change)</td>
+<td>Background refresh (slight delay OK)</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code> API reference</a> to learn more.</p>
+<h2 id="revalidatepath"><code>revalidatePath</code></h2>
+<p><code>revalidatePath</code> invalidates all cached data for a specific route path. Use it when you want to revalidate a route without knowing which tags are associated with it.</p>
+<pre><code class="language-tsx">import { revalidatePath } from 'next/cache'
+
+export async function updateUser(id: string) {
+  // Mutate data
+  revalidatePath('/profile')
+}
+</code></pre>
+<pre><code class="language-jsx">import { revalidatePath } from 'next/cache'
+
+export async function updateUser(id) {
+  // Mutate data
+  revalidatePath('/profile')
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Prefer tag-based revalidation (<code>revalidateTag</code>/<code>updateTag</code>) over path-based when possible — it’s more precise and avoids over-invalidating.</p>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code> API reference</a> to learn more.</p>
+<h2 id="what-should-i-cache">What should I cache?</h2>
+<p>Cache data that doesn’t depend on <a href="/docs/app/getting-started/caching#working-with-runtime-apis">runtime data</a> and that you’re OK serving from cache for a period of time. Use <code>use cache</code> with <code>cacheLife</code> to describe that behavior.</p>
+<p>For content management systems with update mechanisms, use tags with longer cache durations and rely on <code>revalidateTag</code> to refresh content when it actually changes, rather than expiring the cache preemptively.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

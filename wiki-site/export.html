@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/export — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-export">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><li><a href="#further-reading">Further Reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/export</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ❗ <code>errors</code>, ☑️ <code>recommended</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Reports funny business with exports, like repeated exports of names or defaults.</p>
+<h2 id="rule-details">Rule Details</h2>
+<pre><code class="language-js">export default class MyClass { /*...*/ } // Multiple default exports.
+
+function makeClass() { return new MyClass(...arguments) }
+
+export default makeClass // Multiple default exports.
+</code></pre>
+<p>or</p>
+<pre><code class="language-js">export const foo = function () { /*...*/ } // Multiple exports of name 'foo'.
+
+function bar() { /*...*/ }
+export { bar as foo } // Multiple exports of name 'foo'.
+</code></pre>
+<p>In the case of named/default re-export, all <code>n</code> re-exports will be reported,
+as at least <code>n-1</code> of them are clearly mistakes, but it is not clear which one
+(if any) is intended. Could be the result of copy/paste, code duplication with
+intent to rename, etc.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li>Lee Byron’s <a href="https://github.com/leebyron/ecmascript-more-export-from" target="_blank" rel="noopener">ES7</a> export proposal</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>revalidatetag — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-revalidatetag">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><ul><li><a href="#revalidation-behavior">Revalidation Behavior</a></li></ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#relationship-with-revalidatepath">Relationship with revalidatePath</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#server-action">Server Action</a></li><li><a href="#route-handler">Route Handler</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">revalidatetag</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the revalidateTag function.</td></tr></table><p><code>revalidateTag</code> allows you to invalidate cached data on-demand for a specific cache tag.</p>
+<p>This function is ideal for content where a slight delay in updates is acceptable, such as blog posts, product catalogs, or documentation. Users receive stale content while fresh data loads in the background.</p>
+<h2 id="usage">Usage</h2>
+<p><code>revalidateTag</code> can be called in Server Functions and Route Handlers.</p>
+<p><code>revalidateTag</code> cannot be called in Client Components or Proxy, as it only works in server environments.</p>
+<h3 id="revalidation-behavior">Revalidation Behavior</h3>
+<p>The revalidation behavior depends on whether you provide the second argument:</p>
+<ul>
+<li><strong>With <code>profile=&quot;max&quot;</code> (recommended)</strong>: The tag entry is marked as stale, and the next time a resource with that tag is visited, it will use stale-while-revalidate semantics. This means the stale content is served while fresh content is fetched in the background.</li>
+<li><strong>With a custom cache life profile</strong>: For advanced usage, you can specify any cache life profile that your application has defined, allowing for custom revalidation behaviors tailored to your specific caching requirements.</li>
+<li><strong>Without the second argument (deprecated)</strong>: The tag entry is expired immediately, and the next request to that resource will be a blocking revalidate/cache miss. This behavior is now deprecated, and you should either use <code>profile=&quot;max&quot;</code> or migrate to <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a>.</li>
+</ul>
+<blockquote>
+<p><strong>Good to know</strong>: When using <code>profile=&quot;max&quot;</code>, <code>revalidateTag</code> marks tagged data as stale, but fresh data is only fetched when pages using that tag are next visited. This means calling <code>revalidateTag</code> will not immediately trigger many revalidations at once. The invalidation only happens when any page using that tag is next visited.</p>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-ts">revalidateTag(tag: string, profile: string | { expire?: number }): void;
+</code></pre>
+<ul>
+<li><code>tag</code>: A string representing the cache tag associated with the data you want to revalidate. Must not exceed 256 characters. This value is case-sensitive.</li>
+<li><code>profile</code>: A string that specifies the revalidation behavior. The recommended value is <code>&quot;max&quot;</code> which provides stale-while-revalidate semantics, or any of the other default or custom profiles defined in <a href="/docs/app/api-reference/config/next-config-js/cacheLife"><code>cacheLife</code></a>. Alternatively, you can pass an object with an <code>expire</code> property for custom expiration behavior.</li>
+</ul>
+<p>Tags must first be assigned to cached data. You can do this in two ways:</p>
+<ul>
+<li>Using the <a href="/docs/app/api-reference/functions/fetch"><code>next.tags</code></a> option with <code>fetch</code> for caching external API requests:</li>
+</ul>
+<pre><code class="language-tsx">fetch(url, { next: { tags: ['posts'] } })
+</code></pre>
+<ul>
+<li>Using <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag</code></a> inside cached functions or components with the <code>'use cache'</code> directive:</li>
+</ul>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+async function getData() {
+  'use cache'
+  cacheTag('posts')
+  // ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: The single-argument form <code>revalidateTag(tag)</code> is deprecated. It currently works if TypeScript errors are suppressed, but this behavior may be removed in a future version. Update to the two-argument signature.</p>
+</blockquote>
+<h2 id="returns">Returns</h2>
+<p><code>revalidateTag</code> does not return a value.</p>
+<h2 id="relationship-with-revalidatepath">Relationship with <code>revalidatePath</code></h2>
+<p><code>revalidateTag</code> invalidates data with specific tags across all pages that use those tags, while <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a> invalidates specific page or layout paths.</p>
+<blockquote>
+<p><strong>Good to know</strong>: These functions serve different purposes and may need to be used together for comprehensive data consistency. For detailed examples and considerations, see <a href="/docs/app/api-reference/functions/revalidatePath#relationship-with-revalidatetag-and-updatetag">relationship with revalidateTag and updateTag</a> for more information.</p>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<p>The following examples demonstrate how to use <code>revalidateTag</code> in different contexts. In both cases, we’re using <code>profile=&quot;max&quot;</code> to mark data as stale and use stale-while-revalidate semantics, which is the recommended approach for most use cases.</p>
+<h3 id="server-action">Server Action</h3>
+<pre><code class="language-ts">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export default async function submit() {
+  await addPost()
+  revalidateTag('posts', 'max')
+}
+</code></pre>
+<pre><code class="language-js">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export default async function submit() {
+  await addPost()
+  revalidateTag('posts', 'max')
+}
+</code></pre>
+<h3 id="route-handler">Route Handler</h3>
+<pre><code class="language-ts">import type { NextRequest } from 'next/server'
+import { revalidateTag } from 'next/cache'
+
+export async function GET(request: NextRequest) {
+  const tag = request.nextUrl.searchParams.get('tag')
+
+  if (tag) {
+    revalidateTag(tag, 'max')
+    return Response.json({ revalidated: true, now: Date.now() })
+  }
+
+  return Response.json({
+    revalidated: false,
+    now: Date.now(),
+    message: 'Missing tag to revalidate',
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { revalidateTag } from 'next/cache'
+
+export async function GET(request) {
+  const tag = request.nextUrl.searchParams.get('tag')
+
+  if (tag) {
+    revalidateTag(tag, 'max')
+    return Response.json({ revalidated: true, now: Date.now() })
+  }
+
+  return Response.json({
+    revalidated: false,
+    now: Date.now(),
+    message: 'Missing tag to revalidate',
+  })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: For webhooks or third-party services that need immediate expiration, you can pass <code>{ expire: 0 }</code> as the second argument: <code>revalidateTag(tag, { expire: 0 })</code>. This pattern is necessary when external systems call your Route Handlers and require data to expire immediately. For all other cases, it’s recommended to use <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a> in Server Actions for immediate updates instead.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

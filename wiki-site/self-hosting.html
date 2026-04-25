@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>self-hosting — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-self-hosting">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reverse-proxy">Reverse Proxy</a></li><li><a href="#image-optimization">Image Optimization</a></li><li><a href="#proxy">Proxy</a></li><li><a href="#environment-variables">Environment Variables</a></li><li><a href="#caching-and-isr">Caching and ISR</a></li><ul><li><a href="#automatic-caching">Automatic Caching</a></li><li><a href="#static-assets">Static Assets</a></li><li><a href="#configuring-caching">Configuring Caching</a></li></ul><li><a href="#build-cache">Build Cache</a></li><li><a href="#multi-server-deployments">Multi-Server Deployments</a></li><ul><li><a href="#server-functions-encryption-key">Server Functions encryption key</a></li><li><a href="#deployment-identifier">Deployment identifier</a></li><li><a href="#shared-cache">Shared cache</a></li></ul><li><a href="#version-skew">Version Skew</a></li><li><a href="#streaming-and-suspense">Streaming and Suspense</a></li><li><a href="#multi-instance-cache-coordination">Multi-Instance Cache Coordination</a></li><li><a href="#cache-components">Cache Components</a></li><li><a href="#usage-with-cdns">Usage with CDNs</a></li><li><a href="#after">after</a></li><li><a href="#manual-graceful-shutdowns">Manual Graceful Shutdowns</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">self-hosting</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Self-Hosting</td></tr><tr><th>description</th><td>Learn how to self-host your Next.js application on a Node.js server, Docker image, or static HTML files (static exports).</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>When <a href="/docs/app/getting-started/deploying">deploying</a> your Next.js app, you may want to configure how different features are handled based on your infrastructure.</p>
+<blockquote>
+<p><strong>🎥 Watch:</strong> Learn more about self-hosting Next.js → <a href="https://www.youtube.com/watch?v=sIVL4JMqRfc" target="_blank" rel="noopener">YouTube (45 minutes)</a>.</p>
+</blockquote>
+<h2 id="reverse-proxy">Reverse Proxy</h2>
+<p>When self-hosting, it’s recommended to use a reverse proxy (like nginx) in front of your Next.js server rather than exposing it directly to the internet. A reverse proxy can handle malformed requests, slow connection attacks, payload size limits, rate limiting, and other security concerns, offloading these tasks from the Next.js server. This allows the server to dedicate its resources to rendering rather than request validation.</p>
+<h2 id="image-optimization">Image Optimization</h2>
+<p><a href="/docs/app/api-reference/components/image">Image Optimization</a> through <code>next/image</code> works self-hosted with zero configuration when deploying using <code>next start</code>. If you would prefer to have a separate service to optimize images, you can <a href="/docs/app/api-reference/components/image#loader">configure an image loader</a>.</p>
+<p>Image Optimization can be used with a <a href="/docs/app/guides/static-exports#image-optimization">static export</a> by defining a custom image loader in <code>next.config.js</code>. Note that images are optimized at runtime, not during the build.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>On glibc-based Linux systems, Image Optimization may require <a href="https://sharp.pixelplumbing.com/install#linux-memory-allocator" target="_blank" rel="noopener">additional configuration</a> to prevent excessive memory usage.</li>
+<li>Learn more about the <a href="/docs/app/api-reference/components/image#minimumcachettl">caching behavior of optimized images</a> and how to configure the TTL.</li>
+<li>You can also <a href="/docs/app/api-reference/components/image#unoptimized">disable Image Optimization</a> and still retain other benefits of using <code>next/image</code> if you prefer. For example, if you are optimizing images yourself separately.</li>
+</ul>
+</blockquote>
+<h2 id="proxy">Proxy</h2>
+<p><a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a> works self-hosted with zero configuration when deploying using <code>next start</code>. Since it requires access to the incoming request, it is not supported when using a <a href="/docs/app/guides/static-exports">static export</a>.</p>
+<p>Proxy uses the <a href="/docs/app/api-reference/edge">Edge runtime</a>, a subset of all available Node.js APIs to help ensure low latency, since it may run in front of every route or asset in your application. If you do not want this, you can use the <a href="/blog/next-15-2#nodejs-middleware-experimental">full Node.js runtime</a> to run Proxy.</p>
+<p>If you are looking to add logic (or use an external package) that requires all Node.js APIs, you might be able to move this logic to a <a href="/docs/app/api-reference/file-conventions/layout">layout</a> as a <a href="/docs/app/getting-started/server-and-client-components">Server Component</a>. For example, checking <a href="/docs/app/api-reference/functions/headers">headers</a> and <a href="/docs/app/api-reference/functions/redirect">redirecting</a>. You can also use headers, cookies, or query parameters to <a href="/docs/app/api-reference/config/next-config-js/redirects#header-cookie-and-query-matching">redirect</a> or <a href="/docs/app/api-reference/config/next-config-js/rewrites#header-cookie-and-query-matching">rewrite</a> through <code>next.config.js</code>. If that does not work, you can also use a <a href="/docs/pages/guides/custom-server">custom server</a>.</p>
+<h2 id="environment-variables">Environment Variables</h2>
+<p>Next.js can support both build time and runtime environment variables.</p>
+<p><strong>By default, environment variables are only available on the server</strong>. To expose an environment variable to the browser, it must be prefixed with <code>NEXT_PUBLIC_</code>. However, these public environment variables will be inlined into the JavaScript bundle during <code>next build</code>.</p>
+<PagesOnly>
+<p>To read runtime environment variables, we recommend using <code>getServerSideProps</code> or <a href="/docs/app/guides/migrating/app-router-migration">incrementally adopting the App Router</a>.</p>
+</PagesOnly>
+<AppOnly>
+<p>You safely read environment variables on the server during dynamic rendering.</p>
+<pre><code class="language-tsx">import { connection } from 'next/server'
+
+export default async function Component() {
+  await connection()
+  // cookies, headers, and other Request-time APIs
+  // will also opt into dynamic rendering, meaning
+  // this env variable is evaluated at runtime
+  const value = process.env.MY_VALUE
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">import { connection } from 'next/server'
+
+export default async function Component() {
+  await connection()
+  // cookies, headers, and other Request-time APIs
+  // will also opt into dynamic rendering, meaning
+  // this env variable is evaluated at runtime
+  const value = process.env.MY_VALUE
+  // ...
+}
+</code></pre>
+</AppOnly>
+<p>This allows you to use a singular Docker image that can be promoted through multiple environments with different values.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>You can run code on server startup using the <a href="/docs/app/guides/instrumentation"><code>register</code> function</a>.</li>
+</ul>
+</blockquote>
+<h2 id="caching-and-isr">Caching and ISR</h2>
+<p>Next.js can cache responses, generated static pages, build outputs, and other static assets like images, fonts, and scripts.</p>
+<p>Caching and revalidating pages (with <a href="/docs/app/guides/incremental-static-regeneration">Incremental Static Regeneration</a>) use the <strong>same Next.js server cache</strong>. By default, this cache is stored on the local filesystem (on disk) of each Next.js server instance.</p>
+<p>This works automatically for a single self-hosted <code>next start</code> instance with persistent local disk. If you run multiple instances, use ephemeral compute, or place a CDN/reverse proxy in front of Next.js, also review <a href="#configuring-caching">Configuring Caching</a>, <a href="#multi-instance-cache-coordination">Multi-Instance Cache Coordination</a>, and <a href="#usage-with-cdns">Usage with CDNs</a>.</p>
+<p>You can configure the Next.js cache location if you want to persist cached pages and data to durable storage, or share the cache across multiple containers or instances of your Next.js application.</p>
+<h3 id="automatic-caching">Automatic Caching</h3>
+<ul>
+<li>Next.js sets the <code>Cache-Control</code> header of <code>public, max-age=31536000, immutable</code> to truly immutable assets. It cannot be overridden. These immutable files contain a SHA-hash in the file name, so they can be safely cached indefinitely. For example, <a href="/docs/app/getting-started/images#local-images">Static Image Imports</a>. You can <a href="/docs/app/api-reference/components/image#minimumcachettl">configure the TTL</a> for images.</li>
+<li>Incremental Static Regeneration (ISR) sets the <code>Cache-Control</code> header of <code>s-maxage: &lt;revalidate in getStaticProps&gt;, stale-while-revalidate</code>. This revalidation time is defined in your <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code> function</a> in seconds. If you set <code>revalidate: false</code>, it will default to a one-year cache duration. To leverage this at the CDN layer, your CDN/reverse proxy must respect these directives and cache-key variability (<a href="/docs/app/guides/cdn-caching">CDN Caching</a>); otherwise, responses may bypass CDN caching or serve stale/mismatched variants during client-side navigation.</li>
+<li>Dynamically rendered pages set a <code>Cache-Control</code> header of <code>private, no-cache, no-store, max-age=0, must-revalidate</code> to prevent user-specific data from being cached. This applies to both the App Router and Pages Router. This also includes <a href="/docs/app/guides/draft-mode">Draft Mode</a>.</li>
+</ul>
+<h3 id="static-assets">Static Assets</h3>
+<p>If you want to host static assets on a different domain or CDN, you can use the <code>assetPrefix</code> <a href="/docs/app/api-reference/config/next-config-js/assetPrefix">configuration</a> in <code>next.config.js</code>. Next.js will use this asset prefix when retrieving JavaScript or CSS files. Separating your assets to a different domain does come with the downside of extra time spent on DNS and TLS resolution.</p>
+<p><a href="/docs/app/api-reference/config/next-config-js/assetPrefix">Learn more about <code>assetPrefix</code></a>.</p>
+<h3 id="configuring-caching">Configuring Caching</h3>
+<p>By default, generated cache assets will be stored in memory (defaults to 50mb) and on disk. On ephemeral compute platforms (common serverless setups), local disk is often non-persistent or unavailable, so this cache is effectively short-lived and per-instance. If you are hosting Next.js using a container orchestration platform like Kubernetes, each pod will have a copy of the cache. To prevent stale data from being shown since the cache is not shared between pods by default, you can configure the Next.js cache to provide a cache handler and disable in-memory caching.</p>
+<p>To configure the cache location when self-hosting, you can configure a custom handler in your <code>next.config.js</code> file:</p>
+<p>For production deployments, use this as a starting point and extend it with durable storage, eviction policies, error handling, and distributed tag coordination. See <a href="/docs/app/api-reference/config/next-config-js/incrementalCacheHandlerPath">Custom Next.js Cache Handler</a> and the <a href="https://github.com/vercel/next.js/tree/canary/examples/cache-handler-redis" target="_blank" rel="noopener">Redis <code>cacheHandler</code> example</a>. If you are configuring backends for <code>'use cache'</code> directives, use <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers"><code>cacheHandlers</code></a>.</p>
+<pre><code class="language-jsx">module.exports = {
+  cacheHandler: require.resolve('./cache-handler.js'),
+  cacheMaxMemorySize: 0, // disable default in-memory caching
+}
+</code></pre>
+<p>Then, create <code>cache-handler.js</code> in the root of your project, for example:</p>
+<pre><code class="language-jsx">const cache = new Map()
+
+module.exports = class CacheHandler {
+  constructor(options) {
+    this.options = options
+  }
+
+  async get(key) {
+    // This could be stored anywhere, like durable storage
+    return cache.get(key)
+  }
+
+  async set(key, data, ctx) {
+    // This could be stored anywhere, like durable storage
+    cache.set(key, {
+      value: data,
+      lastModified: Date.now(),
+      tags: ctx.tags,
+    })
+  }
+
+  async revalidateTag(tags) {
+    // tags is either a string or an array of strings
+    tags = [tags].flat()
+    // Iterate over all entries in the cache
+    for (let [key, value] of cache) {
+      // If the value's tags include the specified tag, delete this entry
+      if (value.tags.some((tag) =&gt; tags.includes(tag))) {
+        cache.delete(key)
+      }
+    }
+  }
+
+  // If you want to have temporary in memory cache for a single request that is reset
+  // before the next request you can leverage this method
+  resetRequestCache() {}
+}
+</code></pre>
+<p>Using a custom cache handler will allow you to ensure consistency across all pods hosting your Next.js application. For instance, you can save the cached values anywhere, like <a href="https://github.com/vercel/next.js/tree/canary/examples/cache-handler-redis" target="_blank" rel="noopener">Redis</a> or AWS S3.</p>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li><code>revalidatePath</code> is a convenience layer on top of cache tags. Calling <code>revalidatePath</code> will call the <code>revalidateTag</code> function with a special default tag for the provided page.</li>
+</ul>
+</blockquote>
+<h2 id="build-cache">Build Cache</h2>
+<p>Next.js generates an ID during <code>next build</code> to identify which version of your application is being served. The same build should be used and boot up multiple containers.</p>
+<p>If you are rebuilding for each stage of your environment, you will need to generate a consistent build ID to use between containers. Use the <code>generateBuildId</code> command in <code>next.config.js</code>:</p>
+<pre><code class="language-jsx">module.exports = {
+  generateBuildId: async () =&gt; {
+    // This could be anything, using the latest git hash
+    return process.env.GIT_HASH
+  },
+}
+</code></pre>
+<h2 id="multi-server-deployments">Multi-Server Deployments</h2>
+<p>When running Next.js across multiple server instances (for example, containers behind a load balancer), there are additional considerations to ensure consistent behavior.</p>
+<h3 id="server-functions-encryption-key">Server Functions encryption key</h3>
+<p>Next.js encrypts <a href="/docs/app/getting-started/mutating-data">Server Function</a> closure variables before sending them to the client. By default, a unique encryption key is generated for each build.</p>
+<p>When running multiple server instances, all instances must use the same encryption key. Otherwise, a Server Function encrypted by one instance cannot be decrypted by another, causing “Failed to find Server Action” errors.</p>
+<p>Set a consistent encryption key using the <code>NEXT_SERVER_ACTIONS_ENCRYPTION_KEY</code> environment variable. The key must be a base64-encoded value with a valid AES key length (16, 24, or 32 bytes). Next.js generates 32-byte keys by default.</p>
+<pre><code class="language-bash">NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=your-generated-key next build
+</code></pre>
+<p>The key is embedded in the build output and used automatically at runtime. Learn more in the <a href="/docs/app/guides/data-security#overwriting-encryption-keys-advanced">Data Security guide</a>.</p>
+<h3 id="deployment-identifier">Deployment identifier</h3>
+<p>Configure a <a href="/docs/app/api-reference/config/next-config-js/deploymentId"><code>deploymentId</code></a> to enable version skew protection during rolling deployments. This ensures clients always receive assets from a consistent deployment version.</p>
+<h3 id="shared-cache">Shared cache</h3>
+<p>By default, Next.js uses an in-memory cache that is not shared across instances. For consistent caching behavior, use <a href="/docs/app/api-reference/directives/use-cache-remote"><code>'use cache: remote'</code></a> with a <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers">custom cache handler</a> that stores data in external storage.</p>
+<h2 id="version-skew">Version Skew</h2>
+<p>When self-hosting across multiple instances or doing rolling deployments, <a href="/docs/app/glossary#version-skew">version skew</a> can cause:</p>
+<ul>
+<li><strong>Missing assets</strong>: The client requests JavaScript or CSS files that no longer exist on the server</li>
+<li><strong>Server Function mismatches</strong>: The client invokes a Server Function using an ID from a previous build that the server no longer recognizes</li>
+<li><strong>Navigation failures</strong>: Prefetched page data from an old deployment is incompatible with the new server</li>
+</ul>
+<p>Next.js uses the <a href="/docs/app/api-reference/config/next-config-js/deploymentId"><code>deploymentId</code></a> to detect and handle version skew. When a deployment ID is configured:</p>
+<ul>
+<li>Static assets include a <code>?dpl=&lt;deploymentId&gt;</code> query parameter</li>
+<li>Client-side navigation requests include an <code>x-deployment-id</code> header</li>
+<li>The server compares the client’s deployment ID with its own</li>
+</ul>
+<p>If a mismatch is detected, Next.js triggers a hard navigation (full page reload) instead of a client-side navigation. This ensures the client fetches assets from a consistent deployment version.</p>
+<pre><code class="language-js">module.exports = {
+  deploymentId: process.env.DEPLOYMENT_VERSION,
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> When the application is reloaded, there may be a loss of application state if it’s not designed to persist between page navigations. URL state or local storage would persist, but component state like <code>useState</code> would be lost.</p>
+</blockquote>
+<AppOnly>
+<h2 id="streaming-and-suspense">Streaming and Suspense</h2>
+<p>The Next.js App Router supports <a href="/docs/app/api-reference/file-conventions/loading">streaming responses</a> when self-hosting. If you are using nginx or a similar proxy, you will need to configure it to disable buffering to enable streaming.</p>
+<p>For example, you can disable buffering in nginx by setting <code>X-Accel-Buffering</code> to <code>no</code>:</p>
+<pre><code class="language-js">module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/:path*{/}?',
+        headers: [
+          {
+            key: 'X-Accel-Buffering',
+            value: 'no',
+          },
+        ],
+      },
+    ]
+  },
+}
+</code></pre>
+<p>Beyond nginx, ensure that your entire infrastructure supports streaming end-to-end:</p>
+<ul>
+<li><strong>Load balancers</strong> must support chunked transfer encoding or HTTP/2 streaming. Some cloud load balancers (for example, AWS ALB with Lambda integration) may buffer responses by default.</li>
+<li><strong>Reverse proxies</strong> between the load balancer and Next.js must also pass through chunked responses without buffering.</li>
+<li>If using <a href="/docs/app/guides/ppr-platform-guide">Partial Prerendering</a>, streaming support is required. Without it, the static shell and dynamic content are delivered together after the full render completes, eliminating PPR’s time-to-first-byte advantage.</li>
+</ul>
+<h2 id="multi-instance-cache-coordination">Multi-Instance Cache Coordination</h2>
+<p>In addition to the <a href="/docs/app/guides/self-hosting#multi-server-deployments">multi-server configuration</a> above (encryption key, deployment ID, shared cache), App Router deployments with multiple instances need cache tag coordination.</p>
+<p>By default, calling <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag()</code></a> on one instance only invalidates the cache on that instance. Other instances continue serving stale content until they independently discover the invalidation.</p>
+<p>To coordinate tag invalidation across instances, implement the <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers#refreshtags"><code>refreshTags()</code></a> method in your <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers">custom cache handler</a>. This method is called before each request and should sync tag state from shared storage (like Redis) so all instances learn about invalidations promptly.</p>
+<p>For a detailed explanation of the tag architecture, see <a href="/docs/app/guides/how-revalidation-works">How Revalidation Works</a>.</p>
+<h2 id="cache-components">Cache Components</h2>
+<p><a href="/docs/app/getting-started/caching">Cache Components</a> works by default with Next.js and is not a CDN-only feature. This includes deployment as a Node.js server (through <code>next start</code>) and when used with a Docker container.</p>
+<h2 id="usage-with-cdns">Usage with CDNs</h2>
+<p>When using a CDN in front of your Next.js application, the page will include <code>Cache-Control: private</code> response header when dynamic APIs are accessed. This ensures that the resulting HTML page is marked as non-cacheable. If the page is fully prerendered to static, it will include <code>Cache-Control: public</code> to allow the page to be cached on the CDN.</p>
+<p>If you don’t need a mix of both static and dynamic components, you can make your entire route static and cache the output HTML on a CDN. This Automatic Static Optimization is the default behavior when running <code>next build</code> if dynamic APIs are not used.</p>
+<p>For detailed guidance on CDN caching behavior, graceful degradation, and cache variability, see <a href="/docs/app/guides/cdn-caching">CDN Caching</a>. For Partial Prerendering support on different platforms, see the <a href="/docs/app/guides/ppr-platform-guide">PPR Platform Guide</a> and the <a href="/docs/app/api-reference/config/next-config-js/adapterPath">Deployment Adapter API</a>.</p>
+</AppOnly>
+<AppOnly>
+<h2 id="after"><code>after</code></h2>
+<p><a href="/docs/app/api-reference/functions/after"><code>after</code></a> is fully supported when self-hosting with <code>next start</code>.</p>
+<p>When stopping the server, ensure a graceful shutdown by sending <code>SIGINT</code> or <code>SIGTERM</code> signals and waiting. The Next.js server will finish in-flight requests and execute any pending <code>after()</code> callbacks before exiting. Platforms should allow a configurable drain period (10-30 seconds is recommended) to ensure all background work completes.</p>
+</AppOnly>
+<PagesOnly>
+<h2 id="manual-graceful-shutdowns">Manual Graceful Shutdowns</h2>
+<p>When self-hosting, you might want to run code when the server shuts down on <code>SIGTERM</code> or <code>SIGINT</code> signals.</p>
+<p>You can set the env variable <code>NEXT_MANUAL_SIG_HANDLE</code> to <code>true</code> and then register a handler for that signal inside your <code>_document.js</code> file. You will need to register the environment variable directly in the <code>package.json</code> script, and not in the <code>.env</code> file.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Manual signal handling is not available in <code>next dev</code>.</p>
+</blockquote>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;NEXT_MANUAL_SIG_HANDLE=true next start&quot;
+  }
+}
+</code></pre>
+<pre><code class="language-js">if (process.env.NEXT_MANUAL_SIG_HANDLE) {
+  process.on('SIGTERM', () =&gt; {
+    console.log('Received SIGTERM: cleaning up')
+    process.exit(0)
+  })
+  process.on('SIGINT', () =&gt; {
+    console.log('Received SIGINT: cleaning up')
+    process.exit(0)
+  })
+}
+</code></pre>
+</PagesOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

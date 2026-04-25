@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>05-custom-app — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-05-custom-app">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#getinitialprops-with-app">getInitialProps with App</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">05-custom-app</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Control page initialization and add a layout that persists for all pages by overriding the default App component used by Next.js.</td></tr></table><p>Next.js uses the <code>App</code> component to initialize pages. You can override it and control the page initialization and:</p>
+<ul>
+<li>Create a shared layout between page changes</li>
+<li>Inject additional data into pages</li>
+<li><a href="/docs/app/getting-started/css">Add global CSS</a></li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>To override the default <code>App</code>, create the file <code>pages/_app</code> as shown below:</p>
+<pre><code class="language-tsx">import type { AppProps } from 'next/app'
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function MyApp({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>The <code>Component</code> prop is the active <code>page</code>, so whenever you navigate between routes, <code>Component</code> will change to the new <code>page</code>. Therefore, any props you send to <code>Component</code> will be received by the <code>page</code>.</p>
+<p><code>pageProps</code> is an object with the initial props that were preloaded for your page by one of our <a href="/docs/pages/building-your-application/data-fetching">data fetching methods</a>, otherwise it’s an empty object.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If your app is running and you added a custom <code>App</code>, you’ll need to restart the development server. Only required if <code>pages/_app.js</code> didn’t exist before.</li>
+<li><code>App</code> does not support Next.js <a href="/docs/pages/building-your-application/data-fetching">Data Fetching methods</a> like <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a> or <a href="/docs/pages/building-your-application/data-fetching/get-server-side-props"><code>getServerSideProps</code></a>.</li>
+</ul>
+</blockquote>
+<h2 id="getinitialprops-with-app"><code>getInitialProps</code> with <code>App</code></h2>
+<p>Using <a href="/docs/pages/api-reference/functions/get-initial-props"><code>getInitialProps</code></a> in <code>App</code> will disable <a href="/docs/pages/building-your-application/rendering/automatic-static-optimization">Automatic Static Optimization</a> for pages without <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a>.</p>
+<p><strong>We do not recommend using this pattern.</strong> Instead, consider <a href="/docs/app/guides/migrating/app-router-migration">incrementally adopting</a> the App Router, which allows you to more easily fetch data for pages and layouts.</p>
+<pre><code class="language-tsx">import App, { AppContext, AppInitialProps, AppProps } from 'next/app'
+
+type AppOwnProps = { example: string }
+
+export default function MyApp({
+  Component,
+  pageProps,
+  example,
+}: AppProps &amp; AppOwnProps) {
+  return (
+    &lt;&gt;
+      &lt;p&gt;Data: {example}&lt;/p&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/&gt;
+  )
+}
+
+MyApp.getInitialProps = async (
+  context: AppContext
+): Promise&lt;AppOwnProps &amp; AppInitialProps&gt; =&gt; {
+  const ctx = await App.getInitialProps(context)
+
+  return { ...ctx, example: 'data' }
+}
+</code></pre>
+<pre><code class="language-jsx">import App from 'next/app'
+
+export default function MyApp({ Component, pageProps, example }) {
+  return (
+    &lt;&gt;
+      &lt;p&gt;Data: {example}&lt;/p&gt;
+      &lt;Component {...pageProps} /&gt;
+    &lt;/&gt;
+  )
+}
+
+MyApp.getInitialProps = async (context) =&gt; {
+  const ctx = await App.getInitialProps(context)
+
+  return { ...ctx, example: 'data' }
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>scripts — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-scripts">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><ul><li><a href="#layout-scripts">Layout Scripts</a></li><li><a href="#application-scripts">Application Scripts</a></li><li><a href="#strategy">Strategy</a></li><li><a href="#offloading-scripts-to-a-web-worker-experimental">Offloading Scripts To A Web Worker (experimental)</a></li><li><a href="#inline-scripts">Inline Scripts</a></li><li><a href="#executing-additional-code">Executing Additional Code</a></li><li><a href="#additional-attributes">Additional Attributes</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">scripts</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Scripts</td></tr><tr><th>description</th><td>Learn more about the next/script API.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<AppOnly>
+<h3 id="layout-scripts">Layout Scripts</h3>
+<p>To load a third-party script for multiple routes, import <code>next/script</code> and include the script directly in your layout component:</p>
+<pre><code class="language-tsx">import Script from 'next/script'
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;&gt;
+      &lt;section&gt;{children}&lt;/section&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function DashboardLayout({ children }) {
+  return (
+    &lt;&gt;
+      &lt;section&gt;{children}&lt;/section&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>The third-party script is fetched when the folder route (e.g. <code>dashboard/page.js</code>) or any nested route (e.g. <code>dashboard/settings/page.js</code>) is accessed by the user. Next.js will ensure the script will <strong>only load once</strong>, even if a user navigates between multiple routes in the same layout.</p>
+</AppOnly>
+<h3 id="application-scripts">Application Scripts</h3>
+<AppOnly>
+<p>To load a third-party script for all routes, import <code>next/script</code> and include the script directly in your root layout:</p>
+<pre><code class="language-tsx">import Script from 'next/script'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; /&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; /&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To load a third-party script for all routes, import <code>next/script</code> and include the script directly in your custom <code>_app</code>:</p>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;&gt;
+      &lt;Component {...pageProps} /&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>This script will load and execute when <em>any</em> route in your application is accessed. Next.js will ensure the script will <strong>only load once</strong>, even if a user navigates between multiple pages.</p>
+<blockquote>
+<p><strong>Recommendation</strong>: We recommend only including third-party scripts in specific pages or layouts in order to minimize any unnecessary impact to performance.</p>
+</blockquote>
+<h3 id="strategy">Strategy</h3>
+<p>Although the default behavior of <code>next/script</code> allows you to load third-party scripts in any page or layout, you can fine-tune its loading behavior by using the <code>strategy</code> property:</p>
+<ul>
+<li><code>beforeInteractive</code>: Load the script before any Next.js code and before any page hydration occurs.</li>
+<li><code>afterInteractive</code>: (<strong>default</strong>) Load the script early but after some hydration on the page occurs.</li>
+<li><code>lazyOnload</code>: Load the script later during browser idle time.</li>
+<li><code>worker</code>: (experimental) Load the script in a web worker.</li>
+</ul>
+<p>Refer to the <a href="/docs/app/api-reference/components/script#strategy"><code>next/script</code></a> API reference documentation to learn more about each strategy and their use cases.</p>
+<h3 id="offloading-scripts-to-a-web-worker-experimental">Offloading Scripts To A Web Worker (experimental)</h3>
+<blockquote>
+<p><strong>Warning:</strong> The <code>worker</code> strategy is not yet stable and does not yet work with the App Router. Use with caution.</p>
+</blockquote>
+<p>Scripts that use the <code>worker</code> strategy are offloaded and executed in a web worker with <a href="https://partytown.qwik.dev/" target="_blank" rel="noopener">Partytown</a>. This can improve the performance of your site by dedicating the main thread to the rest of your application code.</p>
+<p>This strategy is still experimental and can only be used if the <code>nextScriptWorkers</code> flag is enabled in <code>next.config.js</code>:</p>
+<pre><code class="language-js">module.exports = {
+  experimental: {
+    nextScriptWorkers: true,
+  },
+}
+</code></pre>
+<p>Then, run the development server and Next.js will guide you through the installation of the required packages to finish the setup:</p>
+<pre><code class="language-bash">pnpm dev
+</code></pre>
+<pre><code class="language-bash">npm run dev
+</code></pre>
+<pre><code class="language-bash">yarn dev
+</code></pre>
+<pre><code class="language-bash">bun dev
+</code></pre>
+<p>You’ll see instructions like these: Please install Partytown by running <code>npm install @qwik.dev/partytown</code></p>
+<p>Once setup is complete, defining <code>strategy=&quot;worker&quot;</code> will automatically instantiate Partytown in your application and offload the script to a web worker.</p>
+<pre><code class="language-tsx">import Script from 'next/script'
+
+export default function Home() {
+  return (
+    &lt;&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; strategy=&quot;worker&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function Home() {
+  return (
+    &lt;&gt;
+      &lt;Script src=&quot;https://example.com/script.js&quot; strategy=&quot;worker&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>There are a number of trade-offs that need to be considered when loading a third-party script in a web worker. Please see Partytown’s <a href="https://partytown.qwik.dev/trade-offs" target="_blank" rel="noopener">tradeoffs</a> documentation for more information.</p>
+<PagesOnly>
+<h4>Using custom Partytown configuration</h4>
+<p>Although the <code>worker</code> strategy does not require any additional configuration to work, Partytown supports the use of a config object to modify some of its settings, including enabling <code>debug</code> mode and forwarding events and triggers.</p>
+<p>If you would like to add additional configuration options, you can include it within the <code>&lt;Head /&gt;</code> component used in a <a href="/docs/pages/building-your-application/routing/custom-document">custom <code>_document.js</code></a>:</p>
+<pre><code class="language-jsx">import { Html, Head, Main, NextScript } from 'next/document'
+
+export default function Document() {
+  return (
+    &lt;Html&gt;
+      &lt;Head&gt;
+        &lt;script
+          data-partytown-config
+          dangerouslySetInnerHTML={{
+            __html: `
+              partytown = {
+                lib: &quot;/_next/static/~partytown/&quot;,
+                debug: true
+              };
+            `,
+          }}
+        /&gt;
+      &lt;/Head&gt;
+      &lt;body&gt;
+        &lt;Main /&gt;
+        &lt;NextScript /&gt;
+      &lt;/body&gt;
+    &lt;/Html&gt;
+  )
+}
+</code></pre>
+<p>In order to modify Partytown’s configuration, the following conditions must be met:</p>
+<ol>
+<li>The <code>data-partytown-config</code> attribute must be used in order to overwrite the default configuration used by Next.js</li>
+<li>Unless you decide to save Partytown’s library files in a separate directory, the <code>lib: &quot;/_next/static/~partytown/&quot;</code> property and value must be included in the configuration object in order to let Partytown know where Next.js stores the necessary static files.</li>
+</ol>
+<blockquote>
+<p><strong>Note</strong>: If you are using an <a href="/docs/pages/api-reference/config/next-config-js/assetPrefix">asset prefix</a> and would like to modify Partytown’s default configuration, you must include it as part of the <code>lib</code> path.</p>
+</blockquote>
+<p>Take a look at Partytown’s <a href="https://partytown.qwik.dev/configuration" target="_blank" rel="noopener">configuration options</a> to see the full list of other properties that can be added.</p>
+</PagesOnly>
+<h3 id="inline-scripts">Inline Scripts</h3>
+<p>Inline scripts, or scripts not loaded from an external file, are also supported by the Script component. They can be written by placing the JavaScript within curly braces:</p>
+<pre><code class="language-jsx">&lt;Script id=&quot;show-banner&quot;&gt;
+  {`document.getElementById('banner').classList.remove('hidden')`}
+&lt;/Script&gt;
+</code></pre>
+<p>Or by using the <code>dangerouslySetInnerHTML</code> property:</p>
+<pre><code class="language-jsx">&lt;Script
+  id=&quot;show-banner&quot;
+  dangerouslySetInnerHTML={{
+    __html: `document.getElementById('banner').classList.remove('hidden')`,
+  }}
+/&gt;
+</code></pre>
+<blockquote>
+<p><strong>Warning</strong>: An <code>id</code> property must be assigned for inline scripts in order for Next.js to track and optimize the script.</p>
+</blockquote>
+<h3 id="executing-additional-code">Executing Additional Code</h3>
+<p>Event handlers can be used with the Script component to execute additional code after a certain event occurs:</p>
+<ul>
+<li><code>onLoad</code>: Execute code after the script has finished loading.</li>
+<li><code>onReady</code>: Execute code after the script has finished loading and every time the component is mounted.</li>
+<li><code>onError</code>: Execute code if the script fails to load.</li>
+</ul>
+<AppOnly>
+<p>These handlers will only work when <code>next/script</code> is imported and used inside of a <a href="/docs/app/getting-started/server-and-client-components">Client Component</a> where <code>&quot;use client&quot;</code> is defined as the first line of code:</p>
+<pre><code class="language-tsx">'use client'
+
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        onLoad={() =&gt; {
+          console.log('Script has loaded')
+        }}
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        onLoad={() =&gt; {
+          console.log('Script has loaded')
+        }}
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>Refer to the <a href="/docs/app/api-reference/components/script#onload"><code>next/script</code></a> API reference to learn more about each event handler and view examples.</p>
+</AppOnly>
+<PagesOnly>
+<p>These handlers will only work when <code>next/script</code> is imported and used inside of a <a href="/docs/app/getting-started/server-and-client-components">Client Component</a> where <code>&quot;use client&quot;</code> is defined as the first line of code:</p>
+<pre><code class="language-tsx">import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        onLoad={() =&gt; {
+          console.log('Script has loaded')
+        }}
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        onLoad={() =&gt; {
+          console.log('Script has loaded')
+        }}
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>Refer to the <a href="/docs/pages/api-reference/components/script#onload"><code>next/script</code></a> API reference to learn more about each event handler and view examples.</p>
+</PagesOnly>
+<h3 id="additional-attributes">Additional Attributes</h3>
+<p>There are many DOM attributes that can be assigned to a <code>&lt;script&gt;</code> element that are not used by the Script component, like <a href="https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce" target="_blank" rel="noopener"><code>nonce</code></a> or <a href="https://developer.mozilla.org/docs/Web/HTML/Global_attributes/data-*" target="_blank" rel="noopener">custom data attributes</a>. Including any additional attributes will automatically forward it to the final, optimized <code>&lt;script&gt;</code> element that is included in the HTML.</p>
+<AppOnly>
+<pre><code class="language-tsx">import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        id=&quot;example-script&quot;
+        nonce=&quot;XUENAJFW&quot;
+        data-test=&quot;script&quot;
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        id=&quot;example-script&quot;
+        nonce=&quot;XUENAJFW&quot;
+        data-test=&quot;script&quot;
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-tsx">import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        id=&quot;example-script&quot;
+        nonce=&quot;XUENAJFW&quot;
+        data-test=&quot;script&quot;
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Script from 'next/script'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Script
+        src=&quot;https://example.com/script.js&quot;
+        id=&quot;example-script&quot;
+        nonce=&quot;XUENAJFW&quot;
+        data-test=&quot;script&quot;
+      /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-deprecated — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-deprecated">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-deprecated</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Reports use of a deprecated name, as indicated by a JSDoc block with a <code>@deprecated</code>
+tag or TomDoc <code>Deprecated:</code> comment.</p>
+<p>using a JSDoc <code>@deprecated</code> tag:</p>
+<pre><code class="language-js">// @file: ./answer.js
+
+/**
+ * this is what you get when you trust a mouse talk show
+ * @deprecated need to restart the experiment
+ * @returns {Number} nonsense
+ */
+export function multiply(six, nine) {
+  return 42
+}
+</code></pre>
+<p>will report as such:</p>
+<pre><code class="language-js">import { multiply } from './answer' // Deprecated: need to restart the experiment
+
+function whatever(y, z) {
+  return multiply(y, z) // Deprecated: need to restart the experiment
+}
+</code></pre>
+<p>or using the TomDoc equivalent:</p>
+<pre><code class="language-js">// Deprecated: This is what you get when you trust a mouse talk show, need to
+// restart the experiment.
+//
+// Returns a Number nonsense
+export function multiply(six, nine) {
+  return 42
+}
+</code></pre>
+<p>Only JSDoc is enabled by default. Other documentation styles can be enabled with
+the <code>import/docstyle</code> setting.</p>
+<pre><code class="language-yaml"># .eslintrc.yml
+settings:
+  import/docstyle: ['jsdoc', 'tomdoc']
+</code></pre>
+<h2 id="worklist">Worklist</h2>
+<ul>
+<li>[x] report explicit imports on the import node</li>
+<li>[x] support namespaces
+<ul>
+<li>[x] should bubble up through deep namespaces (#157)</li>
+</ul>
+</li>
+<li>[x] report explicit imports at reference time (at the identifier) similar to namespace</li>
+<li>[x] mark module deprecated if file JSDoc has a @deprecated tag?</li>
+<li>[ ] don’t flag redeclaration of imported, deprecated names</li>
+<li>[ ] flag destructuring</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

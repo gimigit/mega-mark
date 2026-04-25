@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-amd — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-amd">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><li><a href="#when-not-to-use-it">When Not To Use It</a></li><li><a href="#contributors">Contributors</a></li><li><a href="#further-reading">Further Reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-amd</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Reports <code>require([array], ...)</code> and <code>define([array], ...)</code> function calls at the
+module scope. Will not report if !=2 arguments, or first argument is not a literal array.</p>
+<p>Intended for temporary use when migrating to pure ES6 modules.</p>
+<h2 id="rule-details">Rule Details</h2>
+<p>This will be reported:</p>
+<pre><code class="language-js">define([&quot;a&quot;, &quot;b&quot;], function (a, b) { /* ... */ })
+
+require([&quot;b&quot;, &quot;c&quot;], function (b, c) { /* ... */ })
+</code></pre>
+<p>CommonJS <code>require</code> is still valid.</p>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you don’t mind mixing module systems (sometimes this is useful), you probably
+don’t want this rule.</p>
+<p>It is also fairly noisy if you have a larger codebase that is being transitioned
+from AMD to ES6 modules.</p>
+<h2 id="contributors">Contributors</h2>
+<p>Special thanks to @xjamundx for donating his no-define rule as a start to this.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="./no-commonjs.md"><code>no-commonjs</code></a>: report CommonJS <code>require</code> and <code>exports</code></li>
+<li>Source: <a href="https://github.com/xjamundx/eslint-plugin-modules" target="_blank" rel="noopener">https://github.com/xjamundx/eslint-plugin-modules</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generate-static-params — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-generate-static-params">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#single-dynamic-segment">Single Dynamic Segment</a></li><li><a href="#multiple-dynamic-segments">Multiple Dynamic Segments</a></li><li><a href="#catch-all-dynamic-segment">Catch-all Dynamic Segment</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#prerendering">Prerendering</a></li><li><a href="#with-route-handlers">With Route Handlers</a></li><li><a href="#route-handlers-with-cache-components">Route Handlers with Cache Components</a></li><li><a href="#disable-rendering-for-unspecified-paths">Disable rendering for unspecified paths</a></li><li><a href="#multiple-dynamic-segments-in-a-route">Multiple Dynamic Segments in a Route</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">generate-static-params</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the generateStaticParams function.</td></tr></table><p>The <code>generateStaticParams</code> function can be used in combination with <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route segments</a> to <a href="/docs/app/glossary#prerendering"><strong>statically generate</strong></a> routes at build time instead of on-demand at request time.</p>
+<p><code>generateStaticParams</code> can be used with:</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/page">Pages</a> (<code>page.tsx</code>/<code>page.js</code>)</li>
+<li><a href="/docs/app/api-reference/file-conventions/layout">Layouts</a> (<code>layout.tsx</code>/<code>layout.js</code>)</li>
+<li><a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> (<code>route.ts</code>/<code>route.js</code>)</li>
+</ul>
+<pre><code class="language-tsx">// Return a list of `params` to populate the [slug] dynamic segment
+export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+
+// Multiple versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">// Return a list of `params` to populate the [slug] dynamic segment
+export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+
+// Multiple versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+export default async function Page({ params }) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>You can use the <a href="/docs/app/api-reference/file-conventions/route-segment-config/dynamicParams"><code>dynamicParams</code></a> segment config option to control what happens when a dynamic segment is visited that was not generated with <code>generateStaticParams</code>.</li>
+<li>You must return <a href="#all-paths-at-build-time">an empty array from <code>generateStaticParams</code></a> or utilize <a href="/docs/app/guides/caching-without-cache-components#dynamic"><code>export const dynamic = 'force-static'</code></a> in order to revalidate (ISR) <a href="#all-paths-at-runtime">paths at runtime</a>.</li>
+<li>During <code>next dev</code>, <code>generateStaticParams</code> will be called when you navigate to a route.</li>
+<li>During <code>next build</code>, <code>generateStaticParams</code> runs before the corresponding Layouts or Pages are generated.</li>
+<li>During revalidation (ISR), <code>generateStaticParams</code> will not be called again.</li>
+<li><code>generateStaticParams</code> replaces the <a href="/docs/pages/api-reference/functions/get-static-paths"><code>getStaticPaths</code></a> function in the Pages Router.</li>
+</ul>
+</blockquote>
+<h2 id="parameters">Parameters</h2>
+<p><code>options.params</code> (optional)</p>
+<p>If multiple dynamic segments in a route use <code>generateStaticParams</code>, the child <code>generateStaticParams</code> function is executed once for each set of <code>params</code> the parent generates.</p>
+<p>The <code>params</code> object contains the populated <code>params</code> from the parent <code>generateStaticParams</code>, which can be used to <a href="#multiple-dynamic-segments-in-a-route">generate the <code>params</code> in a child segment</a>.</p>
+<h2 id="returns">Returns</h2>
+<p><code>generateStaticParams</code> should return an array of objects where each object represents the populated dynamic segments of a single route.</p>
+<ul>
+<li>Each property in the object is a dynamic segment to be filled in for the route.</li>
+<li>The properties name is the segment’s name, and the properties value is what that segment should be filled in with.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Example Route</th>
+<th><code>generateStaticParams</code> Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/product/[id]</code></td>
+<td><code>{ id: string }[]</code></td>
+</tr>
+<tr>
+<td><code>/products/[category]/[product]</code></td>
+<td><code>{ category: string, product: string }[]</code></td>
+</tr>
+<tr>
+<td><code>/products/[...slug]</code></td>
+<td><code>{ slug: string[] }[]</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="single-dynamic-segment">Single Dynamic Segment</h2>
+<pre><code class="language-tsx">export function generateStaticParams() {
+  return [{ id: '1' }, { id: '2' }, { id: '3' }]
+}
+
+// Three versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+// - /product/1
+// - /product/2
+// - /product/3
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ id: string }&gt;
+}) {
+  const { id } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export function generateStaticParams() {
+  return [{ id: '1' }, { id: '2' }, { id: '3' }]
+}
+
+// Three versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+// - /product/1
+// - /product/2
+// - /product/3
+export default async function Page({ params }) {
+  const { id } = await params
+  // ...
+}
+</code></pre>
+<h2 id="multiple-dynamic-segments">Multiple Dynamic Segments</h2>
+<pre><code class="language-tsx">export function generateStaticParams() {
+  return [
+    { category: 'a', product: '1' },
+    { category: 'b', product: '2' },
+    { category: 'c', product: '3' },
+  ]
+}
+
+// Three versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+// - /products/a/1
+// - /products/b/2
+// - /products/c/3
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ category: string; product: string }&gt;
+}) {
+  const { category, product } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export function generateStaticParams() {
+  return [
+    { category: 'a', product: '1' },
+    { category: 'b', product: '2' },
+    { category: 'c', product: '3' },
+  ]
+}
+
+// Three versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+// - /products/a/1
+// - /products/b/2
+// - /products/c/3
+export default async function Page({ params }) {
+  const { category, product } = await params
+  // ...
+}
+</code></pre>
+<h2 id="catch-all-dynamic-segment">Catch-all Dynamic Segment</h2>
+<pre><code class="language-tsx">export function generateStaticParams() {
+  return [{ slug: ['a', '1'] }, { slug: ['b', '2'] }, { slug: ['c', '3'] }]
+}
+
+// Three versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+// - /product/a/1
+// - /product/b/2
+// - /product/c/3
+export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string[] }&gt;
+}) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">export function generateStaticParams() {
+  return [{ slug: ['a', '1'] }, { slug: ['b', '2'] }, { slug: ['c', '3'] }]
+}
+
+// Three versions of this page will be statically generated
+// using the `params` returned by `generateStaticParams`
+// - /product/a/1
+// - /product/b/2
+// - /product/c/3
+export default async function Page({ params }) {
+  const { slug } = await params
+  // ...
+}
+</code></pre>
+<h2 id="examples">Examples</h2>
+<h3 id="prerendering">Prerendering</h3>
+<h4>All paths at build time</h4>
+<p>To statically render all paths at build time, supply the full list of paths to <code>generateStaticParams</code>:</p>
+<pre><code class="language-tsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<pre><code class="language-jsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  return posts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<h4>Subset of paths at build time</h4>
+<p>To statically render a subset of paths at build time, and the rest the first time they’re visited at runtime, return a partial list of paths:</p>
+<pre><code class="language-tsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  // Render the first 10 posts at build time
+  return posts.slice(0, 10).map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<pre><code class="language-jsx">export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+
+  // Render the first 10 posts at build time
+  return posts.slice(0, 10).map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<p>Then, by using the <a href="/docs/app/api-reference/file-conventions/route-segment-config/dynamicParams"><code>dynamicParams</code></a> segment config option, you can control what happens when a dynamic segment is visited that was not generated with <code>generateStaticParams</code>.</p>
+<pre><code class="language-tsx">// All posts besides the top 10 will be a 404
+export const dynamicParams = false
+
+export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+  const topPosts = posts.slice(0, 10)
+
+  return topPosts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<pre><code class="language-jsx">// All posts besides the top 10 will be a 404
+export const dynamicParams = false
+
+export async function generateStaticParams() {
+  const posts = await fetch('https://.../posts').then((res) =&gt; res.json())
+  const topPosts = posts.slice(0, 10)
+
+  return topPosts.map((post) =&gt; ({
+    slug: post.slug,
+  }))
+}
+</code></pre>
+<h4>All paths at runtime</h4>
+<p>To statically render all paths the first time they’re visited, return an empty array (no paths will be rendered at build time) or utilize <a href="/docs/app/guides/caching-without-cache-components#dynamic"><code>export const dynamic = 'force-static'</code></a>:</p>
+<pre><code class="language-jsx">export async function generateStaticParams() {
+  return []
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>You must always return an array from <code>generateStaticParams</code>, even if it’s empty. Otherwise, the route will be dynamically rendered.</li>
+</ul>
+</blockquote>
+<pre><code class="language-jsx">export const dynamic = 'force-static'
+</code></pre>
+<h4>With Cache Components</h4>
+<p>When using <a href="/docs/app/getting-started/caching">Cache Components</a> with dynamic routes, <code>generateStaticParams</code> must return <strong>at least one param</strong>. Empty arrays cause a <a href="/docs/messages/empty-generate-static-params">build error</a>. This allows Cache Components to validate your route doesn’t incorrectly access <code>cookies()</code>, <code>headers()</code>, or <code>searchParams</code> at runtime.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If you don’t know the actual param values at build time, you can return a placeholder param (e.g., <code>[{ slug: '__placeholder__' }]</code>) for validation, then handle it in your page with <code>notFound()</code>. However, this prevents build time validation from working effectively and may cause runtime errors.</p>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/file-conventions/dynamic-routes#with-cache-components">dynamic routes section</a> for detailed walkthroughs.</p>
+<h3 id="with-route-handlers">With Route Handlers</h3>
+<p>You can use <code>generateStaticParams</code> with <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> to statically generate API responses at build time:</p>
+<pre><code class="language-ts">export async function generateStaticParams() {
+  return [{ id: '1' }, { id: '2' }, { id: '3' }]
+}
+
+export async function GET(
+  request: Request,
+  { params }: RouteContext&lt;'/api/posts/[id]'&gt;
+) {
+  const { id } = await params
+  // This will be statically generated for IDs 1, 2, and 3
+  return Response.json({ id, title: `Post ${id}` })
+}
+</code></pre>
+<pre><code class="language-js">export async function generateStaticParams() {
+  return [{ id: '1' }, { id: '2' }, { id: '3' }]
+}
+
+export async function GET(request, { params }) {
+  const { id } = await params
+  // This will be statically generated for IDs 1, 2, and 3
+  return Response.json({ id, title: `Post ${id}` })
+}
+</code></pre>
+<h3 id="route-handlers-with-cache-components">Route Handlers with Cache Components</h3>
+<p>When using <a href="/docs/app/getting-started/caching">Cache Components</a>, combine with <code>use cache</code> for optimal caching:</p>
+<pre><code class="language-ts">export async function generateStaticParams() {
+  return [{ id: '1' }, { id: '2' }, { id: '3' }]
+}
+
+async function getPost(id: Promise&lt;string&gt;) {
+  'use cache'
+  const resolvedId = await id
+  const response = await fetch(`https://api.example.com/posts/${resolvedId}`)
+  return response.json()
+}
+
+export async function GET(
+  request: Request,
+  { params }: RouteContext&lt;'/api/posts/[id]'&gt;
+) {
+  const post = await getPost(params.then((p) =&gt; p.id))
+  return Response.json(post)
+}
+</code></pre>
+<p>See the <a href="/docs/app/api-reference/file-conventions/route#static-generation-with-generatestaticparams">Route Handlers documentation</a> for more details.</p>
+<h3 id="disable-rendering-for-unspecified-paths">Disable rendering for unspecified paths</h3>
+<p>To prevent unspecified paths from being prerendered at runtime, add the <code>export const dynamicParams = false</code> option in a route segment. When this config option is used, only paths provided by <code>generateStaticParams</code> will be served, and unspecified routes will 404 or match (in the case of <a href="/docs/app/api-reference/file-conventions/dynamic-routes#catch-all-segments">catch-all routes</a>).</p>
+<h3 id="multiple-dynamic-segments-in-a-route">Multiple Dynamic Segments in a Route</h3>
+<p>You can generate params for dynamic segments above the current layout or page, but <strong>not below</strong>. For example, given the <code>app/products/[category]/[product]</code> route:</p>
+<ul>
+<li><code>app/products/[category]/[product]/page.js</code> can generate params for <strong>both</strong> <code>[category]</code> and <code>[product]</code>.</li>
+<li><code>app/products/[category]/layout.js</code> can <strong>only</strong> generate params for <code>[category]</code>.</li>
+</ul>
+<p>There are two approaches to generating params for a route with multiple dynamic segments:</p>
+<h4>Generate params from the bottom up</h4>
+<p>Generate multiple dynamic segments from the child route segment.</p>
+<pre><code class="language-tsx">// Generate segments for both [category] and [product]
+export async function generateStaticParams() {
+  const products = await fetch('https://.../products').then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    category: product.category.slug,
+    product: product.id,
+  }))
+}
+
+export default function Page({
+  params,
+}: {
+  params: Promise&lt;{ category: string; product: string }&gt;
+}) {
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">// Generate segments for both [category] and [product]
+export async function generateStaticParams() {
+  const products = await fetch('https://.../products').then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    category: product.category.slug,
+    product: product.id,
+  }))
+}
+
+export default function Page({ params }) {
+  // ...
+}
+</code></pre>
+<h4>Generate params from the top down</h4>
+<p>Generate the parent segments first and use the result to generate the child segments.</p>
+<pre><code class="language-tsx">// Generate segments for [category]
+export async function generateStaticParams() {
+  const products = await fetch('https://.../products').then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    category: product.category.slug,
+  }))
+}
+
+export default function Layout({
+  params,
+}: {
+  params: Promise&lt;{ category: string }&gt;
+}) {
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">// Generate segments for [category]
+export async function generateStaticParams() {
+  const products = await fetch('https://.../products').then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    category: product.category.slug,
+  }))
+}
+
+export default function Layout({ params }) {
+  // ...
+}
+</code></pre>
+<p>A child route segment’s <code>generateStaticParams</code> function is executed once for each segment a parent <code>generateStaticParams</code> generates.</p>
+<p>The child <code>generateStaticParams</code> function can use the <code>params</code> returned from the parent <code>generateStaticParams</code> function to dynamically generate its own segments.</p>
+<pre><code class="language-tsx">// Generate segments for [product] using the `params` passed from
+// the parent segment's `generateStaticParams` function
+export async function generateStaticParams({
+  params: { category },
+}: {
+  params: { category: string }
+}) {
+  const products = await fetch(
+    `https://.../products?category=${category}`
+  ).then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    product: product.id,
+  }))
+}
+
+export default function Page({
+  params,
+}: {
+  params: Promise&lt;{ category: string; product: string }&gt;
+}) {
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">// Generate segments for [product] using the `params` passed from
+// the parent segment's `generateStaticParams` function
+export async function generateStaticParams({ params: { category } }) {
+  const products = await fetch(
+    `https://.../products?category=${category}`
+  ).then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    product: product.id,
+  }))
+}
+
+export default function Page({ params }) {
+  // ...
+}
+</code></pre>
+<p>Notice that the params argument can be accessed synchronously and includes only parent segment params.</p>
+<p>For type completion, you can make use of the TypeScript <code>Awaited</code> helper in combination with either <a href="/docs/app/api-reference/file-conventions/page#page-props-helper"><code>Page Props helper</code></a> or <a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper"><code>Layout Props helper</code></a>:</p>
+<pre><code class="language-ts">export async function generateStaticParams({
+  params: { category },
+}: {
+  params: Awaited&lt;LayoutProps&lt;'/products/[category]'&gt;['params']&gt;
+}) {
+  const products = await fetch(
+    `https://.../products?category=${category}`
+  ).then((res) =&gt; res.json())
+
+  return products.map((product) =&gt; ({
+    product: product.id,
+  }))
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: <code>fetch</code> requests are automatically <a href="/docs/app/glossary#memoization">memoized</a> for the same data across all <code>generate</code>-prefixed functions, Layouts, Pages, and Server Components. React <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>cache</code> can be used</a> if <code>fetch</code> is unavailable.</p>
+</blockquote>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>generateStaticParams</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

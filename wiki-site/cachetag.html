@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cachetag — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-cachetag">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#usage">Usage</a></li><li><a href="#good-to-know">Good to know</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#tagging-components-or-functions">Tagging components or functions</a></li><li><a href="#creating-tags-from-external-data">Creating tags from external data</a></li><li><a href="#invalidating-tagged-cache">Invalidating tagged cache</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">cachetag</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>View related API references.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>The <code>cacheTag</code> function allows you to tag cached data for on-demand invalidation. By associating tags with cache entries, you can selectively purge or revalidate specific cache entries without affecting other cached data.</p>
+<h2 id="usage">Usage</h2>
+<p>To use <code>cacheTag</code>, enable the <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code> flag</a> in your <code>next.config.js</code> file:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">const nextConfig = {
+  cacheComponents: true,
+}
+
+export default nextConfig
+</code></pre>
+<p>The <code>cacheTag</code> function takes one or more string values.</p>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+export async function getData() {
+  'use cache'
+  cacheTag('my-data')
+  const data = await fetch('/api/data')
+  return data
+}
+</code></pre>
+<pre><code class="language-jsx">import { cacheTag } from 'next/cache'
+
+export async function getData() {
+  'use cache'
+  cacheTag('my-data')
+  const data = await fetch('/api/data')
+  return data
+}
+</code></pre>
+<p>You can then purge the cache on-demand using <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a> API in another function, for example, a <a href="/docs/app/api-reference/file-conventions/route">route handler</a> or <a href="/docs/app/getting-started/mutating-data">Server Action</a>:</p>
+<pre><code class="language-tsx">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export default async function submit() {
+  await addPost()
+  revalidateTag('my-data')
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export default async function submit() {
+  await addPost()
+  revalidateTag('my-data')
+}
+</code></pre>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li><strong>Idempotent Tags</strong>: Applying the same tag multiple times has no additional effect.</li>
+<li><strong>Multiple Tags</strong>: You can assign multiple tags to a single cache entry by passing multiple string values to <code>cacheTag</code>.</li>
+</ul>
+<pre><code class="language-tsx">cacheTag('tag-one', 'tag-two')
+</code></pre>
+<ul>
+<li><strong>Limits</strong>: The max length for a custom tag is 256 characters and the max tag items is 128.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="tagging-components-or-functions">Tagging components or functions</h3>
+<p>Tag your cached data by calling <code>cacheTag</code> within a cached function or component:</p>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+interface BookingsProps {
+  type: string
+}
+
+export async function Bookings({ type = 'haircut' }: BookingsProps) {
+  'use cache'
+  cacheTag('bookings-data')
+
+  async function getBookingsData() {
+    const data = await fetch(`/api/bookings?type=${encodeURIComponent(type)}`)
+    return data
+  }
+
+  return //...
+}
+</code></pre>
+<pre><code class="language-jsx">import { cacheTag } from 'next/cache'
+
+export async function Bookings({ type = 'haircut' }) {
+  'use cache'
+  cacheTag('bookings-data')
+
+  async function getBookingsData() {
+    const data = await fetch(`/api/bookings?type=${encodeURIComponent(type)}`)
+    return data
+  }
+
+  return //...
+}
+</code></pre>
+<h3 id="creating-tags-from-external-data">Creating tags from external data</h3>
+<p>You can use the data returned from an async function to tag the cache entry.</p>
+<pre><code class="language-tsx">import { cacheTag } from 'next/cache'
+
+interface BookingsProps {
+  type: string
+}
+
+export async function Bookings({ type = 'haircut' }: BookingsProps) {
+  async function getBookingsData() {
+    'use cache'
+    const data = await fetch(`/api/bookings?type=${encodeURIComponent(type)}`)
+    cacheTag('bookings-data', data.id)
+    return data
+  }
+  return //...
+}
+</code></pre>
+<pre><code class="language-jsx">import { cacheTag } from 'next/cache'
+
+export async function Bookings({ type = 'haircut' }) {
+  async function getBookingsData() {
+    'use cache'
+    const data = await fetch(`/api/bookings?type=${encodeURIComponent(type)}`)
+    cacheTag('bookings-data', data.id)
+    return data
+  }
+  return //...
+}
+</code></pre>
+<h3 id="invalidating-tagged-cache">Invalidating tagged cache</h3>
+<p>Using <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a>, you can invalidate the cache for a specific tag when needed:</p>
+<pre><code class="language-tsx">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export async function updateBookings() {
+  await updateBookingData()
+  revalidateTag('bookings-data')
+}
+</code></pre>
+<pre><code class="language-jsx">'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export async function updateBookings() {
+  await updateBookingData()
+  revalidateTag('bookings-data')
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

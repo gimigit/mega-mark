@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>incrementalcachehandlerpath — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-incrementalcachehandlerpath">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#api-reference">API Reference</a></li><ul><li><a href="#get">get()</a></li><li><a href="#set">set()</a></li><li><a href="#revalidatetag">revalidateTag()</a></li><li><a href="#resetrequestcache">resetRequestCache()</a></li></ul><li><a href="#image-optimization-caching">Image Optimization Caching</a></li><li><a href="#platform-support">Platform Support</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">incrementalcachehandlerpath</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>cacheHandler</td></tr><tr><th>description</th><td>Configure the Next.js cache used for storing and revalidating data to use any external service like Redis, Memcached, or others.</td></tr></table><p>You can configure the Next.js cache location if you want to persist cached pages and data to durable storage, or share the cache across multiple containers or instances of your Next.js application.</p>
+<blockquote>
+<p><strong>Good to know</strong>: The <code>cacheHandler</code> (singular) configuration is specifically used by Next.js for server cache operations such as storing and revalidating ISR, route handler responses, and optimized images. It is <strong>not</strong> used by <code>'use cache'</code> directives. For <code>'use cache'</code> directives, use <a href="/docs/app/api-reference/config/next-config-js/cacheHandlers"><code>cacheHandlers</code></a> (plural) instead.</p>
+</blockquote>
+<pre><code class="language-js">module.exports = {
+  cacheHandler: require.resolve('./cache-handler.js'),
+  cacheMaxMemorySize: 0, // disable default in-memory caching
+}
+</code></pre>
+<p>View an example of a <a href="/docs/app/guides/self-hosting#configuring-caching">custom cache handler</a> and learn more about the implementation.</p>
+<h2 id="api-reference">API Reference</h2>
+<p>The cache handler can implement the following methods: <code>get</code>, <code>set</code>, <code>revalidateTag</code>, and <code>resetRequestCache</code>.</p>
+<h3 id="get"><code>get()</code></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td><code>string</code></td>
+<td>The key to the cached value.</td>
+</tr>
+<tr>
+<td><code>ctx</code></td>
+<td><code>object</code></td>
+<td>Context including the cache entry kind.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>ctx</code> parameter contains a <code>kind</code> property that indicates the type of cache entry being retrieved. Possible values include <code>'APP_PAGE'</code>, <code>'APP_ROUTE'</code>, <code>'PAGES'</code>, <code>'FETCH'</code>, and <code>'IMAGE'</code>.</p>
+<p>Returns the cached value or <code>null</code> if not found.</p>
+<h3 id="set"><code>set()</code></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td><code>string</code></td>
+<td>The key to store the data under.</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>Data or <code>null</code></td>
+<td>The data to be cached.</td>
+</tr>
+<tr>
+<td><code>ctx</code></td>
+<td><code>{ tags: [] }</code></td>
+<td>The cache tags provided.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>data</code> object contains a <code>kind</code> property that indicates the type of cache entry. For image optimization, <code>kind</code> will be <code>'IMAGE'</code> and the data will include properties like <code>buffer</code>, <code>etag</code>, <code>extension</code>, and <code>revalidate</code>.</p>
+<p>Returns <code>Promise&lt;void&gt;</code>.</p>
+<h3 id="revalidatetag"><code>revalidateTag()</code></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tag</code></td>
+<td><code>string</code> or <code>string[]</code></td>
+<td>The cache tags to revalidate.</td>
+</tr>
+</tbody>
+</table>
+<p>Returns <code>Promise&lt;void&gt;</code>. Learn more about <a href="/docs/app/guides/incremental-static-regeneration">revalidating data</a> or the <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag()</code></a> function.</p>
+<h3 id="resetrequestcache"><code>resetRequestCache()</code></h3>
+<p>This method resets the temporary in-memory cache for a single request before the next request.</p>
+<p>Returns <code>void</code>.</p>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li><code>revalidatePath</code> is a convenience layer on top of cache tags. Calling <code>revalidatePath</code> will call your <code>revalidateTag</code> function, which you can then choose if you want to tag cache keys based on the path.</li>
+</ul>
+<h2 id="image-optimization-caching">Image Optimization Caching</h2>
+<p>The <code>cacheHandler</code> can also be used for caching optimized images from <code>next/image</code>. To enable this, set <code>images.customCacheHandler</code> to <code>true</code> in your <code>next.config.js</code>:</p>
+<pre><code class="language-js">module.exports = {
+  cacheHandler: require.resolve('./cache-handler.js'),
+  images: {
+    customCacheHandler: true,
+  },
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: This opt-in flag will become the default behavior in the next major version. Setting it now allows you to prepare your cache handler for image optimization entries.</p>
+</blockquote>
+<p>You can use the <code>kind</code> property to differentiate between cache entry types and handle images separately if needed, for example to implement an eviction policy or store images in a different location.</p>
+<p>When handling image cache entries, the <code>kind</code> will be <code>'IMAGE'</code> and the data will include <code>buffer</code>, <code>etag</code>, <code>extension</code>, and <code>revalidate</code> properties.</p>
+<h2 id="platform-support">Platform Support</h2>
+<table>
+<thead>
+<tr>
+<th>Deployment Option</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#nodejs-server">Node.js server</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#docker">Docker container</a></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#static-export">Static export</a></td>
+<td>No</td>
+</tr>
+<tr>
+<td><a href="/docs/app/getting-started/deploying#adapters">Adapters</a></td>
+<td>Platform-specific</td>
+</tr>
+</tbody>
+</table>
+<p>Learn how to <a href="/docs/app/guides/self-hosting#caching-and-isr">configure ISR</a> when self-hosting Next.js.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.2.0</code></td>
+<td><code>cacheHandler</code> support for image optimization caching.</td>
+</tr>
+<tr>
+<td><code>v14.1.0</code></td>
+<td>Renamed to <code>cacheHandler</code> and became stable.</td>
+</tr>
+<tr>
+<td><code>v13.4.0</code></td>
+<td><code>incrementalCacheHandlerPath</code> support for <code>revalidateTag</code>.</td>
+</tr>
+<tr>
+<td><code>v13.4.0</code></td>
+<td><code>incrementalCacheHandlerPath</code> support for standalone output.</td>
+</tr>
+<tr>
+<td><code>v12.2.0</code></td>
+<td>Experimental <code>incrementalCacheHandlerPath</code> added.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

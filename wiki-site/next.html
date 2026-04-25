@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generate route types first, then validate with TypeScript — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-next">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#commands">Commands</a></li><li><a href="#next-dev-options">next dev options</a></li><li><a href="#next-build-options">next build options</a></li><li><a href="#next-start-options">next start options</a></li><li><a href="#next-info-options">next info options</a></li><li><a href="#next-telemetry-options">next telemetry options</a></li><li><a href="#next-typegen-options">next typegen options</a></li><li><a href="#next-upgrade-options">next upgrade options</a></li><li><a href="#next-experimental-analyze-options">next experimental-analyze options</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#debugging-prerender-errors">Debugging prerender errors</a></li><li><a href="#building-specific-routes">Building specific routes</a></li><li><a href="#changing-the-default-port">Changing the default port</a></li><li><a href="#using-https-during-development">Using HTTPS during development</a></li><li><a href="#configuring-a-timeout-for-downstream-proxies">Configuring a timeout for downstream proxies</a></li><li><a href="#passing-nodejs-arguments">Passing Node.js arguments</a></li><li><a href="#cpu-profiling">CPU profiling</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Generate route types first, then validate with TypeScript</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to run and build your application with the Next.js CLI.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>The Next.js CLI allows you to develop, build, start your application, and more.</p>
+<p>Basic usage:</p>
+<pre><code class="language-bash">pnpm next [command] [options]
+</code></pre>
+<pre><code class="language-bash">npx next [command] [options]
+</code></pre>
+<pre><code class="language-bash">yarn next [command] [options]
+</code></pre>
+<pre><code class="language-bash">bunx next [command] [options]
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: With <code>npm run</code>, use <code>--</code> before CLI flags so npm forwards them to <code>next</code>. This is not required for <code>pnpm</code>, <code>yarn</code>, or <code>bun</code>.</p>
+</blockquote>
+<h2 id="reference">Reference</h2>
+<p>The following options are available:</p>
+<table>
+<thead>
+<tr>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h</code> or <code>--help</code></td>
+<td>Shows all available options</td>
+</tr>
+<tr>
+<td><code>-v</code> or <code>--version</code></td>
+<td>Outputs the Next.js version number</td>
+</tr>
+</tbody>
+</table>
+<h3 id="commands">Commands</h3>
+<p>The following commands are available:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#next-dev-options"><code>dev</code></a></td>
+<td>Starts Next.js in development mode with Hot Module Reloading, error reporting, and more.</td>
+</tr>
+<tr>
+<td><a href="#next-build-options"><code>build</code></a></td>
+<td>Creates an optimized production build of your application. Displaying information about each route.</td>
+</tr>
+<tr>
+<td><a href="#next-start-options"><code>start</code></a></td>
+<td>Starts Next.js in production mode. The application should be compiled with <code>next build</code> first.</td>
+</tr>
+<tr>
+<td><a href="#next-info-options"><code>info</code></a></td>
+<td>Prints relevant details about the current system which can be used to report Next.js bugs.</td>
+</tr>
+<tr>
+<td><a href="#next-telemetry-options"><code>telemetry</code></a></td>
+<td>Allows you to enable or disable Next.js’ completely anonymous telemetry collection.</td>
+</tr>
+<tr>
+<td><a href="#next-typegen-options"><code>typegen</code></a></td>
+<td>Generates TypeScript definitions for routes, pages, layouts, and route handlers without running a full build.</td>
+</tr>
+<tr>
+<td><a href="#next-upgrade-options"><code>upgrade</code></a></td>
+<td>Upgrades your Next.js application to the latest version.</td>
+</tr>
+<tr>
+<td><a href="#next-experimental-analyze-options"><code>experimental-analyze</code></a></td>
+<td>Analyzes bundle output using Turbopack. Does not produce build artifacts.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Good to know</strong>: Running <code>next</code> without a command is an alias for <code>next dev</code>.</p>
+</blockquote>
+<h3 id="next-dev-options"><code>next dev</code> options</h3>
+<p><code>next dev</code> starts the application in development mode with Hot Module Reloading (HMR), error reporting, and more.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Development builds output to <code>.next/dev</code> instead of <code>.next</code>. This allows you to run <code>next dev</code> and <code>next build</code> concurrently without conflicts.</p>
+</blockquote>
+<p>The following options are available when running <code>next dev</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>[directory]</code></td>
+<td>A directory in which to build the application. If not provided, current directory is used.</td>
+</tr>
+<tr>
+<td><code>--turbopack</code></td>
+<td>Force enable <a href="/docs/app/api-reference/turbopack">Turbopack</a> (enabled by default). Also available as <code>--turbo</code>.</td>
+</tr>
+<tr>
+<td><code>--webpack</code></td>
+<td>Use Webpack instead of the default <a href="/docs/app/api-reference/turbopack">Turbopack</a> bundler for development.</td>
+</tr>
+<tr>
+<td><code>-p</code> or <code>--port &lt;port&gt;</code></td>
+<td>Specify a port number on which to start the application. Default: 3000, env: PORT</td>
+</tr>
+<tr>
+<td><code>-H</code>or <code>--hostname &lt;hostname&gt;</code></td>
+<td>Specify a hostname on which to start the application. Useful for making the application available for other devices on the network. Default: 0.0.0.0</td>
+</tr>
+<tr>
+<td><code>--experimental-https</code></td>
+<td>Starts the server with HTTPS and generates a self-signed certificate.</td>
+</tr>
+<tr>
+<td><code>--experimental-https-key &lt;path&gt;</code></td>
+<td>Path to a HTTPS key file.</td>
+</tr>
+<tr>
+<td><code>--experimental-https-cert &lt;path&gt;</code></td>
+<td>Path to a HTTPS certificate file.</td>
+</tr>
+<tr>
+<td><code>--experimental-https-ca &lt;path&gt;</code></td>
+<td>Path to a HTTPS certificate authority file.</td>
+</tr>
+<tr>
+<td><code>--experimental-upload-trace &lt;traceUrl&gt;</code></td>
+<td>Reports a subset of the debugging trace to a remote HTTP URL.</td>
+</tr>
+<tr>
+<td><code>--experimental-cpu-prof</code></td>
+<td>Enables CPU profiling using V8’s inspector. Profiles are saved to <code>.next/cpu-profiles/</code> on exit.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="next-build-options"><code>next build</code> options</h3>
+<p><code>next build</code> creates an optimized production build of your application. The output displays information about each route. For example:</p>
+<pre><code class="language-bash">Route (app)
+┌ ○ /_not-found
+└ ƒ /products/[id]
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+</code></pre>
+<p>The following options are available for the <code>next build</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>[directory]</code></td>
+<td>A directory on which to build the application. If not provided, the current directory will be used.</td>
+</tr>
+<tr>
+<td><code>--turbopack</code></td>
+<td>Force enable <a href="/docs/app/api-reference/turbopack">Turbopack</a> (enabled by default). Also available as <code>--turbo</code>.</td>
+</tr>
+<tr>
+<td><code>--webpack</code></td>
+<td>Build using Webpack.</td>
+</tr>
+<tr>
+<td><code>-d</code> or <code>--debug</code></td>
+<td>Enables a more verbose build output. With this flag enabled additional build output like rewrites, redirects, and headers will be shown.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>--profile</code></td>
+<td>Enables production <a href="https://react.dev/reference/react/Profiler" target="_blank" rel="noopener">profiling for React</a>.</td>
+</tr>
+<tr>
+<td><code>--no-lint</code></td>
+<td>Disables linting. <em>Note: linting will be removed from <code>next build</code> in Next 16. If you’re using Next 15.5+ with a linter other than <code>eslint</code>, linting during build will not occur.</em></td>
+</tr>
+<tr>
+<td><code>--no-mangling</code></td>
+<td>Disables <a href="https://en.wikipedia.org/wiki/Name_mangling" target="_blank" rel="noopener">mangling</a>. This may affect performance and should only be used for debugging purposes.</td>
+</tr>
+<tr>
+<td><code>--experimental-app-only</code></td>
+<td>Builds only App Router routes.</td>
+</tr>
+<tr>
+<td><code>--experimental-build-mode [mode]</code></td>
+<td>Uses an experimental build mode. (choices: “compile”, “generate”, default: “default”)</td>
+</tr>
+<tr>
+<td><code>--debug-prerender</code></td>
+<td>Debug prerender errors in development.</td>
+</tr>
+<tr>
+<td><code>--debug-build-paths=&lt;patterns&gt;</code></td>
+<td>Build only specific routes for debugging.</td>
+</tr>
+<tr>
+<td><code>--experimental-cpu-prof</code></td>
+<td>Enables CPU profiling using V8’s inspector. Profiles are saved to <code>.next/cpu-profiles/</code> on exit.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="next-start-options"><code>next start</code> options</h3>
+<p><code>next start</code> starts the application in production mode. The application should be compiled with <a href="#next-build-options"><code>next build</code></a> first.</p>
+<p>The following options are available for the <code>next start</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h</code> or <code>--help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>[directory]</code></td>
+<td>A directory on which to start the application. If no directory is provided, the current directory will be used.</td>
+</tr>
+<tr>
+<td><code>-p</code> or <code>--port &lt;port&gt;</code></td>
+<td>Specify a port number on which to start the application. (default: 3000, env: PORT)</td>
+</tr>
+<tr>
+<td><code>-H</code> or <code>--hostname &lt;hostname&gt;</code></td>
+<td>Specify a hostname on which to start the application (default: 0.0.0.0).</td>
+</tr>
+<tr>
+<td><code>--keepAliveTimeout &lt;keepAliveTimeout&gt;</code></td>
+<td>Specify the maximum amount of milliseconds to wait before closing the inactive connections.</td>
+</tr>
+<tr>
+<td><code>--experimental-cpu-prof</code></td>
+<td>Enables CPU profiling using V8’s inspector. Profiles are saved to <code>.next/cpu-profiles/</code> on exit.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="next-info-options"><code>next info</code> options</h3>
+<p><code>next info</code> prints relevant details about the current system which can be used to report Next.js bugs when opening a <a href="https://github.com/vercel/next.js/issues" target="_blank" rel="noopener">GitHub issue</a>. This information includes Operating System platform/arch/version, Binaries (Node.js, npm, Yarn, pnpm), package versions (<code>next</code>, <code>react</code>, <code>react-dom</code>), and more.</p>
+<p>The output should look like this:</p>
+<pre><code class="language-bash">Operating System:
+  Platform: darwin
+  Arch: arm64
+  Version: Darwin Kernel Version 23.6.0
+  Available memory (MB): 65536
+  Available CPU cores: 10
+Binaries:
+  Node: 20.12.0
+  npm: 10.5.0
+  Yarn: 1.22.19
+  pnpm: 9.6.0
+Relevant Packages:
+  next: 15.0.0-canary.115 // Latest available version is detected (15.0.0-canary.115).
+  eslint-config-next: 14.2.5
+  react: 19.0.0-rc
+  react-dom: 19.0.0
+  typescript: 5.5.4
+Next.js Config:
+  output: N/A
+</code></pre>
+<p>The following options are available for the <code>next info</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h</code> or <code>--help</code></td>
+<td>Show all available options</td>
+</tr>
+<tr>
+<td><code>--verbose</code></td>
+<td>Collects additional information for debugging.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="next-telemetry-options"><code>next telemetry</code> options</h3>
+<p>Next.js collects <strong>completely anonymous</strong> telemetry data about general usage. Participation in this anonymous program is optional, and you can opt-out if you prefer not to share information.</p>
+<p>The following options are available for the <code>next telemetry</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>--enable</code></td>
+<td>Enables Next.js’ telemetry collection.</td>
+</tr>
+<tr>
+<td><code>--disable</code></td>
+<td>Disables Next.js’ telemetry collection.</td>
+</tr>
+</tbody>
+</table>
+<p>Learn more about <a href="/telemetry">Telemetry</a>.</p>
+<h3 id="next-typegen-options"><code>next typegen</code> options</h3>
+<p><code>next typegen</code> generates TypeScript definitions for your application’s routes without performing a full build. This is useful for IDE autocomplete and CI type-checking of route usage.</p>
+<p>Previously, route types were only generated during <code>next dev</code> or <code>next build</code>, which meant running <code>tsc --noEmit</code> directly wouldn’t validate your route types. Now you can generate types independently and validate them externally:</p>
+<pre><code class="language-bash"># Generate route types first, then validate with TypeScript
+next typegen &amp;&amp; tsc --noEmit
+
+# Or in CI workflows for type checking without building
+next typegen &amp;&amp; npm run type-check
+</code></pre>
+<p>The following options are available for the <code>next typegen</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>[directory]</code></td>
+<td>A directory on which to generate types. If not provided, the current directory will be used.</td>
+</tr>
+</tbody>
+</table>
+<p>Output files are written to <code>&lt;distDir&gt;/types</code> (typically: <code>.next/dev/types</code> in development or <code>.next/types</code> in production):</p>
+<pre><code class="language-bash">next typegen
+# or for a specific app
+next typegen ./apps/web
+</code></pre>
+<p>Additionally, <code>next typegen</code> generates a <code>next-env.d.ts</code> file. We recommend adding <code>next-env.d.ts</code> to your <code>.gitignore</code> file.</p>
+<p>The <code>next-env.d.ts</code> file is included into your <code>tsconfig.json</code> file, to make Next.js types available to your project.</p>
+<p>To ensure <code>next-env.d.ts</code> is present before type-checking run <code>next typegen</code>. The commands <code>next dev</code> and <code>next build</code> also generate the <code>next-env.d.ts</code> file, but it is often undesirable to run these just to type-check, for example in CI/CD environments.</p>
+<blockquote>
+<p><strong>Good to know</strong>: <code>next typegen</code> loads your Next.js config (<code>next.config.js</code>, <code>next.config.mjs</code>, or <code>next.config.ts</code>) using the production build phase. Ensure any required environment variables and dependencies are available so the config can load correctly.</p>
+</blockquote>
+<h3 id="next-upgrade-options"><code>next upgrade</code> options</h3>
+<p><code>next upgrade</code> upgrades your Next.js application to the latest version.</p>
+<p>The following options are available for the <code>next upgrade</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>[directory]</code></td>
+<td>A directory with the Next.js application to upgrade. If not provided, the current directory will be used.</td>
+</tr>
+<tr>
+<td><code>--revision &lt;revision&gt;</code></td>
+<td>Specify a Next.js version or tag to upgrade to (e.g., <code>latest</code>, <code>canary</code>, <code>15.0.0</code>). Defaults to the release channel you have currently installed.</td>
+</tr>
+<tr>
+<td><code>--verbose</code></td>
+<td>Show verbose output during the upgrade process.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="next-experimental-analyze-options"><code>next experimental-analyze</code> options</h3>
+<p><code>next experimental-analyze</code> analyzes your application’s bundle output using <a href="/docs/app/api-reference/turbopack">Turbopack</a>. This command helps you understand the size and composition of your bundles, including JavaScript, CSS, and other assets. This command doesn’t produce an application build.</p>
+<pre><code class="language-bash">pnpm next experimental-analyze
+</code></pre>
+<pre><code class="language-bash">npx next experimental-analyze
+</code></pre>
+<pre><code class="language-bash">yarn next experimental-analyze
+</code></pre>
+<pre><code class="language-bash">bunx next experimental-analyze
+</code></pre>
+<p>By default, the command starts a local server after analysis completes, allowing you to explore your bundle composition in the browser. The analyzer lets you:</p>
+<ul>
+<li>Filter bundles by route and switch between client and server views</li>
+<li>View the full import chain showing why a module is included</li>
+<li>Trace imports across server-to-client component boundaries and dynamic imports</li>
+</ul>
+<p>See <a href="/docs/app/guides/package-bundling#optimizing-large-bundles">Package Bundling</a> for optimization strategies.</p>
+<p>To write the analysis output to disk without starting the server, use the <code>--output</code> flag. The output is written to <code>.next/diagnostics/analyze</code> and contains static files that can be copied elsewhere or shared with others:</p>
+<pre><code class="language-bash"># Write output to .next/diagnostics/analyze
+npx next experimental-analyze --output
+
+# Copy the output for comparison with a future analysis
+cp -r .next/diagnostics/analyze ./analyze-before-refactor
+</code></pre>
+<p>The following options are available for the <code>next experimental-analyze</code> command:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show all available options.</td>
+</tr>
+<tr>
+<td><code>[directory]</code></td>
+<td>A directory on which to analyze the application. If not provided, the current directory will be used.</td>
+</tr>
+<tr>
+<td><code>--no-mangling</code></td>
+<td>Disables <a href="https://en.wikipedia.org/wiki/Name_mangling" target="_blank" rel="noopener">mangling</a>. This may affect performance and should only be used for debugging purposes.</td>
+</tr>
+<tr>
+<td><code>--profile</code></td>
+<td>Enables production <a href="https://react.dev/reference/react/Profiler" target="_blank" rel="noopener">profiling for React</a>. This may affect performance.</td>
+</tr>
+<tr>
+<td><code>-o, --output</code></td>
+<td>Write analysis files to disk without starting the server. Output is written to <code>.next/diagnostics/analyze</code>.</td>
+</tr>
+<tr>
+<td><code>--port &lt;port&gt;</code></td>
+<td>Specify a port number to serve the analyzer on. (default: 4000, env: PORT)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples</h2>
+<h3 id="debugging-prerender-errors">Debugging prerender errors</h3>
+<p>If you encounter prerendering errors during <code>next build</code>, you can pass the <code>--debug-prerender</code> flag to get more detailed output:</p>
+<pre><code class="language-bash">next build --debug-prerender
+</code></pre>
+<p>This enables several experimental options to make debugging easier:</p>
+<ul>
+<li>Disables server code minification:
+<ul>
+<li><code>experimental.serverMinification = false</code></li>
+<li><code>experimental.turbopackMinify = false</code></li>
+</ul>
+</li>
+<li>Generates source maps for server bundles:
+<ul>
+<li><code>experimental.serverSourceMaps = true</code></li>
+</ul>
+</li>
+<li>Enables source map consumption in child processes used for prerendering:
+<ul>
+<li><code>enablePrerenderSourceMaps = true</code></li>
+</ul>
+</li>
+<li>Continues building even after the first prerender error, so you can see all issues at once:
+<ul>
+<li><code>experimental.prerenderEarlyExit = false</code></li>
+</ul>
+</li>
+</ul>
+<p>This helps surface more readable stack traces and code frames in the build output.</p>
+<blockquote>
+<p><strong>Warning</strong>: <code>--debug-prerender</code> is for debugging in development only. Do not deploy builds generated with <code>--debug-prerender</code> to production, as it may impact performance.</p>
+</blockquote>
+<h3 id="building-specific-routes">Building specific routes</h3>
+<p>You can build only specific routes in the App and Pages Routers using the <code>--debug-build-paths</code> option. This is useful for faster debugging when working with large applications. The <code>--debug-build-paths</code> option accepts comma-separated file paths and supports glob patterns:</p>
+<pre><code class="language-bash"># Build a specific route
+next build --debug-build-paths=&quot;app/page.tsx&quot;
+
+# Build more than one route
+next build --debug-build-paths=&quot;app/page.tsx,pages/index.tsx&quot;
+
+# Use glob patterns
+next build --debug-build-paths=&quot;app/**/page.tsx&quot;
+next build --debug-build-paths=&quot;pages/*.tsx&quot;
+</code></pre>
+<h3 id="changing-the-default-port">Changing the default port</h3>
+<p>By default, Next.js uses <code>http://localhost:3000</code> during development and with <code>next start</code>. The default port can be changed with the <code>-p</code> option, like so:</p>
+<pre><code class="language-bash">next dev -p 4000
+</code></pre>
+<p>Or using the <code>PORT</code> environment variable:</p>
+<pre><code class="language-bash">PORT=4000 next dev
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: <code>PORT</code> cannot be set in <code>.env</code> as booting up the HTTP server happens before any other code is initialized.</p>
+</blockquote>
+<h3 id="using-https-during-development">Using HTTPS during development</h3>
+<p>For certain use cases like webhooks or authentication, you can use <a href="https://developer.mozilla.org/en-US/docs/Glossary/HTTPS" target="_blank" rel="noopener">HTTPS</a> to have a secure environment on <code>localhost</code>. Next.js can generate a self-signed certificate with <code>next dev</code> using the <code>--experimental-https</code> flag:</p>
+<pre><code class="language-bash">next dev --experimental-https
+</code></pre>
+<p>With the generated certificate, the Next.js development server will exist at <code>https://localhost:3000</code>. The default port <code>3000</code> is used unless a port is specified with <code>-p</code>, <code>--port</code>, or <code>PORT</code>.</p>
+<p>You can also provide a custom certificate and key with <code>--experimental-https-key</code> and <code>--experimental-https-cert</code>. Optionally, you can provide a custom CA certificate with <code>--experimental-https-ca</code> as well.</p>
+<pre><code class="language-bash">next dev --experimental-https --experimental-https-key ./certificates/localhost-key.pem --experimental-https-cert ./certificates/localhost.pem
+</code></pre>
+<p><code>next dev --experimental-https</code> is only intended for development and creates a locally trusted certificate with <a href="https://github.com/FiloSottile/mkcert" target="_blank" rel="noopener"><code>mkcert</code></a>. In production, use properly issued certificates from trusted authorities.</p>
+<h3 id="configuring-a-timeout-for-downstream-proxies">Configuring a timeout for downstream proxies</h3>
+<p>When deploying Next.js behind a downstream proxy (e.g. a load-balancer like AWS ELB/ALB), it’s important to configure Next’s underlying HTTP server with <a href="https://nodejs.org/api/http.html#http_server_keepalivetimeout" target="_blank" rel="noopener">keep-alive timeouts</a> that are <em>larger</em> than the downstream proxy’s timeouts. Otherwise, once a keep-alive timeout is reached for a given TCP connection, Node.js will immediately terminate that connection without notifying the downstream proxy. This results in a proxy error whenever it attempts to reuse a connection that Node.js has already terminated.</p>
+<p>To configure the timeout values for the production Next.js server, pass <code>--keepAliveTimeout</code> (in milliseconds) to <code>next start</code>, like so:</p>
+<pre><code class="language-bash">next start --keepAliveTimeout 70000
+</code></pre>
+<h3 id="passing-nodejs-arguments">Passing Node.js arguments</h3>
+<p>You can pass any <a href="https://nodejs.org/api/cli.html#cli_node_options_options" target="_blank" rel="noopener">node arguments</a> to <code>next</code> commands. For example:</p>
+<pre><code class="language-bash">NODE_OPTIONS='--throw-deprecation' next
+NODE_OPTIONS='-r esm' next
+NODE_OPTIONS='--inspect' next
+</code></pre>
+<h3 id="cpu-profiling">CPU profiling</h3>
+<p>You can capture CPU profiles to analyze performance bottlenecks in your Next.js application. The <code>--experimental-cpu-prof</code> flag enables V8’s built-in CPU profiler and saves profiles to <code>.next/cpu-profiles/</code> when the process exits:</p>
+<pre><code class="language-bash"># Profile the build process
+next build --experimental-cpu-prof
+
+# Profile the dev server (profile saved on Ctrl+C or SIGTERM)
+next dev --experimental-cpu-prof
+
+# Profile the production server
+next start --experimental-cpu-prof
+</code></pre>
+<p>The generated <code>.cpuprofile</code> files can be opened in Chrome DevTools (Performance tab → Load profile) or other V8-compatible profiling tools.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Profile files are named with a descriptive prefix and timestamp. The profiles generated depend on the command:</p>
+<p><strong><code>next dev</code>:</strong></p>
+<ul>
+<li><code>dev-main-*</code> - Parent process (dev server orchestration)</li>
+<li><code>dev-server-*</code> - Child server process (request handling and rendering) - this is typically what you want to analyze</li>
+</ul>
+<p><strong><code>next build</code> (Turbopack):</strong></p>
+<ul>
+<li><code>build-main-*</code> - Main build orchestration process</li>
+<li><code>build-turbopack-*</code> - Turbopack compilation worker</li>
+</ul>
+<p><strong><code>next build</code> (Webpack):</strong></p>
+<ul>
+<li><code>build-main-*</code> - Main build orchestration process</li>
+<li><code>build-webpack-client-*</code> - Client bundle compilation worker</li>
+<li><code>build-webpack-server-*</code> - Server bundle compilation worker</li>
+<li><code>build-webpack-edge-server-*</code> - Edge runtime compilation worker</li>
+</ul>
+<p><strong><code>next start</code>:</strong></p>
+<ul>
+<li><code>start-main-*</code> - Production server process</li>
+</ul>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v16.1.0</code></td>
+<td>Add the <code>next upgrade</code> command</td>
+</tr>
+<tr>
+<td><code>v16.1.0</code></td>
+<td>Add the <code>next experimental-analyze</code> command</td>
+</tr>
+<tr>
+<td><code>v16.0.0</code></td>
+<td>The JS bundle size metrics have been removed from <code>next build</code></td>
+</tr>
+<tr>
+<td><code>v15.5.0</code></td>
+<td>Add the <code>next typegen</code> command</td>
+</tr>
+<tr>
+<td><code>v15.4.0</code></td>
+<td>Add <code>--debug-prerender</code> option for <code>next build</code> to help debug prerender errors.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

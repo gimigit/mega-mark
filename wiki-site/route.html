@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>route — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-route">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#http-methods">HTTP Methods</a></li><li><a href="#parameters">Parameters</a></li><li><a href="#route-context-helper">Route Context Helper</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#cookies">Cookies</a></li><li><a href="#headers">Headers</a></li><li><a href="#revalidating-cached-data">Revalidating Cached Data</a></li><li><a href="#redirects">Redirects</a></li><li><a href="#dynamic-route-segments">Dynamic Route Segments</a></li><li><a href="#url-query-parameters">URL Query Parameters</a></li><li><a href="#streaming">Streaming</a></li><li><a href="#request-body">Request Body</a></li><li><a href="#request-body-formdata">Request Body FormData</a></li><li><a href="#cors">CORS</a></li><li><a href="#webhooks">Webhooks</a></li><li><a href="#non-ui-responses">Non-UI Responses</a></li><li><a href="#segment-config-options">Segment Config Options</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">route</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the route.js special file.</td></tr></table><p>Route Handlers allow you to create custom request handlers for a given route using the Web <a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener">Request</a> and <a href="https://developer.mozilla.org/docs/Web/API/Response" target="_blank" rel="noopener">Response</a> APIs.</p>
+<pre><code class="language-ts">export async function GET() {
+  return Response.json({ message: 'Hello World' })
+}
+</code></pre>
+<pre><code class="language-js">export async function GET() {
+  return Response.json({ message: 'Hello World' })
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="http-methods">HTTP Methods</h3>
+<p>A <strong>route</strong> file allows you to create custom request handlers for a given route. The following <a href="https://developer.mozilla.org/docs/Web/HTTP/Methods" target="_blank" rel="noopener">HTTP methods</a> are supported: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, <code>HEAD</code>, and <code>OPTIONS</code>.</p>
+<pre><code class="language-ts">export async function GET(request: Request) {}
+
+export async function HEAD(request: Request) {}
+
+export async function POST(request: Request) {}
+
+export async function PUT(request: Request) {}
+
+export async function DELETE(request: Request) {}
+
+export async function PATCH(request: Request) {}
+
+// If `OPTIONS` is not defined, Next.js will automatically implement `OPTIONS` and set the appropriate Response `Allow` header depending on the other methods defined in the Route Handler.
+export async function OPTIONS(request: Request) {}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {}
+
+export async function HEAD(request) {}
+
+export async function POST(request) {}
+
+export async function PUT(request) {}
+
+export async function DELETE(request) {}
+
+export async function PATCH(request) {}
+
+// If `OPTIONS` is not defined, Next.js will automatically implement `OPTIONS` and set the appropriate Response `Allow` header depending on the other methods defined in the Route Handler.
+export async function OPTIONS(request) {}
+</code></pre>
+<h3 id="parameters">Parameters</h3>
+<h4><code>request</code> (optional)</h4>
+<p>The <code>request</code> object is a <a href="/docs/app/api-reference/functions/next-request">NextRequest</a> object, which is an extension of the Web <a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener">Request</a> API. <code>NextRequest</code> gives you further control over the incoming request, including easily accessing <code>cookies</code> and an extended, parsed, URL object <code>nextUrl</code>.</p>
+<pre><code class="language-ts">import type { NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const url = request.nextUrl
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {
+  const url = request.nextUrl
+}
+</code></pre>
+<h4><code>context</code> (optional)</h4>
+<ul>
+<li><strong><code>params</code></strong>: a promise that resolves to an object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> for the current route.</li>
+</ul>
+<pre><code class="language-ts">export async function GET(
+  request: Request,
+  { params }: { params: Promise&lt;{ team: string }&gt; }
+) {
+  const { team } = await params
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request, { params }) {
+  const { team } = await params
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/dashboard/[team]/route.js</code></td>
+<td><code>/dashboard/1</code></td>
+<td><code>Promise&lt;{ team: '1' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[tag]/[item]/route.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>Promise&lt;{ tag: '1', item: '2' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/blog/[...slug]/route.js</code></td>
+<td><code>/blog/1/2</code></td>
+<td><code>Promise&lt;{ slug: ['1', '2'] }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="route-context-helper">Route Context Helper</h3>
+<p>You can type the Route Handler context using <code>RouteContext</code> to get strongly typed <code>params</code> from a route literal. <code>RouteContext</code> is a globally available helper.</p>
+<pre><code class="language-ts">import type { NextRequest } from 'next/server'
+
+export async function GET(_req: NextRequest, ctx: RouteContext&lt;'/users/[id]'&gt;) {
+  const { id } = await ctx.params
+  return Response.json({ id })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong></p>
+<ul>
+<li>Types are generated during <code>next dev</code>, <code>next build</code> or <code>next typegen</code>.</li>
+<li>After type generation, the <code>RouteContext</code> helper is globally available. It doesn’t need to be imported.</li>
+</ul>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<h3 id="cookies">Cookies</h3>
+<p>You can read or set cookies with <a href="/docs/app/api-reference/functions/cookies"><code>cookies</code></a> from <code>next/headers</code>.</p>
+<pre><code class="language-ts">import { cookies } from 'next/headers'
+
+export async function GET(request: NextRequest) {
+  const cookieStore = await cookies()
+
+  const a = cookieStore.get('a')
+  const b = cookieStore.set('b', '1')
+  const c = cookieStore.delete('c')
+}
+</code></pre>
+<pre><code class="language-js">import { cookies } from 'next/headers'
+
+export async function GET(request) {
+  const cookieStore = await cookies()
+
+  const a = cookieStore.get('a')
+  const b = cookieStore.set('b', '1')
+  const c = cookieStore.delete('c')
+}
+</code></pre>
+<p>Alternatively, you can return a new <code>Response</code> using the <a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Set-Cookie" target="_blank" rel="noopener"><code>Set-Cookie</code></a> header.</p>
+<pre><code class="language-ts">import { cookies } from 'next/headers'
+
+export async function GET(request: Request) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('token')
+
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { 'Set-Cookie': `token=${token.value}` },
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { cookies } from 'next/headers'
+
+export async function GET(request) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('token')
+
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { 'Set-Cookie': `token=${token.value}` },
+  })
+}
+</code></pre>
+<p>You can also use the underlying Web APIs to read cookies from the request (<a href="/docs/app/api-reference/functions/next-request"><code>NextRequest</code></a>):</p>
+<pre><code class="language-ts">import { type NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const token = request.cookies.get('token')
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {
+  const token = request.cookies.get('token')
+}
+</code></pre>
+<h3 id="headers">Headers</h3>
+<p>You can read headers with <a href="/docs/app/api-reference/functions/headers"><code>headers</code></a> from <code>next/headers</code>.</p>
+<pre><code class="language-ts">import { headers } from 'next/headers'
+import type { NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const headersList = await headers()
+  const referer = headersList.get('referer')
+}
+</code></pre>
+<pre><code class="language-js">import { headers } from 'next/headers'
+
+export async function GET(request) {
+  const headersList = await headers()
+  const referer = headersList.get('referer')
+}
+</code></pre>
+<p>This <code>headers</code> instance is read-only. To set headers, you need to return a new <code>Response</code> with new <code>headers</code>.</p>
+<pre><code class="language-ts">import { headers } from 'next/headers'
+
+export async function GET(request: Request) {
+  const headersList = await headers()
+  const referer = headersList.get('referer')
+
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { referer: referer },
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { headers } from 'next/headers'
+
+export async function GET(request) {
+  const headersList = await headers()
+  const referer = headersList.get('referer')
+
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { referer: referer },
+  })
+}
+</code></pre>
+<p>You can also use the underlying Web APIs to read headers from the request (<a href="/docs/app/api-reference/functions/next-request"><code>NextRequest</code></a>):</p>
+<pre><code class="language-ts">import { type NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers)
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {
+  const requestHeaders = new Headers(request.headers)
+}
+</code></pre>
+<h3 id="revalidating-cached-data">Revalidating Cached Data</h3>
+<p>You can <a href="/docs/app/guides/incremental-static-regeneration">revalidate cached data</a> using the <code>revalidate</code> route segment config option.</p>
+<pre><code class="language-ts">export const revalidate = 60
+
+export async function GET() {
+  const data = await fetch('https://api.vercel.app/blog')
+  const posts = await data.json()
+
+  return Response.json(posts)
+}
+</code></pre>
+<pre><code class="language-js">export const revalidate = 60
+
+export async function GET() {
+  const data = await fetch('https://api.vercel.app/blog')
+  const posts = await data.json()
+
+  return Response.json(posts)
+}
+</code></pre>
+<h3 id="redirects">Redirects</h3>
+<pre><code class="language-ts">import { redirect } from 'next/navigation'
+
+export async function GET(request: Request) {
+  redirect('https://nextjs.org/')
+}
+</code></pre>
+<pre><code class="language-js">import { redirect } from 'next/navigation'
+
+export async function GET(request) {
+  redirect('https://nextjs.org/')
+}
+</code></pre>
+<h3 id="dynamic-route-segments">Dynamic Route Segments</h3>
+<p>Route Handlers can use <a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic Segments</a> to create request handlers from dynamic data.</p>
+<pre><code class="language-ts">export async function GET(
+  request: Request,
+  { params }: { params: Promise&lt;{ slug: string }&gt; }
+) {
+  const { slug } = await params // 'a', 'b', or 'c'
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request, { params }) {
+  const { slug } = await params // 'a', 'b', or 'c'
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Example URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/items/[slug]/route.js</code></td>
+<td><code>/items/a</code></td>
+<td><code>Promise&lt;{ slug: 'a' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/items/[slug]/route.js</code></td>
+<td><code>/items/b</code></td>
+<td><code>Promise&lt;{ slug: 'b' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/items/[slug]/route.js</code></td>
+<td><code>/items/c</code></td>
+<td><code>Promise&lt;{ slug: 'c' }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Static Generation with <code>generateStaticParams</code></h4>
+<p>You can use <a href="/docs/app/api-reference/functions/generate-static-params"><code>generateStaticParams</code></a> with dynamic Route Handlers to statically generate responses at build time for specified params, while handling other params dynamically at request time.</p>
+<p>When using <a href="/docs/app/getting-started/caching">Cache Components</a>, you can combine <code>generateStaticParams</code> with <code>use cache</code> to enable data caching for both prerendered and runtime params.</p>
+<p>See the <a href="/docs/app/api-reference/functions/generate-static-params#with-route-handlers">generateStaticParams with Route Handlers</a> documentation for examples and details.</p>
+<h3 id="url-query-parameters">URL Query Parameters</h3>
+<p>The request object passed to the Route Handler is a <code>NextRequest</code> instance, which includes <a href="/docs/app/api-reference/functions/next-request#nexturl">some additional convenience methods</a>, such as those for more easily handling query parameters.</p>
+<pre><code class="language-ts">import { type NextRequest } from 'next/server'
+
+export function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
+  const query = searchParams.get('query')
+  // query is &quot;hello&quot; for /api/search?query=hello
+}
+</code></pre>
+<pre><code class="language-js">export function GET(request) {
+  const searchParams = request.nextUrl.searchParams
+  const query = searchParams.get('query')
+  // query is &quot;hello&quot; for /api/search?query=hello
+}
+</code></pre>
+<h3 id="streaming">Streaming</h3>
+<p>Streaming is commonly used in combination with Large Language Models (LLMs), such as OpenAI, for AI-generated content. Learn more about the <a href="https://sdk.vercel.ai/docs/introduction" target="_blank" rel="noopener">AI SDK</a>.</p>
+<pre><code class="language-ts">import { openai } from '@ai-sdk/openai'
+import { StreamingTextResponse, streamText } from 'ai'
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  const result = await streamText({
+    model: openai('gpt-4-turbo'),
+    messages,
+  })
+
+  return new StreamingTextResponse(result.toAIStream())
+}
+</code></pre>
+<pre><code class="language-js">import { openai } from '@ai-sdk/openai'
+import { StreamingTextResponse, streamText } from 'ai'
+
+export async function POST(req) {
+  const { messages } = await req.json()
+  const result = await streamText({
+    model: openai('gpt-4-turbo'),
+    messages,
+  })
+
+  return new StreamingTextResponse(result.toAIStream())
+}
+</code></pre>
+<p>These abstractions use the Web APIs to create a stream. You can also use the underlying Web APIs directly.</p>
+<pre><code class="language-ts">// https://developer.mozilla.org/docs/Web/API/ReadableStream#convert_async_iterator_to_stream
+function iteratorToStream(iterator: any) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next()
+
+      if (done) {
+        controller.close()
+      } else {
+        controller.enqueue(value)
+      }
+    },
+  })
+}
+
+function sleep(time: number) {
+  return new Promise((resolve) =&gt; {
+    setTimeout(resolve, time)
+  })
+}
+
+const encoder = new TextEncoder()
+
+async function* makeIterator() {
+  yield encoder.encode('&lt;p&gt;One&lt;/p&gt;')
+  await sleep(200)
+  yield encoder.encode('&lt;p&gt;Two&lt;/p&gt;')
+  await sleep(200)
+  yield encoder.encode('&lt;p&gt;Three&lt;/p&gt;')
+}
+
+export async function GET() {
+  const iterator = makeIterator()
+  const stream = iteratorToStream(iterator)
+
+  return new Response(stream)
+}
+</code></pre>
+<pre><code class="language-js">// https://developer.mozilla.org/docs/Web/API/ReadableStream#convert_async_iterator_to_stream
+function iteratorToStream(iterator) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next()
+
+      if (done) {
+        controller.close()
+      } else {
+        controller.enqueue(value)
+      }
+    },
+  })
+}
+
+function sleep(time) {
+  return new Promise((resolve) =&gt; {
+    setTimeout(resolve, time)
+  })
+}
+
+const encoder = new TextEncoder()
+
+async function* makeIterator() {
+  yield encoder.encode('&lt;p&gt;One&lt;/p&gt;')
+  await sleep(200)
+  yield encoder.encode('&lt;p&gt;Two&lt;/p&gt;')
+  await sleep(200)
+  yield encoder.encode('&lt;p&gt;Three&lt;/p&gt;')
+}
+
+export async function GET() {
+  const iterator = makeIterator()
+  const stream = iteratorToStream(iterator)
+
+  return new Response(stream)
+}
+</code></pre>
+<h3 id="request-body">Request Body</h3>
+<p>You can read the <code>Request</code> body using the standard Web API methods:</p>
+<pre><code class="language-ts">export async function POST(request: Request) {
+  const res = await request.json()
+  return Response.json({ res })
+}
+</code></pre>
+<pre><code class="language-js">export async function POST(request) {
+  const res = await request.json()
+  return Response.json({ res })
+}
+</code></pre>
+<h3 id="request-body-formdata">Request Body FormData</h3>
+<p>You can read the <code>FormData</code> using the <code>request.formData()</code> function:</p>
+<pre><code class="language-ts">export async function POST(request: Request) {
+  const formData = await request.formData()
+  const name = formData.get('name')
+  const email = formData.get('email')
+  return Response.json({ name, email })
+}
+</code></pre>
+<pre><code class="language-js">export async function POST(request) {
+  const formData = await request.formData()
+  const name = formData.get('name')
+  const email = formData.get('email')
+  return Response.json({ name, email })
+}
+</code></pre>
+<p>Since <code>formData</code> data are all strings, you may want to use <a href="https://www.npmjs.com/zod-form-data" target="_blank" rel="noopener"><code>zod-form-data</code></a> to validate the request and retrieve data in the format you prefer (e.g. <code>number</code>).</p>
+<h3 id="cors">CORS</h3>
+<p>You can set CORS headers for a specific Route Handler using the standard Web API methods:</p>
+<pre><code class="language-ts">export async function GET(request: Request) {
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>To add CORS headers to multiple Route Handlers, you can use <a href="/docs/app/api-reference/file-conventions/proxy#cors">Proxy</a> or the <a href="/docs/app/api-reference/config/next-config-js/headers#cors"><code>next.config.js</code> file</a>.</li>
+</ul>
+</blockquote>
+<h3 id="webhooks">Webhooks</h3>
+<p>You can use a Route Handler to receive webhooks from third-party services:</p>
+<pre><code class="language-ts">export async function POST(request: Request) {
+  try {
+    const text = await request.text()
+    // Process the webhook payload
+  } catch (error) {
+    return new Response(`Webhook error: ${error.message}`, {
+      status: 400,
+    })
+  }
+
+  return new Response('Success!', {
+    status: 200,
+  })
+}
+</code></pre>
+<pre><code class="language-js">export async function POST(request) {
+  try {
+    const text = await request.text()
+    // Process the webhook payload
+  } catch (error) {
+    return new Response(`Webhook error: ${error.message}`, {
+      status: 400,
+    })
+  }
+
+  return new Response('Success!', {
+    status: 200,
+  })
+}
+</code></pre>
+<p>Notably, unlike API Routes with the Pages Router, you do not need to use <code>bodyParser</code> to use any additional configuration.</p>
+<h3 id="non-ui-responses">Non-UI Responses</h3>
+<p>You can use Route Handlers to return non-UI content. Note that <a href="/docs/app/api-reference/file-conventions/metadata/sitemap#generating-a-sitemap-using-code-js-ts"><code>sitemap.xml</code></a>, <a href="/docs/app/api-reference/file-conventions/metadata/robots#generate-a-robots-file"><code>robots.txt</code></a>, <a href="/docs/app/api-reference/file-conventions/metadata/app-icons#generate-icons-using-code-js-ts-tsx"><code>app icons</code></a>, and <a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image">open graph images</a> all have built-in support.</p>
+<pre><code class="language-ts">export async function GET() {
+  return new Response(
+    `&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;rss version=&quot;2.0&quot;&gt;
+
+&lt;channel&gt;
+  &lt;title&gt;Next.js Documentation&lt;/title&gt;
+  &lt;link&gt;https://nextjs.org/docs&lt;/link&gt;
+  &lt;description&gt;The React Framework for the Web&lt;/description&gt;
+&lt;/channel&gt;
+
+&lt;/rss&gt;`,
+    {
+      headers: {
+        'Content-Type': 'text/xml',
+      },
+    }
+  )
+}
+</code></pre>
+<pre><code class="language-js">export async function GET() {
+  return new Response(`&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;rss version=&quot;2.0&quot;&gt;
+
+&lt;channel&gt;
+  &lt;title&gt;Next.js Documentation&lt;/title&gt;
+  &lt;link&gt;https://nextjs.org/docs&lt;/link&gt;
+  &lt;description&gt;The React Framework for the Web&lt;/description&gt;
+&lt;/channel&gt;
+
+&lt;/rss&gt;`)
+}
+</code></pre>
+<h3 id="segment-config-options">Segment Config Options</h3>
+<p>Route Handlers use the same <a href="/docs/app/api-reference/file-conventions/route-segment-config">route segment configuration</a> as pages and layouts.</p>
+<pre><code class="language-ts">export const dynamic = 'auto'
+export const dynamicParams = true
+export const revalidate = false
+export const fetchCache = 'auto'
+export const runtime = 'nodejs'
+export const preferredRegion = 'auto'
+</code></pre>
+<pre><code class="language-js">export const dynamic = 'auto'
+export const dynamicParams = true
+export const revalidate = false
+export const fetchCache = 'auto'
+export const runtime = 'nodejs'
+export const preferredRegion = 'auto'
+</code></pre>
+<p>See the <a href="/docs/app/api-reference/file-conventions/route-segment-config">API reference</a> for more details.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td><code>context.params</code> is now a promise. A <a href="/docs/app/guides/upgrading/codemods#150">codemod</a> is available</td>
+</tr>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td>The default caching for <code>GET</code> handlers was changed from static to dynamic</td>
+</tr>
+<tr>
+<td><code>v13.2.0</code></td>
+<td>Route Handlers are introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

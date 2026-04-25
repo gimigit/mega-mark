@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-relative-parent-imports — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-relative-parent-imports">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-relative-parent-imports</h1>
+
+</div>
+<div class="article-body">
+<!-- end auto-generated rule header -->
+<p>Use this rule to prevent imports to folders in relative parent paths.</p>
+<p>This rule is useful for enforcing tree-like folder structures instead of complex graph-like folder structures. While this restriction might be a departure from Node’s default resolution style, it can lead large, complex codebases to be easier to maintain. If you’ve ever had debates over “where to put files” this rule is for you.</p>
+<p>To fix violations of this rule there are three general strategies. Given this example:</p>
+<pre><code class="language-pt">numbers
+└── three.js
+add.js
+</code></pre>
+<pre><code class="language-js">// ./add.js
+export default function (numbers) {
+  return numbers.reduce((sum, n) =&gt; sum + n, 0);
+}
+
+// ./numbers/three.js
+import add from '../add'; // violates import/no-relative-parent-imports
+
+export default function three() {
+  return add([1, 2]);
+}
+</code></pre>
+<p>You can,</p>
+<ol>
+<li>
+<p>Move the file to be in a sibling folder (or higher) of the dependency.</p>
+<p><code>three.js</code> could be be in the same folder as <code>add.js</code>:</p>
+<pre><code class="language-pt">three.js
+add.js
+</code></pre>
+<p>or since <code>add</code> doesn’t have any imports, it could be in it’s own directory (namespace):</p>
+<pre><code class="language-pt">math
+└── add.js
+three.js
+</code></pre>
+</li>
+<li>
+<p>Pass the dependency as an argument at runtime (dependency injection)</p>
+<pre><code class="language-js">// three.js
+export default function three(add) {
+  return add([1, 2]);
+}
+
+// somewhere else when you use `three.js`:
+import add from './add';
+import three from './numbers/three';
+console.log(three(add));
+</code></pre>
+</li>
+<li>
+<p>Make the dependency a package so it’s globally available to all files in your project:</p>
+<pre><code class="language-js">import add from 'add'; // from https://www.npmjs.com/package/add
+export default function three() {
+  return add([1,2]);
+}
+</code></pre>
+</li>
+</ol>
+<p>These are (respectively) static, dynamic &amp; global solutions to graph-like dependency resolution.</p>
+<h2 id="examples">Examples</h2>
+<p>Given the following folder structure:</p>
+<pre><code class="language-pt">my-project
+├── lib
+│   ├── a.js
+│   └── b.js
+└── main.js
+</code></pre>
+<p>And the .eslintrc file:</p>
+<pre><code class="language-json">{
+  ...
+  &quot;rules&quot;: {
+    &quot;import/no-relative-parent-imports&quot;: &quot;error&quot;
+  }
+}
+</code></pre>
+<p>The following patterns are considered problems:</p>
+<pre><code class="language-js">/**
+ *  in my-project/lib/a.js
+ */
+
+import bar from '../main'; // Import parent file using a relative path
+</code></pre>
+<p>The following patterns are NOT considered problems:</p>
+<pre><code class="language-js">/**
+ *  in my-project/main.js
+ */
+
+import foo from 'foo'; // Import package using module path
+import a from './lib/a'; // Import child file using relative path
+
+/**
+ *  in my-project/lib/a.js
+ */
+
+import b from './b'; // Import sibling file using relative path
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

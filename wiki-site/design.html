@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-design">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#data-flows">Data flows</a></li><li><a href="#persisting-the-session-information-in-cookies">Persisting the session information in Cookies</a></li><ul><li><a href="#cookie-chunking-strategy">Cookie chunking strategy</a></li><li><a href="#cookies-as-a-database-max-age-option-explained">Cookies as a database (Max-Age option explained)</a></li><li><a href="#encoding-cookie-values">Encoding cookie values</a></li></ul><li><a href="#ssr-framework-patterns">SSR framework patterns</a></li><ul><li><a href="#when-does-the-server-setall">When does the server setAll?</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Design</h1>
+
+</div>
+<div class="article-body">
+<p>This document should help clarify how this library works internally and why
+certain choices were made.</p>
+<h2 id="data-flows">Data flows</h2>
+<p>Supabase Auth encodes a user’s session using an access token (a JWT,
+symmetrically signed) and a refresh token (a unique string that can be only
+used once to issue a new access token).</p>
+<p>In Single Page Applications (SPA) these are stored in local storage. For
+applications where Server-Side Rendering frameworks are used, the access and
+refresh token need to also be accessible by the server.</p>
+<p>This is traditionally done using browser cookies <a href="">Cookies</a>. By storing the
+access token and refresh token in cookies, the browser will send them over to
+the server on every page load. Then, the server can take them from the request
+headers and render HTML (i.e. server-rendered React) based on the user’s
+session.</p>
+<p>It’s important to note that when the user visits a SSR page for the first time,
+the request (and therefore cookies) are sent <em>well before any JavaScript runs
+on the page.</em> In fact, JavaScript can only run after the response from the
+server is received. This means that the access token is very likely expired
+when sent to the server, and it’s the server’s job to use the refresh token (as
+an extension of the usser’s agent) to obtain a new access token.</p>
+<p>Since a refresh token can only be used once, the server must send back the new
+access token it received as <code>Set-Cookie</code> headers.</p>
+<h2 id="persisting-the-session-information-in-cookies">Persisting the session information in Cookies</h2>
+<p>Cookies have significant limitations, as they are a technology invented many
+years ago. They can <a href="https://datatracker.ietf.org/doc/html/rfc6265#section-4.1.1" target="_blank" rel="noopener">only hold US ASCII characters <strong>not including</strong> <code>&quot;</code>, <code>,</code>,
+<code>;</code>, <code>\</code>, <code>\n</code>, <code>\r</code>, and other
+whitespace</a>. As
+such JSON <strong>is not permitted</strong> (though appears to be somewhat allowed in
+real-life by most servers).</p>
+<p>Browsers tend to limit the size of individual cookies. Experimental results
+show that individual cookies longer than 3180 bytes will not be sent to the
+server, or may not even be saved at all.</p>
+<p>For this reason, a <em>cookie chunking</em> strategy is used to split a single value
+over multiple cookies.</p>
+<h3 id="cookie-chunking-strategy">Cookie chunking strategy</h3>
+<p>This library uses this cookie chunking strategy:</p>
+<ol>
+<li>If the value to be stored is &lt;= 3180 bytes, then it’s stored under the full
+cookie name.</li>
+<li>If the value is &gt;= 3180 bytes, it’s split in chunks of 3180 bytes.
+The name of the cookie takes the form <code>key.chunk_index</code> where <code>key</code> is the
+key for storing the value and <code>chunk_index</code> is the 0-based index of the
+chunk.</li>
+</ol>
+<p>The operation for reading a stored item with the key <code>key</code> is as follows:</p>
+<ol>
+<li>If there’s a cookie with a full name <code>key</code>, use its value.</li>
+<li>For each index starting at <code>0</code> if there’s a <code>key.index</code> cookie, join its
+value with the previous index. If there’s no value, stop processing.</li>
+</ol>
+<p>Note: These algorithms were introduced in versions &lt;= 0.3.0 and are kept for
+their simplicity.</p>
+<p>Because of these algorithms, it’s important for the library to ensure handling
+these state changes with regards to a stored item’s value:</p>
+<ol>
+<li><em>Non-chunked to chunked.</em> If a value for an item previously fit in a
+non-chunked cookie, but now it needs to be split amongst multiple cookies:
+<ul>
+<li>The non-chunked cookie must be <em>removed</em> (i.e. set to <code>Max-Age=0</code>).</li>
+</ul>
+</li>
+<li><em>More chunks to less chunks.</em> If a value for an item previously fit in 3
+chunks but now needs to fit in 2 chunks:
+<ul>
+<li>The chunks from the end, e.g. <code>key.2</code> must be <em>removed</em> (i.e. set to
+<code>Max-Age=0</code>).</li>
+</ul>
+</li>
+<li><em>Chunked to non-chunked.</em> If a value for an item previously fit in at least
+2 chunks, but now can fit in one cookie:
+<ul>
+<li>All of the chunks need to be <em>removed</em> (i.e. set to <code>Max-Age=0</code>) and only
+the full cookie be set to the value.</li>
+</ul>
+</li>
+</ol>
+<p>If these state changes are not implemented correctly, it can lead to issues in
+the Supabase Auth library such as:</p>
+<ul>
+<li>Reading garbled data (reading stale chunks).</li>
+<li>Reading stale data (as the non-chunked version is preferential, failing to
+remove it when moving to chunked data can cause the library to read old
+data).</li>
+</ul>
+<h4>Deprecation of <code>get</code>, <code>set</code> and <code>remove</code> in favor of <code>getAll</code> and <code>setAll</code></h4>
+<p>To ensure the correct implementation of the state changes described above, it
+was necessary to deprecate the <code>get</code>, <code>set</code> and <code>remove</code> cookie access methods
+starting in version 0.4.0 in favor of <code>getAll</code> and <code>setAll</code>.</p>
+<p>This is because when a storage item needs to be set, all cookies that have
+chunk-like names need to be properly set and cleared. These cannot be known in
+advance, so <code>get</code> is not sufficient for solving the problem.</p>
+<p>To illustrate with an example, suppose a request comes in with the following
+cookies:</p>
+<pre><code class="language-typescript">{
+   'storage-item': 'value',
+   'storage-item.0': 'value',
+   'storage-item.1': 'value',
+   'storage-item.5': 'value',
+}
+</code></pre>
+<p>The client library cannot know that there exist 4 different versions of the
+same cookies so it can <code>get</code> them. It must use a function like <code>getAll</code> with
+which it can inspect the full state of the request.</p>
+<p>Let’s assume that the new state of the <code>storage-item</code> is to set two chunks <code>.0</code>
+and <code>.1</code> such as:</p>
+<pre><code class="language-typescript">{
+   'storage-item.0': 'val',
+   'storage-item.1': 'ue',
+}
+</code></pre>
+<p>These need to be translated into the following <code>Set-Cookie</code> headers (commands):</p>
+<pre><code class="language-http">Set-Cookie: storage-item.0=val; Max-Age=&lt;many seconds&gt;
+Set-Cookie: storage-item.1=ue;  Max-Age=&lt;many seconds&gt;
+Set-Cookie: storage-item=;   Max-Age=0
+Set-Cookie: storage-item.5=; Max-Age=0
+</code></pre>
+<p>Notice the last two commands that clear the stale <code>storage-key</code> and
+<code>storage-item.5</code> cookies.</p>
+<p>Starting version 0.4.0 if <code>get</code>, <code>set</code> and <code>remove</code> are used, in an effort to
+maintain some reliability of the state represented by cookies, the client
+library will test for the storage item and its first 5 chunks and clear them if
+necessary. This should suffice for most situations, but not all.</p>
+<p>Regardless, all users must switch to <code>getAll</code> and <code>setAll</code>, as in the next
+major version the individual <code>get</code>, <code>set</code> and <code>remove</code> methods will not be
+supported.</p>
+<h3 id="cookies-as-a-database-max-age-option-explained">Cookies as a database (Max-Age option explained)</h3>
+<p>Cookies are like a very primitive key-value store. You can only query by cookie
+name, and the database will give you back a value. It won’t give you back its
+metadata.</p>
+<p>To write to the database, you have to use the <code>Set-Cookie</code> header, which is
+like the <code>INSERT</code> or <code>UPDATE</code> commands.</p>
+<p>Since the Supabase Auth library uses cookies only to store the session, the
+<code>Max-Age</code> option of a cookie (as a chunk or otherwise) must be set to a very
+high number. This ensures that the browser will always send the value to the
+server, and not “delete it.”</p>
+<p>Conversely, when a cookie is <strong>removed</strong> the <code>Max-Age</code> option should be set to
+<code>0</code>. This is equivalent to a <code>DELETE</code> command. This is <strong>extremely important</strong>
+as failing to send these commands can result in stale data remaining in the
+browser.</p>
+<h3 id="encoding-cookie-values">Encoding cookie values</h3>
+<p>As mentioned previously, cookies can <a href="https://datatracker.ietf.org/doc/html/rfc6265#section-4.1.1" target="_blank" rel="noopener">only hold US ASCII characters <strong>not including</strong> <code>&quot;</code>, <code>,</code>,
+<code>;</code>, <code>\</code>, <code>\n</code>, <code>\r</code>, and other
+whitespace</a>. But,
+Supabase Auth’s library encodes stored items as JSON.</p>
+<p>This means that, technically, these values must not be used as-is as cookies
+and some transformation to the JSON needs to be made to conform to the
+restriction.</p>
+<p>This is because:</p>
+<ul>
+<li>JSON is full of <code>&quot;</code>, which appear to be banned and can be mis-interpreted.</li>
+<li>JSON can hold any UTF-8 sequence, which is not US ASCII. This means that if
+the stored session holds any character (like a Chinese, Japanese or Cyrillic
+user name) it should technically be not accepted and is open to
+mis-interpretation.</li>
+</ul>
+<h4>Versions at or before 0.3.0</h4>
+<p>Up to version 0.3.0 this limitation for cookies was ignored, and likely
+contributed to confused servers, browsers, developers and users.</p>
+<p>Therefore, the raw JSON values (chunked or not) were split up without regards
+to the limitations and set as cookies.</p>
+<h4>Versions after 0.3.0</h4>
+<p>To force the library’s behavior into compliance, after version 0.3.0 a new
+encoding strategy is developed for cookie values.</p>
+<p>It utilizes Base64-URL encoding in the following manner:</p>
+<ol>
+<li>The value is prefixed with <code>base64-</code> which allows the library to detect the
+encoding used.</li>
+<li>The value is encoded using Base64-URL and appended to the prefix, without
+any white space or padding (<code>=</code>) characters.</li>
+<li>If the whole prefix + encoded value needs to be chunked, it’s chunked as a
+whole string.</li>
+</ol>
+<p>Therefore to read a value from cookies, the library uses this algorithm:</p>
+<ol>
+<li>If the value starts with <code>base64-</code>, read the rest of it, decode it from Base64
+and return it.</li>
+<li>If the value does not start with <code>base64-</code> and there is another prefix
+defined then attempt to use the indicated encoding algorithm. If that
+algorithm is not supported, either return an error or return a null value.</li>
+<li>Finally, the value does not seem to be an encoded value, so try to read it
+as-is (raw) and return it.</li>
+</ol>
+<p>This algorithm allows for backward and forward compatibility between versions
+0.3.0 and above including the introduction of new/different encoding
+strategies.</p>
+<h2 id="ssr-framework-patterns">SSR framework patterns</h2>
+<p>All SSR frameworks today can be described as having the following patterns:</p>
+<ol>
+<li><strong>Middleware.</strong> This is a function that runs on the server <em>before</em> any
+rendering is done. It has access to the whole request, including headers,
+cookies and other infromation. Usually these functions have the right to
+change the response headers as well, such as for setting cookies. They are
+often used to:
+<ul>
+<li>Redirect to other pages (like to <code>/sign-in</code> to ask the user to sign in, or
+<code>/verify-mfa</code> to ask them to go through MFA)</li>
+<li>Return responses (such as 401, 403 and others)</li>
+</ul>
+</li>
+<li><strong>Routes or APIs.</strong> These are functions that help developers implement APIs
+for their applications without needing to build a separate API server. These
+are often useful with traditional <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form" target="_blank" rel="noopener">HTML forms</a> or
+simply for offloading slow or privileged tasks. These functions have access to
+the full request context
+and are able to return any response, including setting headers.</li>
+<li><strong>Server pages and components.</strong> These are React components (sometimes
+organized as pages) which can be rendered on the server. Most React features
+that enable interactivity, such as click handlers, <code>useEffect</code>, <code>useContext</code> or
+React Query are <strong>not available.</strong> Usually only basic <code>fetch</code> is allowed, with
+some form of additional caching provided. In most SSR frameworks when a page or
+component is rendered on the server <strong>accessing request information is
+limited or not available, with the exception of access to cookies</strong>. <ins>It is
+not possible to <strong>set cookies</strong>.</ins></li>
+<li><strong>Client (browser) pages and components.</strong> These are React components that are
+<a href="https://react.dev/reference/react-dom/client/hydrateRoot" target="_blank" rel="noopener">hydrated</a> into
+life after the server has returned the rendered response for the page. They run
+inside the browser’s runtime, and have full access to the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie" target="_blank" rel="noopener"><code>document.cookie</code></a>
+API for reading and writing cookies.</li>
+</ol>
+<p>As you can see, patterns 1 and 2 allow full access to cookies on the server,
+while pattern 3 allows for read-only access on the server. This means that any
+Supabase Client object on the server must be able to conditionally “set”
+cookies and always allow access to reading them.</p>
+<p>As the cookie access method per framework (or version of framework) varies, the
+<code>createServerClient</code> function exposes an interface for getting and optionally
+setting cookies:</p>
+<ul>
+<li><code>getAll</code> a function that returns <em>all</em> cookies associated with the request as
+an array of <code>{ name: string; value: string }</code> objects. It’s important to
+return all cookies, as the server may need to “delete” cookies by setting them
+to <code>Max-Age=0</code> such as when moving from more chunks to less chunks.</li>
+<li><code>setAll</code> a function whose first argument is an array of cookie objects <code>{ name: string; value: string; options: CookieOptions }</code>. Each of those <em>must</em>
+be set <strong>both on the request (when available, usually in middlewares) and response</strong>. If the client is used in server-rendered pages and components (pattern 3) and setting of cookies is not possible, the library must emit a warning that setting of cookies is required but not available. This is a developer aid to help identify mutations in server-rendering which is a code smell.</li>
+</ul>
+<p>On the browser (client) the <code>createBrowserClient</code> function will use the
+underlying <code>document.cookie</code> API automatically. If this is not supported for
+some reason, <strong>both <code>getAll</code> and <code>setAll</code> must be specified.</strong> The client must
+always be able to set cookies, as access tokens and refresh tokens are
+continuously issued while the user is interacting with the page.</p>
+<p>It is expected that <code>getAll</code> sees the changes created by <code>setAll</code>!</p>
+<h3 id="when-does-the-server-setall">When does the server <code>setAll</code>?</h3>
+<p>Server-side rendering frameworks attempt to make it easy to generate HTML on
+the server, which improves important web metrics like (Time to first byte,
+First contentful paint, etc.).</p>
+<p>It’s important to notice that server-rendering <em>primarily</em> comes into play on
+fresh page loads. Once a page has been rendered and hydrated in the browser,
+client React compoenents take over. When using the Supabase Auth library in the
+browser in such a way, the user’s session (access and refresh tokens) are
+proactively and ahead-of-time refreshed, meaning that they are continuously set
+as cookies well ahead of their expiry time.</p>
+<p>From this it naturally follows that the most critical user session refresh
+point is when the user has not interacted with the page in a while, such as
+opening a new tab after a full night of partying.</p>
+<p>Say the website <code>app.example.com</code> is developed in an SSR framework. What
+happens when a user opens a brand new tab after a while and types
+<code>app.example.com&lt;Enter&gt;</code> in the address bar is this:</p>
+<ol>
+<li>The browser sends a request to <code>https://app.example.com</code> with all the
+cookies in its store.</li>
+<li>The middleware (pattern 1) is invoked.</li>
+<li>The server client is created with a <code>getAll</code> that retrieves the cookies.</li>
+<li>The server client notices that the access token stored in the cookies has
+been expired for hours or days.</li>
+<li>It calls the <code>POST /token?grant_type=refresh_token</code> endpoint of Supabase
+Auth to get a new access token (or to detect that the user has been signed
+out due to session termination).</li>
+<li>Finally calls <code>setAll</code> with the new cookies that need to be set or cleared.</li>
+</ol>
+<p>Once this process is complete, and the effect of <code>setAll</code> is returned to the
+browser as <code>Set-Cookie</code> headers in the response, both browser and server are
+in-sync with regards to the user session.</p>
+<p>So long as the user continues interacting with the website, the browser client
+will keep the access token up-to-date so any future server-side rendering is
+unlikely to need to refresh the user’s session.</p>
+<p>There are two key points to identify from this about the behavior of
+<code>createServerClient</code>:</p>
+<ol>
+<li><strong>Using the middleware pattern is mandatory. Session refresh happens in the
+middleware.</strong> Not using a middleware function means that the session will
+likely not be properly refreshed, given that server pages and components don’t
+always get to set cookies.</li>
+<li><strong>Cookies are set when the storage values change. Set-Cookie headers should
+not be sent out if there is no change.</strong> Therefore cookies are set only on
+these <code>onAuthStateChange</code> events:
+<ul>
+<li><code>TOKEN_REFRESHED</code> – when the access token was expired</li>
+<li><code>USER_UPDATED</code> – usually only in pattern 3 – routes or APIs that call the <code>updateUser()</code> API</li>
+<li><code>SIGNED_OUT</code> when the session expired or was terminated, such as the user signing out from another device</li>
+</ul>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>staletimes — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-staletimes">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">staletimes</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to override the invalidation time of the client cache.</td></tr><tr><th>version</th><td>experimental</td></tr></table><p><code>staleTimes</code> is an experimental feature that enables caching of page segments in the <a href="/docs/app/glossary#client-cache">Client Cache</a>.</p>
+<p>You can enable this experimental feature and provide custom revalidation times by setting the experimental <code>staleTimes</code> flag:</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>The <code>static</code> and <code>dynamic</code> properties correspond with the time period (in seconds) based on different types of <a href="/docs/app/api-reference/components/link#prefetch">link prefetching</a>.</p>
+<ul>
+<li>The <code>dynamic</code> property is used when the page is neither statically generated nor fully prefetched (e.g. with <code>prefetch={true}</code>).
+<ul>
+<li>Default: 0 seconds (not cached)</li>
+</ul>
+</li>
+<li>The <code>static</code> property is used for statically generated pages, or when the <code>prefetch</code> prop on <code>Link</code> is set to <code>true</code>, or when calling <a href="/docs/app/api-reference/functions/use-router"><code>router.prefetch</code></a>.
+<ul>
+<li>Default: 5 minutes</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/loading">Loading boundaries</a> are considered reusable for the <code>static</code> period defined in this configuration.</li>
+<li>This doesn’t affect <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">partial rendering</a>, <strong>meaning shared layouts won’t automatically be refetched on every navigation, only the page segment that changes.</strong></li>
+<li>This doesn’t change <a href="/docs/app/glossary#client-cache">back/forward caching</a> behavior to prevent layout shift and to prevent losing the browser scroll position.</li>
+</ul>
+</blockquote>
+<h3 id="version-history">Version History</h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0</code></td>
+<td>The <code>dynamic</code> <code>staleTimes</code> default changed from 30s to 0s.</td>
+</tr>
+<tr>
+<td><code>v14.2.0</code></td>
+<td>Experimental <code>staleTimes</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

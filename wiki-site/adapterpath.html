@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>adapterpath — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-adapterpath">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#configuration">Configuration</a></li><li><a href="#adapters">Adapters</a></li><li><a href="#creating-an-adapter">Creating an Adapter</a></li><li><a href="#api-reference">API Reference</a></li><li><a href="#testing-adapters">Testing Adapters</a></li><li><a href="#routing-with-nextrouting">Routing with @next/routing</a></li><li><a href="#implementing-ppr-in-an-adapter">Implementing PPR in an Adapter</a></li><li><a href="#runtime-integration">Runtime Integration</a></li><li><a href="#invoking-entrypoints">Invoking Entrypoints</a></li><li><a href="#output-types">Output Types</a></li><li><a href="#routing-information">Routing Information</a></li><li><a href="#use-cases">Use Cases</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">adapterpath</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Configure a custom adapter for Next.js to hook into the build process.</td></tr></table><p>Next.js provides a built-in adapters API. It allows deployment platforms or build systems to integrate with the Next.js build process.</p>
+<p>For a full reference implementation, see the <a href="https://github.com/nextjs/adapter-vercel" target="_blank" rel="noopener"><code>nextjs/adapter-vercel</code></a> adapter.</p>
+<h2 id="configuration">Configuration</h2>
+<p>To use an adapter, specify the path to your adapter module in <code>adapterPath</code>:</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  adapterPath: require.resolve('./my-adapter.js'),
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>Alternatively <code>NEXT_ADAPTER_PATH</code> can be set to enable zero-config usage in deployment platforms.</p>
+<h2 id="adapters">Adapters</h2>
+<p>For full adapter implementation details, use the dedicated Adapters section:</p>
+<ul>
+<li><a href="/docs/app/api-reference/adapters/configuration">Configuration</a></li>
+<li><a href="/docs/app/api-reference/adapters/creating-an-adapter">Creating an Adapter</a></li>
+<li><a href="/docs/app/api-reference/adapters/api-reference">API Reference</a></li>
+<li><a href="/docs/app/api-reference/adapters/testing-adapters">Testing Adapters</a></li>
+<li><a href="/docs/app/api-reference/adapters/routing-with-next-routing">Routing with <code>@next/routing</code></a></li>
+<li><a href="/docs/app/api-reference/adapters/implementing-ppr-in-an-adapter">Implementing PPR in an Adapter</a></li>
+<li><a href="/docs/app/api-reference/adapters/runtime-integration">Runtime Integration</a></li>
+<li><a href="/docs/app/api-reference/adapters/invoking-entrypoints">Invoking Entrypoints</a></li>
+<li><a href="/docs/app/api-reference/adapters/output-types">Output Types</a></li>
+<li><a href="/docs/app/api-reference/adapters/routing-information">Routing Information</a></li>
+<li><a href="/docs/app/api-reference/adapters/use-cases">Use Cases</a></li>
+</ul>
+<h2 id="creating-an-adapter">Creating an Adapter</h2>
+<p>See <a href="/docs/app/api-reference/adapters/creating-an-adapter">Creating an Adapter</a>.</p>
+<h2 id="api-reference">API Reference</h2>
+<p>See <a href="/docs/app/api-reference/adapters/api-reference">API Reference</a>.</p>
+<h2 id="testing-adapters">Testing Adapters</h2>
+<p>See <a href="/docs/app/api-reference/adapters/testing-adapters">Testing Adapters</a>.</p>
+<h2 id="routing-with-nextrouting">Routing with <code>@next/routing</code></h2>
+<p>See <a href="/docs/app/api-reference/adapters/routing-with-next-routing">Routing with <code>@next/routing</code></a>.</p>
+<h2 id="implementing-ppr-in-an-adapter">Implementing PPR in an Adapter</h2>
+<p>See <a href="/docs/app/api-reference/adapters/implementing-ppr-in-an-adapter">Implementing PPR in an Adapter</a>.</p>
+<h2 id="runtime-integration">Runtime Integration</h2>
+<p>See <a href="/docs/app/api-reference/adapters/runtime-integration">Runtime Integration</a>.</p>
+<h2 id="invoking-entrypoints">Invoking Entrypoints</h2>
+<p>See <a href="/docs/app/api-reference/adapters/invoking-entrypoints">Invoking Entrypoints</a>.</p>
+<h2 id="output-types">Output Types</h2>
+<p>See <a href="/docs/app/api-reference/adapters/output-types">Output Types</a>.</p>
+<h2 id="routing-information">Routing Information</h2>
+<p>See <a href="/docs/app/api-reference/adapters/routing-information">Routing Information</a>.</p>
+<h2 id="use-cases">Use Cases</h2>
+<p>See <a href="/docs/app/api-reference/adapters/use-cases">Use Cases</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

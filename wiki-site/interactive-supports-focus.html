@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/interactive-supports-focus — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-interactive-supports-focus">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-do-i-resolve-this-error">How do I resolve this error?</a></li><ul><li><a href="#case-i-got-the-error-elements-with-the-role-interactive-role-must-be-tabbable-how-can-i-fix-this">Case: I got the error “Elements with the ‘${role}’ interactive role must be tabbable”. How can I fix this?</a></li><li><a href="#case-i-got-the-error-elements-with-the-role-interactive-role-must-be-focusable-how-can-i-fix-this">Case: I got the error “Elements with the ‘${role}’ interactive role must be focusable”. How can I fix this?</a></li><li><a href="#case-this-element-is-not-a-button-link-menuitem-etc-it-is-catching-bubbled-events-from-elements-that-it-contains">Case: This element is not a button, link, menuitem, etc. It is catching bubbled events from elements that it contains</a></li></ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/interactive-supports-focus</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Elements with an interactive role and interaction handlers (mouse or key press) must be focusable.</p>
+<h2 id="how-do-i-resolve-this-error">How do I resolve this error?</h2>
+<h3 id="case-i-got-the-error-elements-with-the-role-interactive-role-must-be-tabbable-how-can-i-fix-this">Case: I got the error “Elements with the ‘${role}’ interactive role must be tabbable”. How can I fix this?</h3>
+<p>This element is a stand-alone control like a button, a link or a form element. A user should be able to reach this element by pressing the tab key on their keyboard.</p>
+<p>Add the <code>tabIndex</code> property to your component. A value of zero indicates that this element can be tabbed to.</p>
+<pre><code class="language-jsx">&lt;div
+  role=&quot;button&quot;
+  tabIndex={0} /&gt;
+</code></pre>
+<p>– or –</p>
+<p>Replace the component with one that renders semantic html element like <code>&lt;button&gt;</code>, <code>&lt;a href&gt;</code> or <code>&lt;input&gt;</code> – whichever fits your purpose.</p>
+<p>Generally buttons, links and form elements should be reachable via tab key presses. An element that can be tabbed to is said to be in the <em>tab ring</em>.</p>
+<h3 id="case-i-got-the-error-elements-with-the-role-interactive-role-must-be-focusable-how-can-i-fix-this">Case: I got the error “Elements with the ‘${role}’ interactive role must be focusable”. How can I fix this?</h3>
+<p>This element is part of a group of buttons, links, menu items, etc. Or this element is part of a composite widget. Composite widgets prescribe standard <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_generalnav" target="_blank" rel="noopener">keyboard interaction patterns</a>. Within a group of similar elements – like a button bar – or within a composite widget, elements that can be focused are given a tabindex of -1. This makes the element <em>focusable</em> but not <em>tabbable</em>. Generally one item in a group should have a tabindex of zero so that a user can tab to the component. Once an element in the component has focus, your key management behaviors will control traversal within the component’s pieces. As the UI author, you will need to implement the key handling behaviors such as listening for traversal key (up/down/left/right) presses and moving the page focus between the focusable elements in your widget.</p>
+<pre><code class="language-jsx">&lt;div role=&quot;menu&quot;&gt;
+  &lt;div role=&quot;menuitem&quot; tabIndex=&quot;0&quot;&gt;Open&lt;/div&gt;
+  &lt;div role=&quot;menuitem&quot; tabIndex=&quot;-1&quot;&gt;Save&lt;/div&gt;
+  &lt;div role=&quot;menuitem&quot; tabIndex=&quot;-1&quot;&gt;Close&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>In the example above, the first item in the group can be tabbed to. The developer provides the ability to traverse to the subsequent items via the up/down/left/right arrow keys. Traversing via arrow keys is not provided by the browser or the assistive technology. See <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_generalnav" target="_blank" rel="noopener">Fundamental Keyboard Navigation Conventions</a> for information about established traversal behaviors for various UI widgets.</p>
+<h3 id="case-this-element-is-not-a-button-link-menuitem-etc-it-is-catching-bubbled-events-from-elements-that-it-contains">Case: This element is not a button, link, menuitem, etc. It is catching bubbled events from elements that it contains</h3>
+<p>If your element is catching bubbled click or key events from descendant elements, then the proper role for this element is <code>presentation</code>.</p>
+<pre><code class="language-jsx">&lt;div
+  onClick={onClickHandler}
+  role=&quot;presentation&quot;&gt;
+  &lt;button&gt;Save&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Marking an element with the role <code>presentation</code> indicates to assistive technology that this element should be ignored; it exists to support the web application and is not meant for humans to interact with directly.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>This rule takes an options object with the key <code>tabbable</code>. The value is an array of interactive ARIA roles that should be considered tabbable, not just focusable. Any interactive role not included in this list will be flagged as needing to be focusable (tabindex of -1).</p>
+<pre><code class="language-js">{
+  'jsx-a11y/interactive-supports-focus': [
+    'error',
+    {
+      tabbable: [
+        'button',
+        'checkbox',
+        'link',
+        'searchbox',
+        'spinbutton',
+        'switch',
+        'textbox',
+      ],
+    },
+  ]
+}
+</code></pre>
+<p>The recommended options list interactive roles that act as form elements. Generally, elements with a role like <code>menuitem</code> are a part of a composite widget. Focus in a composite widget is controlled and moved programmatically to satisfy the prescribed <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_generalnav" target="_blank" rel="noopener">keyboard interaction pattern</a> for the widget.</p>
+<p>The list of possible values includes:</p>
+<pre><code class="language-js">[
+  'button',
+  'checkbox',
+  'columnheader',
+  'combobox',
+  'grid',
+  'gridcell',
+  'link',
+  'listbox',
+  'menu',
+  'menubar',
+  'menuitem',
+  'menuitemcheckbox',
+  'menuitemradio',
+  'option',
+  'progressbar',
+  'radio',
+  'radiogroup',
+  'row',
+  'rowheader',
+  'searchbox',
+  'slider',
+  'spinbutton',
+  'switch',
+  'tab',
+  'tablist',
+  'textbox',
+  'toolbar',
+  'tree',
+  'treegrid',
+  'treeitem',
+  'doc-backlink',
+  'doc-biblioref',
+  'doc-glossref',
+  'doc-noteref',
+]
+</code></pre>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;!-- Good: div with onClick attribute is hidden from screen reader --&gt;
+&lt;div aria-hidden onClick={() =&gt; void 0} /&gt;
+&lt;!-- Good: span with onClick attribute is in the tab order --&gt;
+&lt;span onClick=&quot;doSomething();&quot; tabIndex=&quot;0&quot; role=&quot;button&quot;&gt;Click me!&lt;/span&gt;
+&lt;!-- Good: span with onClick attribute may be focused programmatically --&gt;
+&lt;span onClick=&quot;doSomething();&quot; tabIndex=&quot;-1&quot; role=&quot;menuitem&quot;&gt;Click me too!&lt;/span&gt;
+&lt;!-- Good: anchor element with href is inherently focusable --&gt;
+&lt;a href=&quot;javascript:void(0);&quot; onClick=&quot;doSomething();&quot;&gt;Click ALL the things!&lt;/a&gt;
+&lt;!-- Good: buttons are inherently focusable --&gt;
+&lt;button onClick=&quot;doSomething();&quot;&gt;Click the button :)&lt;/button&gt;
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;!-- Bad: span with onClick attribute has no tabindex --&gt;
+&lt;span onclick=&quot;submitForm();&quot; role=&quot;button&quot;&gt;Submit&lt;/span&gt;
+&lt;!-- Bad: anchor element without href is not focusable --&gt;
+&lt;a onclick=&quot;showNextPage();&quot; role=&quot;button&quot;&gt;Next page&lt;/a&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/keyboard" target="_blank" rel="noopener">WCAG 2.1.1</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_focus_02" target="_blank" rel="noopener">Chrome Audit Rules, AX_FOCUS_02</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_button_role#Keyboard_and_focus" target="_blank" rel="noopener">Mozilla Developer Network - ARIA Techniques</a></li>
+<li><a href="https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_generalnav" target="_blank" rel="noopener">Fundamental Keyboard Navigation Conventions</a></li>
+<li><a href="https://www.w3.org/TR/wai-aria-practices-1.1/#aria_ex" target="_blank" rel="noopener">WAI-ARIA Authoring Practices Guide - Design Patterns and Widgets</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

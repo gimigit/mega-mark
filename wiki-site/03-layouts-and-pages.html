@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03-layouts-and-pages — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-03-layouts-and-pages">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#creating-a-page">Creating a page</a></li><li><a href="#creating-a-layout">Creating a layout</a></li><li><a href="#creating-a-nested-route">Creating a nested route</a></li><li><a href="#nesting-layouts">Nesting layouts</a></li><li><a href="#creating-a-dynamic-segment">Creating a dynamic segment</a></li><li><a href="#rendering-with-search-params">Rendering with search params</a></li><ul><li><a href="#what-to-use-and-when">What to use and when</a></li></ul><li><a href="#linking-between-pages">Linking between pages</a></li><li><a href="#route-props-helpers">Route Props Helpers</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">03-layouts-and-pages</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn more about the features mentioned in this page by reading the API Reference.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Next.js uses <strong>file-system based routing</strong>, meaning you can use folders and files to define routes. This page will guide you through how to create layouts and pages, and link between them.</p>
+<h2 id="creating-a-page">Creating a page</h2>
+<p>A <strong>page</strong> is UI that is rendered on a specific route. To create a page, add a <a href="/docs/app/api-reference/file-conventions/page"><code>page</code> file</a> inside the <code>app</code> directory and default export a React component. For example, to create an index page (<code>/</code>):</p>
+<p><Image
+  alt="page.js special file"
+  srcLight="/docs/light/page-special-file.png"
+  srcDark="/docs/dark/page-special-file.png"
+  width="1600"
+  height="282"
+/></p>
+<pre><code class="language-tsx">export default function Page() {
+  return &lt;h1&gt;Hello Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return &lt;h1&gt;Hello Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<h2 id="creating-a-layout">Creating a layout</h2>
+<p>A layout is UI that is <strong>shared</strong> between multiple pages. On navigation, layouts preserve state, remain interactive, and do not rerender.</p>
+<p>You can define a layout by default exporting a React component from a <a href="/docs/app/api-reference/file-conventions/layout"><code>layout</code> file</a>. The component should accept a <code>children</code> prop which can be a page or another <a href="#nesting-layouts">layout</a>.</p>
+<p>For example, to create a layout that accepts your index page as child, add a <code>layout</code> file inside the <code>app</code> directory:</p>
+<p><Image
+  alt="layout.js special file"
+  srcLight="/docs/light/layout-special-file.png"
+  srcDark="/docs/dark/layout-special-file.png"
+  width="1600"
+  height="363"
+/></p>
+<pre><code class="language-tsx">export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        {/* Layout UI */}
+        {/* Place children where you want to render a page or nested layout */}
+        &lt;main&gt;{children}&lt;/main&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function DashboardLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;
+        {/* Layout UI */}
+        {/* Place children where you want to render a page or nested layout */}
+        &lt;main&gt;{children}&lt;/main&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>The layout above is called a <a href="/docs/app/api-reference/file-conventions/layout#root-layout">root layout</a> because it’s defined at the root of the <code>app</code> directory. The root layout is <strong>required</strong> and must contain <code>html</code> and <code>body</code> tags.</p>
+<h2 id="creating-a-nested-route">Creating a nested route</h2>
+<p>A nested route is a route composed of multiple URL segments. For example, the <code>/blog/[slug]</code> route is composed of three segments:</p>
+<ul>
+<li><code>/</code> (Root Segment)</li>
+<li><code>blog</code> (Segment)</li>
+<li><code>[slug]</code> (Leaf Segment)</li>
+</ul>
+<p>In Next.js:</p>
+<ul>
+<li><strong>Folders</strong> are used to define the route segments that map to URL segments.</li>
+<li><strong>Files</strong> (like <code>page</code> and <code>layout</code>) are used to create UI that is shown for a segment.</li>
+</ul>
+<p>To create nested routes, you can nest folders inside each other. For example, to add a route for <code>/blog</code>, create a folder called <code>blog</code> in the <code>app</code> directory. Then, to make <code>/blog</code> publicly accessible, add a <code>page.tsx</code> file:</p>
+<p><Image
+  alt="File hierarchy showing blog folder and a page.js file"
+  srcLight="/docs/light/blog-nested-route.png"
+  srcDark="/docs/dark/blog-nested-route.png"
+  width="1600"
+  height="525"
+/></p>
+<pre><code class="language-tsx">// Dummy imports
+import { getPosts } from '@/lib/posts'
+import { Post } from '@/ui/post'
+
+export default async function Page() {
+  const posts = await getPosts()
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;Post key={post.id} post={post} /&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">// Dummy imports
+import { getPosts } from '@/lib/posts'
+import { Post } from '@/ui/post'
+
+export default async function Page() {
+  const posts = await getPosts()
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;Post key={post.id} post={post} /&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<p>You can continue nesting folders to create nested routes. For example, to create a route for a specific blog post, create a new <code>[slug]</code> folder inside <code>blog</code> and add a <code>page</code> file:</p>
+<p><Image
+  alt="File hierarchy showing blog folder with a nested slug folder and a page.js file"
+  srcLight="/docs/light/blog-post-nested-route.png"
+  srcDark="/docs/dark/blog-post-nested-route.png"
+  width="1600"
+  height="687"
+/></p>
+<pre><code class="language-tsx">function generateStaticParams() {}
+
+export default function Page() {
+  return &lt;h1&gt;Hello, Blog Post Page!&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">function generateStaticParams() {}
+
+export default function Page() {
+  return &lt;h1&gt;Hello, Blog Post Page!&lt;/h1&gt;
+}
+</code></pre>
+<p>Wrapping a folder name in square brackets (e.g. <code>[slug]</code>) creates a <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route segment</a> which is used to generate multiple pages from data. e.g. blog posts, product pages, etc.</p>
+<h2 id="nesting-layouts">Nesting layouts</h2>
+<p>By default, layouts in the folder hierarchy are also nested, which means they wrap child layouts via their <code>children</code> prop. You can nest layouts by adding <code>layout</code> inside specific route segments (folders).</p>
+<p>For example, to create a layout for the <code>/blog</code> route, add a new <code>layout</code> file inside the <code>blog</code> folder.</p>
+<p><Image
+  alt="File hierarchy showing root layout wrapping the blog layout"
+  srcLight="/docs/light/nested-layouts.png"
+  srcDark="/docs/dark/nested-layouts.png"
+  width="1600"
+  height="768"
+/></p>
+<pre><code class="language-tsx">export default function BlogLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return &lt;section&gt;{children}&lt;/section&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function BlogLayout({ children }) {
+  return &lt;section&gt;{children}&lt;/section&gt;
+}
+</code></pre>
+<p>If you were to combine the two layouts above, the root layout (<code>app/layout.js</code>) would wrap the blog layout (<code>app/blog/layout.js</code>), which would wrap the blog (<code>app/blog/page.js</code>) and blog post page (<code>app/blog/[slug]/page.js</code>).</p>
+<h2 id="creating-a-dynamic-segment">Creating a dynamic segment</h2>
+<p><a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic segments</a> allow you to create routes that are generated from data. For example, instead of manually creating a route for each individual blog post, you can create a dynamic segment to generate the routes based on blog post data.</p>
+<p>To create a dynamic segment, wrap the segment (folder) name in square brackets: <code>[segmentName]</code>. For example, in the <code>app/blog/[slug]/page.tsx</code> route, the <code>[slug]</code> is the dynamic segment.</p>
+<pre><code class="language-tsx">export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  const post = await getPost(slug)
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{post.title}&lt;/h1&gt;
+      &lt;p&gt;{post.content}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function BlogPostPage({ params }) {
+  const { slug } = await params
+  const post = await getPost(slug)
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{post.title}&lt;/h1&gt;
+      &lt;p&gt;{post.content}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Learn more about <a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic Segments</a> and the <a href="/docs/app/api-reference/file-conventions/page#params-optional"><code>params</code></a> props.</p>
+<p>Nested <a href="/docs/app/api-reference/file-conventions/layout#params-optional">layouts within Dynamic Segments</a>, can also access the <code>params</code> props.</p>
+<h2 id="rendering-with-search-params">Rendering with search params</h2>
+<p>In a Server Component <strong>page</strong>, you can access search parameters using the <a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code></a> prop:</p>
+<pre><code class="language-tsx">export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const filters = (await searchParams).filters
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ searchParams }) {
+  const filters = (await searchParams).filters
+}
+</code></pre>
+<p>Using <code>searchParams</code> opts your page into <a href="/docs/app/glossary#dynamic-rendering"><strong>dynamic rendering</strong></a> because it requires an incoming request to read the search parameters from.</p>
+<p>Client Components can read search params using the <a href="/docs/app/api-reference/functions/use-search-params"><code>useSearchParams</code></a> hook.</p>
+<p>Learn more about <code>useSearchParams</code> in <a href="/docs/app/api-reference/functions/use-search-params#prerendering">prerendered</a> and <a href="/docs/app/api-reference/functions/use-search-params#dynamic-rendering">dynamically rendered</a> routes.</p>
+<h3 id="what-to-use-and-when">What to use and when</h3>
+<ul>
+<li>Use the <code>searchParams</code> prop when you need search parameters to <strong>load data for the page</strong> (e.g. pagination, filtering from a database).</li>
+<li>Use <code>useSearchParams</code> when search parameters are used <strong>only on the client</strong> (e.g. filtering a list already loaded via props).</li>
+<li>As a small optimization, you can use <code>new URLSearchParams(window.location.search)</code> in <strong>callbacks or event handlers</strong> to read search params without triggering re-renders.</li>
+</ul>
+<h2 id="linking-between-pages">Linking between pages</h2>
+<p>You can use the <a href="/docs/app/api-reference/components/link"><code>&lt;Link&gt;</code> component</a> to navigate between routes. <code>&lt;Link&gt;</code> is a built-in Next.js component that extends the HTML <code>&lt;a&gt;</code> tag to provide <a href="/docs/app/getting-started/linking-and-navigating#prefetching">prefetching</a> and <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">client-side navigation</a>.</p>
+<p>For example, to generate a list of blog posts, import <code>&lt;Link&gt;</code> from <code>next/link</code> and pass a <code>href</code> prop to the component:</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default async function Post({ post }) {
+  const posts = await getPosts()
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.slug}&gt;
+          &lt;Link href={`/blog/${post.slug}`}&gt;{post.title}&lt;/Link&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default async function Post({ post }) {
+  const posts = await getPosts()
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.slug}&gt;
+          &lt;Link href={`/blog/${post.slug}`}&gt;{post.title}&lt;/Link&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: <code>&lt;Link&gt;</code> is the primary way to navigate between routes in Next.js. You can also use the <a href="/docs/app/api-reference/functions/use-router"><code>useRouter</code> hook</a> for more advanced navigation.</p>
+</blockquote>
+<h2 id="route-props-helpers">Route Props Helpers</h2>
+<p>Next.js exposes utility types that infer <code>params</code> and named slots from your route structure:</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/page#page-props-helper"><strong>PageProps</strong></a>: Props for <code>page</code> components, including <code>params</code> and <code>searchParams</code>.</li>
+<li><a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper"><strong>LayoutProps</strong></a>: Props for <code>layout</code> components, including <code>children</code> and any named slots (e.g. folders like <code>@analytics</code>).</li>
+</ul>
+<p>These are globally available helpers, generated when running either <code>next dev</code>, <code>next build</code> or <a href="/docs/app/api-reference/cli/next#next-typegen-options"><code>next typegen</code></a>.</p>
+<pre><code class="language-tsx">export default async function Page(props: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await props.params
+  return &lt;h1&gt;Blog post: {slug}&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">export default function Layout(props: LayoutProps&lt;'/dashboard'&gt;) {
+  return (
+    &lt;section&gt;
+      {props.children}
+      {/* If you have app/dashboard/@analytics, it appears as a typed slot: */}
+      {/* {props.analytics} */}
+    &lt;/section&gt;
+  )
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong></p>
+<ul>
+<li>Static routes resolve <code>params</code> to <code>{}</code>.</li>
+<li><code>PageProps</code>, <code>LayoutProps</code> are global helpers — no imports required.</li>
+<li>Types are generated during <code>next dev</code>, <code>next build</code> or <code>next typegen</code>.</li>
+</ul>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

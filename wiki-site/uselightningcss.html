@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>uselightningcss — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-uselightningcss">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#lightningcssfeatures">lightningCssFeatures</a></li><ul><li><a href="#options">Options</a></li><li><a href="#available-features">Available features</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">uselightningcss</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Enable experimental support for Lightning CSS.</td></tr><tr><th>version</th><td>experimental</td></tr></table><p>Experimental support for using <a href="https://lightningcss.dev" target="_blank" rel="noopener">Lightning CSS</a> with webpack. Lightning CSS is a fast CSS transformer and minifier, written in Rust.</p>
+<p>If this option is not set, Next.js on webpack uses <a href="https://postcss.org/" target="_blank" rel="noopener">PostCSS</a> with <a href="https://www.npmjs.com/package/postcss-preset-env" target="_blank" rel="noopener"><code>postcss-preset-env</code></a> by default.</p>
+<p>Turbopack uses Lightning CSS by default since Next 14.2. This configuration option has no effect on Turbopack. Turbopack always uses Lightning CSS.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    useLightningcss: false, // default, ignored on Turbopack
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    useLightningcss: true, // disables PostCSS on webpack
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h2 id="lightningcssfeatures"><code>lightningCssFeatures</code></h2>
+<p>By default, Lightning CSS decides which CSS features to transpile based on your <a href="https://browsersl.ist/" target="_blank" rel="noopener">browserslist</a> targets. The <code>lightningCssFeatures</code> option lets you override this by forcing specific features to always be transpiled (<code>include</code>) or never be transpiled (<code>exclude</code>), regardless of browser support.</p>
+<p>This applies to both webpack (when <code>useLightningcss</code> is enabled) and Turbopack.</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    useLightningcss: true,
+    lightningCssFeatures: {
+      // Always transpile these features, even if targets support them
+      include: ['light-dark', 'oklab-colors'],
+      // Never transpile these features, even if targets don't support them
+      exclude: ['nesting'],
+    },
+  },
+}
+
+export default nextConfig
+</code></pre>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    useLightningcss: true,
+    lightningCssFeatures: {
+      // Always transpile these features, even if targets support them
+      include: ['light-dark', 'oklab-colors'],
+      // Never transpile these features, even if targets don't support them
+      exclude: ['nesting'],
+    },
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<h3 id="options">Options</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>include</code></td>
+<td><code>string[]</code></td>
+<td>Features to always transpile, regardless of browser targets.</td>
+</tr>
+<tr>
+<td><code>exclude</code></td>
+<td><code>string[]</code></td>
+<td>Features to never transpile, even when browser targets would require them.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="available-features">Available features</h3>
+<p>Individual features:</p>
+<table>
+<thead>
+<tr>
+<th>Feature name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nesting</code></td>
+<td><a href="https://drafts.csswg.org/css-nesting/" target="_blank" rel="noopener">CSS Nesting</a></td>
+</tr>
+<tr>
+<td><code>not-selector-list</code></td>
+<td><code>:not</code> with multiple selectors</td>
+</tr>
+<tr>
+<td><code>dir-selector</code></td>
+<td><code>:dir()</code> selector</td>
+</tr>
+<tr>
+<td><code>lang-selector-list</code></td>
+<td><code>:lang()</code> with multiple languages</td>
+</tr>
+<tr>
+<td><code>is-selector</code></td>
+<td><code>:is()</code> selector</td>
+</tr>
+<tr>
+<td><code>text-decoration-thickness-percent</code></td>
+<td>Percentage values in <code>text-decoration-thickness</code></td>
+</tr>
+<tr>
+<td><code>media-interval-syntax</code></td>
+<td>Media query range interval syntax</td>
+</tr>
+<tr>
+<td><code>media-range-syntax</code></td>
+<td>Media query range syntax (<code>width &gt;= 600px</code>)</td>
+</tr>
+<tr>
+<td><code>custom-media-queries</code></td>
+<td><code>@custom-media</code> rules</td>
+</tr>
+<tr>
+<td><code>clamp-function</code></td>
+<td><code>clamp()</code> function</td>
+</tr>
+<tr>
+<td><code>color-function</code></td>
+<td><code>color()</code> function</td>
+</tr>
+<tr>
+<td><code>oklab-colors</code></td>
+<td><code>oklab()</code> and <code>oklch()</code> colors</td>
+</tr>
+<tr>
+<td><code>lab-colors</code></td>
+<td><code>lab()</code> and <code>lch()</code> colors</td>
+</tr>
+<tr>
+<td><code>p3-colors</code></td>
+<td>Display P3 colors</td>
+</tr>
+<tr>
+<td><code>hex-alpha-colors</code></td>
+<td>4 and 8 digit hex colors with alpha</td>
+</tr>
+<tr>
+<td><code>space-separated-color-notation</code></td>
+<td>Space-separated color notation (<code>rgb(0 0 0)</code>)</td>
+</tr>
+<tr>
+<td><code>font-family-system-ui</code></td>
+<td><code>system-ui</code> font family</td>
+</tr>
+<tr>
+<td><code>double-position-gradients</code></td>
+<td>Double-position gradient stops</td>
+</tr>
+<tr>
+<td><code>vendor-prefixes</code></td>
+<td>Vendor-prefixed properties and values</td>
+</tr>
+<tr>
+<td><code>logical-properties</code></td>
+<td>Logical properties and values</td>
+</tr>
+<tr>
+<td><code>light-dark</code></td>
+<td><code>light-dark()</code> color function</td>
+</tr>
+</tbody>
+</table>
+<p>Composite groups (shorthand for enabling multiple features at once):</p>
+<table>
+<thead>
+<tr>
+<th>Group name</th>
+<th>Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>selectors</code></td>
+<td><code>nesting</code>, <code>not-selector-list</code>, <code>dir-selector</code>, <code>lang-selector-list</code>, <code>is-selector</code></td>
+</tr>
+<tr>
+<td><code>media-queries</code></td>
+<td><code>media-interval-syntax</code>, <code>media-range-syntax</code>, <code>custom-media-queries</code></td>
+</tr>
+<tr>
+<td><code>colors</code></td>
+<td><code>color-function</code>, <code>oklab-colors</code>, <code>lab-colors</code>, <code>p3-colors</code>, <code>hex-alpha-colors</code>, <code>space-separated-color-notation</code>, <code>light-dark</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>16.2.0</code></td>
+<td><code>lightningCssFeatures</code> added.</td>
+</tr>
+<tr>
+<td><code>15.1.0</code></td>
+<td>Support for <code>useSwcCss</code> was removed from Turbopack.</td>
+</tr>
+<tr>
+<td><code>14.2.0</code></td>
+<td>Turbopack’s default CSS processor was changed from <code>@swc/css</code> to Lightning CSS. <code>useLightningcss</code> became ignored on Turbopack, and a legacy <code>experimental.turbo.useSwcCss</code> option was added.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

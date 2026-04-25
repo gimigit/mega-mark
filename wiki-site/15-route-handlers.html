@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>15-route-handlers — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-15-route-handlers">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#route-handlers">Route Handlers</a></li><ul><li><a href="#convention">Convention</a></li><li><a href="#supported-http-methods">Supported HTTP Methods</a></li><li><a href="#extended-nextrequest-and-nextresponse-apis">Extended NextRequest and NextResponse APIs</a></li><li><a href="#caching">Caching</a></li><li><a href="#special-route-handlers">Special Route Handlers</a></li><li><a href="#route-resolution">Route Resolution</a></li><li><a href="#route-context-helper">Route Context Helper</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">15-route-handlers</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Route Handlers</td></tr><tr><th>description</th><td>Learn more about Route Handlers</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><h2 id="route-handlers">Route Handlers</h2>
+<p>Route Handlers allow you to create custom request handlers for a given route using the Web <a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener">Request</a> and <a href="https://developer.mozilla.org/docs/Web/API/Response" target="_blank" rel="noopener">Response</a> APIs.</p>
+<p><Image
+  alt="Route.js Special File"
+  srcLight="/docs/light/route-special-file.png"
+  srcDark="/docs/dark/route-special-file.png"
+  width="1600"
+  height="444"
+/></p>
+<blockquote>
+<p><strong>Good to know</strong>: Route Handlers are only available inside the <code>app</code> directory. They are the equivalent of <a href="/docs/pages/building-your-application/routing/api-routes">API Routes</a> inside the <code>pages</code> directory meaning you <strong>do not</strong> need to use API Routes and Route Handlers together.</p>
+</blockquote>
+<h3 id="convention">Convention</h3>
+<p>Route Handlers are defined in a <a href="/docs/app/api-reference/file-conventions/route"><code>route.js|ts</code> file</a> inside the <code>app</code> directory:</p>
+<pre><code class="language-ts">export async function GET(request: Request) {}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {}
+</code></pre>
+<p>Route Handlers can be nested anywhere inside the <code>app</code> directory, similar to <code>page.js</code> and <code>layout.js</code>. But there <strong>cannot</strong> be a <code>route.js</code> file at the same route segment level as <code>page.js</code>.</p>
+<h3 id="supported-http-methods">Supported HTTP Methods</h3>
+<p>The following <a href="https://developer.mozilla.org/docs/Web/HTTP/Methods" target="_blank" rel="noopener">HTTP methods</a> are supported: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, <code>HEAD</code>, and <code>OPTIONS</code>. If an unsupported method is called, Next.js will return a <code>405 Method Not Allowed</code> response.</p>
+<h3 id="extended-nextrequest-and-nextresponse-apis">Extended <code>NextRequest</code> and <code>NextResponse</code> APIs</h3>
+<p>In addition to supporting the native <a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener">Request</a> and <a href="https://developer.mozilla.org/docs/Web/API/Response" target="_blank" rel="noopener">Response</a> APIs, Next.js extends them with <a href="/docs/app/api-reference/functions/next-request"><code>NextRequest</code></a> and <a href="/docs/app/api-reference/functions/next-response"><code>NextResponse</code></a> to provide convenient helpers for advanced use cases.</p>
+<h3 id="caching">Caching</h3>
+<p>Route Handlers are not cached by default. You can, however, opt into caching for <code>GET</code> methods. Other supported HTTP methods are <strong>not</strong> cached. To cache a <code>GET</code> method, use a <a href="/docs/app/guides/caching-without-cache-components#dynamic">route config option</a> such as <code>export const dynamic = 'force-static'</code> in your Route Handler file.</p>
+<pre><code class="language-ts">export const dynamic = 'force-static'
+
+export async function GET() {
+  const res = await fetch('https://data.mongodb-api.com/...', {
+    headers: {
+      'Content-Type': 'application/json',
+      'API-Key': process.env.DATA_API_KEY,
+    },
+  })
+  const data = await res.json()
+
+  return Response.json({ data })
+}
+</code></pre>
+<pre><code class="language-js">export const dynamic = 'force-static'
+
+export async function GET() {
+  const res = await fetch('https://data.mongodb-api.com/...', {
+    headers: {
+      'Content-Type': 'application/json',
+      'API-Key': process.env.DATA_API_KEY,
+    },
+  })
+  const data = await res.json()
+
+  return Response.json({ data })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Other supported HTTP methods are <strong>not</strong> cached, even if they are placed alongside a <code>GET</code> method that is cached, in the same file.</p>
+</blockquote>
+<h4>With Cache Components</h4>
+<p>When <a href="/docs/app/getting-started/caching">Cache Components</a> is enabled, <code>GET</code> Route Handlers follow the same model as normal UI routes in your application. They run at request time by default, can be prerendered when they don’t access uncached or runtime data, and you can use <code>use cache</code> to include uncached data in the static response.</p>
+<p><strong>Static example</strong> - doesn’t access uncached or runtime data, so it will be prerendered at build time:</p>
+<pre><code class="language-tsx">export async function GET() {
+  return Response.json({
+    projectName: 'Next.js',
+  })
+}
+</code></pre>
+<p><strong>Dynamic example</strong> - accesses non-deterministic operations. During the build, prerendering stops when <code>Math.random()</code> is called, deferring to request-time rendering:</p>
+<pre><code class="language-tsx">export async function GET() {
+  return Response.json({
+    randomNumber: Math.random(),
+  })
+}
+</code></pre>
+<p><strong>Runtime data example</strong> - accesses request-specific data. Prerendering terminates when runtime APIs like <code>headers()</code> are called:</p>
+<pre><code class="language-tsx">import { headers } from 'next/headers'
+
+export async function GET() {
+  const headersList = await headers()
+  const userAgent = headersList.get('user-agent')
+
+  return Response.json({ userAgent })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Prerendering stops if the <code>GET</code> handler accesses network requests, database queries, async file system operations, request object properties (like <code>req.url</code>, <code>request.headers</code>, <code>request.cookies</code>, <code>request.body</code>), runtime APIs like <a href="/docs/app/api-reference/functions/cookies"><code>cookies()</code></a>, <a href="/docs/app/api-reference/functions/headers"><code>headers()</code></a>, <a href="/docs/app/api-reference/functions/connection"><code>connection()</code></a>, or non-deterministic operations.</p>
+</blockquote>
+<p><strong>Cached example</strong> - accesses uncached data (database query) but caches it with <code>use cache</code>, allowing it to be included in the prerendered response:</p>
+<pre><code class="language-tsx">import { cacheLife } from 'next/cache'
+
+export async function GET() {
+  const products = await getProducts()
+  return Response.json(products)
+}
+
+async function getProducts() {
+  'use cache'
+  cacheLife('hours')
+
+  return await db.query('SELECT * FROM products')
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: <code>use cache</code> cannot be used directly inside a Route Handler body; extract it to a helper function. Cached responses revalidate according to <code>cacheLife</code> when a new request arrives.</p>
+</blockquote>
+<h3 id="special-route-handlers">Special Route Handlers</h3>
+<p>Special Route Handlers like <a href="/docs/app/api-reference/file-conventions/metadata/sitemap"><code>sitemap.ts</code></a>, <a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image"><code>opengraph-image.tsx</code></a>, and <a href="/docs/app/api-reference/file-conventions/metadata/app-icons"><code>icon.tsx</code></a>, and other <a href="/docs/app/api-reference/file-conventions/metadata">metadata files</a> remain static by default unless they use Request-time APIs or dynamic config options.</p>
+<h3 id="route-resolution">Route Resolution</h3>
+<p>You can consider a <code>route</code> the lowest level routing primitive.</p>
+<ul>
+<li>They <strong>do not</strong> participate in layouts or client-side navigations like <code>page</code>.</li>
+<li>There <strong>cannot</strong> be a <code>route.js</code> file at the same route as <code>page.js</code>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Route</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/page.js</code></td>
+<td><code>app/route.js</code></td>
+<td><Cross size={18} /> Conflict</td>
+</tr>
+<tr>
+<td><code>app/page.js</code></td>
+<td><code>app/api/route.js</code></td>
+<td><Check size={18} /> Valid</td>
+</tr>
+<tr>
+<td><code>app/[user]/page.js</code></td>
+<td><code>app/api/route.js</code></td>
+<td><Check size={18} /> Valid</td>
+</tr>
+</tbody>
+</table>
+<p>Each <code>route.js</code> or <code>page.js</code> file takes over all HTTP verbs for that route.</p>
+<pre><code class="language-ts">export default function Page() {
+  return &lt;h1&gt;Hello, Next.js!&lt;/h1&gt;
+}
+
+// Conflict
+// `app/route.ts`
+export async function POST(request: Request) {}
+</code></pre>
+<pre><code class="language-js">export default function Page() {
+  return &lt;h1&gt;Hello, Next.js!&lt;/h1&gt;
+}
+
+// Conflict
+// `app/route.js`
+export async function POST(request) {}
+</code></pre>
+<p>Read more about how Route Handlers <a href="/docs/app/guides/backend-for-frontend">complement your frontend application</a>, or explore the Route Handlers <a href="/docs/app/api-reference/file-conventions/route">API Reference</a>.</p>
+<h3 id="route-context-helper">Route Context Helper</h3>
+<p>In TypeScript, you can type the <code>context</code> parameter for Route Handlers with the globally available <a href="/docs/app/api-reference/file-conventions/route#route-context-helper"><code>RouteContext</code></a> helper:</p>
+<pre><code class="language-ts">import type { NextRequest } from 'next/server'
+
+export async function GET(_req: NextRequest, ctx: RouteContext&lt;'/users/[id]'&gt;) {
+  const { id } = await ctx.params
+  return Response.json({ id })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong></p>
+<ul>
+<li>Types are generated during <code>next dev</code>, <code>next build</code> or <code>next typegen</code>.</li>
+</ul>
+</blockquote>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

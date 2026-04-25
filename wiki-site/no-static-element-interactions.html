@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jsx-a11y/no-static-element-interactions — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-static-element-interactions">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#how-do-i-resolve-this-error">How do I resolve this error?</a></li><ul><li><a href="#case-this-element-acts-like-a-button-link-menuitem-etc">Case: This element acts like a button, link, menuitem, etc</a></li><li><a href="#case-the-event-handler-is-only-being-used-to-capture-bubbled-events">Case: The event handler is only being used to capture bubbled events</a></li></ul><li><a href="#rule-options">Rule options</a></li><ul><li><a href="#succeed">Succeed</a></li><li><a href="#fail">Fail</a></li></ul><li><a href="#accessibility-guidelines">Accessibility guidelines</a></li><ul><li><a href="#resources">Resources</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">jsx-a11y/no-static-element-interactions</h1>
+
+</div>
+<div class="article-body">
+<p>💼 This rule is enabled in the following configs: ☑️ <code>recommended</code>, 🔒 <code>strict</code>.</p>
+<!-- end auto-generated rule header -->
+<p>Static HTML elements do not have semantic meaning. This is clear in the case of <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code>. It is less so clear in the case of elements that <em>seem</em> semantic, but that do not have a semantic mapping in the accessibility layer. For example <code>&lt;a&gt;</code>, <code>&lt;big&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;footer&gt;</code>, <code>&lt;picture&gt;</code>, <code>&lt;strike&gt;</code> and <code>&lt;time&gt;</code> – to name a few – have no semantic layer mapping. They are as void of meaning as <code>&lt;div&gt;</code>.</p>
+<p>The <a href="https://www.w3.org/TR/wai-aria-1.1/#usage_intro" target="_blank" rel="noopener">WAI-ARIA <code>role</code> attribute</a> confers a semantic mapping to an element. The semantic value can then be expressed to a user via assistive technology.</p>
+<p>In order to add interactivity such as a mouse or key event listener to a static element, that element must be given a role value as well.</p>
+<h2 id="how-do-i-resolve-this-error">How do I resolve this error?</h2>
+<h3 id="case-this-element-acts-like-a-button-link-menuitem-etc">Case: This element acts like a button, link, menuitem, etc</h3>
+<p>Indicate the element’s role with the <code>role</code> attribute:</p>
+<pre><code class="language-jsx">&lt;div
+  onClick={onClickHandler}
+  onKeyPress={onKeyPressHandler}
+  role=&quot;button&quot;
+  tabindex=&quot;0&quot;&gt;
+  Save
+&lt;/div&gt;
+</code></pre>
+<p>Common interactive roles include:</p>
+<ol>
+<li><code>button</code></li>
+<li><code>link</code></li>
+<li><code>checkbox</code></li>
+<li><code>menuitem</code></li>
+<li><code>menuitemcheckbox</code></li>
+<li><code>menuitemradio</code></li>
+<li><code>option</code></li>
+<li><code>radio</code></li>
+<li><code>searchbox</code></li>
+<li><code>switch</code></li>
+<li><code>textbox</code></li>
+</ol>
+<p>Note: Adding a role to your element does <strong>not</strong> add behavior. When a semantic HTML element like <code>&lt;button&gt;</code> is used, then it will also respond to Enter key presses when it has focus. The developer is responsible for providing the expected behavior of an element that the role suggests it would have: focusability and key press support.</p>
+<h3 id="case-the-event-handler-is-only-being-used-to-capture-bubbled-events">Case: The event handler is only being used to capture bubbled events</h3>
+<p>If your element is catching bubbled click or key events from descendant elements, there are no appropriate roles for your element: you will have to deactivate the rule. Consider explaining the reason for disabling the rule as well.</p>
+<pre><code class="language-jsx">{/* The &lt;div&gt; element has a child &lt;button&gt; element that allows keyboard interaction */}
+{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+&lt;div onClick={this.handleButtonClick}&gt;
+  &lt;button&gt;Save&lt;/button&gt;
+  &lt;button&gt;Cancel&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Do not use the role <code>presentation</code> on the element: it removes the element’s semantics, and may also remove its children’s semantics, creating big issues with assistive technology.</p>
+<h2 id="rule-options">Rule options</h2>
+<p>You may configure which handler props should be taken into account when applying this rule. The recommended configuration includes the following 6 handlers and the <code>allowExpressionValues</code> option.</p>
+<pre><code class="language-javascript">'jsx-a11y/no-static-element-interactions': [
+  'error',
+  {
+    handlers: [
+      'onClick',
+      'onMouseDown',
+      'onMouseUp',
+      'onKeyPress',
+      'onKeyDown',
+      'onKeyUp',
+    ],
+    allowExpressionValues: true,
+  },
+],
+</code></pre>
+<p>Adjust the list of handler prop names in the handlers array to increase or decrease the coverage surface of this rule in your codebase.</p>
+<p>The <code>allowExpressionValues</code> option determines whether the <code>role</code> attribute is allowed to be assigned using an expression. For example, the following would pass in recommended mode if <code>allowExpressionValues</code> is set to be <code>true</code>:</p>
+<pre><code class="language-jsx">&lt;div role={ROLE_BUTTON} onClick={() =&gt; {}} /&gt;;
+// In case of a conditional expression, there should be literals on both sides of ternary operator
+&lt;div role={isButton ? &quot;button&quot; : &quot;link&quot;} onClick={() =&gt; {}} /&gt;;
+</code></pre>
+<h3 id="succeed">Succeed</h3>
+<pre><code class="language-jsx">&lt;button onClick={() =&gt; {}} className=&quot;foo&quot; /&gt;
+&lt;div className=&quot;foo&quot; onClick={() =&gt; {}} role=&quot;button&quot; /&gt;
+&lt;input type=&quot;text&quot; onClick={() =&gt; {}} /&gt;
+</code></pre>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-jsx">&lt;div onClick={() =&gt; {}} /&gt;
+</code></pre>
+<h2 id="accessibility-guidelines">Accessibility guidelines</h2>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG21/Understanding/name-role-value" target="_blank" rel="noopener">WCAG 4.1.2</a></li>
+</ul>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="https://www.w3.org/TR/wai-aria-1.1/#usage_intro" target="_blank" rel="noopener">WAI-ARIA <code>role</code> attribute</a></li>
+<li><a href="https://www.w3.org/TR/wai-aria-practices-1.1/#aria_ex" target="_blank" rel="noopener">WAI-ARIA Authoring Practices Guide - Design Patterns and Widgets</a></li>
+<li><a href="https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_generalnav" target="_blank" rel="noopener">Fundamental Keyboard Navigation Conventions</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_button_role#Keyboard_and_focus" target="_blank" rel="noopener">Mozilla Developer Network - ARIA Techniques</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>draft-mode — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-draft-mode">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><li><a href="#good-to-know">Good to know</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#enabling-draft-mode">Enabling Draft Mode</a></li><li><a href="#disabling-draft-mode">Disabling Draft Mode</a></li><li><a href="#checking-if-draft-mode-is-enabled">Checking if Draft Mode is enabled</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">draft-mode</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use Draft Mode with this step-by-step guide.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p><code>draftMode</code> is an <strong>async</strong> function allows you to enable and disable <a href="/docs/app/guides/draft-mode">Draft Mode</a>, as well as check if Draft Mode is enabled in a <a href="/docs/app/getting-started/server-and-client-components">Server Component</a>.</p>
+<pre><code class="language-tsx">import { draftMode } from 'next/headers'
+
+export default async function Page() {
+  const { isEnabled } = await draftMode()
+}
+</code></pre>
+<pre><code class="language-jsx">import { draftMode } from 'next/headers'
+
+export default async function Page() {
+  const { isEnabled } = await draftMode()
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<p>The following methods and properties are available:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>isEnabled</code></td>
+<td>A boolean value that indicates if Draft Mode is enabled.</td>
+</tr>
+<tr>
+<td><code>enable()</code></td>
+<td>Enables Draft Mode in a Route Handler by setting a cookie (<code>__prerender_bypass</code>).</td>
+</tr>
+<tr>
+<td><code>disable()</code></td>
+<td>Disables Draft Mode in a Route Handler by deleting a cookie.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li><code>draftMode</code> is an <strong>asynchronous</strong> function that returns a promise. You must use <code>async/await</code> or React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function.
+<ul>
+<li>In version 14 and earlier, <code>draftMode</code> was a synchronous function. To help with backwards compatibility, you can still access it synchronously in Next.js 15, but this behavior will be deprecated in the future.</li>
+</ul>
+</li>
+<li>A new bypass cookie value will be generated each time you run <code>next build</code>. This ensures that the bypass cookie can’t be guessed.</li>
+<li>To test Draft Mode locally over HTTP, your browser will need to allow third-party cookies and local storage access.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h3 id="enabling-draft-mode">Enabling Draft Mode</h3>
+<p>To enable Draft Mode, create a new <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a> and call the <code>enable()</code> method:</p>
+<pre><code class="language-tsx">import { draftMode } from 'next/headers'
+
+export async function GET(request: Request) {
+  const draft = await draftMode()
+  draft.enable()
+  return new Response('Draft mode is enabled')
+}
+</code></pre>
+<pre><code class="language-js">import { draftMode } from 'next/headers'
+
+export async function GET(request) {
+  const draft = await draftMode()
+  draft.enable()
+  return new Response('Draft mode is enabled')
+}
+</code></pre>
+<h3 id="disabling-draft-mode">Disabling Draft Mode</h3>
+<p>By default, the Draft Mode session ends when the browser is closed.</p>
+<p>To disable Draft Mode manually, call the <code>disable()</code> method in your <a href="/docs/app/api-reference/file-conventions/route">Route Handler</a>:</p>
+<pre><code class="language-tsx">import { draftMode } from 'next/headers'
+
+export async function GET(request: Request) {
+  const draft = await draftMode()
+  draft.disable()
+  return new Response('Draft mode is disabled')
+}
+</code></pre>
+<pre><code class="language-js">import { draftMode } from 'next/headers'
+
+export async function GET(request) {
+  const draft = await draftMode()
+  draft.disable()
+  return new Response('Draft mode is disabled')
+}
+</code></pre>
+<p>Then, send a request to invoke the Route Handler. If calling the route using the <a href="/docs/app/api-reference/components/link"><code>&lt;Link&gt;</code> component</a>, you must pass <code>prefetch={false}</code> to prevent accidentally deleting the cookie on prefetch.</p>
+<h3 id="checking-if-draft-mode-is-enabled">Checking if Draft Mode is enabled</h3>
+<p>You can check if Draft Mode is enabled in a Server Component with the <code>isEnabled</code> property:</p>
+<pre><code class="language-tsx">import { draftMode } from 'next/headers'
+
+export default async function Page() {
+  const { isEnabled } = await draftMode()
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;My Blog Post&lt;/h1&gt;
+      &lt;p&gt;Draft Mode is currently {isEnabled ? 'Enabled' : 'Disabled'}&lt;/p&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { draftMode } from 'next/headers'
+
+export default async function Page() {
+  const { isEnabled } = await draftMode()
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;My Blog Post&lt;/h1&gt;
+      &lt;p&gt;Draft Mode is currently {isEnabled ? 'Enabled' : 'Disabled'}&lt;/p&gt;
+    &lt;/main&gt;
+  )
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td><code>draftMode</code> is now an async function. A <a href="/docs/app/guides/upgrading/codemods#150">codemod</a> is available.</td>
+</tr>
+<tr>
+<td><code>v13.4.0</code></td>
+<td><code>draftMode</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

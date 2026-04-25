@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generate-metadata — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-generate-metadata">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#the-metadata-object">The metadata object</a></li><li><a href="#generatemetadata-function">generateMetadata function</a></li><li><a href="#why-generatemetadata-is-server-component-only">Why generateMetadata is Server Component only</a></li><li><a href="#reference">Reference</a></li><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#metadata-fields">Metadata Fields</a></li><li><a href="#description">description</a></li><li><a href="#other-fields">Other fields</a></li><li><a href="#opengraph">openGraph</a></li><li><a href="#robots">robots</a></li><li><a href="#icons">icons</a></li><li><a href="#themecolor">themeColor</a></li><li><a href="#colorscheme">colorScheme</a></li><li><a href="#manifest">manifest</a></li><li><a href="#twitter">twitter</a></li><li><a href="#viewport">viewport</a></li><li><a href="#verification">verification</a></li><li><a href="#applewebapp">appleWebApp</a></li><li><a href="#alternates">alternates</a></li><li><a href="#applinks">appLinks</a></li><li><a href="#archives">archives</a></li><li><a href="#assets">assets</a></li><li><a href="#bookmarks">bookmarks</a></li><li><a href="#category">category</a></li><li><a href="#facebook">facebook</a></li><li><a href="#pinterest">pinterest</a></li><li><a href="#other">other</a></li><li><a href="#types">Types</a></li><li><a href="#unsupported-metadata">Unsupported Metadata</a></li><li><a href="#resource-hints">Resource hints</a></li></ul><li><a href="#behavior">Behavior</a></li><ul><li><a href="#default-fields">Default Fields</a></li><li><a href="#streaming-metadata">Streaming metadata</a></li><li><a href="#with-cache-components">With Cache Components</a></li><li><a href="#ordering">Ordering</a></li><li><a href="#merging">Merging</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">generate-metadata</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>View all the Metadata API options.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>You can use the <code>metadata</code> object or the <code>generateMetadata</code> function to define metadata.</p>
+<h2 id="the-metadata-object">The <code>metadata</code> object</h2>
+<p>To define static metadata, export a <a href="#metadata-fields"><code>Metadata</code> object</a> from a <code>layout.js</code> or <code>page.js</code> file.</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '...',
+  description: '...',
+}
+
+export default function Page() {}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: '...',
+  description: '...',
+}
+
+export default function Page() {}
+</code></pre>
+<blockquote>
+<p>See the <a href="#metadata-fields">Metadata Fields</a> for a complete list of supported options.</p>
+</blockquote>
+<h2 id="generatemetadata-function"><code>generateMetadata</code> function</h2>
+<p>Dynamic metadata depends on <strong>dynamic information</strong>, such as the current route parameters, external data, or <code>metadata</code> in parent segments, can be set by exporting a <code>generateMetadata</code> function that returns a <a href="#metadata-fields"><code>Metadata</code> object</a>.</p>
+<p>Resolving <code>generateMetadata</code> is part of rendering the page. If the page can be prerendered and <code>generateMetadata</code> doesn’t introduce dynamic behavior, the resulting metadata is included in the page’s initial HTML.</p>
+<p>Otherwise the metadata resolved from <code>generateMetadata</code> <a href="/docs/app/api-reference/functions/generate-metadata#streaming-metadata">can be streamed</a> after sending the initial UI.</p>
+<pre><code class="language-tsx">import type { Metadata, ResolvingMetadata } from 'next'
+
+type Props = {
+  params: Promise&lt;{ id: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise&lt;Metadata&gt; {
+  // read route params
+  const { id } = await params
+
+  // fetch data
+  const product = await fetch(`https://.../${id}`).then((res) =&gt; res.json())
+
+  // optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || []
+
+  return {
+    title: product.title,
+    openGraph: {
+      images: ['/some-specific-page-image.jpg', ...previousImages],
+    },
+  }
+}
+
+export default function Page({ params, searchParams }: Props) {}
+</code></pre>
+<pre><code class="language-jsx">export async function generateMetadata({ params, searchParams }, parent) {
+  // read route params
+  const { id } = await params
+
+  // fetch data
+  const product = await fetch(`https://.../${id}`).then((res) =&gt; res.json())
+
+  // optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || []
+
+  return {
+    title: product.title,
+    openGraph: {
+      images: ['/some-specific-page-image.jpg', ...previousImages],
+    },
+  }
+}
+
+export default function Page({ params, searchParams }) {}
+</code></pre>
+<p>For type completion of <code>params</code> and <code>searchParams</code>, you can type the first argument with <a href="/docs/app/api-reference/file-conventions/page#page-props-helper"><code>PageProps&lt;'/route'&gt;</code></a> or <a href="/docs/app/api-reference/file-conventions/layout#layout-props-helper"><code>LayoutProps&lt;'/route'&gt;</code></a> for pages and layouts respectively.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Metadata can be added to <code>layout.js</code> and <code>page.js</code> files.</li>
+<li>Next.js will automatically resolve the metadata, and create the relevant <code>&lt;head&gt;</code> tags for the page.</li>
+<li>The <code>metadata</code> object and <code>generateMetadata</code> function exports are <strong>only supported in Server Components</strong>.</li>
+<li>You cannot export both the <code>metadata</code> object and <code>generateMetadata</code> function from the same route segment.</li>
+<li><code>fetch</code> requests inside <code>generateMetadata</code> are automatically <a href="/docs/app/glossary#memoization">memoized</a> for the same data across <code>generateMetadata</code>, <code>generateStaticParams</code>, Layouts, Pages, and Server Components.</li>
+<li>React <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>cache</code> can be used</a> if <code>fetch</code> is unavailable.</li>
+<li><a href="/docs/app/api-reference/file-conventions/metadata">File-based metadata</a> has the higher priority and will override the <code>metadata</code> object and <code>generateMetadata</code> function.</li>
+</ul>
+</blockquote>
+<h2 id="why-generatemetadata-is-server-component-only">Why <code>generateMetadata</code> is Server Component only</h2>
+<p><code>generateMetadata</code> and the <code>metadata</code> export are only supported in Server Components because metadata must be resolved on the server before the page component is rendered. This allows Next.js to include the metadata in the initial HTML response.</p>
+<p>If you need to use Client Component features, keep your <code>page.tsx</code> as a Server Component and move the Client Component logic to a separate file:</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+import { InteractiveComponent } from './interactive-component'
+
+export const metadata: Metadata = {
+  title: 'My Page',
+}
+
+export default function Page() {
+  return &lt;InteractiveComponent /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import { InteractiveComponent } from './interactive-component'
+
+export const metadata = {
+  title: 'My Page',
+}
+
+export default function Page() {
+  return &lt;InteractiveComponent /&gt;
+}
+</code></pre>
+<pre><code class="language-tsx">'use client'
+
+export function InteractiveComponent() {
+  // Client-side interactivity (hooks, event handlers, etc.)
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+export function InteractiveComponent() {
+  // Client-side interactivity (hooks, event handlers, etc.)
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="parameters">Parameters</h3>
+<p><code>generateMetadata</code> function accepts the following parameters:</p>
+<ul>
+<li>
+<p><code>props</code> - An object containing the parameters of the current route:</p>
+<ul>
+<li>
+<p><code>params</code> - An object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> object from the root segment down to the segment <code>generateMetadata</code> is called from. Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/[slug]/page.js</code></td>
+<td><code>/shop/1</code></td>
+<td><code>{ slug: '1' }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[tag]/[item]/page.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>{ tag: '1', item: '2' }</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[...slug]/page.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>{ slug: ['1', '2'] }</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><code>searchParams</code> - An object containing the current URL’s <a href="https://developer.mozilla.org/docs/Learn/Common_questions/What_is_a_URL#parameters" target="_blank" rel="noopener">search params</a>. Examples:</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th><code>searchParams</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/shop?a=1</code></td>
+<td><code>{ a: '1' }</code></td>
+</tr>
+<tr>
+<td><code>/shop?a=1&amp;b=2</code></td>
+<td><code>{ a: '1', b: '2' }</code></td>
+</tr>
+<tr>
+<td><code>/shop?a=1&amp;a=2</code></td>
+<td><code>{ a: ['1', '2'] }</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+<li>
+<p><code>parent</code> - A promise of the resolved metadata from parent route segments.</p>
+</li>
+</ul>
+<h3 id="returns">Returns</h3>
+<p><code>generateMetadata</code> should return a <a href="#metadata-fields"><code>Metadata</code> object</a> containing one or more metadata fields.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If metadata doesn’t depend on request information, it should be defined using the static <a href="#the-metadata-object"><code>metadata</code> object</a> rather than <code>generateMetadata</code>.</li>
+<li><code>fetch</code> requests are automatically memoized for the same data across <code>generateMetadata</code>, <code>generateStaticParams</code>, Layouts, Pages, and Server Components. React <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>cache</code> can be used</a> if <code>fetch</code> is unavailable.</li>
+<li><code>searchParams</code> are only available in <code>page.js</code> segments.</li>
+<li>The <a href="/docs/app/api-reference/functions/redirect"><code>redirect()</code></a> and <a href="/docs/app/api-reference/functions/not-found"><code>notFound()</code></a> Next.js methods can also be used inside <code>generateMetadata</code>.</li>
+</ul>
+</blockquote>
+<h3 id="metadata-fields">Metadata Fields</h3>
+<p>The following fields are supported:</p>
+<h4><code>title</code></h4>
+<p>The <code>title</code> attribute is used to set the title of the document. It can be defined as a simple <a href="#string">string</a> or an optional <a href="#template">template object</a>.</p>
+<h5>String</h5>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'Next.js',
+}
+</code></pre>
+<pre><code class="language-html">&lt;title&gt;Next.js&lt;/title&gt;
+</code></pre>
+<h5><code>default</code></h5>
+<p><code>title.default</code> can be used to provide a <strong>fallback title</strong> to child route segments that don’t define a <code>title</code>.</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Acme',
+  },
+}
+</code></pre>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {}
+
+// Output: &lt;title&gt;Acme&lt;/title&gt;
+</code></pre>
+<h5><code>template</code></h5>
+<p><code>title.template</code> can be used to add a prefix or a suffix to <code>titles</code> defined in <strong>child</strong> route segments.</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: {
+    template: '%s | Acme',
+    default: 'Acme', // a default is required when creating a template
+  },
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: {
+    template: '%s | Acme',
+    default: 'Acme', // a default is required when creating a template
+  },
+}
+</code></pre>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'About',
+}
+
+// Output: &lt;title&gt;About | Acme&lt;/title&gt;
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'About',
+}
+
+// Output: &lt;title&gt;About | Acme&lt;/title&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>title.template</code> applies to <strong>child</strong> route segments and <strong>not</strong> the segment it’s defined in. This means:
+<ul>
+<li><code>title.default</code> is <strong>required</strong> when you add a <code>title.template</code>.</li>
+<li><code>title.template</code> defined in <code>layout.js</code> will not apply to a <code>title</code> defined in a <code>page.js</code> of the same route segment.</li>
+<li><code>title.template</code> defined in <code>page.js</code> has no effect because a page is always the terminating segment (it doesn’t have any children route segments).</li>
+</ul>
+</li>
+<li><code>title.template</code> has <strong>no effect</strong> if a route has not defined a <code>title</code> or <code>title.default</code>.</li>
+</ul>
+</blockquote>
+<h5><code>absolute</code></h5>
+<p><code>title.absolute</code> can be used to provide a title that <strong>ignores</strong> <code>title.template</code> set in parent segments.</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: {
+    template: '%s | Acme',
+  },
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: {
+    template: '%s | Acme',
+  },
+}
+</code></pre>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'About',
+  },
+}
+
+// Output: &lt;title&gt;About&lt;/title&gt;
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: {
+    absolute: 'About',
+  },
+}
+
+// Output: &lt;title&gt;About&lt;/title&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>layout.js</code>
+<ul>
+<li><code>title</code> (string) and <code>title.default</code> define the default title for child segments (that do not define their own <code>title</code>). It will augment <code>title.template</code> from the closest parent segment if it exists.</li>
+<li><code>title.absolute</code> defines the default title for child segments. It ignores <code>title.template</code> from parent segments.</li>
+<li><code>title.template</code> defines a new title template for child segments.</li>
+</ul>
+</li>
+<li><code>page.js</code>
+<ul>
+<li>If a page does not define its own title the closest parents resolved title will be used.</li>
+<li><code>title</code> (string) defines the routes title. It will augment <code>title.template</code> from the closest parent segment if it exists.</li>
+<li><code>title.absolute</code> defines the route title. It ignores <code>title.template</code> from parent segments.</li>
+<li><code>title.template</code> has no effect in <code>page.js</code> because a page is always the terminating segment of a route.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h3 id="description"><code>description</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  description: 'The React Framework for the Web',
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;description&quot; content=&quot;The React Framework for the Web&quot; /&gt;
+</code></pre>
+<h3 id="other-fields">Other fields</h3>
+<pre><code class="language-jsx">export const metadata = {
+  generator: 'Next.js',
+  applicationName: 'Next.js',
+  referrer: 'origin-when-cross-origin',
+  keywords: ['Next.js', 'React', 'JavaScript'],
+  authors: [{ name: 'Seb' }, { name: 'Josh', url: 'https://nextjs.org' }],
+  creator: 'Jiachi Liu',
+  publisher: 'Sebastian Markbåge',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;application-name&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta name=&quot;author&quot; content=&quot;Seb&quot; /&gt;
+&lt;link rel=&quot;author&quot; href=&quot;https://nextjs.org&quot; /&gt;
+&lt;meta name=&quot;author&quot; content=&quot;Josh&quot; /&gt;
+&lt;meta name=&quot;generator&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta name=&quot;keywords&quot; content=&quot;Next.js,React,JavaScript&quot; /&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;origin-when-cross-origin&quot; /&gt;
+&lt;meta name=&quot;color-scheme&quot; content=&quot;dark&quot; /&gt;
+&lt;meta name=&quot;creator&quot; content=&quot;Jiachi Liu&quot; /&gt;
+&lt;meta name=&quot;publisher&quot; content=&quot;Sebastian Markbåge&quot; /&gt;
+&lt;meta name=&quot;format-detection&quot; content=&quot;telephone=no, address=no, email=no&quot; /&gt;
+</code></pre>
+<h4><code>metadataBase</code></h4>
+<p><code>metadataBase</code> is a convenience option to set a base URL prefix for <code>metadata</code> fields that require a fully qualified URL.</p>
+<ul>
+<li><code>metadataBase</code> allows URL-based <code>metadata</code> fields defined in the <strong>current route segment and below</strong> to use a <strong>relative path</strong> instead of an otherwise required absolute URL.</li>
+<li>The field’s relative path will be composed with <code>metadataBase</code> to form a fully qualified URL.</li>
+</ul>
+<pre><code class="language-jsx">export const metadata = {
+  metadataBase: new URL('https://acme.com'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'en-US': '/en-US',
+      'de-DE': '/de-DE',
+    },
+  },
+  openGraph: {
+    images: '/og-image.png',
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;canonical&quot; href=&quot;https://acme.com&quot; /&gt;
+&lt;link rel=&quot;alternate&quot; hreflang=&quot;en-US&quot; href=&quot;https://acme.com/en-US&quot; /&gt;
+&lt;link rel=&quot;alternate&quot; hreflang=&quot;de-DE&quot; href=&quot;https://acme.com/de-DE&quot; /&gt;
+&lt;meta property=&quot;og:image&quot; content=&quot;https://acme.com/og-image.png&quot; /&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li><code>metadataBase</code> is typically set in root <code>app/layout.js</code> to apply to URL-based <code>metadata</code> fields across all routes.</li>
+<li>All URL-based <code>metadata</code> fields that require absolute URLs can be configured with a <code>metadataBase</code> option.</li>
+<li><code>metadataBase</code> can contain a subdomain e.g. <code>https://app.acme.com</code> or base path e.g. <code>https://acme.com/start/from/here</code></li>
+<li>If a <code>metadata</code> field provides an absolute URL, <code>metadataBase</code> will be ignored.</li>
+<li>Using a relative path in a URL-based <code>metadata</code> field without configuring a <code>metadataBase</code> will cause a build error.</li>
+<li>Next.js will normalize duplicate slashes between <code>metadataBase</code> (e.g. <code>https://acme.com/</code>) and a relative field (e.g. <code>/path</code>) to a single slash (e.g. <code>https://acme.com/path</code>)</li>
+</ul>
+</blockquote>
+<h4>URL Composition</h4>
+<p>URL composition favors developer intent over default directory traversal semantics.</p>
+<ul>
+<li>Trailing slashes between <code>metadataBase</code> and <code>metadata</code> fields are normalized.</li>
+<li>An “absolute” path in a <code>metadata</code> field (that typically would replace the whole URL path) is treated as a “relative” path (starting from the end of <code>metadataBase</code>).</li>
+</ul>
+<p>For example, given the following <code>metadataBase</code>:</p>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://acme.com'),
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  metadataBase: new URL('https://acme.com'),
+}
+</code></pre>
+<p>Any <code>metadata</code> fields that inherit the above <code>metadataBase</code> and set their own value will be resolved as follows:</p>
+<table>
+<thead>
+<tr>
+<th><code>metadata</code> field</th>
+<th>Resolved URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td><code>https://acme.com</code></td>
+</tr>
+<tr>
+<td><code>./</code></td>
+<td><code>https://acme.com</code></td>
+</tr>
+<tr>
+<td><code>payments</code></td>
+<td><code>https://acme.com/payments</code></td>
+</tr>
+<tr>
+<td><code>/payments</code></td>
+<td><code>https://acme.com/payments</code></td>
+</tr>
+<tr>
+<td><code>./payments</code></td>
+<td><code>https://acme.com/payments</code></td>
+</tr>
+<tr>
+<td><code>../payments</code></td>
+<td><code>https://acme.com/payments</code></td>
+</tr>
+<tr>
+<td><code>https://beta.acme.com/payments</code></td>
+<td><code>https://beta.acme.com/payments</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="opengraph"><code>openGraph</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  openGraph: {
+    title: 'Next.js',
+    description: 'The React Framework for the Web',
+    url: 'https://nextjs.org',
+    siteName: 'Next.js',
+    images: [
+      {
+        url: 'https://nextjs.org/og.png', // Must be an absolute URL
+        width: 800,
+        height: 600,
+      },
+      {
+        url: 'https://nextjs.org/og-alt.png', // Must be an absolute URL
+        width: 1800,
+        height: 1600,
+        alt: 'My custom alt',
+      },
+    ],
+    videos: [
+      {
+        url: 'https://nextjs.org/video.mp4', // Must be an absolute URL
+        width: 800,
+        height: 600,
+      },
+    ],
+    audio: [
+      {
+        url: 'https://nextjs.org/audio.mp3', // Must be an absolute URL
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:title&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta property=&quot;og:description&quot; content=&quot;The React Framework for the Web&quot; /&gt;
+&lt;meta property=&quot;og:url&quot; content=&quot;https://nextjs.org/&quot; /&gt;
+&lt;meta property=&quot;og:site_name&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta property=&quot;og:locale&quot; content=&quot;en_US&quot; /&gt;
+&lt;meta property=&quot;og:image&quot; content=&quot;https://nextjs.org/og.png&quot; /&gt;
+&lt;meta property=&quot;og:image:width&quot; content=&quot;800&quot; /&gt;
+&lt;meta property=&quot;og:image:height&quot; content=&quot;600&quot; /&gt;
+&lt;meta property=&quot;og:image&quot; content=&quot;https://nextjs.org/og-alt.png&quot; /&gt;
+&lt;meta property=&quot;og:image:width&quot; content=&quot;1800&quot; /&gt;
+&lt;meta property=&quot;og:image:height&quot; content=&quot;1600&quot; /&gt;
+&lt;meta property=&quot;og:image:alt&quot; content=&quot;My custom alt&quot; /&gt;
+&lt;meta property=&quot;og:video&quot; content=&quot;https://nextjs.org/video.mp4&quot; /&gt;
+&lt;meta property=&quot;og:video:width&quot; content=&quot;800&quot; /&gt;
+&lt;meta property=&quot;og:video:height&quot; content=&quot;600&quot; /&gt;
+&lt;meta property=&quot;og:audio&quot; content=&quot;https://nextjs.org/audio.mp3&quot; /&gt;
+&lt;meta property=&quot;og:type&quot; content=&quot;website&quot; /&gt;
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  openGraph: {
+    title: 'Next.js',
+    description: 'The React Framework for the Web',
+    type: 'article',
+    publishedTime: '2023-01-01T00:00:00.000Z',
+    authors: ['Seb', 'Josh'],
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;og:title&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta property=&quot;og:description&quot; content=&quot;The React Framework for the Web&quot; /&gt;
+&lt;meta property=&quot;og:type&quot; content=&quot;article&quot; /&gt;
+&lt;meta property=&quot;article:published_time&quot; content=&quot;2023-01-01T00:00:00.000Z&quot; /&gt;
+&lt;meta property=&quot;article:author&quot; content=&quot;Seb&quot; /&gt;
+&lt;meta property=&quot;article:author&quot; content=&quot;Josh&quot; /&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>It may be more convenient to use the <a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif">file-based Metadata API</a> for Open Graph images. Rather than having to sync the config export with actual files, the file-based API will automatically generate the correct metadata for you.</li>
+</ul>
+</blockquote>
+<h3 id="robots"><code>robots</code></h3>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;robots&quot; content=&quot;index, follow&quot; /&gt;
+&lt;meta
+  name=&quot;googlebot&quot;
+  content=&quot;index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1&quot;
+/&gt;
+</code></pre>
+<h3 id="icons"><code>icons</code></h3>
+<blockquote>
+<p><strong>Good to know</strong>: We recommend using the <a href="/docs/app/api-reference/file-conventions/metadata/app-icons#image-files-ico-jpg-png">file-based Metadata API</a> for icons where possible. Rather than having to sync the config export with actual files, the file-based API will automatically generate the correct metadata for you.</p>
+</blockquote>
+<pre><code class="language-jsx">export const metadata = {
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/shortcut-icon.png',
+    apple: '/apple-icon.png',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/apple-touch-icon-precomposed.png',
+    },
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;shortcut icon&quot; href=&quot;/shortcut-icon.png&quot; /&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;/icon.png&quot; /&gt;
+&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;/apple-icon.png&quot; /&gt;
+&lt;link
+  rel=&quot;apple-touch-icon-precomposed&quot;
+  href=&quot;/apple-touch-icon-precomposed.png&quot;
+/&gt;
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  icons: {
+    icon: [
+      { url: '/icon.png' },
+      new URL('/icon.png', 'https://example.com'),
+      { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' },
+    ],
+    shortcut: ['/shortcut-icon.png'],
+    apple: [
+      { url: '/apple-icon.png' },
+      { url: '/apple-icon-x3.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/apple-touch-icon-precomposed.png',
+      },
+    ],
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;shortcut icon&quot; href=&quot;/shortcut-icon.png&quot; /&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;/icon.png&quot; /&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;https://example.com/icon.png&quot; /&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;/icon-dark.png&quot; media=&quot;(prefers-color-scheme: dark)&quot; /&gt;
+&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;/apple-icon.png&quot; /&gt;
+&lt;link
+  rel=&quot;apple-touch-icon-precomposed&quot;
+  href=&quot;/apple-touch-icon-precomposed.png&quot;
+/&gt;
+&lt;link
+  rel=&quot;apple-touch-icon&quot;
+  href=&quot;/apple-icon-x3.png&quot;
+  sizes=&quot;180x180&quot;
+  type=&quot;image/png&quot;
+/&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: The <code>msapplication-*</code> meta tags are no longer supported in Chromium builds of Microsoft Edge, and thus no longer needed.</p>
+</blockquote>
+<h3 id="themecolor"><code>themeColor</code></h3>
+<blockquote>
+<p><strong>Deprecated</strong>: The <code>themeColor</code> option in <code>metadata</code> is deprecated as of Next.js 14. Please use the <a href="/docs/app/api-reference/functions/generate-viewport"><code>viewport</code> configuration</a> instead.</p>
+</blockquote>
+<h3 id="colorscheme"><code>colorScheme</code></h3>
+<blockquote>
+<p><strong>Deprecated</strong>: The <code>colorScheme</code> option in <code>metadata</code> is deprecated as of Next.js 14. Please use the <a href="/docs/app/api-reference/functions/generate-viewport"><code>viewport</code> configuration</a> instead.</p>
+</blockquote>
+<h3 id="manifest"><code>manifest</code></h3>
+<p>A web application manifest, as defined in the <a href="https://developer.mozilla.org/docs/Web/Manifest" target="_blank" rel="noopener">Web Application Manifest specification</a>.</p>
+<pre><code class="language-jsx">export const metadata = {
+  manifest: 'https://nextjs.org/manifest.json',
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;manifest&quot; href=&quot;https://nextjs.org/manifest.json&quot; /&gt;
+</code></pre>
+<h3 id="twitter"><code>twitter</code></h3>
+<p>The Twitter specification is (surprisingly) used for more than just X (formerly known as Twitter).</p>
+<p>Learn more about the <a href="https://developer.x.com/en/docs/twitter-for-websites/cards/overview/markup" target="_blank" rel="noopener">Twitter Card markup reference</a>.</p>
+<pre><code class="language-jsx">export const metadata = {
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Next.js',
+    description: 'The React Framework for the Web',
+    siteId: '1467726470533754880',
+    creator: '@nextjs',
+    creatorId: '1467726470533754880',
+    images: ['https://nextjs.org/og.png'], // Must be an absolute URL
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;twitter:card&quot; content=&quot;summary_large_image&quot; /&gt;
+&lt;meta name=&quot;twitter:site:id&quot; content=&quot;1467726470533754880&quot; /&gt;
+&lt;meta name=&quot;twitter:creator&quot; content=&quot;@nextjs&quot; /&gt;
+&lt;meta name=&quot;twitter:creator:id&quot; content=&quot;1467726470533754880&quot; /&gt;
+&lt;meta name=&quot;twitter:title&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta name=&quot;twitter:description&quot; content=&quot;The React Framework for the Web&quot; /&gt;
+&lt;meta name=&quot;twitter:image&quot; content=&quot;https://nextjs.org/og.png&quot; /&gt;
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  twitter: {
+    card: 'app',
+    title: 'Next.js',
+    description: 'The React Framework for the Web',
+    siteId: '1467726470533754880',
+    creator: '@nextjs',
+    creatorId: '1467726470533754880',
+    images: {
+      url: 'https://nextjs.org/og.png',
+      alt: 'Next.js Logo',
+    },
+    app: {
+      name: 'twitter_app',
+      id: {
+        iphone: 'twitter_app://iphone',
+        ipad: 'twitter_app://ipad',
+        googleplay: 'twitter_app://googleplay',
+      },
+      url: {
+        iphone: 'https://iphone_url',
+        ipad: 'https://ipad_url',
+      },
+    },
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;twitter:site:id&quot; content=&quot;1467726470533754880&quot; /&gt;
+&lt;meta name=&quot;twitter:creator&quot; content=&quot;@nextjs&quot; /&gt;
+&lt;meta name=&quot;twitter:creator:id&quot; content=&quot;1467726470533754880&quot; /&gt;
+&lt;meta name=&quot;twitter:title&quot; content=&quot;Next.js&quot; /&gt;
+&lt;meta name=&quot;twitter:description&quot; content=&quot;The React Framework for the Web&quot; /&gt;
+&lt;meta name=&quot;twitter:card&quot; content=&quot;app&quot; /&gt;
+&lt;meta name=&quot;twitter:image&quot; content=&quot;https://nextjs.org/og.png&quot; /&gt;
+&lt;meta name=&quot;twitter:image:alt&quot; content=&quot;Next.js Logo&quot; /&gt;
+&lt;meta name=&quot;twitter:app:name:iphone&quot; content=&quot;twitter_app&quot; /&gt;
+&lt;meta name=&quot;twitter:app:id:iphone&quot; content=&quot;twitter_app://iphone&quot; /&gt;
+&lt;meta name=&quot;twitter:app:id:ipad&quot; content=&quot;twitter_app://ipad&quot; /&gt;
+&lt;meta name=&quot;twitter:app:id:googleplay&quot; content=&quot;twitter_app://googleplay&quot; /&gt;
+&lt;meta name=&quot;twitter:app:url:iphone&quot; content=&quot;https://iphone_url&quot; /&gt;
+&lt;meta name=&quot;twitter:app:url:ipad&quot; content=&quot;https://ipad_url&quot; /&gt;
+&lt;meta name=&quot;twitter:app:name:ipad&quot; content=&quot;twitter_app&quot; /&gt;
+&lt;meta name=&quot;twitter:app:name:googleplay&quot; content=&quot;twitter_app&quot; /&gt;
+</code></pre>
+<h3 id="viewport"><code>viewport</code></h3>
+<blockquote>
+<p><strong>Deprecated</strong>: The <code>viewport</code> option in <code>metadata</code> is deprecated as of Next.js 14. Please use the <a href="/docs/app/api-reference/functions/generate-viewport"><code>viewport</code> configuration</a> instead.</p>
+</blockquote>
+<h3 id="verification"><code>verification</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  verification: {
+    google: 'google',
+    yandex: 'yandex',
+    yahoo: 'yahoo',
+    other: {
+      me: ['my-email', 'my-link'],
+    },
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;google-site-verification&quot; content=&quot;google&quot; /&gt;
+&lt;meta name=&quot;y_key&quot; content=&quot;yahoo&quot; /&gt;
+&lt;meta name=&quot;yandex-verification&quot; content=&quot;yandex&quot; /&gt;
+&lt;meta name=&quot;me&quot; content=&quot;my-email&quot; /&gt;
+&lt;meta name=&quot;me&quot; content=&quot;my-link&quot; /&gt;
+</code></pre>
+<h3 id="applewebapp"><code>appleWebApp</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  itunes: {
+    appId: 'myAppStoreID',
+    appArgument: 'myAppArgument',
+  },
+  appleWebApp: {
+    title: 'Apple Web App',
+    statusBarStyle: 'black-translucent',
+    startupImage: [
+      '/assets/startup/apple-touch-startup-image-768x1004.png',
+      {
+        url: '/assets/startup/apple-touch-startup-image-1536x2008.png',
+        media: '(device-width: 768px) and (device-height: 1024px)',
+      },
+    ],
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta
+  name=&quot;apple-itunes-app&quot;
+  content=&quot;app-id=myAppStoreID, app-argument=myAppArgument&quot;
+/&gt;
+&lt;meta name=&quot;mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+&lt;meta name=&quot;apple-mobile-web-app-title&quot; content=&quot;Apple Web App&quot; /&gt;
+&lt;link
+  href=&quot;/assets/startup/apple-touch-startup-image-768x1004.png&quot;
+  rel=&quot;apple-touch-startup-image&quot;
+/&gt;
+&lt;link
+  href=&quot;/assets/startup/apple-touch-startup-image-1536x2008.png&quot;
+  media=&quot;(device-width: 768px) and (device-height: 1024px)&quot;
+  rel=&quot;apple-touch-startup-image&quot;
+/&gt;
+&lt;meta
+  name=&quot;apple-mobile-web-app-status-bar-style&quot;
+  content=&quot;black-translucent&quot;
+/&gt;
+</code></pre>
+<h3 id="alternates"><code>alternates</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  alternates: {
+    canonical: 'https://nextjs.org',
+    languages: {
+      'en-US': 'https://nextjs.org/en-US',
+      'de-DE': 'https://nextjs.org/de-DE',
+    },
+    media: {
+      'only screen and (max-width: 600px)': 'https://nextjs.org/mobile',
+    },
+    types: {
+      'application/rss+xml': 'https://nextjs.org/rss',
+    },
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;canonical&quot; href=&quot;https://nextjs.org&quot; /&gt;
+&lt;link rel=&quot;alternate&quot; hreflang=&quot;en-US&quot; href=&quot;https://nextjs.org/en-US&quot; /&gt;
+&lt;link rel=&quot;alternate&quot; hreflang=&quot;de-DE&quot; href=&quot;https://nextjs.org/de-DE&quot; /&gt;
+&lt;link
+  rel=&quot;alternate&quot;
+  media=&quot;only screen and (max-width: 600px)&quot;
+  href=&quot;https://nextjs.org/mobile&quot;
+/&gt;
+&lt;link
+  rel=&quot;alternate&quot;
+  type=&quot;application/rss+xml&quot;
+  href=&quot;https://nextjs.org/rss&quot;
+/&gt;
+</code></pre>
+<h3 id="applinks"><code>appLinks</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  appLinks: {
+    ios: {
+      url: 'https://nextjs.org/ios',
+      app_store_id: 'app_store_id',
+    },
+    android: {
+      package: 'com.example.android/package',
+      app_name: 'app_name_android',
+    },
+    web: {
+      url: 'https://nextjs.org/web',
+      should_fallback: true,
+    },
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;al:ios:url&quot; content=&quot;https://nextjs.org/ios&quot; /&gt;
+&lt;meta property=&quot;al:ios:app_store_id&quot; content=&quot;app_store_id&quot; /&gt;
+&lt;meta property=&quot;al:android:package&quot; content=&quot;com.example.android/package&quot; /&gt;
+&lt;meta property=&quot;al:android:app_name&quot; content=&quot;app_name_android&quot; /&gt;
+&lt;meta property=&quot;al:web:url&quot; content=&quot;https://nextjs.org/web&quot; /&gt;
+&lt;meta property=&quot;al:web:should_fallback&quot; content=&quot;true&quot; /&gt;
+</code></pre>
+<h3 id="archives"><code>archives</code></h3>
+<p>Describes a collection of records, documents, or other materials of historical interest (<a href="https://www.w3.org/TR/2011/WD-html5-20110113/links.html#rel-archives" target="_blank" rel="noopener">source</a>).</p>
+<pre><code class="language-jsx">export const metadata = {
+  archives: ['https://nextjs.org/13'],
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;archives&quot; href=&quot;https://nextjs.org/13&quot; /&gt;
+</code></pre>
+<h3 id="assets"><code>assets</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  assets: ['https://nextjs.org/assets'],
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;assets&quot; href=&quot;https://nextjs.org/assets&quot; /&gt;
+</code></pre>
+<h3 id="bookmarks"><code>bookmarks</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  bookmarks: ['https://nextjs.org/13'],
+}
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;bookmarks&quot; href=&quot;https://nextjs.org/13&quot; /&gt;
+</code></pre>
+<h3 id="category"><code>category</code></h3>
+<pre><code class="language-jsx">export const metadata = {
+  category: 'technology',
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;category&quot; content=&quot;technology&quot; /&gt;
+</code></pre>
+<h3 id="facebook"><code>facebook</code></h3>
+<p>You can connect a Facebook app or Facebook account to your webpage for certain Facebook Social Plugins <a href="https://developers.facebook.com/docs/plugins/comments/#moderation-setup-instructions" target="_blank" rel="noopener">Facebook Documentation</a></p>
+<blockquote>
+<p><strong>Good to know</strong>: You can specify either appId or admins, but not both.</p>
+</blockquote>
+<pre><code class="language-jsx">export const metadata = {
+  facebook: {
+    appId: '12345678',
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;fb:app_id&quot; content=&quot;12345678&quot; /&gt;
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  facebook: {
+    admins: '12345678',
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;fb:admins&quot; content=&quot;12345678&quot; /&gt;
+</code></pre>
+<p>If you want to generate multiple fb:admins meta tags you can use array value.</p>
+<pre><code class="language-jsx">export const metadata = {
+  facebook: {
+    admins: ['12345678', '87654321'],
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta property=&quot;fb:admins&quot; content=&quot;12345678&quot; /&gt;
+&lt;meta property=&quot;fb:admins&quot; content=&quot;87654321&quot; /&gt;
+</code></pre>
+<h3 id="pinterest"><code>pinterest</code></h3>
+<p>You can enable or disable <a href="https://developers.pinterest.com/docs/web-features/rich-pins-overview/" target="_blank" rel="noopener">Pinterest Rich Pins</a> on your webpage.</p>
+<pre><code class="language-jsx">export const metadata = {
+  pinterest: {
+    richPin: true,
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;pinterest-rich-pin&quot; content=&quot;true&quot; /&gt;
+</code></pre>
+<h3 id="other"><code>other</code></h3>
+<p>All metadata options should be covered using the built-in support. However, there may be custom metadata tags specific to your site, or brand new metadata tags just released. You can use the <code>other</code> option to render any custom metadata tag.</p>
+<pre><code class="language-jsx">export const metadata = {
+  other: {
+    custom: 'meta',
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;custom&quot; content=&quot;meta&quot; /&gt;
+</code></pre>
+<p>If you want to generate multiple same key meta tags you can use array value.</p>
+<pre><code class="language-jsx">export const metadata = {
+  other: {
+    custom: ['meta1', 'meta2'],
+  },
+}
+</code></pre>
+<pre><code class="language-html">&lt;meta name=&quot;custom&quot; content=&quot;meta1&quot; /&gt; &lt;meta name=&quot;custom&quot; content=&quot;meta2&quot; /&gt;
+</code></pre>
+<h3 id="types">Types</h3>
+<p>You can add type safety to your metadata by using the <code>Metadata</code> type. If you are using the <a href="/docs/app/api-reference/config/typescript">built-in TypeScript plugin</a> in your IDE, you do not need to manually add the type, but you can still explicitly add it if you want.</p>
+<h4><code>metadata</code> object</h4>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Next.js',
+}
+</code></pre>
+<h4><code>generateMetadata</code> function</h4>
+<h5>Regular function</h5>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export function generateMetadata(): Metadata {
+  return {
+    title: 'Next.js',
+  }
+}
+</code></pre>
+<h5>Async function</h5>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+export async function generateMetadata(): Promise&lt;Metadata&gt; {
+  return {
+    title: 'Next.js',
+  }
+}
+</code></pre>
+<h5>With segment props</h5>
+<pre><code class="language-tsx">import type { Metadata } from 'next'
+
+type Props = {
+  params: Promise&lt;{ id: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}
+
+export function generateMetadata({ params, searchParams }: Props): Metadata {
+  return {
+    title: 'Next.js',
+  }
+}
+
+export default function Page({ params, searchParams }: Props) {}
+</code></pre>
+<h5>With parent metadata</h5>
+<pre><code class="language-tsx">import type { Metadata, ResolvingMetadata } from 'next'
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise&lt;Metadata&gt; {
+  return {
+    title: 'Next.js',
+  }
+}
+</code></pre>
+<h5>JavaScript Projects</h5>
+<p>For JavaScript projects, you can use JSDoc to add type safety.</p>
+<pre><code class="language-js">/** @type {import(&quot;next&quot;).Metadata} */
+export const metadata = {
+  title: 'Next.js',
+}
+</code></pre>
+<h3 id="unsupported-metadata">Unsupported Metadata</h3>
+<p>The following metadata types do not currently have built-in support. However, they can still be rendered in the layout or page itself.</p>
+<table>
+<thead>
+<tr>
+<th>Metadata</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;meta http-equiv=&quot;...&quot;&gt;</code></td>
+<td>Use appropriate HTTP Headers via <a href="/docs/app/api-reference/functions/redirect"><code>redirect()</code></a>, <a href="/docs/app/api-reference/file-conventions/proxy#nextresponse">Proxy</a>, <a href="/docs/app/api-reference/config/next-config-js/headers">Security Headers</a></td>
+</tr>
+<tr>
+<td><code>&lt;base&gt;</code></td>
+<td>Render the tag in the layout or page itself.</td>
+</tr>
+<tr>
+<td><code>&lt;noscript&gt;</code></td>
+<td>Render the tag in the layout or page itself.</td>
+</tr>
+<tr>
+<td><code>&lt;style&gt;</code></td>
+<td>Learn more about <a href="/docs/app/getting-started/css">styling in Next.js</a>.</td>
+</tr>
+<tr>
+<td><code>&lt;script&gt;</code></td>
+<td>Learn more about <a href="/docs/app/guides/scripts">using scripts</a>.</td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;stylesheet&quot; /&gt;</code></td>
+<td><code>import</code> stylesheets directly in the layout or page itself.</td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;preload /&gt;</code></td>
+<td>Use <a href="#link-relpreload">ReactDOM preload method</a></td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;preconnect&quot; /&gt;</code></td>
+<td>Use <a href="#link-relpreconnect">ReactDOM preconnect method</a></td>
+</tr>
+<tr>
+<td><code>&lt;link rel=&quot;dns-prefetch&quot; /&gt;</code></td>
+<td>Use <a href="#link-reldns-prefetch">ReactDOM prefetchDNS method</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="resource-hints">Resource hints</h3>
+<p>The <code>&lt;link&gt;</code> element has a number of <code>rel</code> keywords that can be used to hint to the browser that an external resource is likely to be needed. The browser uses this information to apply preloading optimizations depending on the keyword.</p>
+<p>While the Metadata API doesn’t directly support these hints, you can use new <a href="https://github.com/facebook/react/pull/26237" target="_blank" rel="noopener"><code>ReactDOM</code> methods</a> to safely insert them into the <code>&lt;head&gt;</code> of the document.</p>
+<pre><code class="language-tsx">'use client'
+
+import ReactDOM from 'react-dom'
+
+export function PreloadResources() {
+  ReactDOM.preload('...', { as: '...' })
+  ReactDOM.preconnect('...', { crossOrigin: '...' })
+  ReactDOM.prefetchDNS('...')
+
+  return '...'
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import ReactDOM from 'react-dom'
+
+export function PreloadResources() {
+  ReactDOM.preload('...', { as: '...' })
+  ReactDOM.preconnect('...', { crossOrigin: '...' })
+  ReactDOM.prefetchDNS('...')
+
+  return '...'
+}
+</code></pre>
+<h4><code>&lt;link rel=&quot;preload&quot;&gt;</code></h4>
+<p>Start loading a resource early in the page rendering (browser) lifecycle. <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/rel/preload" target="_blank" rel="noopener">MDN Docs</a>.</p>
+<pre><code class="language-tsx">ReactDOM.preload(href: string, options: { as: string })
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;preload&quot; href=&quot;...&quot; as=&quot;...&quot; /&gt;
+</code></pre>
+<h5><code>&lt;link rel=&quot;preconnect&quot;&gt;</code></h5>
+<p>Preemptively initiate a connection to an origin. <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/rel/preconnect" target="_blank" rel="noopener">MDN Docs</a>.</p>
+<pre><code class="language-tsx">ReactDOM.preconnect(href: string, options?: { crossOrigin?: string })
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;preconnect&quot; href=&quot;...&quot; crossorigin /&gt;
+</code></pre>
+<h4><code>&lt;link rel=&quot;dns-prefetch&quot;&gt;</code></h4>
+<p>Attempt to resolve a domain name before resources get requested. <a href="https://developer.mozilla.org/docs/Web/HTML/Attributes/rel/dns-prefetch" target="_blank" rel="noopener">MDN Docs</a>.</p>
+<pre><code class="language-tsx">ReactDOM.prefetchDNS(href: string)
+</code></pre>
+<pre><code class="language-html">&lt;link rel=&quot;dns-prefetch&quot; href=&quot;...&quot; /&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>These methods are currently only supported in Client Components, which are still Server Side Rendered on initial page load.</li>
+<li>Next.js in-built features such as <code>next/font</code>, <code>next/image</code> and <code>next/script</code> automatically handle relevant resource hints.</li>
+</ul>
+</blockquote>
+<h2 id="behavior">Behavior</h2>
+<h3 id="default-fields">Default Fields</h3>
+<p>There are two default <code>meta</code> tags that are always added even if a route doesn’t define metadata:</p>
+<ul>
+<li>The <a href="https://developer.mozilla.org/docs/Web/HTML/Element/meta#attr-charset" target="_blank" rel="noopener">meta charset tag</a> sets the character encoding for the website.</li>
+<li>The <a href="https://developer.mozilla.org/docs/Web/HTML/Viewport_meta_tag" target="_blank" rel="noopener">meta viewport tag</a> sets the viewport width and scale for the website to adjust for different devices.</li>
+</ul>
+<pre><code class="language-html">&lt;meta charset=&quot;utf-8&quot; /&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: You can overwrite the default <a href="/docs/app/api-reference/functions/generate-metadata#viewport"><code>viewport</code></a> meta tag.</p>
+</blockquote>
+<h3 id="streaming-metadata">Streaming metadata</h3>
+<p>Streaming metadata allows Next.js to render and send the initial UI to the browser, without waiting for <code>generateMetadata</code> to complete.</p>
+<p>When <code>generateMetadata</code> resolves, the resulting metadata tags are appended to the <code>&lt;body&gt;</code> tag. We have verified that metadata is interpreted correctly by bots that execute JavaScript and inspect the full DOM (e.g. <code>Googlebot</code>).</p>
+<p>For <strong>HTML-limited bots</strong> that can’t execute JavaScript (e.g. <code>facebookexternalhit</code>), metadata continues to block page rendering. The resulting metadata will be available in the <code>&lt;head&gt;</code> tag.</p>
+<p>Next.js automatically detects <strong>HTML-limited bots</strong> by looking at the User Agent header. You can use the <a href="/docs/app/api-reference/config/next-config-js/htmlLimitedBots"><code>htmlLimitedBots</code></a> option in your Next.js config file to override the default <a href="https://github.com/vercel/next.js/blob/canary/packages/next/src/shared/lib/router/utils/html-bots.ts" target="_blank" rel="noopener">User Agent list</a>.</p>
+<p>To fully disable streaming metadata:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const config: NextConfig = {
+  htmlLimitedBots: /.*/,
+}
+
+export default config
+</code></pre>
+<pre><code class="language-js">module.exports = {
+  htmlLimitedBots: /.*/,
+}
+</code></pre>
+<p>Streaming metadata improves perceived performance by reducing <a href="https://developer.mozilla.org/docs/Glossary/Time_to_first_byte" target="_blank" rel="noopener">TTFB</a> and can help lowering <a href="https://developer.mozilla.org/docs/Glossary/Largest_contentful_paint" target="_blank" rel="noopener">LCP</a> time.</p>
+<p>Overriding <code>htmlLimitedBots</code> could lead to longer response times. Streaming metadata is an advanced feature, and the default should be sufficient for most cases.</p>
+<h3 id="with-cache-components">With Cache Components</h3>
+<p>When <a href="/docs/app/getting-started/caching">Cache Components</a> is enabled, <code>generateMetadata</code> follows the same rules as other components. If metadata accesses runtime data (<code>cookies()</code>, <code>headers()</code>, <code>params</code>, <code>searchParams</code>) or performs uncached data fetching, it defers to request time.</p>
+<p>How Next.js handles this depends on the rest of your page:</p>
+<ul>
+<li><strong>If other parts also defer to request time</strong>: Prerendering generates a static shell, and metadata streams in with other deferred content.</li>
+<li><strong>If the page or layout is otherwise fully prerenderable</strong>: Next.js requires an explicit choice: cache the data if possible, or signal that deferred rendering is intentional.</li>
+</ul>
+<p>Streaming metadata at runtime while the rest of the page is fully prerenderable is not common. To ensure this behavior is intentional, an error is raised indicating which page or layout needs to be handled.</p>
+<p>To resolve this, you have two options. If metadata depends on external data but not runtime data, use <code>use cache</code>:</p>
+<pre><code class="language-tsx">export async function generateMetadata() {
+  'use cache'
+  const { title, description } = await db.query('site-metadata')
+  return { title, description }
+}
+</code></pre>
+<p>If metadata genuinely requires runtime data, add a dynamic marker component to your page:</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import { cookies } from 'next/headers'
+import { connection } from 'next/server'
+
+export async function generateMetadata() {
+  const token = (await cookies()).get('token')?.value
+  // ... use token to fetch personalized metadata
+  return { title: 'Personalized Title' }
+}
+
+const Connection = async () =&gt; {
+  await connection()
+  return null
+}
+
+async function DynamicMarker() {
+  return (
+    &lt;Suspense&gt;
+      &lt;Connection /&gt;
+    &lt;/Suspense&gt;
+  )
+}
+
+export default function Page() {
+  // DO NOT place await connection() here
+  // doing so prevents the article tag content from
+  // being included in the static shell
+  return (
+    &lt;&gt;
+      &lt;article&gt;Static content&lt;/article&gt;
+      &lt;DynamicMarker /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>The <code>DynamicMarker</code> component renders nothing but tells Next.js the page has intentional dynamic content. By wrapping it in Suspense, the static content still prerenders normally.</p>
+<h3 id="ordering">Ordering</h3>
+<p>Metadata is evaluated in order, starting from the root segment down to the segment closest to the final <code>page.js</code> segment. For example:</p>
+<ol>
+<li><code>app/layout.tsx</code> (Root Layout)</li>
+<li><code>app/blog/layout.tsx</code> (Nested Blog Layout)</li>
+<li><code>app/blog/[slug]/page.tsx</code> (Blog Page)</li>
+</ol>
+<h3 id="merging">Merging</h3>
+<p>Following the <a href="#ordering">evaluation order</a>, Metadata objects exported from multiple segments in the same route are <strong>shallowly</strong> merged together to form the final metadata output of a route. Duplicate keys are <strong>replaced</strong> based on their ordering.</p>
+<p>This means metadata with nested fields such as <a href="/docs/app/api-reference/functions/generate-metadata#opengraph"><code>openGraph</code></a> and <a href="/docs/app/api-reference/functions/generate-metadata#robots"><code>robots</code></a> that are defined in an earlier segment are <strong>overwritten</strong> by the last segment to define them.</p>
+<h4>Overwriting fields</h4>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'Acme',
+  openGraph: {
+    title: 'Acme',
+    description: 'Acme is a...',
+  },
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'Blog',
+  openGraph: {
+    title: 'Blog',
+  },
+}
+
+// Output:
+// &lt;title&gt;Blog&lt;/title&gt;
+// &lt;meta property=&quot;og:title&quot; content=&quot;Blog&quot; /&gt;
+</code></pre>
+<p>In the example above:</p>
+<ul>
+<li><code>title</code> from <code>app/layout.js</code> is <strong>replaced</strong> by <code>title</code> in <code>app/blog/page.js</code>.</li>
+<li>All <code>openGraph</code> fields from <code>app/layout.js</code> are <strong>replaced</strong> in <code>app/blog/page.js</code> because <code>app/blog/page.js</code> sets <code>openGraph</code> metadata. Note the absence of <code>openGraph.description</code>.</li>
+</ul>
+<p>If you’d like to share some nested fields between segments while overwriting others, you can pull them out into a separate variable:</p>
+<pre><code class="language-jsx">export const openGraphImage = { images: ['http://...'] }
+</code></pre>
+<pre><code class="language-jsx">import { openGraphImage } from './shared-metadata'
+
+export const metadata = {
+  openGraph: {
+    ...openGraphImage,
+    title: 'Home',
+  },
+}
+</code></pre>
+<pre><code class="language-jsx">import { openGraphImage } from '../shared-metadata'
+
+export const metadata = {
+  openGraph: {
+    ...openGraphImage,
+    title: 'About',
+  },
+}
+</code></pre>
+<p>In the example above, the OG image is shared between <code>app/layout.js</code> and <code>app/about/page.js</code> while the titles are different.</p>
+<h4>Inheriting fields</h4>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'Acme',
+  openGraph: {
+    title: 'Acme',
+    description: 'Acme is a...',
+  },
+}
+</code></pre>
+<pre><code class="language-jsx">export const metadata = {
+  title: 'About',
+}
+
+// Output:
+// &lt;title&gt;About&lt;/title&gt;
+// &lt;meta property=&quot;og:title&quot; content=&quot;Acme&quot; /&gt;
+// &lt;meta property=&quot;og:description&quot; content=&quot;Acme is a...&quot; /&gt;
+</code></pre>
+<p><strong>Notes</strong></p>
+<ul>
+<li><code>title</code> from <code>app/layout.js</code> is <strong>replaced</strong> by <code>title</code> in <code>app/about/page.js</code>.</li>
+<li>All <code>openGraph</code> fields from <code>app/layout.js</code> are <strong>inherited</strong> in <code>app/about/page.js</code> because <code>app/about/page.js</code> doesn’t set <code>openGraph</code> metadata.</li>
+</ul>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.2.0</code></td>
+<td>Introduced streaming support to <code>generateMetadata</code>.</td>
+</tr>
+<tr>
+<td><code>v13.2.0</code></td>
+<td><code>viewport</code>, <code>themeColor</code>, and <code>colorScheme</code> deprecated in favor of the <a href="/docs/app/api-reference/functions/generate-viewport"><code>viewport</code> configuration</a>.</td>
+</tr>
+<tr>
+<td><code>v13.2.0</code></td>
+<td><code>metadata</code> and <code>generateMetadata</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

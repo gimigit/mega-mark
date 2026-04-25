@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/first — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-first">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#on-directives">On directives</a></li><li><a href="#with-fixer">With Fixer</a></li></ul><li><a href="#when-not-to-use-it">When Not To Use It</a></li><li><a href="#further-reading">Further Reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/first</h1>
+
+</div>
+<div class="article-body">
+<p>🔧 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a>.</p>
+<!-- end auto-generated rule header -->
+<p>This rule reports any imports that come after non-import
+statements.</p>
+<h2 id="rule-details">Rule Details</h2>
+<pre><code class="language-js">import foo from './foo'
+
+// some module-level initializer
+initWith(foo)
+
+import bar from './bar' // &lt;- reported
+</code></pre>
+<p>Providing <code>absolute-first</code> as an option will report any absolute imports (i.e.
+packages) that come after any relative imports:</p>
+<pre><code class="language-js">import foo from 'foo'
+import bar from './bar'
+
+import * as _ from 'lodash' // &lt;- reported
+</code></pre>
+<p>If you really want import type ordering, check out <a href="./order.md"><code>import/order</code></a>.</p>
+<p>Notably, <code>import</code>s are hoisted, which means the imported modules will be evaluated
+before any of the statements interspersed between them. Keeping all <code>import</code>s together
+at the top of the file may prevent surprises resulting from this part of the spec.</p>
+<h3 id="on-directives">On directives</h3>
+<p>Directives are allowed as long as they occur strictly before any <code>import</code> declarations,
+as follows:</p>
+<pre><code class="language-js">'use super-mega-strict'
+
+import { suchFoo } from 'lame-fake-module-name'  // no report here
+</code></pre>
+<p>A directive in this case is assumed to be a single statement that contains only
+a literal string-valued expression.</p>
+<p><code>'use strict'</code> would be a good example, except that <a href="https://262.ecma-international.org/6.0/#sec-strict-mode-code" target="_blank" rel="noopener">modules are always in strict
+mode</a> so it would be surprising to see a <code>'use strict'</code> sharing a file with <code>import</code>s and
+<code>export</code>s.</p>
+<p>Given that, see <a href="https://github.com/import-js/eslint-plugin-import/issues/255" target="_blank" rel="noopener">#255</a> for the reasoning.</p>
+<h3 id="with-fixer">With Fixer</h3>
+<p>This rule contains a fixer to reorder in-body import to top, the following criteria applied:</p>
+<ol>
+<li>Never re-order relative to each other, even if <code>absolute-first</code> is set.</li>
+<li>If an import creates an identifier, and that identifier is referenced at module level <em>before</em> the import itself, that won’t be re-ordered.</li>
+</ol>
+<h2 id="when-not-to-use-it">When Not To Use It</h2>
+<p>If you don’t mind imports being sprinkled throughout, you may not want to
+enable this rule.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="./order.md"><code>import/order</code></a>: a major step up from <code>absolute-first</code></li>
+<li>Issue <a href="https://github.com/import-js/eslint-plugin-import/issues/255" target="_blank" rel="noopener">#255</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

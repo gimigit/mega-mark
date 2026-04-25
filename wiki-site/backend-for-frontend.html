@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Returns Markdown — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-backend-for-frontend">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#public-endpoints">Public Endpoints</a></li><li><a href="#content-types">Content types</a></li><ul><li><a href="#content-negotiation">Content negotiation</a></li><li><a href="#consuming-request-payloads">Consuming request payloads</a></li></ul><li><a href="#manipulating-data">Manipulating data</a></li><li><a href="#proxying-to-a-backend">Proxying to a backend</a></li><li><a href="#nextrequest-and-nextresponse">NextRequest and NextResponse</a></li><li><a href="#webhooks-and-callback-urls">Webhooks and callback URLs</a></li><li><a href="#redirects">Redirects</a></li><li><a href="#proxy">Proxy</a></li><li><a href="#security">Security</a></li><ul><li><a href="#working-with-headers">Working with headers</a></li><li><a href="#rate-limiting">Rate limiting</a></li><li><a href="#verify-payloads">Verify payloads</a></li><li><a href="#access-to-protected-resources">Access to protected resources</a></li></ul><li><a href="#preflight-requests">Preflight Requests</a></li><li><a href="#library-patterns">Library patterns</a></li><li><a href="#more-examples">More examples</a></li><li><a href="#caveats">Caveats</a></li><ul><li><a href="#server-components">Server Components</a></li><li><a href="#server-actions">Server Actions</a></li><li><a href="#export-mode">export mode</a></li><li><a href="#deployment-environment">Deployment environment</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Returns Markdown</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Backend for Frontend</td></tr><tr><th>description</th><td>Learn more about Route Handlers, Proxy, and Rewrites</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr></table><p>Next.js supports the “Backend for Frontend” pattern. This lets you create public endpoints to handle HTTP requests and return any content type—not just HTML. You can also access data sources and perform side effects like updating remote data.</p>
+<p>If you are starting a new project, using <code>create-next-app</code> with the <code>--api</code> flag automatically includes an example <code>route.ts</code> in your new project’s <code>app/</code> folder, demonstrating how to create an API endpoint.</p>
+<pre><code class="language-bash">pnpm create next-app --api
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest --api
+</code></pre>
+<pre><code class="language-bash">yarn create next-app --api
+</code></pre>
+<pre><code class="language-bash">bun create next-app --api
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Next.js backend capabilities are not a full backend replacement. They serve as an API layer that:</p>
+<ul>
+<li>is publicly reachable</li>
+<li>handles any HTTP request</li>
+<li>can return any content type</li>
+</ul>
+</blockquote>
+<p>To implement this pattern, use:</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a></li>
+<li><a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy</code></a></li>
+<li>In Pages Router, <a href="/docs/pages/building-your-application/routing/api-routes">API Routes</a></li>
+</ul>
+<h2 id="public-endpoints">Public Endpoints</h2>
+<p>Route Handlers are public HTTP endpoints. Any client can access them.</p>
+<p>Create a Route Handler using the <code>route.ts</code> or <code>route.js</code> file convention:</p>
+<pre><code class="language-ts">export function GET(request: Request) {}
+</code></pre>
+<pre><code class="language-js">export function GET(request) {}
+</code></pre>
+<p>This handles <code>GET</code> requests sent to <code>/api</code>.</p>
+<p>Use <code>try/catch</code> blocks for operations that may throw an exception:</p>
+<pre><code class="language-ts">import { submit } from '@/lib/submit'
+
+export async function POST(request: Request) {
+  try {
+    await submit(request)
+    return new Response(null, { status: 204 })
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected error'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { submit } from '@/lib/submit'
+
+export async function POST(request) {
+  try {
+    await submit(request)
+    return new Response(null, { status: 204 })
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected error'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<p>Avoid exposing sensitive information in error messages sent to the client.</p>
+<p>To restrict access, implement authentication and authorization. See <a href="/docs/app/guides/authentication">Authentication</a>.</p>
+<h2 id="content-types">Content types</h2>
+<p>Route Handlers let you serve non-UI responses, including JSON, XML, images, files, and plain text.</p>
+<p>Next.js uses file conventions for common endpoints:</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/metadata/sitemap"><code>sitemap.xml</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/metadata/opengraph-image"><code>opengraph-image.jpg</code>, <code>twitter-image</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/metadata/app-icons">favicon, app icon, and apple-icon</a></li>
+<li><a href="/docs/app/api-reference/file-conventions/metadata/manifest"><code>manifest.json</code></a></li>
+<li><a href="/docs/app/api-reference/file-conventions/metadata/robots"><code>robots.txt</code></a></li>
+</ul>
+<p>You can also define custom ones, such as:</p>
+<ul>
+<li><code>llms.txt</code></li>
+<li><code>rss.xml</code></li>
+<li><code>.well-known</code></li>
+</ul>
+<p>For example, <code>app/rss.xml/route.ts</code> creates a Route Handler for <code>rss.xml</code>.</p>
+<pre><code class="language-ts">export async function GET(request: Request) {
+  const rssResponse = await fetch(/* rss endpoint */)
+  const rssData = await rssResponse.json()
+
+  const rssFeed = `&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;rss version=&quot;2.0&quot;&gt;
+&lt;channel&gt;
+ &lt;title&gt;${rssData.title}&lt;/title&gt;
+ &lt;description&gt;${rssData.description}&lt;/description&gt;
+ &lt;link&gt;${rssData.link}&lt;/link&gt;
+ &lt;copyright&gt;${rssData.copyright}&lt;/copyright&gt;
+ ${rssData.items.map((item) =&gt; {
+   return `&lt;item&gt;
+    &lt;title&gt;${item.title}&lt;/title&gt;
+    &lt;description&gt;${item.description}&lt;/description&gt;
+    &lt;link&gt;${item.link}&lt;/link&gt;
+    &lt;pubDate&gt;${item.publishDate}&lt;/pubDate&gt;
+    &lt;guid isPermaLink=&quot;false&quot;&gt;${item.guid}&lt;/guid&gt;
+ &lt;/item&gt;`
+ })}
+&lt;/channel&gt;
+&lt;/rss&gt;`
+
+  const headers = new Headers({ 'content-type': 'application/xml' })
+
+  return new Response(rssFeed, { headers })
+}
+</code></pre>
+<pre><code class="language-js">export async function GET(request) {
+  const rssResponse = await fetch(/* rss endpoint */)
+  const rssData = await rssResponse.json()
+
+  const rssFeed = `&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;rss version=&quot;2.0&quot;&gt;
+&lt;channel&gt;
+ &lt;title&gt;${rssData.title}&lt;/title&gt;
+ &lt;description&gt;${rssData.description}&lt;/description&gt;
+ &lt;link&gt;${rssData.link}&lt;/link&gt;
+ &lt;copyright&gt;${rssData.copyright}&lt;/copyright&gt;
+ ${rssData.items.map((item) =&gt; {
+   return `&lt;item&gt;
+    &lt;title&gt;${item.title}&lt;/title&gt;
+    &lt;description&gt;${item.description}&lt;/description&gt;
+    &lt;link&gt;${item.link}&lt;/link&gt;
+    &lt;pubDate&gt;${item.publishDate}&lt;/pubDate&gt;
+    &lt;guid isPermaLink=&quot;false&quot;&gt;${item.guid}&lt;/guid&gt;
+ &lt;/item&gt;`
+ })}
+&lt;/channel&gt;
+&lt;/rss&gt;`
+
+  const headers = new Headers({ 'content-type': 'application/xml' })
+
+  return new Response(rssFeed, { headers })
+}
+</code></pre>
+<p>Sanitize any input used to generate markup.</p>
+<h3 id="content-negotiation">Content negotiation</h3>
+<p>You can use <a href="/docs/app/api-reference/config/next-config-js/rewrites">rewrites</a> with header matching to serve different content types from the same URL based on the request’s <code>Accept</code> header. This is known as <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation" target="_blank" rel="noopener">content negotiation</a>.</p>
+<p>For example, a documentation site might serve HTML pages to browsers and raw Markdown to AI agents from the same <code>/docs/…</code> URLs.</p>
+<p><strong>1. Configure a rewrite that matches the <code>Accept</code> header:</strong></p>
+<pre><code class="language-js">module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/docs/:slug*',
+        destination: '/docs/md/:slug*',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(.*)text/markdown(.*)',
+          },
+        ],
+      },
+    ]
+  },
+}
+</code></pre>
+<p>When a request to <code>/docs/getting-started</code> includes <code>Accept: text/markdown</code>, the rewrite routes it to <code>/docs/md/getting-started</code>. A Route Handler at that path returns the Markdown response. Clients that do not send <code>text/markdown</code> in their <code>Accept</code> header continue to receive the normal HTML page.</p>
+<p><strong>2. Create a Route Handler for the Markdown response:</strong></p>
+<pre><code class="language-ts">import { getDocsMd, generateDocsStaticParams } from '@/lib/docs'
+
+export async function generateStaticParams() {
+  return generateDocsStaticParams()
+}
+
+export async function GET(_: Request, ctx: RouteContext&lt;'/docs/md/[...slug]'&gt;) {
+  const { slug } = await ctx.params
+  const mdDoc = await getDocsMd({ slug })
+
+  if (mdDoc == null) {
+    return new Response(null, { status: 404 })
+  }
+
+  return new Response(mdDoc, {
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      Vary: 'Accept',
+    },
+  })
+}
+</code></pre>
+<pre><code class="language-js">import { getDocsMd, generateDocsStaticParams } from '@/lib/docs'
+
+export async function generateStaticParams() {
+  return generateDocsStaticParams()
+}
+
+export async function GET(_, { params }) {
+  const { slug } = await params
+  const mdDoc = await getDocsMd({ slug })
+
+  if (mdDoc == null) {
+    return new Response(null, { status: 404 })
+  }
+
+  return new Response(mdDoc, {
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      Vary: 'Accept',
+    },
+  })
+}
+</code></pre>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary" target="_blank" rel="noopener"><code>Vary: Accept</code></a> response header tells caches that the response body depends on the <code>Accept</code> request header. Without it, a shared cache could serve a cached Markdown response to a browser (or vice versa). Most hosting providers already include the <code>Accept</code> header in their cache key, but setting <code>Vary</code> explicitly ensures correct behavior across all CDNs and proxy caches.</p>
+<p><code>generateStaticParams</code> lets you pre-render the Markdown variants at build time so they can be served from the edge without hitting the origin server on every request.</p>
+<p><strong>3. Test it with <code>curl</code>:</strong></p>
+<pre><code class="language-bash"># Returns Markdown
+curl -H &quot;Accept: text/markdown&quot; https://example.com/docs/getting-started
+
+# Returns the normal HTML page
+curl https://example.com/docs/getting-started
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>The <code>/docs/md/...</code> route is still directly accessible without the rewrite. If you want to restrict it to only serve via the rewrite, use <a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy</code></a> to block direct requests that don’t include the expected <code>Accept</code> header.</li>
+<li>For more advanced negotiation logic, you can use <a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy</code></a> instead of rewrites for more flexibility.</li>
+</ul>
+</blockquote>
+<h3 id="consuming-request-payloads">Consuming request payloads</h3>
+<p>Use Request <a href="https://developer.mozilla.org/en-US/docs/Web/API/Request#instance_methods" target="_blank" rel="noopener">instance methods</a> like <code>.json()</code>, <code>.formData()</code>, or <code>.text()</code> to access the request body.</p>
+<p><code>GET</code> and <code>HEAD</code> requests don’t carry a body.</p>
+<pre><code class="language-ts">export async function POST(request: Request) {
+  const res = await request.json()
+  return Response.json({ res })
+}
+</code></pre>
+<pre><code class="language-js">export async function POST(request) {
+  const res = await request.json()
+  return Response.json({ res })
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Validate data before passing it to other systems</p>
+</blockquote>
+<pre><code class="language-ts">import { sendMail, validateInputs } from '@/lib/email-transporter'
+
+export async function POST(request: Request) {
+  const formData = await request.formData()
+  const email = formData.get('email')
+  const contents = formData.get('contents')
+
+  try {
+    await validateInputs({ email, contents })
+    const info = await sendMail({ email, contents })
+
+    return Response.json({ messageId: info.messageId })
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected exception'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { sendMail, validateInputs } from '@/lib/email-transporter'
+
+export async function POST(request) {
+  const formData = await request.formData()
+  const email = formData.get('email')
+  const contents = formData.get('contents')
+
+  try {
+    await validateInputs({ email, contents })
+    const info = await sendMail({ email, contents })
+
+    return Response.json({ messageId: info.messageId })
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected exception'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<p>You can only read the request body once. Clone the request if you need to read it again:</p>
+<pre><code class="language-ts">export async function POST(request: Request) {
+  try {
+    const clonedRequest = request.clone()
+
+    await request.body()
+    await clonedRequest.body()
+    await request.body() // Throws error
+
+    return new Response(null, { status: 204 })
+  } catch {
+    return new Response(null, { status: 500 })
+  }
+}
+</code></pre>
+<pre><code class="language-js">export async function POST(request) {
+  try {
+    const clonedRequest = request.clone()
+
+    await request.body()
+    await clonedRequest.body()
+    await request.body() // Throws error
+
+    return new Response(null, { status: 204 })
+  } catch {
+    return new Response(null, { status: 500 })
+  }
+}
+</code></pre>
+<h2 id="manipulating-data">Manipulating data</h2>
+<p>Route Handlers can transform, filter, and aggregate data from one or more sources. This keeps logic out of the frontend and avoids exposing internal systems.</p>
+<p>You can also offload heavy computations to the server and reduce client battery and data usage.</p>
+<pre><code class="language-ts">import { parseWeatherData } from '@/lib/weather'
+
+export async function POST(request: Request) {
+  const body = await request.json()
+  const searchParams = new URLSearchParams({ lat: body.lat, lng: body.lng })
+
+  try {
+    const weatherResponse = await fetch(`${weatherEndpoint}?${searchParams}`)
+
+    if (!weatherResponse.ok) {
+      /* handle error */
+    }
+
+    const weatherData = await weatherResponse.text()
+    const payload = parseWeatherData.asJSON(weatherData)
+
+    return new Response(payload, { status: 200 })
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected exception'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { parseWeatherData } from '@/lib/weather'
+
+export async function POST(request) {
+  const body = await request.json()
+  const searchParams = new URLSearchParams({ lat: body.lat, lng: body.lng })
+
+  try {
+    const weatherResponse = await fetch(`${weatherEndpoint}?${searchParams}`)
+
+    if (!weatherResponse.ok) {
+      /* handle error */
+    }
+
+    const weatherData = await weatherResponse.text()
+    const payload = parseWeatherData.asJSON(weatherData)
+
+    return new Response(payload, { status: 200 })
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected exception'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: This example uses <code>POST</code> to avoid putting geo-location data in the URL. <code>GET</code> requests may be cached or logged, which could expose sensitive info.</p>
+</blockquote>
+<h2 id="proxying-to-a-backend">Proxying to a backend</h2>
+<p>You can use a Route Handler as a <code>proxy</code> to another backend. Add validation logic before forwarding the request.</p>
+<pre><code class="language-ts">import { isValidRequest } from '@/lib/utils'
+
+export async function POST(request: Request, { params }) {
+  const clonedRequest = request.clone()
+  const isValid = await isValidRequest(clonedRequest)
+
+  if (!isValid) {
+    return new Response(null, { status: 400, statusText: 'Bad Request' })
+  }
+
+  const { slug } = await params
+  const pathname = slug.join('/')
+  const proxyURL = new URL(pathname, 'https://nextjs.org')
+  const proxyRequest = new Request(proxyURL, request)
+
+  try {
+    return fetch(proxyRequest)
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected exception'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { isValidRequest } from '@/lib/utils'
+
+export async function POST(request, { params }) {
+  const clonedRequest = request.clone()
+  const isValid = await isValidRequest(clonedRequest)
+
+  if (!isValid) {
+    return new Response(null, { status: 400, statusText: 'Bad Request' })
+  }
+
+  const { slug } = await params
+  const pathname = slug.join('/')
+  const proxyURL = new URL(pathname, 'https://nextjs.org')
+  const proxyRequest = new Request(proxyURL, request)
+
+  try {
+    return fetch(proxyRequest)
+  } catch (reason) {
+    const message =
+      reason instanceof Error ? reason.message : 'Unexpected exception'
+
+    return new Response(message, { status: 500 })
+  }
+}
+</code></pre>
+<p>Or use:</p>
+<ul>
+<li><code>proxy</code> <a href="#proxy">rewrites</a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/rewrites"><code>rewrites</code></a> in <code>next.config.js</code>.</li>
+</ul>
+<h2 id="nextrequest-and-nextresponse">NextRequest and NextResponse</h2>
+<p>Next.js extends the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Request" target="_blank" rel="noopener"><code>Request</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Response" target="_blank" rel="noopener"><code>Response</code></a> Web APIs with methods that simplify common operations. These extensions are available in both Route Handlers and Proxy.</p>
+<p>Both provide methods for reading and manipulating cookies.</p>
+<p><code>NextRequest</code> includes the <a href="/docs/app/api-reference/functions/next-request#nexturl"><code>nextUrl</code></a> property, which exposes parsed values from the incoming request, for example, it makes it easier to access request pathname and search params.</p>
+<p><code>NextResponse</code> provides helpers like <code>next()</code>, <code>json()</code>, <code>redirect()</code>, and <code>rewrite()</code>.</p>
+<p>You can pass <code>NextRequest</code> to any function expecting <code>Request</code>. Likewise, you can return <code>NextResponse</code> where a <code>Response</code> is expected.</p>
+<pre><code class="language-ts">import { type NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const nextUrl = request.nextUrl
+
+  if (nextUrl.searchParams.get('redirect')) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  if (nextUrl.searchParams.get('rewrite')) {
+    return NextResponse.rewrite(new URL('/', request.url))
+  }
+
+  return NextResponse.json({ pathname: nextUrl.pathname })
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+
+export async function GET(request) {
+  const nextUrl = request.nextUrl
+
+  if (nextUrl.searchParams.get('redirect')) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  if (nextUrl.searchParams.get('rewrite')) {
+    return NextResponse.rewrite(new URL('/', request.url))
+  }
+
+  return NextResponse.json({ pathname: nextUrl.pathname })
+}
+</code></pre>
+<p>Learn more about <a href="/docs/app/api-reference/functions/next-request"><code>NextRequest</code></a> and <a href="/docs/app/api-reference/functions/next-response"><code>NextResponse</code></a>.</p>
+<h2 id="webhooks-and-callback-urls">Webhooks and callback URLs</h2>
+<p>Use Route Handlers to receive event notifications from third-party applications.</p>
+<p>For example, revalidate a route when content changes in a CMS. Configure the CMS to call a specific endpoint on changes.</p>
+<pre><code class="language-ts">import { type NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const token = request.nextUrl.searchParams.get('token')
+
+  if (token !== process.env.REVALIDATE_SECRET_TOKEN) {
+    return NextResponse.json({ success: false }, { status: 401 })
+  }
+
+  const tag = request.nextUrl.searchParams.get('tag')
+
+  if (!tag) {
+    return NextResponse.json({ success: false }, { status: 400 })
+  }
+
+  revalidateTag(tag)
+
+  return NextResponse.json({ success: true })
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+
+export async function GET(request) {
+  const token = request.nextUrl.searchParams.get('token')
+
+  if (token !== process.env.REVALIDATE_SECRET_TOKEN) {
+    return NextResponse.json({ success: false }, { status: 401 })
+  }
+
+  const tag = request.nextUrl.searchParams.get('tag')
+
+  if (!tag) {
+    return NextResponse.json({ success: false }, { status: 400 })
+  }
+
+  revalidateTag(tag)
+
+  return NextResponse.json({ success: true })
+}
+</code></pre>
+<p>Callback URLs are another use case. When a user completes a third-party flow, the third party sends them to a callback URL. Use a Route Handler to verify the response and decide where to redirect the user.</p>
+<pre><code class="language-ts">import { type NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const token = request.nextUrl.searchParams.get('session_token')
+  const redirectUrl = request.nextUrl.searchParams.get('redirect_url')
+
+  const response = NextResponse.redirect(new URL(redirectUrl, request.url))
+
+  response.cookies.set({
+    value: token,
+    name: '_token',
+    path: '/',
+    secure: true,
+    httpOnly: true,
+    expires: undefined, // session cookie
+  })
+
+  return response
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+
+export async function GET(request) {
+  const token = request.nextUrl.searchParams.get('session_token')
+  const redirectUrl = request.nextUrl.searchParams.get('redirect_url')
+
+  const response = NextResponse.redirect(new URL(redirectUrl, request.url))
+
+  response.cookies.set({
+    value: token,
+    name: '_token',
+    path: '/',
+    secure: true,
+    httpOnly: true,
+    expires: undefined, // session cookie
+  })
+
+  return response
+}
+</code></pre>
+<h2 id="redirects">Redirects</h2>
+<pre><code class="language-ts">import { redirect } from 'next/navigation'
+
+export async function GET(request: Request) {
+  redirect('https://nextjs.org/')
+}
+</code></pre>
+<pre><code class="language-js">import { redirect } from 'next/navigation'
+
+export async function GET(request) {
+  redirect('https://nextjs.org/')
+}
+</code></pre>
+<p>Learn more about redirects in <a href="/docs/app/api-reference/functions/redirect"><code>redirect</code></a> and <a href="/docs/app/api-reference/functions/permanentRedirect"><code>permanentRedirect</code></a></p>
+<h2 id="proxy">Proxy</h2>
+<p>Only one <code>proxy</code> file is allowed per project. Use <code>config.matcher</code> to target specific paths. Learn more about <a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy</code></a>.</p>
+<p>Use <code>proxy</code> to generate a response before the request reaches a route path.</p>
+<pre><code class="language-ts">import { isAuthenticated } from '@lib/auth'
+
+export const config = {
+  matcher: '/api/:function*',
+}
+
+export function proxy(request: Request) {
+  if (!isAuthenticated(request)) {
+    return Response.json(
+      { success: false, message: 'authentication failed' },
+      { status: 401 }
+    )
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { isAuthenticated } from '@lib/auth'
+
+export const config = {
+  matcher: '/api/:function*',
+}
+
+export function proxy(request) {
+  if (!isAuthenticated(request)) {
+    return Response.json(
+      { success: false, message: 'authentication failed' },
+      { status: 401 }
+    )
+  }
+}
+</code></pre>
+<p>You can also proxy requests using <code>proxy</code>:</p>
+<pre><code class="language-ts">import { NextResponse } from 'next/server'
+
+export function proxy(request: Request) {
+  if (request.nextUrl.pathname === '/proxy-this-path') {
+    const rewriteUrl = new URL('https://nextjs.org')
+    return NextResponse.rewrite(rewriteUrl)
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+
+export function proxy(request) {
+  if (request.nextUrl.pathname === '/proxy-this-path') {
+    const rewriteUrl = new URL('https://nextjs.org')
+    return NextResponse.rewrite(rewriteUrl)
+  }
+}
+</code></pre>
+<p>Another type of response <code>proxy</code> can produce are redirects:</p>
+<pre><code class="language-ts">import { NextResponse } from 'next/server'
+
+export function proxy(request: Request) {
+  if (request.nextUrl.pathname === '/v1/docs') {
+    request.nextUrl.pathname = '/v2/docs'
+    return NextResponse.redirect(request.nextUrl)
+  }
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+
+export function proxy(request) {
+  if (request.nextUrl.pathname === '/v1/docs') {
+    request.nextUrl.pathname = '/v2/docs'
+    return NextResponse.redirect(request.nextUrl)
+  }
+}
+</code></pre>
+<h2 id="security">Security</h2>
+<h3 id="working-with-headers">Working with headers</h3>
+<p>Be deliberate about where headers go, and avoid directly passing incoming request headers to the outgoing response.</p>
+<ul>
+<li><strong>Upstream request headers</strong>: In Proxy, <code>NextResponse.next({ request: { headers } })</code> modifies the headers your server receives and does not expose them to the client.</li>
+<li><strong>Response headers</strong>: <code>new Response(..., { headers })</code>, <code>NextResponse.json(..., { headers })</code>, <code>NextResponse.next({ headers })</code>, or <code>response.headers.set(...)</code> send headers back to the client. If sensitive values were appended to these headers, they will be visible to clients.</li>
+</ul>
+<p>Learn more in <a href="/docs/app/api-reference/functions/next-response#next">NextResponse headers in Proxy</a>.</p>
+<h3 id="rate-limiting">Rate limiting</h3>
+<p>You can implement rate limiting in your Next.js backend. In addition to code-based checks, enable any rate limiting features provided by your host.</p>
+<pre><code class="language-ts">import { NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+export async function POST(request: Request) {
+  const { rateLimited } = await checkRateLimit(request)
+
+  if (rateLimited) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
+
+  return new Response(null, { status: 204 })
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+export async function POST(request) {
+  const { rateLimited } = await checkRateLimit(request)
+
+  if (rateLimited) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
+
+  return new Response(null, { status: 204 })
+}
+</code></pre>
+<h3 id="verify-payloads">Verify payloads</h3>
+<p>Never trust incoming request data. Validate content type and size, and sanitize against XSS before use.</p>
+<p>Use timeouts to prevent abuse and protect server resources.</p>
+<p>Store user-generated static assets in dedicated services. When possible, upload them from the browser and store the returned URI in your database to reduce request size.</p>
+<h3 id="access-to-protected-resources">Access to protected resources</h3>
+<p>Always verify credentials before granting access. Do not rely on proxy alone for authentication and authorization.</p>
+<p>Remove sensitive or unnecessary data from responses and backend logs.</p>
+<p>Rotate credentials and API keys regularly.</p>
+<h2 id="preflight-requests">Preflight Requests</h2>
+<p>Preflight requests use the <code>OPTIONS</code> method to ask the server if a request is allowed based on origin, method, and headers.</p>
+<p>If <code>OPTIONS</code> is not defined, Next.js adds it automatically and sets the <code>Allow</code> header based on the other defined methods.</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/route#cors">CORS</a></li>
+</ul>
+<h2 id="library-patterns">Library patterns</h2>
+<p>Community libraries often use the factory pattern for Route Handlers.</p>
+<pre><code class="language-ts">import { createHandler } from 'third-party-library'
+
+const handler = createHandler({
+  /* library-specific options */
+})
+
+export const GET = handler
+// or
+export { handler as POST }
+</code></pre>
+<p>This creates a shared handler for <code>GET</code> and <code>POST</code> requests. The library customizes behavior based on the <code>method</code> and <code>pathname</code> in the request.</p>
+<p>Libraries can also provide a <code>proxy</code> factory.</p>
+<pre><code class="language-ts">import { createMiddleware } from 'third-party-library'
+
+export default createMiddleware()
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: Third-party libraries may still refer to <code>proxy</code> as <code>middleware</code>.</p>
+</blockquote>
+<h2 id="more-examples">More examples</h2>
+<p>See more examples on using <a href="/docs/app/api-reference/file-conventions/route#examples">Router Handlers</a> and the <a href="/docs/app/api-reference/file-conventions/proxy#examples"><code>proxy</code></a> API references.</p>
+<p>These examples include, working with <a href="/docs/app/api-reference/file-conventions/route#cookies">Cookies</a>, <a href="/docs/app/api-reference/file-conventions/route#headers">Headers</a>, <a href="/docs/app/api-reference/file-conventions/route#streaming">Streaming</a>, Proxy <a href="/docs/app/api-reference/file-conventions/proxy#negative-matching">negative matching</a>, and other useful code snippets.</p>
+<h2 id="caveats">Caveats</h2>
+<h3 id="server-components">Server Components</h3>
+<p>Fetch data in Server Components directly from its source, not via Route Handlers.</p>
+<p>For Server Components prerendered at build time, using Route Handlers will fail the build step. This is because, while building there is no server listening for these requests.</p>
+<p>For Server Components rendered on demand, fetching from Route Handlers is slower due to the extra HTTP round trip between the handler and the render process.</p>
+<blockquote>
+<p>A server side <code>fetch</code> request uses absolute URLs. This implies an HTTP round trip, to an external server. During development, your own development server acts as the external server. At build time there is no server, and at runtime, the server is available through your public facing domain.</p>
+</blockquote>
+<p>Server Components cover most data-fetching needs. However, fetching data client side might be necessary for:</p>
+<ul>
+<li>Data that depends on client-only Web APIs:
+<ul>
+<li>Geo-location API</li>
+<li>Storage API</li>
+<li>Audio API</li>
+<li>File API</li>
+</ul>
+</li>
+<li>Frequently polled data</li>
+</ul>
+<p>For these, use community libraries like <a href="https://swr.vercel.app/" target="_blank" rel="noopener"><code>swr</code></a> or <a href="https://tanstack.com/query/latest/docs/framework/react/overview" target="_blank" rel="noopener"><code>react-query</code></a>.</p>
+<h3 id="server-actions">Server Actions</h3>
+<p>Server Actions let you run server-side code from the client. Their primary purpose is to mutate data from your frontend client.</p>
+<p>Server Actions are queued. Using them for data fetching introduces sequential execution.</p>
+<h3 id="export-mode"><code>export</code> mode</h3>
+<p><code>export</code> mode outputs a static site without a runtime server. Features that require the Next.js runtime are <a href="/docs/app/guides/static-exports#unsupported-features">not supported</a>, because this mode produces a static site, and no runtime server.</p>
+<p>In <code>export mode</code>, only <code>GET</code> Route Handlers are supported, in combination with the <a href="/docs/app/guides/caching-without-cache-components#dynamic"><code>dynamic</code></a> route segment config, set to <code>'force-static'</code>.</p>
+<p>This can be used to generate static HTML, JSON, TXT, or other files.</p>
+<pre><code class="language-js">export const dynamic = 'force-static'
+
+export function GET() {
+  return new Response('Hello World', { status: 200 })
+}
+</code></pre>
+<h3 id="deployment-environment">Deployment environment</h3>
+<p>Some hosts deploy Route Handlers as lambda functions. This means:</p>
+<ul>
+<li>Route Handlers cannot share data between requests.</li>
+<li>The environment may not support writing to File System.</li>
+<li>Long-running handlers may be terminated due to timeouts.</li>
+<li>WebSockets won’t work because the connection closes on timeout, or after the response is generated.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

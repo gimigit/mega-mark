@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02-get-static-paths — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-02-get-static-paths">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#when-should-i-use-getstaticpaths">When should I use getStaticPaths?</a></li><li><a href="#when-does-getstaticpaths-run">When does getStaticPaths run</a></li><ul><li><a href="#how-does-getstaticprops-run-with-regards-to-getstaticpaths">How does getStaticProps run with regards to getStaticPaths</a></li></ul><li><a href="#where-can-i-use-getstaticpaths">Where can I use getStaticPaths</a></li><li><a href="#runs-on-every-request-in-development">Runs on every request in development</a></li><li><a href="#generating-paths-on-demand">Generating paths on-demand</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">02-get-static-paths</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Fetch data and generate static pages with `getStaticPaths`. Learn more about this API for data fetching in Next.js.</td></tr></table><p>If a page has <a href="/docs/pages/building-your-application/routing/dynamic-routes">Dynamic Routes</a> and uses <code>getStaticProps</code>, it needs to define a list of paths to be statically generated.</p>
+<p>When you export a function called <code>getStaticPaths</code> (Static Site Generation) from a page that uses dynamic routes, Next.js will statically prerender all the paths specified by <code>getStaticPaths</code>.</p>
+<pre><code class="language-tsx">import type {
+  InferGetStaticPropsType,
+  GetStaticProps,
+  GetStaticPaths,
+} from 'next'
+
+type Repo = {
+  name: string
+  stargazers_count: number
+}
+
+export const getStaticPaths = (async () =&gt; {
+  return {
+    paths: [
+      {
+        params: {
+          name: 'next.js',
+        },
+      }, // See the &quot;paths&quot; section below
+    ],
+    fallback: true, // false or &quot;blocking&quot;
+  }
+}) satisfies GetStaticPaths
+
+export const getStaticProps = (async (context) =&gt; {
+  const res = await fetch('https://api.github.com/repos/vercel/next.js')
+  const repo = await res.json()
+  return { props: { repo } }
+}) satisfies GetStaticProps&lt;{
+  repo: Repo
+}&gt;
+
+export default function Page({
+  repo,
+}: InferGetStaticPropsType&lt;typeof getStaticProps&gt;) {
+  return repo.stargazers_count
+}
+</code></pre>
+<pre><code class="language-jsx">export async function getStaticPaths() {
+  return {
+    paths: [
+      {
+        params: {
+          name: 'next.js',
+        },
+      }, // See the &quot;paths&quot; section below
+    ],
+    fallback: true, // false or &quot;blocking&quot;
+  }
+}
+
+export async function getStaticProps() {
+  const res = await fetch('https://api.github.com/repos/vercel/next.js')
+  const repo = await res.json()
+  return { props: { repo } }
+}
+
+export default function Page({ repo }) {
+  return repo.stargazers_count
+}
+</code></pre>
+<p>The <a href="/docs/pages/api-reference/functions/get-static-paths"><code>getStaticPaths</code> API reference</a> covers all parameters and props that can be used with <code>getStaticPaths</code>.</p>
+<h2 id="when-should-i-use-getstaticpaths">When should I use getStaticPaths?</h2>
+<p>You should use <code>getStaticPaths</code> if you’re statically prerendering pages that use dynamic routes and:</p>
+<ul>
+<li>The data comes from a headless CMS</li>
+<li>The data comes from a database</li>
+<li>The data comes from the filesystem</li>
+<li>The data can be publicly cached (not user-specific)</li>
+<li>The page must be prerendered (for SEO) and be very fast — <code>getStaticProps</code> generates <code>HTML</code> and <code>JSON</code> files, both of which can be cached by a CDN for performance</li>
+</ul>
+<h2 id="when-does-getstaticpaths-run">When does getStaticPaths run</h2>
+<p><code>getStaticPaths</code> will only run during build in production, it will not be called during runtime. You can validate code written inside <code>getStaticPaths</code> is removed from the client-side bundle <a href="https://next-code-elimination.vercel.app/" target="_blank" rel="noopener">with this tool</a>.</p>
+<h3 id="how-does-getstaticprops-run-with-regards-to-getstaticpaths">How does getStaticProps run with regards to getStaticPaths</h3>
+<ul>
+<li><code>getStaticProps</code> runs during <code>next build</code> for any <code>paths</code> returned during build</li>
+<li><code>getStaticProps</code> runs in the background when using <code>fallback: true</code></li>
+<li><code>getStaticProps</code> is called before initial render when using <code>fallback: blocking</code></li>
+</ul>
+<h2 id="where-can-i-use-getstaticpaths">Where can I use getStaticPaths</h2>
+<ul>
+<li><code>getStaticPaths</code> <strong>must</strong> be used with <code>getStaticProps</code></li>
+<li>You <strong>cannot</strong> use <code>getStaticPaths</code> with <a href="/docs/pages/building-your-application/data-fetching/get-server-side-props"><code>getServerSideProps</code></a></li>
+<li>You can export <code>getStaticPaths</code> from a <a href="/docs/pages/building-your-application/routing/dynamic-routes">Dynamic Route</a> that also uses <code>getStaticProps</code></li>
+<li>You <strong>cannot</strong> export <code>getStaticPaths</code> from non-page file (e.g. your <code>components</code> folder)</li>
+<li>You must export <code>getStaticPaths</code> as a standalone function, and not a property of the page component</li>
+</ul>
+<h2 id="runs-on-every-request-in-development">Runs on every request in development</h2>
+<p>In development (<code>next dev</code>), <code>getStaticPaths</code> will be called on every request.</p>
+<h2 id="generating-paths-on-demand">Generating paths on-demand</h2>
+<p><code>getStaticPaths</code> allows you to control which pages are generated during the build instead of on-demand with <a href="/docs/pages/api-reference/functions/get-static-paths#fallback-blocking"><code>fallback</code></a>. Generating more pages during a build will cause slower builds.</p>
+<p>You can defer generating all pages on-demand by returning an empty array for <code>paths</code>. This can be especially helpful when deploying your Next.js application to multiple environments. For example, you can have faster builds by generating all pages on-demand for previews (but not production builds). This is helpful for sites with hundreds/thousands of static pages.</p>
+<pre><code class="language-jsx">export async function getStaticPaths() {
+  // When this is true (in preview environments) don't
+  // prerender any static pages
+  // (faster builds, but slower initial page load)
+  if (process.env.SKIP_BUILD_STATIC_GENERATION) {
+    return {
+      paths: [],
+      fallback: 'blocking',
+    }
+  }
+
+  // Call an external API endpoint to get posts
+  const res = await fetch('https://.../posts')
+  const posts = await res.json()
+
+  // Get the paths we want to prerender based on posts
+  // In production environments, prerender all pages
+  // (slower builds, but faster initial page load)
+  const paths = posts.map((post) =&gt; ({
+    params: { id: post.id },
+  }))
+
+  // { fallback: false } means other routes should 404
+  return { paths, fallback: false }
+}
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

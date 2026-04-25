@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>compress — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-compress">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">compress</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Next.js provides gzip compression to compress rendered content and static files, it only works with the server target. Learn more about it here.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>By default, Next.js uses <code>gzip</code> to compress rendered content and static files when using <code>next start</code> or a custom server. This is an optimization for applications that do not have compression configured. If compression is <em>already</em> configured in your application via a custom server, Next.js will not add compression.</p>
+<p>You can check if compression is enabled and which algorithm is used by looking at the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding" target="_blank" rel="noopener"><code>Accept-Encoding</code></a> (browser accepted options) and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding" target="_blank" rel="noopener"><code>Content-Encoding</code></a> (currently used) headers in the response.</p>
+<h2 id="disabling-compression">Disabling compression</h2>
+<p>To disable <strong>compression</strong>, set the <code>compress</code> config option to <code>false</code>:</p>
+<pre><code class="language-js">module.exports = {
+  compress: false,
+}
+</code></pre>
+<p>We <strong>do not recommend disabling compression</strong> unless you have compression configured on your server, as compression reduces bandwidth usage and improves the performance of your application. For example, you’re using <a href="https://nginx.org/" target="_blank" rel="noopener">nginx</a> and want to switch to <code>brotli</code>, set the <code>compress</code> option to <code>false</code> to allow nginx to handle compression.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

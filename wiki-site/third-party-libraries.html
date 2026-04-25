@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>third-party-libraries — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-third-party-libraries">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#getting-started">Getting Started</a></li><li><a href="#google-third-parties">Google Third-Parties</a></li><ul><li><a href="#google-tag-manager">Google Tag Manager</a></li><li><a href="#google-analytics">Google Analytics</a></li><li><a href="#google-maps-embed">Google Maps Embed</a></li><li><a href="#youtube-embed">YouTube Embed</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">third-party-libraries</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Third Party Libraries</td></tr><tr><th>description</th><td>Optimize the performance of third-party libraries in your application with the `@next/third-parties` package.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p><strong><code>@next/third-parties</code></strong> is a library that provides a collection of components and utilities that improve the performance and developer experience of loading popular third-party libraries in your Next.js application.</p>
+<p>All third-party integrations provided by <code>@next/third-parties</code> have been optimized for performance and ease of use.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>To get started, install the <code>@next/third-parties</code> library:</p>
+<pre><code class="language-bash">pnpm add @next/third-parties@latest next@latest
+</code></pre>
+<pre><code class="language-bash">npm install @next/third-parties@latest next@latest
+</code></pre>
+<pre><code class="language-bash">yarn add @next/third-parties@latest next@latest
+</code></pre>
+<pre><code class="language-bash">bun add @next/third-parties@latest next@latest
+</code></pre>
+<p>{/* To do: Remove this paragraph once package becomes stable */}</p>
+<p><code>@next/third-parties</code> is currently an <strong>experimental</strong> library under active development. We recommend installing it with the <strong>latest</strong> or <strong>canary</strong> flags while we work on adding more third-party integrations.</p>
+<h2 id="google-third-parties">Google Third-Parties</h2>
+<p>All supported third-party libraries from Google can be imported from <code>@next/third-parties/google</code>.</p>
+<h3 id="google-tag-manager">Google Tag Manager</h3>
+<p>The <code>GoogleTagManager</code> component can be used to instantiate a <a href="https://developers.google.com/tag-platform/tag-manager" target="_blank" rel="noopener">Google Tag Manager</a> container to your page. By default, it fetches the original inline script after hydration occurs on the page.</p>
+<AppOnly>
+<p>To load Google Tag Manager for all routes, include the component directly in your root layout and pass in your GTM container ID:</p>
+<pre><code class="language-tsx">import { GoogleTagManager } from '@next/third-parties/google'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;GoogleTagManager gtmId=&quot;GTM-XYZ&quot; /&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { GoogleTagManager } from '@next/third-parties/google'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;GoogleTagManager gtmId=&quot;GTM-XYZ&quot; /&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To load Google Tag Manager for all routes, include the component directly in your custom <code>_app</code> and
+pass in your GTM container ID:</p>
+<pre><code class="language-jsx">import { GoogleTagManager } from '@next/third-parties/google'
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;&gt;
+      &lt;Component {...pageProps} /&gt;
+      &lt;GoogleTagManager gtmId=&quot;GTM-XYZ&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>To load Google Tag Manager for a single route, include the component in your page file:</p>
+<AppOnly>
+<pre><code class="language-jsx">import { GoogleTagManager } from '@next/third-parties/google'
+
+export default function Page() {
+  return &lt;GoogleTagManager gtmId=&quot;GTM-XYZ&quot; /&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { GoogleTagManager } from '@next/third-parties/google'
+
+export default function Page() {
+  return &lt;GoogleTagManager gtmId=&quot;GTM-XYZ&quot; /&gt;
+}
+</code></pre>
+</PagesOnly>
+<h4>Sending Events</h4>
+<p>The <code>sendGTMEvent</code> function can be used to track user interactions on your page by sending events
+using the <code>dataLayer</code> object. For this function to work, the <code>&lt;GoogleTagManager /&gt;</code> component must be
+included in either a parent layout, page, or component, or directly in the same file.</p>
+<AppOnly>
+<pre><code class="language-jsx">'use client'
+
+import { sendGTMEvent } from '@next/third-parties/google'
+
+export function EventButton() {
+  return (
+    &lt;div&gt;
+      &lt;button
+        onClick={() =&gt; sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })}
+      &gt;
+        Send Event
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { sendGTMEvent } from '@next/third-parties/google'
+
+export function EventButton() {
+  return (
+    &lt;div&gt;
+      &lt;button
+        onClick={() =&gt; sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })}
+      &gt;
+        Send Event
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>Refer to the Tag Manager <a href="https://developers.google.com/tag-platform/tag-manager/datalayer" target="_blank" rel="noopener">developer
+documentation</a> to learn about the
+different variables and events that can be passed into the function.</p>
+<h4>Server-side Tagging</h4>
+<p>If you’re using a server-side tag manager and serving <code>gtm.js</code> scripts from your tagging server you can
+use <code>gtmScriptUrl</code> option to specify the URL of the script.</p>
+<h4>Options</h4>
+<p>Options to pass to the Google Tag Manager. For a full list of options, read the <a href="https://developers.google.com/tag-platform/tag-manager/datalayer" target="_blank" rel="noopener">Google Tag Manager
+docs</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gtmId</code></td>
+<td>Required*</td>
+<td>Your GTM container ID. Usually starts with <code>GTM-</code>.</td>
+</tr>
+<tr>
+<td><code>gtmScriptUrl</code></td>
+<td>Optional*</td>
+<td>GTM script URL. Defaults to <code>https://www.googletagmanager.com/gtm.js</code>.</td>
+</tr>
+<tr>
+<td><code>dataLayer</code></td>
+<td>Optional</td>
+<td>Data layer object to instantiate the container with.</td>
+</tr>
+<tr>
+<td><code>dataLayerName</code></td>
+<td>Optional</td>
+<td>Name of the data layer. Defaults to <code>dataLayer</code>.</td>
+</tr>
+<tr>
+<td><code>auth</code></td>
+<td>Optional</td>
+<td>Value of authentication parameter (<code>gtm_auth</code>) for environment snippets.</td>
+</tr>
+<tr>
+<td><code>preview</code></td>
+<td>Optional</td>
+<td>Value of preview parameter (<code>gtm_preview</code>) for environment snippets.</td>
+</tr>
+</tbody>
+</table>
+<p>*<code>gtmId</code> can be omitted when <code>gtmScriptUrl</code> is provided to support <a href="https://developers.google.com/tag-platform/tag-manager/gateway/setup-guide?setup=manual" target="_blank" rel="noopener">Google tag gateway for advertisers</a>.</p>
+<h3 id="google-analytics">Google Analytics</h3>
+<p>The <code>GoogleAnalytics</code> component can be used to include <a href="https://developers.google.com/analytics/devguides/collection/ga4" target="_blank" rel="noopener">Google Analytics
+4</a> to your page via the Google tag
+(<code>gtag.js</code>). By default, it fetches the original scripts after hydration occurs on the page.</p>
+<blockquote>
+<p><strong>Recommendation</strong>: If Google Tag Manager is already included in your application, you can
+configure Google Analytics directly using it, rather than including Google Analytics as a separate
+component. Refer to the
+<a href="https://developers.google.com/analytics/devguides/collection/ga4/tag-options#what-is-gtm" target="_blank" rel="noopener">documentation</a>
+to learn more about the differences between Tag Manager and <code>gtag.js</code>.</p>
+</blockquote>
+<AppOnly>
+<p>To load Google Analytics for all routes, include the component directly in your root layout and pass
+in your measurement ID:</p>
+<pre><code class="language-tsx">import { GoogleAnalytics } from '@next/third-parties/google'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+      &lt;GoogleAnalytics gaId=&quot;G-XYZ&quot; /&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { GoogleAnalytics } from '@next/third-parties/google'
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+      &lt;GoogleAnalytics gaId=&quot;G-XYZ&quot; /&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<p>To load Google Analytics for all routes, include the component directly in your custom <code>_app</code> and
+pass in your measurement ID:</p>
+<pre><code class="language-jsx">import { GoogleAnalytics } from '@next/third-parties/google'
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    &lt;&gt;
+      &lt;Component {...pageProps} /&gt;
+      &lt;GoogleAnalytics gaId=&quot;G-XYZ&quot; /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>To load Google Analytics for a single route, include the component in your page file:</p>
+<AppOnly>
+<pre><code class="language-jsx">import { GoogleAnalytics } from '@next/third-parties/google'
+
+export default function Page() {
+  return &lt;GoogleAnalytics gaId=&quot;G-XYZ&quot; /&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { GoogleAnalytics } from '@next/third-parties/google'
+
+export default function Page() {
+  return &lt;GoogleAnalytics gaId=&quot;G-XYZ&quot; /&gt;
+}
+</code></pre>
+</PagesOnly>
+<h4>Sending Events</h4>
+<p>The <code>sendGAEvent</code> function can be used to measure user interactions on your page by sending events
+using the <code>dataLayer</code> object. For this function to work, the <code>&lt;GoogleAnalytics /&gt;</code> component must be
+included in either a parent layout, page, or component, or directly in the same file.</p>
+<AppOnly>
+<pre><code class="language-jsx">'use client'
+
+import { sendGAEvent } from '@next/third-parties/google'
+
+export function EventButton() {
+  return (
+    &lt;div&gt;
+      &lt;button
+        onClick={() =&gt; sendGAEvent('event', 'buttonClicked', { value: 'xyz' })}
+      &gt;
+        Send Event
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { sendGAEvent } from '@next/third-parties/google'
+
+export function EventButton() {
+  return (
+    &lt;div&gt;
+      &lt;button
+        onClick={() =&gt; sendGAEvent('event', 'buttonClicked', { value: 'xyz' })}
+      &gt;
+        Send Event
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<p>Refer to the Google Analytics <a href="https://developers.google.com/analytics/devguides/collection/ga4/event-parameters" target="_blank" rel="noopener">developer
+documentation</a> to learn
+more about event parameters.</p>
+<h4>Tracking Pageviews</h4>
+<p>Google Analytics automatically tracks pageviews when the browser history state changes. This means
+that client-side navigations between Next.js routes will send pageview data without any configuration.</p>
+<p>To ensure that client-side navigations are being measured correctly, verify that the <a href="https://support.google.com/analytics/answer/9216061#enable_disable" target="_blank" rel="noopener"><em>“Enhanced
+Measurement”</em></a> property is
+enabled in your Admin panel and the <em>“Page changes based on browser history events”</em> checkbox is
+selected.</p>
+<blockquote>
+<p><strong>Note</strong>: If you decide to manually send pageview events, make sure to disable the default
+pageview measurement to avoid having duplicate data. Refer to the Google Analytics <a href="https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag#manual_pageviews" target="_blank" rel="noopener">developer
+documentation</a>
+to learn more.</p>
+</blockquote>
+<h4>Options</h4>
+<p>Options to pass to the <code>&lt;GoogleAnalytics&gt;</code> component.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gaId</code></td>
+<td>Required</td>
+<td>Your <a href="https://support.google.com/analytics/answer/12270356" target="_blank" rel="noopener">measurement ID</a>. Usually starts with <code>G-</code>.</td>
+</tr>
+<tr>
+<td><code>dataLayerName</code></td>
+<td>Optional</td>
+<td>Name of the data layer. Defaults to <code>dataLayer</code>.</td>
+</tr>
+<tr>
+<td><code>nonce</code></td>
+<td>Optional</td>
+<td>A <a href="/docs/app/guides/content-security-policy#nonces">nonce</a>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="google-maps-embed">Google Maps Embed</h3>
+<p>The <code>GoogleMapsEmbed</code> component can be used to add a <a href="https://developers.google.com/maps/documentation/embed/embedding-map" target="_blank" rel="noopener">Google Maps
+Embed</a> to your page. By
+default, it uses the <code>loading</code> attribute to lazy-load the embed below the fold.</p>
+<AppOnly>
+<pre><code class="language-jsx">import { GoogleMapsEmbed } from '@next/third-parties/google'
+
+export default function Page() {
+  return (
+    &lt;GoogleMapsEmbed
+      apiKey=&quot;XYZ&quot;
+      height={200}
+      width=&quot;100%&quot;
+      mode=&quot;place&quot;
+      q=&quot;Brooklyn+Bridge,New+York,NY&quot;
+    /&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { GoogleMapsEmbed } from '@next/third-parties/google'
+
+export default function Page() {
+  return (
+    &lt;GoogleMapsEmbed
+      apiKey=&quot;XYZ&quot;
+      height={200}
+      width=&quot;100%&quot;
+      mode=&quot;place&quot;
+      q=&quot;Brooklyn+Bridge,New+York,NY&quot;
+    /&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h4>Options</h4>
+<p>Options to pass to the Google Maps Embed. For a full list of options, read the <a href="https://developers.google.com/maps/documentation/embed/embedding-map" target="_blank" rel="noopener">Google Map Embed
+docs</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apiKey</code></td>
+<td>Required</td>
+<td>Your api key.</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>Required</td>
+<td><a href="https://developers.google.com/maps/documentation/embed/embedding-map#choosing_map_modes" target="_blank" rel="noopener">Map mode</a></td>
+</tr>
+<tr>
+<td><code>height</code></td>
+<td>Optional</td>
+<td>Height of the embed. Defaults to <code>auto</code>.</td>
+</tr>
+<tr>
+<td><code>width</code></td>
+<td>Optional</td>
+<td>Width of the embed. Defaults to <code>auto</code>.</td>
+</tr>
+<tr>
+<td><code>style</code></td>
+<td>Optional</td>
+<td>Pass styles to the iframe.</td>
+</tr>
+<tr>
+<td><code>allowfullscreen</code></td>
+<td>Optional</td>
+<td>Property to allow certain map parts to go full screen.</td>
+</tr>
+<tr>
+<td><code>loading</code></td>
+<td>Optional</td>
+<td>Defaults to lazy. Consider changing if you know your embed will be above the fold.</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td>Optional</td>
+<td>Defines map marker location. <em>This may be required depending on the map mode</em>.</td>
+</tr>
+<tr>
+<td><code>center</code></td>
+<td>Optional</td>
+<td>Defines the center of the map view.</td>
+</tr>
+<tr>
+<td><code>zoom</code></td>
+<td>Optional</td>
+<td>Sets initial zoom level of the map.</td>
+</tr>
+<tr>
+<td><code>maptype</code></td>
+<td>Optional</td>
+<td>Defines type of map tiles to load.</td>
+</tr>
+<tr>
+<td><code>language</code></td>
+<td>Optional</td>
+<td>Defines the language to use for UI elements and for the display of labels on map tiles.</td>
+</tr>
+<tr>
+<td><code>region</code></td>
+<td>Optional</td>
+<td>Defines the appropriate borders and labels to display, based on geo-political sensitivities.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="youtube-embed">YouTube Embed</h3>
+<p>The <code>YouTubeEmbed</code> component can be used to load and display a YouTube embed. This component loads
+faster by using <a href="https://github.com/paulirish/lite-youtube-embed" target="_blank" rel="noopener"><code>lite-youtube-embed</code></a> under the
+hood.</p>
+<AppOnly>
+<pre><code class="language-jsx">import { YouTubeEmbed } from '@next/third-parties/google'
+
+export default function Page() {
+  return &lt;YouTubeEmbed videoid=&quot;ogfYd705cRs&quot; height={400} params=&quot;controls=0&quot; /&gt;
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<pre><code class="language-jsx">import { YouTubeEmbed } from '@next/third-parties/google'
+
+export default function Page() {
+  return &lt;YouTubeEmbed videoid=&quot;ogfYd705cRs&quot; height={400} params=&quot;controls=0&quot; /&gt;
+}
+</code></pre>
+</PagesOnly>
+<h4>Options</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>videoid</code></td>
+<td>Required</td>
+<td>YouTube video id.</td>
+</tr>
+<tr>
+<td><code>width</code></td>
+<td>Optional</td>
+<td>Width of the video container. Defaults to <code>auto</code></td>
+</tr>
+<tr>
+<td><code>height</code></td>
+<td>Optional</td>
+<td>Height of the video container. Defaults to <code>auto</code></td>
+</tr>
+<tr>
+<td><code>playlabel</code></td>
+<td>Optional</td>
+<td>A visually hidden label for the play button for accessibility.</td>
+</tr>
+<tr>
+<td><code>params</code></td>
+<td>Optional</td>
+<td>The video player params defined <a href="https://developers.google.com/youtube/player_parameters#Parameters" target="_blank" rel="noopener">here</a>. <br/> Params are passed as a query param string. <br/> Eg: <code>params=&quot;controls=0&amp;start=10&amp;end=30&quot;</code></td>
+</tr>
+<tr>
+<td><code>style</code></td>
+<td>Optional</td>
+<td>Used to apply styles to the video container.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

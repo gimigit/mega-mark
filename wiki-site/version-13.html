@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>version-13 — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-version-13">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#upgrading-from-12-to-13">Upgrading from 12 to 13</a></li><ul><li><a href="#v13-summary">v13 Summary</a></li></ul><li><a href="#migrating-shared-features">Migrating shared features</a></li><ul><li><a href="#ltimagegt-component">&amp;lt;Image/&amp;gt; Component</a></li><li><a href="#ltlinkgt-component">&amp;lt;Link&amp;gt; Component</a></li><li><a href="#ltscriptgt-component">&amp;lt;Script&amp;gt; Component</a></li><li><a href="#font-optimization">Font Optimization</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">version-13</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Version 13</td></tr><tr><th>description</th><td>Upgrade your Next.js Application from Version 12 to 13.</td></tr></table><h2 id="upgrading-from-12-to-13">Upgrading from 12 to 13</h2>
+<p>To update to Next.js version 13, run the following command using your preferred package manager:</p>
+<pre><code class="language-bash">npm i next@13 react@latest react-dom@latest eslint-config-next@13
+</code></pre>
+<pre><code class="language-bash">yarn add next@13 react@latest react-dom@latest eslint-config-next@13
+</code></pre>
+<pre><code class="language-bash">pnpm i next@13 react@latest react-dom@latest eslint-config-next@13
+</code></pre>
+<pre><code class="language-bash">bun add next@13 react@latest react-dom@latest eslint-config-next@13
+</code></pre>
+<blockquote>
+<p><strong>Good to know:</strong> If you are using TypeScript, ensure you also upgrade <code>@types/react</code> and <code>@types/react-dom</code> to their latest versions.</p>
+</blockquote>
+<h3 id="v13-summary">v13 Summary</h3>
+<ul>
+<li>The <a href="/docs/architecture/supported-browsers">Supported Browsers</a> have been changed to drop Internet Explorer and target modern browsers.</li>
+<li>The minimum Node.js version has been bumped from 12.22.0 to 16.14.0, since 12.x and 14.x have reached end-of-life.</li>
+<li>The minimum React version has been bumped from 17.0.2 to 18.2.0.</li>
+<li>The <code>swcMinify</code> configuration property was changed from <code>false</code> to <code>true</code>. See <a href="/docs/architecture/nextjs-compiler">Next.js Compiler</a> for more info.</li>
+<li>The <code>next/image</code> import was renamed to <code>next/legacy/image</code>. The <code>next/future/image</code> import was renamed to <code>next/image</code>. A <a href="/docs/pages/guides/upgrading/codemods#next-image-to-legacy-image">codemod is available</a> to safely and automatically rename your imports.</li>
+<li>The <code>next/link</code> child can no longer be <code>&lt;a&gt;</code>. Add the <code>legacyBehavior</code> prop to use the legacy behavior or remove the <code>&lt;a&gt;</code> to upgrade. A <a href="/docs/pages/guides/upgrading/codemods#new-link">codemod is available</a> to automatically upgrade your code.</li>
+<li>The <code>target</code> configuration property has been removed and superseded by <a href="/docs/pages/api-reference/config/next-config-js/output">Output File Tracing</a>.</li>
+</ul>
+<h2 id="migrating-shared-features">Migrating shared features</h2>
+<p>Next.js 13 introduces a new <a href="/docs/app"><code>app</code> directory</a> with new features and conventions. However, upgrading to Next.js 13 does <strong>not</strong> require using the new <code>app</code> Router.</p>
+<p>You can continue using <code>pages</code> with new features that work in both directories, such as the updated <a href="#image-component">Image component</a>, <a href="#link-component">Link component</a>, <a href="#script-component">Script component</a>, and <a href="#font-optimization">Font optimization</a>.</p>
+<h3 id="ltimagegt-component"><code>&lt;Image/&gt;</code> Component</h3>
+<p>Next.js 12 introduced many improvements to the Image Component with a temporary import: <code>next/future/image</code>. These improvements included less client-side JavaScript, easier ways to extend and style images, better accessibility, and native browser lazy loading.</p>
+<p>Starting in Next.js 13, this new behavior is now the default for <code>next/image</code>.</p>
+<p>There are two codemods to help you migrate to the new Image Component:</p>
+<ul>
+<li><a href="/docs/pages/guides/upgrading/codemods#next-image-to-legacy-image">next-image-to-legacy-image</a>: This codemod will safely and automatically rename <code>next/image</code> imports to <code>next/legacy/image</code> to maintain the same behavior as Next.js 12. We recommend running this codemod to quickly update to Next.js 13 automatically.</li>
+<li><a href="/docs/pages/guides/upgrading/codemods#next-image-experimental">next-image-experimental</a>: After running the previous codemod, you can optionally run this experimental codemod to upgrade <code>next/legacy/image</code> to the new <code>next/image</code>, which will remove unused props and add inline styles. Please note this codemod is experimental and only covers static usage (such as <code>&lt;Image src={img} layout=&quot;responsive&quot; /&gt;</code>) but not dynamic usage (such as <code>&lt;Image {...props} /&gt;</code>).</li>
+</ul>
+<p>Alternatively, you can manually update by following the <a href="/docs/pages/guides/upgrading/codemods#next-image-experimental">migration guide</a> and also see the <a href="/docs/pages/api-reference/components/image-legacy#comparison">legacy comparison</a>.</p>
+<h3 id="ltlinkgt-component"><code>&lt;Link&gt;</code> Component</h3>
+<p>The <a href="/docs/pages/api-reference/components/link"><code>&lt;Link&gt;</code> Component</a> no longer requires manually adding an <code>&lt;a&gt;</code> tag as a child. This behavior was added as an experimental option in <a href="https://nextjs.org/blog/next-12-2" target="_blank" rel="noopener">version 12.2</a> and is now the default. In Next.js 13, <code>&lt;Link&gt;</code> always renders <code>&lt;a&gt;</code> and allows you to forward props to the underlying tag.</p>
+<p>For example:</p>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+// Next.js 12: `&lt;a&gt;` has to be nested otherwise it's excluded
+&lt;Link href=&quot;/about&quot;&gt;
+  &lt;a&gt;About&lt;/a&gt;
+&lt;/Link&gt;
+
+// Next.js 13: `&lt;Link&gt;` always renders `&lt;a&gt;` under the hood
+&lt;Link href=&quot;/about&quot;&gt;
+  About
+&lt;/Link&gt;
+</code></pre>
+<p>To upgrade your links to Next.js 13, you can use the <a href="/docs/pages/guides/upgrading/codemods#new-link"><code>new-link</code> codemod</a>.</p>
+<h3 id="ltscriptgt-component"><code>&lt;Script&gt;</code> Component</h3>
+<p>The behavior of <a href="/docs/pages/api-reference/components/script"><code>next/script</code></a> has been updated to support both <code>pages</code> and <code>app</code>. If incrementally adopting <code>app</code>, read the <a href="/docs/pages/guides/upgrading">upgrade guide</a>.</p>
+<h3 id="font-optimization">Font Optimization</h3>
+<p>Previously, Next.js helped you optimize fonts by inlining font CSS. Version 13 introduces the new <a href="/docs/pages/api-reference/components/font"><code>next/font</code></a> module which gives you the ability to customize your font loading experience while still ensuring great performance and privacy.</p>
+<p>See <a href="/docs/pages/api-reference/components/font">Optimizing Fonts</a> to learn how to use <code>next/font</code>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

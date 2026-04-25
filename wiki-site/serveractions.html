@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>serveractions — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-serveractions">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#allowedorigins">allowedOrigins</a></li><li><a href="#bodysizelimit">bodySizeLimit</a></li><li><a href="#enabling-server-actions-v13">Enabling Server Actions (v13)</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">serveractions</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Configure Server Actions behavior in your Next.js application.</td></tr></table><p>Options for configuring Server Actions behavior in your Next.js application.</p>
+<h2 id="allowedorigins"><code>allowedOrigins</code></h2>
+<p>A list of extra safe origin domains from which Server Actions can be invoked. Next.js compares the origin of a Server Action request with the host domain, ensuring they match to prevent CSRF attacks. If not provided, only the same origin is allowed.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+
+module.exports = {
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['my-proxy.com', '*.my-proxy.com'],
+    },
+  },
+}
+</code></pre>
+<h2 id="bodysizelimit"><code>bodySizeLimit</code></h2>
+<p>By default, the maximum size of the request body sent to a Server Action is 1MB, to prevent the consumption of excessive server resources in parsing large amounts of data, as well as potential DDoS attacks.</p>
+<p>However, you can configure this limit using the <code>serverActions.bodySizeLimit</code> option. It can take the number of bytes or any string format supported by bytes, for example <code>1000</code>, <code>'500kb'</code> or <code>'3mb'</code>.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+
+module.exports = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
+}
+</code></pre>
+<h2 id="enabling-server-actions-v13">Enabling Server Actions (v13)</h2>
+<p>Server Actions became a stable feature in Next.js 14, and are enabled by default. However, if you are using an earlier version of Next.js, you can enable them by setting <code>experimental.serverActions</code> to <code>true</code>.</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const config = {
+  experimental: {
+    serverActions: true,
+  },
+}
+
+module.exports = config
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

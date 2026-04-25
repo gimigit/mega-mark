@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>create-next-app — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-create-next-app">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#with-the-default-template">With the default template</a></li><li><a href="#linter-options">Linter Options</a></li><li><a href="#with-an-official-nextjs-example">With an official Next.js example</a></li><li><a href="#with-any-public-github-example">With any public GitHub example</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">create-next-app</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Create Next.js apps using one command with the create-next-app CLI.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>The <code>create-next-app</code> CLI allow you to create a new Next.js application using the default template or an <a href="https://github.com/vercel/next.js/tree/canary/examples" target="_blank" rel="noopener">example</a> from a public GitHub repository. It is the easiest way to get started with Next.js.</p>
+<p>Basic usage:</p>
+<pre><code class="language-bash">pnpm create next-app [project-name] [options]
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest [project-name] [options]
+</code></pre>
+<pre><code class="language-bash">yarn create next-app [project-name] [options]
+</code></pre>
+<pre><code class="language-bash">bun create next-app [project-name] [options]
+</code></pre>
+<h2 id="reference">Reference</h2>
+<p>The following options are available:</p>
+<table>
+<thead>
+<tr>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-h</code> or <code>--help</code></td>
+<td>Show all available options</td>
+</tr>
+<tr>
+<td><code>-v</code> or <code>--version</code></td>
+<td>Output the version number</td>
+</tr>
+<tr>
+<td><code>--no-*</code></td>
+<td>Negate default options. E.g. <code>--no-ts</code></td>
+</tr>
+<tr>
+<td><code>--ts</code> or <code>--typescript</code></td>
+<td>Initialize as a TypeScript project (default)</td>
+</tr>
+<tr>
+<td><code>--js</code> or <code>--javascript</code></td>
+<td>Initialize as a JavaScript project</td>
+</tr>
+<tr>
+<td><code>--tailwind</code></td>
+<td>Initialize with Tailwind CSS config (default)</td>
+</tr>
+<tr>
+<td><code>--react-compiler</code></td>
+<td>Initialize with React Compiler enabled</td>
+</tr>
+<tr>
+<td><code>--eslint</code></td>
+<td>Initialize with ESLint config</td>
+</tr>
+<tr>
+<td><code>--biome</code></td>
+<td>Initialize with Biome config</td>
+</tr>
+<tr>
+<td><code>--no-linter</code></td>
+<td>Skip linter configuration</td>
+</tr>
+<tr>
+<td><code>--app</code></td>
+<td>Initialize as an App Router project</td>
+</tr>
+<tr>
+<td><code>--api</code></td>
+<td>Initialize a project with only route handlers</td>
+</tr>
+<tr>
+<td><code>--src-dir</code></td>
+<td>Initialize inside a <code>src/</code> directory</td>
+</tr>
+<tr>
+<td><code>--turbopack</code></td>
+<td>Force enable Turbopack in generated package.json (enabled by default)</td>
+</tr>
+<tr>
+<td><code>--webpack</code></td>
+<td>Force enable Webpack in generated package.json</td>
+</tr>
+<tr>
+<td><code>--import-alias &lt;alias-to-configure&gt;</code></td>
+<td>Specify import alias to use (default “@/*”)</td>
+</tr>
+<tr>
+<td><code>--empty</code></td>
+<td>Initialize an empty project</td>
+</tr>
+<tr>
+<td><code>--use-npm</code></td>
+<td>Explicitly tell the CLI to bootstrap the application using npm</td>
+</tr>
+<tr>
+<td><code>--use-pnpm</code></td>
+<td>Explicitly tell the CLI to bootstrap the application using pnpm</td>
+</tr>
+<tr>
+<td><code>--use-yarn</code></td>
+<td>Explicitly tell the CLI to bootstrap the application using Yarn</td>
+</tr>
+<tr>
+<td><code>--use-bun</code></td>
+<td>Explicitly tell the CLI to bootstrap the application using Bun</td>
+</tr>
+<tr>
+<td><code>-e</code> or <code>--example [name] [github-url]</code></td>
+<td>An example to bootstrap the app with</td>
+</tr>
+<tr>
+<td><code>--example-path &lt;path-to-example&gt;</code></td>
+<td>Specify the path to the example separately</td>
+</tr>
+<tr>
+<td><code>--reset-preferences</code></td>
+<td>Explicitly tell the CLI to reset any stored preferences</td>
+</tr>
+<tr>
+<td><code>--skip-install</code></td>
+<td>Explicitly tell the CLI to skip installing packages</td>
+</tr>
+<tr>
+<td><code>--disable-git</code></td>
+<td>Explicitly tell the CLI to disable git initialization</td>
+</tr>
+<tr>
+<td><code>--agents-md</code></td>
+<td>Include <code>AGENTS.md</code> and <code>CLAUDE.md</code> to guide coding agents (default)</td>
+</tr>
+<tr>
+<td><code>--yes</code></td>
+<td>Use previous preferences or defaults for all options</td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples</h2>
+<h3 id="with-the-default-template">With the default template</h3>
+<p>To create a new app using the default template, run the following command in your terminal:</p>
+<pre><code class="language-bash">pnpm create next-app
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest
+</code></pre>
+<pre><code class="language-bash">yarn create next-app
+</code></pre>
+<pre><code class="language-bash">bun create next-app
+</code></pre>
+<p>On installation, you’ll see the following prompts:</p>
+<pre><code class="language-txt">What is your project named? my-app
+Would you like to use the recommended Next.js defaults?
+    Yes, use recommended defaults - TypeScript, ESLint, Tailwind CSS, App Router, AGENTS.md
+    No, reuse previous settings
+    No, customize settings - Choose your own preferences
+</code></pre>
+<p>If you choose to <code>customize settings</code>, you’ll see the following prompts:</p>
+<pre><code class="language-txt">Would you like to use TypeScript? No / Yes
+Which linter would you like to use? ESLint / Biome / None
+Would you like to use React Compiler? No / Yes
+Would you like to use Tailwind CSS? No / Yes
+Would you like your code inside a `src/` directory? No / Yes
+Would you like to use App Router? (recommended) No / Yes
+Would you like to customize the import alias (`@/*` by default)? No / Yes
+What import alias would you like configured? @/*
+Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? No / Yes
+</code></pre>
+<p>After the prompts, <code>create-next-app</code> will create a folder with your project name and install the required dependencies.</p>
+<h3 id="linter-options">Linter Options</h3>
+<p><strong>ESLint</strong>: The traditional and most popular JavaScript linter. Includes Next.js-specific rules from <code>@next/eslint-plugin-next</code>.</p>
+<p><strong>Biome</strong>: A fast, modern linter and formatter that combines the functionality of ESLint and Prettier. Includes built-in Next.js and React domain support for optimal performance.</p>
+<p><strong>None</strong>: Skip linter configuration entirely. You can always add a linter later.</p>
+<p>Once you’ve answered the prompts, a new project will be created with your chosen configuration.</p>
+<h3 id="with-an-official-nextjs-example">With an official Next.js example</h3>
+<p>To create a new app using an official Next.js example, use the <code>--example</code> flag. For example:</p>
+<pre><code class="language-bash">pnpm create next-app --example [example-name] [your-project-name]
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest --example [example-name] [your-project-name]
+</code></pre>
+<pre><code class="language-bash">yarn create next-app --example [example-name] [your-project-name]
+</code></pre>
+<pre><code class="language-bash">bun create next-app --example [example-name] [your-project-name]
+</code></pre>
+<p>You can view a list of all available examples along with setup instructions in the <a href="https://github.com/vercel/next.js/tree/canary/examples" target="_blank" rel="noopener">Next.js repository</a>.</p>
+<h3 id="with-any-public-github-example">With any public GitHub example</h3>
+<p>To create a new app using any public GitHub example, use the <code>--example</code> option with the GitHub repo’s URL. For example:</p>
+<pre><code class="language-bash">pnpm create next-app --example &quot;https://github.com/.../&quot; [your-project-name]
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest --example &quot;https://github.com/.../&quot; [your-project-name]
+</code></pre>
+<pre><code class="language-bash">yarn create next-app --example &quot;https://github.com/.../&quot; [your-project-name]
+</code></pre>
+<pre><code class="language-bash">bun create next-app --example &quot;https://github.com/.../&quot; [your-project-name]
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

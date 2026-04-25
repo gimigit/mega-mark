@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>import/no-absolute-path — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-no-absolute-path">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#rule-details">Rule Details</a></li><ul><li><a href="#fail">Fail</a></li><li><a href="#pass">Pass</a></li><li><a href="#options">Options</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">import/no-absolute-path</h1>
+
+</div>
+<div class="article-body">
+<p>🔧 This rule is automatically fixable by the <a href="https://eslint.org/docs/latest/user-guide/command-line-interface#--fix" target="_blank" rel="noopener"><code>--fix</code> CLI option</a>.</p>
+<!-- end auto-generated rule header -->
+<p>Node.js allows the import of modules using an absolute path such as <code>/home/xyz/file.js</code>. That is a bad practice as it ties the code using it to your computer, and therefore makes it unusable in packages distributed on <code>npm</code> for instance.</p>
+<p>This rule forbids the import of modules using absolute paths.</p>
+<h2 id="rule-details">Rule Details</h2>
+<h3 id="fail">Fail</h3>
+<pre><code class="language-js">import f from '/foo';
+import f from '/some/path';
+
+var f = require('/foo');
+var f = require('/some/path');
+</code></pre>
+<h3 id="pass">Pass</h3>
+<pre><code class="language-js">import _ from 'lodash';
+import foo from 'foo';
+import foo from './foo';
+
+var _ = require('lodash');
+var foo = require('foo');
+var foo = require('./foo');
+</code></pre>
+<h3 id="options">Options</h3>
+<p>By default, only ES6 imports and CommonJS <code>require</code> calls will have this rule enforced.</p>
+<p>You may provide an options object providing true/false for any of</p>
+<ul>
+<li><code>esmodule</code>: defaults to <code>true</code></li>
+<li><code>commonjs</code>: defaults to <code>true</code></li>
+<li><code>amd</code>: defaults to <code>false</code></li>
+</ul>
+<p>If <code>{ amd: true }</code> is provided, dependency paths for AMD-style <code>define</code> and <code>require</code>
+calls will be resolved:</p>
+<pre><code class="language-js">/*eslint import/no-absolute-path: [2, { commonjs: false, amd: true }]*/
+define(['/foo'], function (foo) { /*...*/ }) // reported
+require(['/foo'], function (foo) { /*...*/ }) // reported
+
+const foo = require('/foo') // ignored because of explicit `commonjs: false`
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

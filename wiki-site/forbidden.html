@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>forbidden — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-forbidden">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#reference">Reference</a></li><ul><li><a href="#props">Props</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">forbidden</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the forbidden.js special file.</td></tr><tr><th>related</th><td></td></tr><tr><th>links</th><td></td></tr><tr><th>version</th><td>experimental</td></tr></table><p>The <strong>forbidden</strong> file is used to render UI when the <a href="/docs/app/api-reference/functions/forbidden"><code>forbidden</code></a> function is invoked during authentication. Along with allowing you to customize the UI, Next.js will return a <code>403</code> status code.</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Forbidden() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Forbidden&lt;/h2&gt;
+      &lt;p&gt;You are not authorized to access this resource.&lt;/p&gt;
+      &lt;Link href=&quot;/&quot;&gt;Return Home&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Forbidden() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Forbidden&lt;/h2&gt;
+      &lt;p&gt;You are not authorized to access this resource.&lt;/p&gt;
+      &lt;Link href=&quot;/&quot;&gt;Return Home&lt;/Link&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h2 id="reference">Reference</h2>
+<h3 id="props">Props</h3>
+<p><code>forbidden.js</code> components do not accept any props.</p>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.1.0</code></td>
+<td><code>forbidden.js</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

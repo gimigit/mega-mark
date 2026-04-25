@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Time zones — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-timezones">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#working-with-time-zones">Working with time zones</a></li><ul><li><a href="#using-tzdate-amp-utcdate">Using TZDate &amp;amp; UTCDate</a></li><li><a href="#using-in-option">Using in option</a></li></ul><li><a href="#further-reading">Further reading</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">Time zones</h1>
+
+</div>
+<div class="article-body">
+<p>Starting from v4, date-fns has first-class support for time zones. It is provided via <a href="https://github.com/date-fns/tz" target="_blank" rel="noopener"><code>@date-fns/tz</code></a> and <a href="https://github.com/date-fns/utc" target="_blank" rel="noopener"><code>@date-fns/utc</code></a> packages. Visit the links to learn more about corresponding packages.</p>
+<p>Just like with everything else in date-fns, the time zones support has a minimal bundle size footprint with <code>UTCDateMini</code> and <code>TZDateMini</code> being <code>239 B</code> and <code>761 B</code>, respectively.</p>
+<p>If you’re looking for time zone support prior to date-fns v4, see the third-party <a href="https://github.com/marnusw/date-fns-tz" target="_blank" rel="noopener"><code>date-fns-tz</code></a> package.</p>
+<p><a href="https://blog.date-fns.org/v40-with-time-zone-support/" target="_blank" rel="noopener">See the announcement blog post</a> for details about the motivation and implementation and <a href="https://date-fns.org/v4.0.0/docs/Change-Log#v4.0.0-2024-09-16" target="_blank" rel="noopener">the change log entry for the list of changes in v4.0</a>.</p>
+<h2 id="working-with-time-zones">Working with time zones</h2>
+<p>There are two ways to start working with time zones:</p>
+<ul>
+<li><a href="#using-tzdate-utcdate">Using the <code>Date</code> extensions <code>TZDate</code> and <code>UTCDate</code></a></li>
+<li><a href="#using-in-option">Using the date-fns functions’ <code>in</code> option</a></li>
+</ul>
+<h3 id="using-tzdate-amp-utcdate">Using <code>TZDate</code> &amp; <code>UTCDate</code></h3>
+<p>One way is to use <a href="https://github.com/date-fns/tz" target="_blank" rel="noopener"><code>TZDate</code></a> or <a href="https://github.com/date-fns/tz" target="_blank" rel="noopener"><code>UTCDate</code></a> <code>Date</code> extensions,with regular date-fns functions:</p>
+<pre><code class="language-ts">import { TZDate } from &quot;@date-fns/tz&quot;;
+import { addHours } from &quot;date-fns&quot;;
+
+// Given that the system time zone is America/Los_Angeles
+// where DST happens on Sunday, 13 March 2022, 02:00:00
+
+// Using the system time zone will produce 03:00 instead of 02:00 because of DST:
+const date = new Date(2022, 2, 13);
+addHours(date, 2).toString();
+//=&gt; 'Sun Mar 13 2022 03:00:00 GMT-0700 (Pacific Daylight Time)'
+
+// Using Asia/Singapore will provide the expected 02:00:
+const tzDate = new TZDate(2022, 2, 13, &quot;Asia/Singapore&quot;);
+addHours(tzDate, 2).toString();
+//=&gt; 'Sun Mar 13 2022 02:00:00 GMT+0800 (Singapore Standard Time)'
+</code></pre>
+<p>You can safely mix and match regular <code>Date</code> instances, as well as <code>UTCDate</code> or <code>TZDate</code> in different time zones and primitive values (timestamps and strings). date-fns will normalize the arguments, taking the first object argument (<code>Date</code> or a <code>Date</code> extension instance) as the reference and return the result in the reference type:</p>
+<pre><code class="language-ts">import { TZDate } from &quot;@date-fns/tz&quot;;
+import { differenceInBusinessDays } from &quot;date-fns&quot;;
+
+const laterDate = new TZDate(2025, 0, 1, &quot;Asia/Singapore&quot;);
+const earlierDate = new TZDate(2024, 0, 1, &quot;America/New_York&quot;);
+
+// Will calculate in Asia/Singapore
+differenceInBusinessDays(laterDate, earlierDate);
+//=&gt; 262
+
+// Will calculate in America/New_York
+differenceInBusinessDays(earlierDate, laterDate);
+//=&gt; -261
+</code></pre>
+<p>In the given example, the one-day difference comes from the fact that in New York (UTC-5), the <code>earlierDate</code> will be <code>Dec 31</code> rather than <code>Jan 1</code>:</p>
+<pre><code class="language-ts">laterDate.withTimeZone(&quot;Asia/Singapore&quot;).toString();
+//=&gt; 'Wed Jan 01 2025 00:00:00 GMT+0800 (Singapore Standard Time)'
+earlierDate.withTimeZone(&quot;Asia/Singapore&quot;).toString();
+//=&gt; 'Mon Jan 01 2024 13:00:00 GMT+0800 (Singapore Standard Time)'
+
+laterDate.withTimeZone(&quot;America/New_York&quot;).toString();
+//=&gt; 'Tue Dec 31 2024 11:00:00 GMT-0500 (Eastern Standard Time)'
+earlierDate.withTimeZone(&quot;America/New_York&quot;).toString();
+//=&gt; 'Mon Jan 01 2024 00:00:00 GMT-0500 (Eastern Standard Time)'
+</code></pre>
+<p>This is essential to understand and consider when making calculations.</p>
+<h3 id="using-in-option">Using <code>in</code> option</h3>
+<p>When it is important to get the value in a specific time zone or when you are unsure about the type of arguments, use the function context <code>in</code> option.</p>
+<p>Each function, where the calculation might be affected by the time zone, like with <code>differenceInBusinessDays</code>, accepts the <code>in</code> option that provides the context for the arguments and the result, so you can explicitly say what time zone to use:</p>
+<pre><code class="language-ts">import { tz } from &quot;@date-fns/tz&quot;;
+
+// Will calculate in Asia/Singapore
+differenceInBusinessDays(laterDate, earlierDate);
+//=&gt; 262
+
+// Will normalize to America/Los_Angeles
+differenceInBusinessDays(laterDate, earlierDate, {
+  in: tz(&quot;America/Los_Angeles&quot;),
+});
+//=&gt; 261
+</code></pre>
+<p>In the example, we forced <code>differenceInBusinessDays</code> to use the Los Angeles time zone.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>Read more about the time zone packages visiting their READMEs:</p>
+<ul>
+<li><a href="https://github.com/date-fns/tz" target="_blank" rel="noopener"><code>@date-fns/tz</code></a></li>
+<li><a href="https://github.com/date-fns/utc" target="_blank" rel="noopener"><code>@date-fns/utc</code></a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

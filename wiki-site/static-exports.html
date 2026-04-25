@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>static-exports — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-static-exports">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#configuration">Configuration</a></li><li><a href="#supported-features">Supported Features</a></li><ul><li><a href="#server-components">Server Components</a></li><li><a href="#client-components">Client Components</a></li></ul><li><a href="#supported-features-1">Supported Features</a></li><ul><li><a href="#image-optimization">Image Optimization</a></li><li><a href="#route-handlers">Route Handlers</a></li><li><a href="#browser-apis">Browser APIs</a></li></ul><li><a href="#unsupported-features">Unsupported Features</a></li><li><a href="#deploying">Deploying</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">static-exports</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Static Exports</td></tr><tr><th>description</th><td>Next.js enables starting as a static site or Single-Page Application (SPA), then later optionally upgrading to use features that require a server.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>Next.js enables starting as a static site or Single-Page Application (SPA), then later optionally upgrading to use features that require a server.</p>
+<p>When running <code>next build</code>, Next.js generates an HTML file per route. By breaking a strict SPA into individual HTML files, Next.js can avoid loading unnecessary JavaScript code on the client-side, reducing the bundle size and enabling faster page loads.</p>
+<p>Since Next.js supports this static export, it can be deployed and hosted on any web server that can serve HTML/CSS/JS static assets.</p>
+<h2 id="configuration">Configuration</h2>
+<p>To enable a static export, change the output mode inside <code>next.config.js</code>:</p>
+<pre><code class="language-js">/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  output: 'export',
+
+  // Optional: Change links `/me` -&gt; `/me/` and emit `/me.html` -&gt; `/me/index.html`
+  // trailingSlash: true,
+
+  // Optional: Prevent automatic `/me` -&gt; `/me/`, instead preserve `href`
+  // skipTrailingSlashRedirect: true,
+
+  // Optional: Change the output directory `out` -&gt; `dist`
+  // distDir: 'dist',
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>After running <code>next build</code>, Next.js will create an <code>out</code> folder with the HTML/CSS/JS assets for your application.</p>
+<PagesOnly>
+<p>You can utilize <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a> and <a href="/docs/pages/building-your-application/data-fetching/get-static-paths"><code>getStaticPaths</code></a> to generate an HTML file for each page in your <code>pages</code> directory (or more for <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic routes</a>).</p>
+</PagesOnly>
+<AppOnly>
+<h2 id="supported-features">Supported Features</h2>
+<p>The core of Next.js has been designed to support static exports.</p>
+<h3 id="server-components">Server Components</h3>
+<p>When you run <code>next build</code> to generate a static export, Server Components consumed inside the <code>app</code> directory will run during the build, similar to traditional static-site generation.</p>
+<p>The resulting component will be rendered into static HTML for the initial page load and a static payload for client navigation between routes. No changes are required for your Server Components when using the static export, unless they consume <a href="#unsupported-features">dynamic server functions</a>.</p>
+<pre><code class="language-tsx">export default async function Page() {
+  // This fetch will run on the server during `next build`
+  const res = await fetch('https://api.example.com/...')
+  const data = await res.json()
+
+  return &lt;main&gt;...&lt;/main&gt;
+}
+</code></pre>
+<h3 id="client-components">Client Components</h3>
+<p>If you want to perform data fetching on the client, you can use a Client Component with <a href="https://github.com/vercel/swr" target="_blank" rel="noopener">SWR</a> to memoize requests.</p>
+<pre><code class="language-tsx">'use client'
+
+import useSWR from 'swr'
+
+const fetcher = (url: string) =&gt; fetch(url).then((r) =&gt; r.json())
+
+export default function Page() {
+  const { data, error } = useSWR(
+    `https://jsonplaceholder.typicode.com/posts/1`,
+    fetcher
+  )
+  if (error) return 'Failed to load'
+  if (!data) return 'Loading...'
+
+  return data.title
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import useSWR from 'swr'
+
+const fetcher = (url) =&gt; fetch(url).then((r) =&gt; r.json())
+
+export default function Page() {
+  const { data, error } = useSWR(
+    `https://jsonplaceholder.typicode.com/posts/1`,
+    fetcher
+  )
+  if (error) return 'Failed to load'
+  if (!data) return 'Loading...'
+
+  return data.title
+}
+</code></pre>
+<p>Since route transitions happen client-side, this behaves like a traditional SPA. For example, the following index route allows you to navigate to different posts on the client:</p>
+<pre><code class="language-tsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Index Page&lt;/h1&gt;
+      &lt;hr /&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;Link href=&quot;/post/1&quot;&gt;Post 1&lt;/Link&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;Link href=&quot;/post/2&quot;&gt;Post 2&lt;/Link&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import Link from 'next/link'
+
+export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;Index Page&lt;/h1&gt;
+      &lt;p&gt;
+        &lt;Link href=&quot;/other&quot;&gt;Other Page&lt;/Link&gt;
+      &lt;/p&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<h2 id="supported-features-1">Supported Features</h2>
+<p>The majority of core Next.js features needed to build a static site are supported, including:</p>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic Routes when using <code>getStaticPaths</code></a></li>
+<li>Prefetching with <code>next/link</code></li>
+<li>Preloading JavaScript</li>
+<li><a href="/docs/pages/guides/lazy-loading">Dynamic Imports</a></li>
+<li>Any styling options (e.g. CSS Modules, styled-jsx)</li>
+<li><a href="/docs/pages/building-your-application/data-fetching/client-side">Client-side data fetching</a></li>
+<li><a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a></li>
+<li><a href="/docs/pages/building-your-application/data-fetching/get-static-paths"><code>getStaticPaths</code></a></li>
+</ul>
+</PagesOnly>
+<h3 id="image-optimization">Image Optimization</h3>
+<p><a href="/docs/app/api-reference/components/image">Image Optimization</a> through <code>next/image</code> can be used with a static export by defining a custom image loader in <code>next.config.js</code>. For example, you can optimize images with a service like Cloudinary:</p>
+<pre><code class="language-js">/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  images: {
+    loader: 'custom',
+    loaderFile: './my-loader.ts',
+  },
+}
+
+module.exports = nextConfig
+</code></pre>
+<p>This custom loader will define how to fetch images from a remote source. For example, the following loader will construct the URL for Cloudinary:</p>
+<pre><code class="language-ts">export default function cloudinaryLoader({
+  src,
+  width,
+  quality,
+}: {
+  src: string
+  width: number
+  quality?: number
+}) {
+  const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`]
+  return `https://res.cloudinary.com/demo/image/upload/${params.join(
+    ','
+  )}${src}`
+}
+</code></pre>
+<pre><code class="language-js">export default function cloudinaryLoader({ src, width, quality }) {
+  const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`]
+  return `https://res.cloudinary.com/demo/image/upload/${params.join(
+    ','
+  )}${src}`
+}
+</code></pre>
+<p>You can then use <code>next/image</code> in your application, defining relative paths to the image in Cloudinary:</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image alt=&quot;turtles&quot; src=&quot;/turtles.jpg&quot; width={300} height={300} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image alt=&quot;turtles&quot; src=&quot;/turtles.jpg&quot; width={300} height={300} /&gt;
+}
+</code></pre>
+<AppOnly>
+<h3 id="route-handlers">Route Handlers</h3>
+<p>Route Handlers will render a static response when running <code>next build</code>. Only the <code>GET</code> HTTP verb is supported. This can be used to generate static HTML, JSON, TXT, or other files from cached or uncached data. For example:</p>
+<pre><code class="language-ts">export async function GET() {
+  return Response.json({ name: 'Lee' })
+}
+</code></pre>
+<pre><code class="language-js">export async function GET() {
+  return Response.json({ name: 'Lee' })
+}
+</code></pre>
+<p>The above file <code>app/data.json/route.ts</code> will render to a static file during <code>next build</code>, producing <code>data.json</code> containing <code>{ name: 'Lee' }</code>.</p>
+<p>If you need to read dynamic values from the incoming request, you cannot use a static export.</p>
+<h3 id="browser-apis">Browser APIs</h3>
+<p>Client Components are prerendered to HTML during <code>next build</code>. Because <a href="https://developer.mozilla.org/docs/Web/API" target="_blank" rel="noopener">Web APIs</a> like <code>window</code>, <code>localStorage</code>, and <code>navigator</code> are not available on the server, you need to safely access these APIs only when running in the browser. For example:</p>
+<pre><code class="language-jsx">'use client';
+
+import { useEffect } from 'react';
+
+export default function ClientComponent() {
+  useEffect(() =&gt; {
+    // You now have access to `window`
+    console.log(window.innerHeight);
+  }, [])
+
+  return ...;
+}
+</code></pre>
+</AppOnly>
+<h2 id="unsupported-features">Unsupported Features</h2>
+<p>Features that require a Node.js server, or dynamic logic that cannot be computed during the build process, are <strong>not</strong> supported:</p>
+<AppOnly>
+<ul>
+<li><a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic Routes</a> with <code>dynamicParams: true</code></li>
+<li><a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic Routes</a> without <code>generateStaticParams()</code></li>
+<li><a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> that rely on Request</li>
+<li><a href="/docs/app/api-reference/functions/cookies">Cookies</a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/rewrites">Rewrites</a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/redirects">Redirects</a></li>
+<li><a href="/docs/app/api-reference/config/next-config-js/headers">Headers</a></li>
+<li><a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a></li>
+<li><a href="/docs/app/guides/incremental-static-regeneration">Incremental Static Regeneration</a></li>
+<li><a href="/docs/app/api-reference/components/image">Image Optimization</a> with the default <code>loader</code></li>
+<li><a href="/docs/app/guides/draft-mode">Draft Mode</a></li>
+<li><a href="/docs/app/getting-started/mutating-data">Server Actions</a></li>
+<li><a href="/docs/app/api-reference/file-conventions/intercepting-routes">Intercepting Routes</a></li>
+</ul>
+<p>Attempting to use any of these features with <code>next dev</code> will result in an error, similar to setting the <a href="/docs/app/guides/caching-without-cache-components#dynamic"><code>dynamic</code></a> option to <code>error</code> in the root layout.</p>
+<pre><code class="language-jsx">export const dynamic = 'error'
+</code></pre>
+</AppOnly>
+<PagesOnly>
+<ul>
+<li><a href="/docs/pages/guides/internationalization">Internationalized Routing</a></li>
+<li><a href="/docs/pages/building-your-application/routing/api-routes">API Routes</a></li>
+<li><a href="/docs/pages/api-reference/config/next-config-js/rewrites">Rewrites</a></li>
+<li><a href="/docs/pages/api-reference/config/next-config-js/redirects">Redirects</a></li>
+<li><a href="/docs/pages/api-reference/config/next-config-js/headers">Headers</a></li>
+<li><a href="/docs/pages/api-reference/file-conventions/proxy">Proxy</a></li>
+<li><a href="/docs/pages/guides/incremental-static-regeneration">Incremental Static Regeneration</a></li>
+<li><a href="/docs/pages/api-reference/components/image">Image Optimization</a> with the default <code>loader</code></li>
+<li><a href="/docs/pages/guides/draft-mode">Draft Mode</a></li>
+<li><a href="/docs/pages/api-reference/functions/get-static-paths#fallback-true"><code>getStaticPaths</code> with <code>fallback: true</code></a></li>
+<li><a href="/docs/pages/api-reference/functions/get-static-paths#fallback-blocking"><code>getStaticPaths</code> with <code>fallback: 'blocking'</code></a></li>
+<li><a href="/docs/pages/building-your-application/data-fetching/get-server-side-props"><code>getServerSideProps</code></a></li>
+</ul>
+</PagesOnly>
+<h2 id="deploying">Deploying</h2>
+<p>With a static export, Next.js can be deployed and hosted on any web server that can serve HTML/CSS/JS static assets.</p>
+<p>When running <code>next build</code>, Next.js generates the static export into the <code>out</code> folder. For example, let’s say you have the following routes:</p>
+<ul>
+<li><code>/</code></li>
+<li><code>/blog/[id]</code></li>
+</ul>
+<p>After running <code>next build</code>, Next.js will generate the following files:</p>
+<ul>
+<li><code>/out/index.html</code></li>
+<li><code>/out/404.html</code></li>
+<li><code>/out/blog/post-1.html</code></li>
+<li><code>/out/blog/post-2.html</code></li>
+</ul>
+<p>If you are using a static host like Nginx, you can configure rewrites from incoming requests to the correct files:</p>
+<pre><code class="language-nginx">server {
+  listen 80;
+  server_name acme.com;
+
+  root /var/www/out;
+
+  location / {
+      try_files $uri $uri.html $uri/ =404;
+  }
+
+  # This is necessary when `trailingSlash: false`.
+  # You can omit this when `trailingSlash: true`.
+  location /blog/ {
+      rewrite ^/blog/(.*)$ /blog/$1.html break;
+  }
+
+  error_page 404 /404.html;
+  location = /404.html {
+      internal;
+  }
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v14.0.0</code></td>
+<td><code>next export</code> has been removed in favor of <code>&quot;output&quot;: &quot;export&quot;</code></td>
+</tr>
+<tr>
+<td><code>v13.4.0</code></td>
+<td>App Router (Stable) adds enhanced static export support, including using React Server Components and Route Handlers.</td>
+</tr>
+<tr>
+<td><code>v13.3.0</code></td>
+<td><code>next export</code> is deprecated and replaced with <code>&quot;output&quot;: &quot;export&quot;</code></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

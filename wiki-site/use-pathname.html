@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>use-pathname — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-use-pathname">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#parameters">Parameters</a></li><li><a href="#returns">Returns</a></li><li><a href="#examples">Examples</a></li><ul><li><a href="#do-something-in-response-to-a-route-change">Do something in response to a route change</a></li><li><a href="#avoid-hydration-mismatch-with-rewrites">Avoid hydration mismatch with rewrites</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">use-pathname</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API Reference for the usePathname hook.</td></tr></table><p><code>usePathname</code> is a <strong>Client Component</strong> hook that lets you read the current URL’s <strong>pathname</strong>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: When <a href="/docs/app/api-reference/config/next-config-js/cacheComponents"><code>cacheComponents</code></a> is enabled <code>usePathname</code> may require a <code>Suspense</code> boundary around it if your route has a dynamic param. If you use <code>generateStaticParams</code> the <code>Suspense</code> boundary is optional</p>
+</blockquote>
+<pre><code class="language-tsx">'use client'
+
+import { usePathname } from 'next/navigation'
+
+export default function ExampleClientComponent() {
+  const pathname = usePathname()
+  return &lt;p&gt;Current pathname: {pathname}&lt;/p&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { usePathname } from 'next/navigation'
+
+export default function ExampleClientComponent() {
+  const pathname = usePathname()
+  return &lt;p&gt;Current pathname: {pathname}&lt;/p&gt;
+}
+</code></pre>
+<p><code>usePathname</code> intentionally requires using a <a href="/docs/app/getting-started/server-and-client-components">Client Component</a>. It’s important to note Client Components are not a de-optimization. They are an integral part of the <a href="/docs/app/getting-started/server-and-client-components">Server Components</a> architecture.</p>
+<p>For example, a Client Component with <code>usePathname</code> will be rendered into HTML on the initial page load. When navigating to a new route, this component does not need to be re-fetched. Instead, the component is downloaded once (in the client JavaScript bundle), and re-renders based on the current state.</p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>Reading the current URL from a <a href="/docs/app/getting-started/server-and-client-components">Server Component</a> is not supported. This design is intentional to support layout state being preserved across page navigations.</li>
+<li>If your page is being statically prerendered and your app has <a href="/docs/app/api-reference/config/next-config-js/rewrites">rewrites</a> in <code>next.config</code> or a <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a> file, reading the pathname with <code>usePathname()</code> can result in hydration mismatch errors—because the initial value comes from the server and may not match the actual browser pathname after routing. See our <a href="#avoid-hydration-mismatch-with-rewrites">example</a> for a way to mitigate this issue.</li>
+</ul>
+</blockquote>
+<details>
+<summary>Compatibility with Pages Router</summary>
+<p>If you have components that use <code>usePathname</code> and they are imported into routes within the Pages Router, be aware that <code>usePathname</code> may return <code>null</code> if the router is not yet initialized. This can occur in cases such as <a href="/docs/pages/api-reference/functions/get-static-paths#fallback-true">fallback routes</a> or during <a href="https://nextjs.org/docs/pages/building-your-application/rendering/static#automatic-static-optimization" target="_blank" rel="noopener">Automatic Static Optimization</a> in the Pages Router.</p>
+<p>To enhance compatibility between routing systems, if your project contains both an <code>app</code> and a <code>pages</code> directory, Next.js will automatically adjust the return type of <code>usePathname</code>.</p>
+</details>
+<h2 id="parameters">Parameters</h2>
+<pre><code class="language-tsx">const pathname = usePathname()
+</code></pre>
+<p><code>usePathname</code> does not take any parameters.</p>
+<h2 id="returns">Returns</h2>
+<p><code>usePathname</code> returns a string of the current URL’s pathname. For example:</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Returned value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td><code>'/'</code></td>
+</tr>
+<tr>
+<td><code>/dashboard</code></td>
+<td><code>'/dashboard'</code></td>
+</tr>
+<tr>
+<td><code>/dashboard?v=2</code></td>
+<td><code>'/dashboard'</code></td>
+</tr>
+<tr>
+<td><code>/blog/hello-world</code></td>
+<td><code>'/blog/hello-world'</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples</h2>
+<h3 id="do-something-in-response-to-a-route-change">Do something in response to a route change</h3>
+<pre><code class="language-tsx">'use client'
+
+import { useEffect } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+
+function ExampleClientComponent() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  useEffect(() =&gt; {
+    // Do something here...
+  }, [pathname, searchParams])
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useEffect } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+
+function ExampleClientComponent() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  useEffect(() =&gt; {
+    // Do something here...
+  }, [pathname, searchParams])
+}
+</code></pre>
+<h3 id="avoid-hydration-mismatch-with-rewrites">Avoid hydration mismatch with rewrites</h3>
+<p>When a page is prerendered, the HTML is generated for the source pathname. If the page is then reached through a rewrite using <code>next.config</code> or <code>Proxy</code>, the browser URL may differ, and <code>usePathname()</code> will read the rewritten pathname on the client.</p>
+<p>To avoid hydration mismatches, design the UI so that only a small, isolated part depends on the client pathname. Render a stable fallback on the server and update that part after mount.</p>
+<pre><code class="language-tsx">'use client'
+
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+
+export default function PathnameBadge() {
+  const pathname = usePathname()
+  const [clientPathname, setClientPathname] = useState('')
+
+  useEffect(() =&gt; {
+    setClientPathname(pathname)
+  }, [pathname])
+
+  return (
+    &lt;p&gt;
+      Current pathname: &lt;span&gt;{clientPathname}&lt;/span&gt;
+    &lt;/p&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+
+export default function PathnameBadge() {
+  const pathname = usePathname()
+  const [clientPathname, setClientPathname] = useState('')
+
+  useEffect(() =&gt; {
+    setClientPathname(pathname)
+  }, [pathname])
+
+  return (
+    &lt;p&gt;
+      Current pathname: &lt;span&gt;{clientPathname}&lt;/span&gt;
+    &lt;/p&gt;
+  )
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>usePathname</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

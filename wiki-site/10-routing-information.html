@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-routing-information — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-10-routing-information">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#routingbeforemiddleware">routing.beforeMiddleware</a></li><li><a href="#routingbeforefiles">routing.beforeFiles</a></li><li><a href="#routingafterfiles">routing.afterFiles</a></li><li><a href="#routingdynamicroutes">routing.dynamicRoutes</a></li><li><a href="#routingonmatch">routing.onMatch</a></li><li><a href="#routingfallback">routing.fallback</a></li><li><a href="#common-route-fields">Common Route Fields</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">10-routing-information</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Reference for routing phases and route fields exposed in `onBuildComplete`.</td></tr></table><p>The <code>routing</code> object in <code>onBuildComplete</code> provides complete routing information with processed patterns ready for deployment:</p>
+<h2 id="routingbeforemiddleware"><code>routing.beforeMiddleware</code></h2>
+<p>Routes applied before middleware execution. These include generated header and redirect behavior.</p>
+<h2 id="routingbeforefiles"><code>routing.beforeFiles</code></h2>
+<p>Rewrite routes checked before filesystem route matching.</p>
+<h2 id="routingafterfiles"><code>routing.afterFiles</code></h2>
+<p>Rewrite routes checked after filesystem route matching.</p>
+<h2 id="routingdynamicroutes"><code>routing.dynamicRoutes</code></h2>
+<p>Dynamic matchers generated from route segments such as <code>[slug]</code> and catch-all routes.</p>
+<h2 id="routingonmatch"><code>routing.onMatch</code></h2>
+<p>Routes that apply after a successful match, such as immutable cache headers for hashed static assets.</p>
+<h2 id="routingfallback"><code>routing.fallback</code></h2>
+<p>Final rewrite routes checked when earlier phases did not produce a match.</p>
+<h2 id="common-route-fields">Common Route Fields</h2>
+<p>Each route entry can include:</p>
+<ul>
+<li><code>source</code>: Original route pattern (optional for generated internal rules)</li>
+<li><code>sourceRegex</code>: Compiled regex for matching requests</li>
+<li><code>destination</code>: Internal destination or redirect destination</li>
+<li><code>headers</code>: Headers to apply</li>
+<li><code>has</code>: Positive matching conditions</li>
+<li><code>missing</code>: Negative matching conditions</li>
+<li><code>status</code>: Redirect status code</li>
+<li><code>priority</code>: Internal route priority flag</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01-installation — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-01-installation">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#quick-start">Quick start</a></li><li><a href="#system-requirements">System requirements</a></li><li><a href="#supported-browsers">Supported browsers</a></li><li><a href="#create-with-the-cli">Create with the CLI</a></li><li><a href="#manual-installation">Manual installation</a></li><ul><li><a href="#create-the-app-directory">Create the app directory</a></li><li><a href="#create-the-pages-directory">Create the pages directory</a></li><li><a href="#create-the-public-folder-optional">Create the public folder (optional)</a></li></ul><li><a href="#run-the-development-server">Run the development server</a></li><li><a href="#set-up-typescript">Set up TypeScript</a></li><ul><li><a href="#ide-plugin">IDE Plugin</a></li></ul><li><a href="#set-up-linting">Set up linting</a></li><li><a href="#set-up-absolute-imports-and-module-path-aliases">Set up Absolute Imports and Module Path Aliases</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">01-installation</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to create a new Next.js application with the `create-next-app` CLI, and set up TypeScript, ESLint, and Module Path Aliases.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<AppOnly>
+<p>Create a new Next.js app and run it locally.</p>
+<h2 id="quick-start">Quick start</h2>
+<ol>
+<li>Create a new Next.js app named <code>my-app</code></li>
+<li><code>cd my-app</code> and start the dev server.</li>
+<li>Visit <code>http://localhost:3000</code>.</li>
+</ol>
+<pre><code class="language-bash">pnpm create next-app@latest my-app --yes
+cd my-app
+pnpm dev
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest my-app --yes
+cd my-app
+npm run dev
+</code></pre>
+<pre><code class="language-bash">yarn create next-app@latest my-app --yes
+cd my-app
+yarn dev
+</code></pre>
+<pre><code class="language-bash">bun create next-app@latest my-app --yes
+cd my-app
+bun dev
+</code></pre>
+<ul>
+<li><code>--yes</code> skips prompts using saved preferences or defaults. The default setup enables TypeScript, Tailwind CSS, ESLint, App Router, and Turbopack, with import alias <code>@/*</code>, and includes <code>AGENTS.md</code> (with a <code>CLAUDE.md</code> that references it) to guide coding agents to write up-to-date Next.js code.</li>
+</ul>
+</AppOnly>
+<h2 id="system-requirements">System requirements</h2>
+<p>Before you begin, make sure your development environment meets the following requirements:</p>
+<ul>
+<li>Minimum Node.js version: <a href="https://nodejs.org/" target="_blank" rel="noopener">20.9</a></li>
+<li>Operating systems: macOS, Windows (including WSL), and Linux.</li>
+</ul>
+<h2 id="supported-browsers">Supported browsers</h2>
+<p>Next.js supports modern browsers with zero configuration.</p>
+<ul>
+<li>Chrome 111+</li>
+<li>Edge 111+</li>
+<li>Firefox 111+</li>
+<li>Safari 16.4+</li>
+</ul>
+<p>Learn more about <a href="/docs/architecture/supported-browsers">browser support</a>, including how to configure polyfills and target specific browsers.</p>
+<h2 id="create-with-the-cli">Create with the CLI</h2>
+<p>The quickest way to create a new Next.js app is using <a href="/docs/app/api-reference/cli/create-next-app"><code>create-next-app</code></a>, which sets up everything automatically for you. To create a project, run:</p>
+<pre><code class="language-bash">pnpm create next-app
+</code></pre>
+<pre><code class="language-bash">npx create-next-app@latest
+</code></pre>
+<pre><code class="language-bash">yarn create next-app
+</code></pre>
+<pre><code class="language-bash">bun create next-app
+</code></pre>
+<p>On installation, you’ll see the following prompts:</p>
+<pre><code class="language-txt">What is your project named? my-app
+Would you like to use the recommended Next.js defaults?
+    Yes, use recommended defaults - TypeScript, ESLint, Tailwind CSS, App Router, AGENTS.md
+    No, reuse previous settings
+    No, customize settings - Choose your own preferences
+</code></pre>
+<p>If you choose to <code>customize settings</code>, you’ll see the following prompts:</p>
+<pre><code class="language-txt">Would you like to use TypeScript? No / Yes
+Which linter would you like to use? ESLint / Biome / None
+Would you like to use React Compiler? No / Yes
+Would you like to use Tailwind CSS? No / Yes
+Would you like your code inside a `src/` directory? No / Yes
+Would you like to use App Router? (recommended) No / Yes
+Would you like to customize the import alias (`@/*` by default)? No / Yes
+What import alias would you like configured? @/*
+Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? No / Yes
+</code></pre>
+<p>After the prompts, <a href="/docs/app/api-reference/cli/create-next-app"><code>create-next-app</code></a> will create a folder with your project name and install the required dependencies.</p>
+<h2 id="manual-installation">Manual installation</h2>
+<p>To manually create a new Next.js app, install the required packages:</p>
+<pre><code class="language-bash">pnpm i next@latest react@latest react-dom@latest
+</code></pre>
+<pre><code class="language-bash">npm i next@latest react@latest react-dom@latest
+</code></pre>
+<pre><code class="language-bash">yarn add next@latest react@latest react-dom@latest
+</code></pre>
+<pre><code class="language-bash">bun add next@latest react@latest react-dom@latest
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>The <code>App Router</code> uses <a href="https://react.dev/blog/2023/05/03/react-canaries" target="_blank" rel="noopener">React canary releases</a> built-in, which include all the stable React 19 changes, as well as newer features being validated in frameworks, but you should still declare react and react-dom in package.json for tooling and ecosystem compatibility.</li>
+<li>The <code>Pages Router</code> uses the React version from your <code>package.json</code>.</li>
+</ul>
+</blockquote>
+<p>Then, add the following scripts to your <code>package.json</code> file:</p>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;,
+    &quot;lint&quot;: &quot;eslint&quot;,
+    &quot;lint:fix&quot;: &quot;eslint --fix&quot;
+  }
+}
+</code></pre>
+<p>These scripts refer to the different stages of developing an application:</p>
+<ul>
+<li><code>next dev</code>: Starts the development server using Turbopack (default bundler).</li>
+<li><code>next build</code>: Builds the application for production.</li>
+<li><code>next start</code>: Starts the production server.</li>
+<li><code>eslint</code>: Runs ESLint.</li>
+</ul>
+<p>Turbopack is now the default bundler. To use Webpack run <code>next dev --webpack</code> or <code>next build --webpack</code>. See the <a href="/docs/app/api-reference/turbopack">Turbopack docs</a> for configuration details.</p>
+<AppOnly>
+<h3 id="create-the-app-directory">Create the <code>app</code> directory</h3>
+<p>Next.js uses file-system routing, which means the routes in your application are determined by how you structure your files.</p>
+<p>Create an <code>app</code> folder. Then, inside <code>app</code>, create a <code>layout.tsx</code> file. This file is the <a href="/docs/app/api-reference/file-conventions/layout#root-layout">root layout</a>. It’s required and must contain the <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code> tags.</p>
+<pre><code class="language-tsx">export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default function RootLayout({ children }) {
+  return (
+    &lt;html lang=&quot;en&quot;&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p>Create a home page <code>app/page.tsx</code> with some initial content:</p>
+<pre><code class="language-tsx">export default function Page() {
+  return &lt;h1&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return &lt;h1&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<p>Both <code>layout.tsx</code> and <code>page.tsx</code> will be rendered when the user visits the root of your application (<code>/</code>).</p>
+<p><Image
+  alt="App Folder Structure"
+  srcLight="/docs/light/app-getting-started.png"
+  srcDark="/docs/dark/app-getting-started.png"
+  width="1600"
+  height="363"
+/></p>
+<blockquote>
+<p><strong>Good to know</strong>:</p>
+<ul>
+<li>If you forget to create the root layout, Next.js will automatically create this file when running the development server with <code>next dev</code>.</li>
+<li>You can optionally use a <a href="/docs/app/api-reference/file-conventions/src-folder"><code>src</code> folder</a> in the root of your project to separate your application’s code from configuration files.</li>
+</ul>
+</blockquote>
+</AppOnly>
+<PagesOnly>
+<h3 id="create-the-pages-directory">Create the <code>pages</code> directory</h3>
+<p>Next.js uses file-system routing, which means the routes in your application are determined by how you structure your files.</p>
+<p>Create a <code>pages</code> directory at the root of your project. Then, add an <code>index.tsx</code> file inside your <code>pages</code> folder. This will be your home page (<code>/</code>):</p>
+<pre><code class="language-tsx">export default function Page() {
+  return &lt;h1&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page() {
+  return &lt;h1&gt;Hello, Next.js!&lt;/h1&gt;
+}
+</code></pre>
+<p>Next, add an <code>_app.tsx</code> file inside <code>pages/</code> to define the global layout. Learn more about the <a href="/docs/pages/building-your-application/routing/custom-app">custom App file</a>.</p>
+<pre><code class="language-tsx">import type { AppProps } from 'next/app'
+
+export default function App({ Component, pageProps }: AppProps) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function App({ Component, pageProps }) {
+  return &lt;Component {...pageProps} /&gt;
+}
+</code></pre>
+<p>Finally, add a <code>_document.tsx</code> file inside <code>pages/</code> to control the initial response from the server. Learn more about the <a href="/docs/pages/building-your-application/routing/custom-document">custom Document file</a>.</p>
+<pre><code class="language-tsx">import { Html, Head, Main, NextScript } from 'next/document'
+
+export default function Document() {
+  return (
+    &lt;Html&gt;
+      &lt;Head /&gt;
+      &lt;body&gt;
+        &lt;Main /&gt;
+        &lt;NextScript /&gt;
+      &lt;/body&gt;
+    &lt;/Html&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">import { Html, Head, Main, NextScript } from 'next/document'
+
+export default function Document() {
+  return (
+    &lt;Html&gt;
+      &lt;Head /&gt;
+      &lt;body&gt;
+        &lt;Main /&gt;
+        &lt;NextScript /&gt;
+      &lt;/body&gt;
+    &lt;/Html&gt;
+  )
+}
+</code></pre>
+</PagesOnly>
+<h3 id="create-the-public-folder-optional">Create the <code>public</code> folder (optional)</h3>
+<p>Create a <a href="/docs/app/api-reference/file-conventions/public-folder"><code>public</code> folder</a> at the root of your project to store static assets such as images, fonts, etc. Files inside <code>public</code> can then be referenced by your code starting from the base URL (<code>/</code>).</p>
+<p>You can then reference these assets using the root path (<code>/</code>). For example, <code>public/profile.png</code> can be referenced as <code>/profile.png</code>:</p>
+<pre><code class="language-tsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image src=&quot;/profile.png&quot; alt=&quot;Profile&quot; width={100} height={100} /&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+export default function Page() {
+  return &lt;Image src=&quot;/profile.png&quot; alt=&quot;Profile&quot; width={100} height={100} /&gt;
+}
+</code></pre>
+<h2 id="run-the-development-server">Run the development server</h2>
+<ol>
+<li>Run <code>npm run dev</code> to start the development server.</li>
+<li>Visit <code>http://localhost:3000</code> to view your application.</li>
+<li>Edit the <AppOnly><code>app/page.tsx</code></AppOnly><PagesOnly><code>pages/index.tsx</code></PagesOnly> file and save it to see the updated result in your browser.</li>
+</ol>
+<h2 id="set-up-typescript">Set up TypeScript</h2>
+<blockquote>
+<p>Minimum TypeScript version: <code>v5.1.0</code></p>
+</blockquote>
+<p>Next.js comes with built-in TypeScript support. To add TypeScript to your project, rename a file to <code>.ts</code> / <code>.tsx</code> and run <code>next dev</code>. Next.js will automatically install the necessary dependencies and add a <code>tsconfig.json</code> file with the recommended config options.</p>
+<AppOnly>
+<h3 id="ide-plugin">IDE Plugin</h3>
+<p>Next.js includes a custom TypeScript plugin and type checker, which VSCode and other code editors can use for advanced type-checking and auto-completion.</p>
+<p>You can enable the plugin in VS Code by:</p>
+<ol>
+<li>Opening the command palette (<code>Ctrl/⌘</code> + <code>Shift</code> + <code>P</code>)</li>
+<li>Searching for “TypeScript: Select TypeScript Version”</li>
+<li>Selecting “Use Workspace Version”</li>
+</ol>
+<p><Image
+  alt="TypeScript Command Palette"
+  srcLight="/docs/light/typescript-command-palette.png"
+  srcDark="/docs/dark/typescript-command-palette.png"
+  width="1600"
+  height="637"
+/></p>
+</AppOnly>
+<p>See the <a href="/docs/app/api-reference/config/typescript">TypeScript reference</a> page for more information.</p>
+<h2 id="set-up-linting">Set up linting</h2>
+<p>Next.js supports linting with either ESLint or Biome. Choose a linter and run it directly via <code>package.json</code> scripts.</p>
+<ul>
+<li>Use <strong>ESLint</strong> (comprehensive rules):</li>
+</ul>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;lint&quot;: &quot;eslint&quot;,
+    &quot;lint:fix&quot;: &quot;eslint --fix&quot;
+  }
+}
+</code></pre>
+<ul>
+<li>Or use <strong>Biome</strong> (fast linter + formatter):</li>
+</ul>
+<pre><code class="language-json">{
+  &quot;scripts&quot;: {
+    &quot;lint&quot;: &quot;biome check&quot;,
+    &quot;format&quot;: &quot;biome format --write&quot;
+  }
+}
+</code></pre>
+<p>If your project previously used <code>next lint</code>, migrate your scripts to the ESLint CLI with the codemod:</p>
+<pre><code class="language-bash">npx @next/codemod@canary next-lint-to-eslint-cli .
+</code></pre>
+<p>If you use ESLint, create an explicit config (recommended <code>eslint.config.mjs</code>). ESLint supports both <a href="https://eslint.org/docs/latest/use/configure/configuration-files#configuring-eslint" target="_blank" rel="noopener">the legacy <code>.eslintrc.*</code> and the newer <code>eslint.config.mjs</code> formats</a>. See the <a href="/docs/app/api-reference/config/eslint#with-core-web-vitals">ESLint API reference</a> for a recommended setup.</p>
+<blockquote>
+<p><strong>Good to know</strong>: Starting with Next.js 16, <code>next build</code> no longer runs the linter automatically. Instead, you can run your linter through NPM scripts.</p>
+</blockquote>
+<p>See the <a href="/docs/app/api-reference/config/eslint">ESLint Plugin</a> page for more information.</p>
+<h2 id="set-up-absolute-imports-and-module-path-aliases">Set up Absolute Imports and Module Path Aliases</h2>
+<p>Next.js has in-built support for the <code>&quot;paths&quot;</code> and <code>&quot;baseUrl&quot;</code> options of <code>tsconfig.json</code> and <code>jsconfig.json</code> files.</p>
+<p>These options allow you to alias project directories to absolute paths, making it easier and cleaner to import modules. For example:</p>
+<pre><code class="language-jsx">// Before
+import { Button } from '../../../components/button'
+
+// After
+import { Button } from '@/components/button'
+</code></pre>
+<p>To configure absolute imports, add the <code>baseUrl</code> configuration option to your <code>tsconfig.json</code> or <code>jsconfig.json</code> file. For example:</p>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;src/&quot;
+  }
+}
+</code></pre>
+<p>In addition to configuring the <code>baseUrl</code> path, you can use the <code>&quot;paths&quot;</code> option to <code>&quot;alias&quot;</code> module paths.</p>
+<p>For example, the following configuration maps <code>@/components/*</code> to <code>components/*</code>:</p>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;src/&quot;,
+    &quot;paths&quot;: {
+      &quot;@/styles/*&quot;: [&quot;styles/*&quot;],
+      &quot;@/components/*&quot;: [&quot;components/*&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Each of the <code>&quot;paths&quot;</code> are relative to the <code>baseUrl</code> location.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

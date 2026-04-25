@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>view-transitions — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-view-transitions">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#example">Example</a></li><ul><li><a href="#step-1-morph-a-thumbnail-into-a-hero-image">Step 1: Morph a thumbnail into a hero image</a></li><li><a href="#step-2-animate-loading-states-with-suspense-reveals">Step 2: Animate loading states with Suspense reveals</a></li><li><a href="#step-3-add-directional-motion-for-navigation">Step 3: Add directional motion for navigation</a></li><li><a href="#step-4-crossfade-content-within-the-same-route">Step 4: Crossfade content within the same route</a></li></ul><li><a href="#next-steps">Next steps</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">view-transitions</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to use view transitions to communicate meaning during navigation, loading, and content changes in a Next.js app.</td></tr><tr><th>nav_title</th><td>View transitions</td></tr></table><p>In web apps, route changes replace the entire page at once. One set of elements disappears, another appears, with no visual connection between them. A user selects a photo thumbnail to view it in detail on another page. They are the same image, but nothing on screen communicates that.</p>
+<p>Apps that need these transitions typically rely on complex animation libraries that manage mount/unmount lifecycles, track element positions across routes, and coordinate timing manually, to animate how elements enter, exit, and move between states.</p>
+<p>React’s <code>&lt;ViewTransition&gt;</code> component integrates with the browser’s <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API" target="_blank" rel="noopener">View Transitions API</a> to handle this declaratively. You name the elements that should persist, and the browser animates between their old and new positions.</p>
+<p>This guide walks through four patterns that cover the most common cases: morphing shared elements, animating loading states, adding directional navigation, and crossfading content within the same route.</p>
+<h2 id="example">Example</h2>
+<p>As an example, we’ll build a photography gallery called <em>Frames</em>.</p>
+<p>We’ll start by morphing a thumbnail into a hero image (shared elements), then animate the loading skeleton into real content (Suspense reveals), add directional slides for forward and back navigation (route transitions), and finish with crossfades for switching between photographer tabs (same-route transitions).</p>
+<p>You can find the resources used in this example here:</p>
+<ul>
+<li><a href="https://react-view-transitions-demo.labs.vercel.dev" target="_blank" rel="noopener">Demo</a></li>
+<li><a href="https://github.com/vercel-labs/react-view-transitions-demo" target="_blank" rel="noopener">Code</a></li>
+</ul>
+<p>Before starting, enable view transitions in your Next.js config:</p>
+<pre><code class="language-ts">import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    viewTransition: true,
+  },
+}
+
+export default nextConfig
+</code></pre>
+<aside class="callout callout-note"><span class="callout-title">NOTE</span><p>The View Transitions API is supported in all major browsers, though some animations may behave differently in Safari. Without browser support, your application works normally, the transitions simply do not animate.</p>
+</aside>
+<p>Then import the <code>ViewTransition</code> component from React:</p>
+<pre><code class="language-tsx">import { ViewTransition } from 'react'
+</code></pre>
+<p><code>&lt;ViewTransition&gt;</code> animations are activated by <a href="https://react.dev/reference/react/useTransition" target="_blank" rel="noopener">Transitions</a>, <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener"><code>&lt;Suspense&gt;</code></a>, and <a href="https://react.dev/reference/react/useDeferredValue" target="_blank" rel="noopener"><code>useDeferredValue</code></a>. Regular <code>setState</code> calls do not trigger them. In Next.js, route navigations are transitions, so <code>&lt;ViewTransition&gt;</code> animations activate automatically during navigation.</p>
+<h3 id="step-1-morph-a-thumbnail-into-a-hero-image">Step 1: Morph a thumbnail into a hero image</h3>
+<p>The gallery displays photos in a grid. Clicking a photo opens a detail page with a larger version of the same image. Without transitions, the thumbnail disappears and the hero appears. Nothing connects them visually. The user has to scan the detail page to confirm they clicked the right photo.</p>
+<p>In motion design, when an object persists across a cut, it communicates continuity. The viewer understands they are looking at the same thing, not a replacement. This is the most important transition pattern: <strong>shared element morphing</strong>.</p>
+<p>Wrap both the grid thumbnail and the detail hero in <code>&lt;ViewTransition&gt;</code> with the same <code>name</code>:</p>
+<pre><code class="language-tsx">import { ViewTransition } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+
+function PhotoGrid({ photos }) {
+  return (
+    &lt;div className=&quot;grid grid-cols-3 gap-3&quot;&gt;
+      {photos.map((photo) =&gt; (
+        &lt;Link key={photo.id} href={`/photo/${photo.id}`}&gt;
+          &lt;ViewTransition name={`photo-${photo.id}`}&gt;
+            &lt;Image src={photo.src} alt={photo.title} /&gt;
+          &lt;/ViewTransition&gt;
+        &lt;/Link&gt;
+      ))}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-tsx">import { ViewTransition } from 'react'
+import Image from 'next/image'
+
+async function PhotoContent({ id }) {
+  const photo = await getPhoto(id)
+
+  return (
+    &lt;ViewTransition name={`photo-${photo.id}`}&gt;
+      &lt;Image src={photo.src} alt={photo.title} fill /&gt;
+    &lt;/ViewTransition&gt;
+  )
+}
+</code></pre>
+<p>The <code>name</code> prop creates identity. React finds elements with the same name on the old and new pages, then animates between their size and position automatically. No additional props are needed for the morph to work.</p>
+<p>If we click a thumbnail now, the image scales and repositions from its grid cell to the hero slot. Navigating back reverses the morph. The user sees one object moving, not two objects swapping.</p>
+<h4>Customizing the morph animation</h4>
+<p>To control the morph CSS, add <code>share=&quot;morph&quot;</code>. This assigns the <code>morph</code> class to the view transition, which you can target with CSS pseudo-elements. For example, to soften the morph mid-flight with a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/blur" target="_blank" rel="noopener"><code>blur</code></a> keyframe:</p>
+<pre><code class="language-tsx">&lt;ViewTransition name={`photo-${photo.id}`} share=&quot;morph&quot;&gt;
+  &lt;Image src={photo.src} alt={photo.title} /&gt;
+&lt;/ViewTransition&gt;
+</code></pre>
+<pre><code class="language-css">::view-transition-group(.morph) {
+  animation-duration: 400ms;
+}
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+@keyframes via-blur {
+  30% {
+    filter: blur(3px);
+  }
+}
+</code></pre>
+<p>The blur hides pixel-level interpolation artifacts during the transition. At 400ms, the morph is slow enough to register but fast enough to feel direct.</p>
+<h3 id="step-2-animate-loading-states-with-suspense-reveals">Step 2: Animate loading states with Suspense reveals</h3>
+<p>The photo detail page loads its content asynchronously. While data is in flight, a Suspense boundary shows a skeleton. When the data resolves, the skeleton is replaced by the real content.</p>
+<p>Without a transition, the swap is instant. The skeleton vanishes and the content pops in.</p>
+<p>In motion design, vertical direction encodes hierarchy. Content sliding up communicates arrival. Content sliding down communicates departure. The pair together creates a handoff: the placeholder yields to the real thing.</p>
+<p>Wrap the Suspense fallback in a <code>ViewTransition</code> with an exit animation, and the content in a <code>ViewTransition</code> with an enter animation:</p>
+<pre><code class="language-tsx">import { Suspense, ViewTransition } from 'react'
+
+export default async function PhotoPage({ params }) {
+  const { id } = await params
+
+  return (
+    &lt;Suspense
+      fallback={
+        &lt;ViewTransition exit=&quot;slide-down&quot;&gt;
+          &lt;PhotoContentSkeleton /&gt;
+        &lt;/ViewTransition&gt;
+      }
+    &gt;
+      &lt;ViewTransition enter=&quot;slide-up&quot; default=&quot;none&quot;&gt;
+        &lt;PhotoContent id={id} /&gt;
+      &lt;/ViewTransition&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<p>The <code>default=&quot;none&quot;</code> prop prevents this <code>ViewTransition</code> from animating during unrelated transitions, like the shared element morph from Step 1. Without it, every transition on the page would trigger every <code>ViewTransition</code>’s animation.</p>
+<p>The CSS animations use asymmetric timing. The exit is fast (150ms). The enter is slower (210ms) and delayed until the exit completes:</p>
+<pre><code class="language-css">:root {
+  --duration-exit: 150ms;
+  --duration-enter: 210ms;
+}
+
+::view-transition-old(.slide-down) {
+  animation:
+    var(--duration-exit) ease-out both fade reverse,
+    var(--duration-exit) ease-out both slide-y reverse;
+}
+::view-transition-new(.slide-up) {
+  animation:
+    var(--duration-enter) ease-in var(--duration-exit) both fade,
+    400ms ease-in both slide-y;
+}
+
+@keyframes fade {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-y {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+</code></pre>
+<p>The asymmetry is deliberate. Old content should leave quickly so it does not compete for attention. New content should arrive more gently so the user has time to register it. The <code>var(--duration-exit)</code> delay on the enter animation means the new content waits for the old content to finish leaving before it appears.</p>
+<p>If we refresh the page, the skeleton slides down and fades out, and a moment later the real content slides up and fades in.</p>
+<h3 id="step-3-add-directional-motion-for-navigation">Step 3: Add directional motion for navigation</h3>
+<p>The gallery now has morphing images and animated loading states. But navigating between pages still has no directional signal. Forward and back navigations look identical. The user cannot tell from the animation whether they moved deeper into the app or returned to a previous page.</p>
+<p>In film and animation, horizontal direction encodes spatial position. Moving left means progressing forward (like turning a page in a left-to-right language). Moving right means going back. This convention is so ingrained that violating it feels disorienting.</p>
+<p>Use the <code>transitionTypes</code> prop on <code>&lt;Link&gt;</code> to tag forward navigations:</p>
+<pre><code class="language-tsx">&lt;Link href={`/photo/${photo.id}`} transitionTypes={['nav-forward']}&gt;
+  {/* photo thumbnail */}
+&lt;/Link&gt;
+</code></pre>
+<p>The same pattern works for any navigation within the app. For example, previous/next arrows on a photo detail page can use <code>nav-back</code> and <code>nav-forward</code> to animate in the corresponding direction.</p>
+<p>For links that return the user to a previous page, use <code>nav-back</code>:</p>
+<pre><code class="language-tsx">&lt;Link href=&quot;/&quot; transitionTypes={['nav-back']}&gt;
+  ← Gallery
+&lt;/Link&gt;
+</code></pre>
+<p>The transition type is not automatic. You decide which links are “forward” and which are “back” based on your app’s navigation hierarchy.</p>
+<p>Then wrap page content in a <code>ViewTransition</code> that maps transition types to directional animations:</p>
+<pre><code class="language-tsx">&lt;ViewTransition
+  enter={{
+    'nav-forward': 'nav-forward',
+    'nav-back': 'nav-back',
+    default: 'none',
+  }}
+  exit={{
+    'nav-forward': 'nav-forward',
+    'nav-back': 'nav-back',
+    default: 'none',
+  }}
+  default=&quot;none&quot;
+&gt;
+  {/* page content */}
+&lt;/ViewTransition&gt;
+</code></pre>
+<p>The <code>enter</code> and <code>exit</code> props accept an object keyed by transition type. When a navigation carries the <code>nav-forward</code> type, the exit animation slides old content left and the enter animation slides new content in from the right. The <code>default: &quot;none&quot;</code> ensures that transitions without a type (like initial page loads) produce no animation.</p>
+<p>The CSS for directional slides:</p>
+<pre><code class="language-css">::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation:
+    150ms ease-in both fade reverse,
+    400ms ease-in-out both slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation:
+    210ms ease-out 150ms both fade,
+    400ms ease-in-out both slide;
+}
+
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation:
+    150ms ease-in both fade reverse,
+    400ms ease-in-out both slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation:
+    210ms ease-out 150ms both fade,
+    400ms ease-in-out both slide;
+}
+
+@keyframes slide {
+  from {
+    translate: var(--slide-offset);
+  }
+  to {
+    translate: 0;
+  }
+}
+</code></pre>
+<p>The 60px offset is enough to communicate direction without making the user track a fast-moving element across the screen.</p>
+<h4>Anchoring the header</h4>
+<p>During directional slides, the header should not move. A sliding header breaks the user’s spatial anchor. They need one fixed reference point to understand that the <em>content</em> moved, not the entire viewport.</p>
+<p>Assign the header a <code>viewTransitionName</code> and suppress its animation in CSS:</p>
+<pre><code class="language-tsx">&lt;header style={{ viewTransitionName: 'site-header' }}&gt;
+  {/* navigation links */}
+&lt;/header&gt;
+</code></pre>
+<pre><code class="language-css">::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+</code></pre>
+<p>The <code>display: none</code> on the old snapshot prevents a flash where both old and new headers are briefly visible. The <code>z-index: 100</code> ensures the header renders above the sliding content.</p>
+<p>If we navigate forward to a photo, content slides left. If we click the “← Gallery” link (tagged with <code>nav-back</code>), content slides right. The header stays fixed throughout both transitions.</p>
+<p>Browser-initiated back navigations (the back button or swipe gestures) do not carry a transition type, so the directional slide does not play. The shared element morph from Step 1 still applies if both pages have matching <code>name</code> props.</p>
+<h4>Respecting reduced motion</h4>
+<p>Directional slides simulate physical movement across the viewport. This is the most common trigger for motion sensitivity. Morphs, reveals, and crossfades carry less risk since they affect smaller areas or rely on opacity rather than position.</p>
+<p>The simplest approach is to disable all animation durations:</p>
+<pre><code class="language-css">@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+</code></pre>
+<p>Without animation, content swaps instantly, which is the browser’s default behavior. A more refined approach would preserve crossfades and opacity transitions while removing positional movement. See <a href="https://css-tricks.com/nuking-motion-with-prefers-reduced-motion/" target="_blank" rel="noopener">“No Motion Isn’t Always prefers-reduced-motion”</a> for more on this.</p>
+<h3 id="step-4-crossfade-content-within-the-same-route">Step 4: Crossfade content within the same route</h3>
+<p>The gallery has a photographer section with tabs. Each tab shows a different photographer’s photos, but the route structure is the same: <code>/collection/[slug]</code>. Clicking between tabs does not feel like navigating to a new page. It feels like switching content within the same container.</p>
+<p>A directional slide would be wrong here. Slides communicate “going to a new place.” A crossfade communicates “same place, different content.” The container persists (continuity), only the grid inside changes (swap).</p>
+<p>Use a <code>ViewTransition</code> with <code>key</code> set to the current slug. When the key changes, React triggers a transition between the old and new content:</p>
+<pre><code class="language-tsx">import { Suspense, ViewTransition } from 'react'
+
+export default async function CollectionPage({ params }) {
+  const { slug } = await params
+
+  return (
+    &lt;Suspense fallback={&lt;CollectionGridSkeleton /&gt;}&gt;
+      &lt;ViewTransition
+        key={slug}
+        name=&quot;collection-content&quot;
+        share=&quot;auto&quot;
+        enter=&quot;auto&quot;
+        default=&quot;none&quot;
+      &gt;
+        &lt;CollectionGrid slug={slug} /&gt;
+      &lt;/ViewTransition&gt;
+    &lt;/Suspense&gt;
+  )
+}
+</code></pre>
+<p>The <code>share=&quot;auto&quot;</code> and <code>enter=&quot;auto&quot;</code> props tell React to use its default crossfade animation. The <code>name</code> prop gives the container an identity so React knows what to animate. The <code>key={slug}</code> change is what triggers the transition.</p>
+<p>If we click between photographer tabs, the grid crossfades. The tab bar and surrounding layout do not move. Only the photo grid transitions between states.</p>
+<h2 id="next-steps">Next steps</h2>
+<p>You now know how to use view transitions to communicate meaning during navigation. Shared elements communicate continuity across routes. Suspense reveals animate loading handoffs. Directional slides encode navigation history. Crossfades signal content changes within the same location.</p>
+<p>Each pattern answers a different question for the user:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>What it communicates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shared element (morph)</td>
+<td>“Same thing, going deeper”</td>
+</tr>
+<tr>
+<td>Suspense reveal</td>
+<td>“Data loaded”</td>
+</tr>
+<tr>
+<td>Directional slide</td>
+<td>“Going forward / coming back”</td>
+</tr>
+<tr>
+<td>Same-route crossfade</td>
+<td>“Same place, different content”</td>
+</tr>
+</tbody>
+</table>
+<p>For API details and more patterns:</p>
+<ul>
+<li><a href="/docs/app/api-reference/config/next-config-js/viewTransition">View transition configuration</a></li>
+<li><a href="/docs/app/api-reference/components/link#transitiontypes">Link <code>transitionTypes</code> prop</a></li>
+<li><a href="/docs/app/api-reference/functions/use-router"><code>useRouter</code></a> — also supports <code>transitionTypes</code> in <code>push()</code> and <code>replace()</code></li>
+<li><a href="https://react.dev/reference/react/ViewTransition" target="_blank" rel="noopener">React <code>ViewTransition</code> component</a></li>
+<li><a href="https://github.com/vercel-labs/react-view-transitions-demo/blob/main/src/app/globals.css" target="_blank" rel="noopener">Complete CSS from this guide</a> — all keyframes and view transition rules in one file</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

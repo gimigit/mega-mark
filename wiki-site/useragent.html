@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>useragent — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-useragent">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#isbot">isBot</a></li><li><a href="#browser">browser</a></li><li><a href="#device">device</a></li><li><a href="#engine">engine</a></li><li><a href="#os">os</a></li><li><a href="#cpu">cpu</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">useragent</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>The userAgent helper extends the Web Request API with additional properties and methods to interact with the user agent object from the request.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>The <code>userAgent</code> helper extends the <a href="https://developer.mozilla.org/docs/Web/API/Request" target="_blank" rel="noopener">Web Request API</a> with additional properties and methods to interact with the user agent object from the request.</p>
+<pre><code class="language-ts">import { NextRequest, NextResponse, userAgent } from 'next/server'
+
+export function proxy(request: NextRequest) {
+  const url = request.nextUrl
+  const { device } = userAgent(request)
+
+  // device.type can be: 'mobile', 'tablet', 'console', 'smarttv',
+  // 'wearable', 'embedded', or undefined (for desktop browsers)
+  const viewport = device.type || 'desktop'
+
+  url.searchParams.set('viewport', viewport)
+  return NextResponse.rewrite(url)
+}
+</code></pre>
+<pre><code class="language-js">import { NextResponse, userAgent } from 'next/server'
+
+export function proxy(request) {
+  const url = request.nextUrl
+  const { device } = userAgent(request)
+
+  // device.type can be: 'mobile', 'tablet', 'console', 'smarttv',
+  // 'wearable', 'embedded', or undefined (for desktop browsers)
+  const viewport = device.type || 'desktop'
+
+  url.searchParams.set('viewport', viewport)
+  return NextResponse.rewrite(url)
+}
+</code></pre>
+<h2 id="isbot"><code>isBot</code></h2>
+<p>A boolean indicating whether the request comes from a known bot.</p>
+<h2 id="browser"><code>browser</code></h2>
+<p>An object containing information about the browser used in the request.</p>
+<ul>
+<li><code>name</code>: A string representing the browser’s name, or <code>undefined</code> if not identifiable.</li>
+<li><code>version</code>: A string representing the browser’s version, or <code>undefined</code>.</li>
+</ul>
+<h2 id="device"><code>device</code></h2>
+<p>An object containing information about the device used in the request.</p>
+<ul>
+<li><code>model</code>: A string representing the model of the device, or <code>undefined</code>.</li>
+<li><code>type</code>: A string representing the type of the device, such as <code>console</code>, <code>mobile</code>, <code>tablet</code>, <code>smarttv</code>, <code>wearable</code>, <code>embedded</code>, or <code>undefined</code>.</li>
+<li><code>vendor</code>: A string representing the vendor of the device, or <code>undefined</code>.</li>
+</ul>
+<h2 id="engine"><code>engine</code></h2>
+<p>An object containing information about the browser’s engine.</p>
+<ul>
+<li><code>name</code>: A string representing the engine’s name. Possible values include: <code>Amaya</code>, <code>Blink</code>, <code>EdgeHTML</code>, <code>Flow</code>, <code>Gecko</code>, <code>Goanna</code>, <code>iCab</code>, <code>KHTML</code>, <code>Links</code>, <code>Lynx</code>, <code>NetFront</code>, <code>NetSurf</code>, <code>Presto</code>, <code>Tasman</code>, <code>Trident</code>, <code>w3m</code>, <code>WebKit</code> or <code>undefined</code>.</li>
+<li><code>version</code>: A string representing the engine’s version, or <code>undefined</code>.</li>
+</ul>
+<h2 id="os"><code>os</code></h2>
+<p>An object containing information about the operating system.</p>
+<ul>
+<li><code>name</code>: A string representing the name of the OS, or <code>undefined</code>.</li>
+<li><code>version</code>: A string representing the version of the OS, or <code>undefined</code>.</li>
+</ul>
+<h2 id="cpu"><code>cpu</code></h2>
+<p>An object containing information about the CPU architecture.</p>
+<ul>
+<li><code>architecture</code>: A string representing the architecture of the CPU. Possible values include: <code>68k</code>, <code>amd64</code>, <code>arm</code>, <code>arm64</code>, <code>armhf</code>, <code>avr</code>, <code>ia32</code>, <code>ia64</code>, <code>irix</code>, <code>irix64</code>, <code>mips</code>, <code>mips64</code>, <code>pa-risc</code>, <code>ppc</code>, <code>sparc</code>, <code>sparc64</code> or <code>undefined</code></li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-04-glossary">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#app-router">App Router</a></li><li><a href="#build-time">Build time</a></li><li><a href="#cache-components">Cache Components</a></li><li><a href="#catch-all-segments">Catch-all Segments</a></li><li><a href="#client-bundles">Client Bundles</a></li><li><a href="#client-component">Client Component</a></li><li><a href="#client-side-navigation">Client-side navigation</a></li><li><a href="#client-cache">Client Cache</a></li><li><a href="#code-splitting">Code Splitting</a></li><li><a href="#dynamic-rendering">Dynamic rendering</a></li><li><a href="#dynamic-route-segments">Dynamic route segments</a></li><li><a href="#environment-variables">Environment Variables</a></li><li><a href="#error-boundary">Error Boundary</a></li><li><a href="#font-optimization">Font Optimization</a></li><li><a href="#file-system-caching">File-system caching</a></li><li><a href="#hydration">Hydration</a></li><li><a href="#import-aliases">Import Aliases</a></li><li><a href="#incremental-static-regeneration-isr">Incremental Static Regeneration (ISR)</a></li><li><a href="#intercepting-routes">Intercepting Routes</a></li><li><a href="#image-optimization">Image Optimization</a></li><li><a href="#layout">Layout</a></li><li><a href="#loading-ui">Loading UI</a></li><li><a href="#module-graph">Module Graph</a></li><li><a href="#metadata">Metadata</a></li><li><a href="#memoization">Memoization</a></li><li><a href="#middleware">Middleware</a></li><li><a href="#not-found">Not Found</a></li><li><a href="#private-folders">Private Folders</a></li><li><a href="#page">Page</a></li><li><a href="#parallel-routes">Parallel Routes</a></li><li><a href="#partial-prerendering-ppr">Partial Prerendering (PPR)</a></li><li><a href="#prefetching">Prefetching</a></li><li><a href="#prerendering">Prerendering</a></li><li><a href="#proxy">Proxy</a></li><li><a href="#redirect">Redirect</a></li><li><a href="#request-time-apis">Request-time APIs</a></li><li><a href="#runtime-rendering">Runtime rendering</a></li><li><a href="#revalidation">Revalidation</a></li><li><a href="#rewrite">Rewrite</a></li><li><a href="#route-groups">Route Groups</a></li><li><a href="#route-handler">Route Handler</a></li><li><a href="#route-segment">Route Segment</a></li><li><a href="#rsc-payload">RSC Payload</a></li><li><a href="#server-component">Server Component</a></li><li><a href="#server-action">Server Action</a></li><li><a href="#server-function">Server Function</a></li><li><a href="#static-export">Static Export</a></li><li><a href="#static-rendering">Static rendering</a></li><li><a href="#static-assets">Static Assets</a></li><li><a href="#static-shell">Static Shell</a></li><li><a href="#streaming">Streaming</a></li><li><a href="#suspense-boundary">Suspense boundary</a></li><li><a href="#turbopack">Turbopack</a></li><li><a href="#tree-shaking">Tree Shaking</a></li><li><a href="#quotuse-cachequot-directive">&amp;quot;use cache&amp;quot; Directive</a></li><li><a href="#quotuse-clientquot-directive">&amp;quot;use client&amp;quot; Directive</a></li><li><a href="#quotuse-serverquot-directive">&amp;quot;use server&amp;quot; Directive</a></li><li><a href="#version-skew">Version skew</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">A</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Glossary</td></tr><tr><th>description</th><td>A glossary of common terms used in Next.js.</td></tr></table><h2 id="app-router">App Router</h2>
+<p>The Next.js router introduced in version 13, built on top of React Server Components. It uses file-system based routing and supports layouts, nested routing, loading states, error handling, and more. Learn more in the <a href="/docs/app">App Router documentation</a>.</p>
+<h1>B</h1>
+<h2 id="build-time">Build time</h2>
+<p>The stage when your application is being compiled. During build time, Next.js transforms your code into optimized files for production, generates static pages, and prepares assets for deployment. See the <a href="/docs/app/api-reference/cli/next#next-build-options"><code>next build</code> CLI reference</a>.</p>
+<h1>C</h1>
+<h2 id="cache-components">Cache Components</h2>
+<p>A feature that enables component and function-level caching using the <a href="/docs/app/api-reference/directives/use-cache"><code>&quot;use cache&quot;</code> directive</a>. Cache Components allows you to mix static, cached, and dynamic content within a single route by prerendering a static HTML shell that’s served immediately, while dynamic content streams in when ready. Configure cache duration with <a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife()</code></a>, tag cached data with <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag()</code></a>, and invalidate on-demand with <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag()</code></a>. Learn more in the <a href="/docs/app/getting-started/caching">Cache Components guide</a>.</p>
+<h2 id="catch-all-segments">Catch-all Segments</h2>
+<p>Dynamic route segments that can match multiple URL parts using the <code>[...folder]/page.js</code> syntax. These segments capture all remaining URL segments and are useful for implementing features like documentation sites or file browsers. Learn more in <a href="/docs/app/api-reference/file-conventions/dynamic-routes#catch-all-segments">Dynamic Route Segments</a>.</p>
+<h2 id="client-bundles">Client Bundles</h2>
+<p>JavaScript bundles sent to the browser. Next.js splits these automatically based on the <a href="#module-graph">module graph</a> to reduce initial payload size and load only the necessary code for each page.</p>
+<h2 id="client-component">Client Component</h2>
+<p>A React component that runs in the browser. In Next.js, Client Components can also be rendered on the server during initial page generation. They can use state, effects, event handlers, and browser APIs, and are marked with the <a href="#use-client-directive"><code>&quot;use client&quot;</code> directive</a> at the top of a file. Learn more in <a href="/docs/app/getting-started/server-and-client-components">Server and Client Components</a>.</p>
+<h2 id="client-side-navigation">Client-side navigation</h2>
+<p>A navigation technique where the page content updates dynamically without a full page reload. Next.js uses client-side navigation with the <a href="/docs/app/api-reference/components/link"><code>&lt;Link&gt;</code> component</a>, keeping shared layouts interactive and preserving browser state. Learn more in <a href="/docs/app/getting-started/linking-and-navigating#client-side-transitions">Linking and Navigating</a>.</p>
+<h2 id="client-cache">Client Cache</h2>
+<p>An in-memory cache in the browser that stores <a href="#rsc-payload">RSC Payload</a> for visited and prefetched routes. During <a href="#client-side-navigation">client-side navigation</a>, Next.js serves cached <a href="#layout">layouts</a> and <a href="#loading-ui">loading states</a> instantly without a server request. Pages are not cached by default but are reused during browser back/forward navigation.</p>
+<p>The client cache is cleared on page refresh. It can be invalidated programmatically with <a href="/docs/app/api-reference/functions/revalidateTag"><code>revalidateTag</code></a>, <a href="/docs/app/api-reference/functions/revalidatePath"><code>revalidatePath</code></a>, <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag</code></a>, <a href="/docs/app/api-reference/functions/use-router"><code>router.refresh</code></a>, <a href="/docs/app/api-reference/functions/cookies"><code>cookies.set</code></a>, or <a href="/docs/app/api-reference/functions/cookies"><code>cookies.delete</code></a>.</p>
+<p>You can configure the client cache duration with <a href="/docs/app/api-reference/config/next-config-js/staleTimes"><code>staleTimes</code></a> globally, or per-route via the <code>stale</code> property in <a href="/docs/app/api-reference/functions/cacheLife#client-cache-behavior"><code>cacheLife</code></a> (recommended).</p>
+<h2 id="code-splitting">Code Splitting</h2>
+<p>The process of dividing your application into smaller JavaScript chunks based on routes. Instead of loading all code upfront, only the code needed for the current route is loaded, reducing initial load time. Next.js automatically performs code splitting based on routes. Learn more in the <a href="/docs/app/guides/package-bundling">Package Bundling guide</a>.</p>
+<h1>D</h1>
+<h2 id="dynamic-rendering">Dynamic rendering</h2>
+<p>When a component is rendered at request time rather than <a href="#build-time">build time</a>. A component becomes dynamic when it uses <a href="#request-time-apis">Request-time APIs</a>.</p>
+<h2 id="dynamic-route-segments">Dynamic route segments</h2>
+<p><a href="#route-segment">Route segments</a> that are generated from data at request time. Created by wrapping a folder name in square brackets (e.g., <code>[slug]</code>), they allow you to create routes from dynamic data like blog posts or product pages. Learn more in <a href="/docs/app/api-reference/file-conventions/dynamic-routes">Dynamic Route Segments</a>.</p>
+<h1>E</h1>
+<h2 id="environment-variables">Environment Variables</h2>
+<p>Configuration values accessible at build time or request time. In Next.js, variables prefixed with <code>NEXT_PUBLIC_</code> are exposed to the browser, while others are only available server-side. Learn more in <a href="/docs/app/guides/environment-variables">Environment Variables</a>.</p>
+<h2 id="error-boundary">Error Boundary</h2>
+<p>A React component that catches JavaScript errors in its child component tree and displays a fallback UI. In Next.js, create an <a href="/docs/app/api-reference/file-conventions/error"><code>error.js</code> file</a> to automatically wrap a route segment in an error boundary. Learn more in <a href="/docs/app/getting-started/error-handling">Error Handling</a>.</p>
+<h1>F</h1>
+<h2 id="font-optimization">Font Optimization</h2>
+<p>Automatic font optimization using <a href="/docs/app/api-reference/components/font"><code>next/font</code></a>. Next.js self-hosts fonts, eliminates layout shift, and applies best practices for performance. Works with Google Fonts and local font files. Learn more in <a href="/docs/app/getting-started/fonts">Fonts</a>.</p>
+<h2 id="file-system-caching">File-system caching</h2>
+<p>A Turbopack feature that stores compiler artifacts on disk between runs, reducing work across <code>next dev</code> or <code>next build</code> commands for significantly faster compile times. Learn more in <a href="/docs/app/api-reference/config/next-config-js/turbopackFileSystemCache">Turbopack FileSystem Caching</a>.</p>
+<h1>H</h1>
+<h2 id="hydration">Hydration</h2>
+<p>React’s process of attaching event handlers to the DOM to make server-rendered static HTML interactive. During hydration, React reconciles the server-rendered markup with the client-side JavaScript. Learn more in <a href="/docs/app/getting-started/server-and-client-components#how-do-server-and-client-components-work-in-nextjs">Server and Client Components</a>.</p>
+<h1>I</h1>
+<h2 id="import-aliases">Import Aliases</h2>
+<p>Custom path mappings that provide shorthand references for frequently used directories. Import aliases reduce the complexity of relative imports and make code more readable and maintainable. Learn more in <a href="/docs/app/getting-started/installation#set-up-absolute-imports-and-module-path-aliases">Absolute Imports and Module Path Aliases</a>.</p>
+<h2 id="incremental-static-regeneration-isr">Incremental Static Regeneration (ISR)</h2>
+<p>A technique that allows you to update static content without rebuilding the entire site. ISR enables you to use static generation on a per-page basis while revalidating pages in the background as traffic comes in. Learn more in the <a href="/docs/app/guides/incremental-static-regeneration">ISR guide</a>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: In Next.js, ISR is also known as <a href="#revalidation">Revalidation</a>.</p>
+</blockquote>
+<h2 id="intercepting-routes">Intercepting Routes</h2>
+<p>A routing pattern that allows loading a route from another part of your application within the current layout. Useful for displaying content (like modals) without the user switching context, while keeping the URL shareable. Learn more in <a href="/docs/app/api-reference/file-conventions/intercepting-routes">Intercepting Routes</a>.</p>
+<h2 id="image-optimization">Image Optimization</h2>
+<p>Automatic image optimization using the <a href="/docs/app/api-reference/components/image"><code>&lt;Image&gt;</code> component</a>. Next.js optimizes images on-demand, serves them in modern formats like WebP, and automatically handles lazy loading and responsive sizing. Learn more in <a href="/docs/app/getting-started/images">Images</a>.</p>
+<h1>L</h1>
+<h2 id="layout">Layout</h2>
+<p>UI that is shared between multiple pages. Layouts preserve state, remain interactive, and do not re-render on navigation. Defined by exporting a React component from a <a href="/docs/app/api-reference/file-conventions/layout"><code>layout.js</code> file</a>. Learn more in <a href="/docs/app/getting-started/layouts-and-pages">Layouts and Pages</a>.</p>
+<h2 id="loading-ui">Loading UI</h2>
+<p>Fallback UI shown while a <a href="#route-segment">route segment</a> is loading. Created by adding a <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.js</code> file</a> to a folder, which automatically wraps the page in a <a href="#suspense-boundary">Suspense boundary</a>. Learn more in <a href="/docs/app/api-reference/file-conventions/loading">Loading UI</a>.</p>
+<h1>M</h1>
+<h2 id="module-graph">Module Graph</h2>
+<p>A graph of file dependencies in your app. Each file (module) is a node, and import/export relationships form the edges. Next.js analyzes this graph to determine optimal bundling and code-splitting strategies. Learn more in <a href="/docs/app/getting-started/server-and-client-components#reducing-js-bundle-size">Server and Client Components</a>.</p>
+<h2 id="metadata">Metadata</h2>
+<p>Information about a page used by browsers and search engines, such as title, description, and Open Graph images. In Next.js, define metadata using the <a href="/docs/app/api-reference/functions/generate-metadata"><code>metadata</code> export</a> or <a href="/docs/app/api-reference/functions/generate-metadata"><code>generateMetadata</code> function</a> in layout or page files. Learn more in <a href="/docs/app/getting-started/metadata-and-og-images">Metadata and OG Images</a>.</p>
+<h2 id="memoization">Memoization</h2>
+<p>Caching the return value of a function so that calling the same function multiple times during a render pass (request) only executes it once. In Next.js, <code>fetch</code> <code>GET</code> requests with the same URL and options are automatically memoized across Server Components, layouts, pages, and <code>generateMetadata</code>/<code>generateStaticParams</code> (but not <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a> since they are not part of the React component tree).</p>
+<p>For non-<code>fetch</code> operations, use the React <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener"><code>cache</code></a> function. Learn more in the <a href="/docs/app/api-reference/functions/fetch"><code>fetch</code> API reference</a>.</p>
+<h2 id="middleware">Middleware</h2>
+<p>See <a href="#proxy">Proxy</a>.</p>
+<h1>N</h1>
+<h2 id="not-found">Not Found</h2>
+<p>A special component shown when a route doesn’t exist or when the <a href="/docs/app/api-reference/functions/not-found"><code>notFound()</code> function</a> is called. Created by adding a <a href="/docs/app/api-reference/file-conventions/not-found"><code>not-found.js</code> file</a> to your app directory. Learn more in <a href="/docs/app/getting-started/error-handling#not-found">Error Handling</a>.</p>
+<h1>P</h1>
+<h2 id="private-folders">Private Folders</h2>
+<p>Folders prefixed with an underscore (e.g., <code>_components</code>) that are excluded from the routing system. These folders are used for code organization and shared utilities without creating accessible routes. Learn more in <a href="/docs/app/getting-started/project-structure#private-folders">Private Folders</a>.</p>
+<h2 id="page">Page</h2>
+<p>UI that is unique to a route. Defined by exporting a React component from a <a href="/docs/app/api-reference/file-conventions/page"><code>page.js</code> file</a> within the <code>app</code> directory. Learn more in <a href="/docs/app/getting-started/layouts-and-pages">Layouts and Pages</a>.</p>
+<h2 id="parallel-routes">Parallel Routes</h2>
+<p>A pattern that allows simultaneously or conditionally rendering multiple pages within the same layout. Created using named slots with the <code>@folder</code> convention, useful for dashboards, modals, and complex layouts. Learn more in <a href="/docs/app/api-reference/file-conventions/parallel-routes">Parallel Routes</a>.</p>
+<h2 id="partial-prerendering-ppr">Partial Prerendering (PPR)</h2>
+<p>A rendering optimization that combines prerendering and dynamic rendering in a single route. The static shell is served immediately while dynamic content streams in when ready, providing the best of both rendering strategies. Learn more in <a href="/docs/app/getting-started/caching">Cache Components</a>.</p>
+<h2 id="prefetching">Prefetching</h2>
+<p>Loading a route in the background before the user navigates to it. Next.js automatically prefetches routes linked with the <a href="/docs/app/api-reference/components/link"><code>&lt;Link&gt;</code> component</a> when they enter the viewport, making navigation feel instant. Learn more in the <a href="/docs/app/guides/prefetching">Prefetching guide</a>.</p>
+<h2 id="prerendering">Prerendering</h2>
+<p>When a component is rendered at <a href="#build-time">build time</a> or in the background during <a href="#revalidation">revalidation</a>. The result is HTML and <a href="#rsc-payload">RSC Payload</a>, which can be cached and served from a CDN. Prerendering is the default for components that don’t use <a href="#request-time-apis">Request-time APIs</a>.</p>
+<h2 id="proxy">Proxy</h2>
+<p>A file (<a href="/docs/app/api-reference/file-conventions/proxy"><code>proxy.js</code></a>) that runs code on the server before request is completed. Used to implement server-side logic like logging, redirects, and rewrites. Formerly known as Middleware. Learn more in the <a href="/docs/app/getting-started/proxy">Proxy guide</a>.</p>
+<h1>R</h1>
+<h2 id="redirect">Redirect</h2>
+<p>Sending users from one URL to another. In Next.js, redirects can be configured in <a href="/docs/app/api-reference/config/next-config-js/redirects"><code>next.config.js</code></a>, returned from <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>, or triggered programmatically with the <a href="/docs/app/api-reference/functions/redirect"><code>redirect()</code> function</a>. Learn more in <a href="/docs/app/guides/redirecting">Redirecting</a>.</p>
+<h2 id="request-time-apis">Request-time APIs</h2>
+<p>Functions that access request-specific data, causing a component to opt into <a href="#dynamic-rendering">dynamic rendering</a>. These include:</p>
+<ul>
+<li><a href="/docs/app/api-reference/functions/cookies"><code>cookies()</code></a> - Access request cookies</li>
+<li><a href="/docs/app/api-reference/functions/headers"><code>headers()</code></a> - Access request headers</li>
+<li><a href="/docs/app/api-reference/file-conventions/page#searchparams-optional"><code>searchParams</code></a> - Access URL query parameters</li>
+<li><a href="/docs/app/api-reference/functions/draft-mode"><code>draftMode()</code></a> - Enable or check draft mode</li>
+</ul>
+<h2 id="runtime-rendering">Runtime rendering</h2>
+<p>See <a href="#dynamic-rendering">Dynamic rendering</a>.</p>
+<h2 id="revalidation">Revalidation</h2>
+<p>The process of updating cached data. Can be time-based (using <a href="/docs/app/api-reference/functions/cacheLife"><code>cacheLife()</code></a> to set cache duration) or on-demand (using <a href="/docs/app/api-reference/functions/cacheTag"><code>cacheTag()</code></a> to tag data, then <a href="/docs/app/api-reference/functions/updateTag"><code>updateTag()</code></a> to invalidate). Learn more in <a href="/docs/app/getting-started/caching">Caching and Revalidating</a>.</p>
+<h2 id="rewrite">Rewrite</h2>
+<p>Mapping an incoming request path to a different destination path without changing the URL in the browser. Configured in <a href="/docs/app/api-reference/config/next-config-js/rewrites"><code>next.config.js</code></a> or returned from <a href="/docs/app/api-reference/file-conventions/proxy">Proxy</a>. Useful for proxying to external services or legacy URLs.</p>
+<h2 id="route-groups">Route Groups</h2>
+<p>A way to organize routes without affecting the URL structure. Created by wrapping a folder name in parentheses (e.g., <code>(marketing)</code>), route groups help organize related routes and enable per-group <a href="#layout">layouts</a>. Learn more in <a href="/docs/app/api-reference/file-conventions/route-groups">Route Groups</a>.</p>
+<h2 id="route-handler">Route Handler</h2>
+<p>A function that handles HTTP requests for a specific route, defined in a <a href="/docs/app/api-reference/file-conventions/route"><code>route.js</code> file</a>. Route Handlers use the Web Request and Response APIs and can handle <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, <code>HEAD</code>, and <code>OPTIONS</code> methods. Learn more in <a href="/docs/app/getting-started/route-handlers">Route Handlers</a>.</p>
+<h2 id="route-segment">Route Segment</h2>
+<p>A part of the URL path (between two slashes) defined by a folder in the <code>app</code> directory. Each folder represents a segment in the URL structure. Learn more in <a href="/docs/app/getting-started/project-structure">Project Structure</a>.</p>
+<h2 id="rsc-payload">RSC Payload</h2>
+<p>The React Server Component Payload—a compact binary representation of the rendered React Server Components tree. Contains the rendered result of Server Components, placeholders for Client Components, and props passed between them. Learn more in <a href="/docs/app/getting-started/server-and-client-components#how-do-server-and-client-components-work-in-nextjs">Server and Client Components</a>.</p>
+<h1>S</h1>
+<h2 id="server-component">Server Component</h2>
+<p>The default component type in the App Router. Server Components render on the server, can fetch data directly, and don’t add to the client JavaScript bundle. They cannot use state or browser APIs. Learn more in <a href="/docs/app/getting-started/server-and-client-components">Server and Client Components</a>.</p>
+<h2 id="server-action">Server Action</h2>
+<p>A <a href="#server-function">Server Function</a> that is passed to a Client Component as a prop or bound to a form action. Server Actions are commonly used for form submissions and data mutations. Learn more in <a href="/docs/app/getting-started/mutating-data">Server Actions and Mutations</a>.</p>
+<h2 id="server-function">Server Function</h2>
+<p>An asynchronous function that runs on the server, marked with the <a href="/docs/app/api-reference/directives/use-server"><code>&quot;use server&quot;</code> directive</a>. Server Functions can be invoked from Client Components. When passed as a prop to a Client Component or bound to a form action, they are called <a href="#server-action">Server Actions</a>. Learn more in <a href="https://react.dev/reference/rsc/server-functions" target="_blank" rel="noopener">React Server Functions</a>.</p>
+<h2 id="static-export">Static Export</h2>
+<p>A deployment mode that generates a fully static site with HTML, CSS, and JavaScript files. Enabled by setting <code>output: 'export'</code> in <code>next.config.js</code>. Static exports can be hosted on any static file server without a Node.js server. Learn more in <a href="/docs/app/guides/static-exports">Static Exports</a>.</p>
+<h2 id="static-rendering">Static rendering</h2>
+<p>See <a href="#prerendering">Prerendering</a>.</p>
+<h2 id="static-assets">Static Assets</h2>
+<p>Files such as images, fonts, videos, and other media that are served directly without processing. Static assets are typically stored in the <code>public</code> directory and referenced by their relative paths. Learn more in <a href="/docs/app/api-reference/file-conventions/public-folder">Static Assets</a>.</p>
+<h2 id="static-shell">Static Shell</h2>
+<p>The prerendered HTML structure of a page that’s served immediately to the browser. With <a href="#partial-prerendering-ppr">Partial Prerendering</a>, the static shell includes all statically renderable content plus <a href="#suspense-boundary">Suspense boundary</a> fallbacks for dynamic content that streams in later.</p>
+<h2 id="streaming">Streaming</h2>
+<p>A technique that allows the server to send parts of a page to the client as they become ready, rather than waiting for the entire page to render. Enabled automatically with <a href="/docs/app/api-reference/file-conventions/loading"><code>loading.js</code></a> or manual <code>&lt;Suspense&gt;</code> boundaries. Learn more in the <a href="/docs/app/guides/streaming">Streaming guide</a>.</p>
+<h2 id="suspense-boundary">Suspense boundary</h2>
+<p>A React <a href="https://react.dev/reference/react/Suspense" target="_blank" rel="noopener"><code>&lt;Suspense&gt;</code></a> component that wraps async content and displays fallback UI while it loads. In Next.js, Suspense boundaries define where the <a href="#static-shell">static shell</a> ends and <a href="#streaming">streaming</a> begins, enabling <a href="#partial-prerendering-ppr">Partial Prerendering</a>.</p>
+<h1>T</h1>
+<h2 id="turbopack">Turbopack</h2>
+<p>A fast, Rust-based bundler built for Next.js. Turbopack is the default bundler for <code>next dev</code> and available for <code>next build</code>. It provides significantly faster compilation times compared to Webpack. Learn more in <a href="/docs/app/api-reference/turbopack">Turbopack</a>.</p>
+<h2 id="tree-shaking">Tree Shaking</h2>
+<p>The process of removing unused code from your JavaScript bundles during the build process. Next.js automatically tree-shakes your code to reduce bundle sizes. Learn more in the <a href="/docs/app/guides/package-bundling">Package Bundling guide</a>.</p>
+<h1>U</h1>
+<h2 id="quotuse-cachequot-directive"><code>&quot;use cache&quot;</code> Directive</h2>
+<p>A directive that marks a component or function as cacheable. It can be placed at the top of a file to indicate that all exports in the file are cacheable, or inline at the top of a function or component to mark that specific scope as cacheable. Learn more in the <a href="/docs/app/api-reference/directives/use-cache"><code>&quot;use cache&quot;</code> reference</a>.</p>
+<h2 id="quotuse-clientquot-directive"><code>&quot;use client&quot;</code> Directive</h2>
+<p>A special React directive that marks the boundary between server and client code. It must be placed at the top of a file, before any imports or other code. It indicates that React Components, helper functions, variable declarations, and all imported dependencies should be included in the <a href="#client-bundles">client bundle</a>. Learn more in the <a href="/docs/app/api-reference/directives/use-client"><code>&quot;use client&quot;</code> reference</a>.</p>
+<h2 id="quotuse-serverquot-directive"><code>&quot;use server&quot;</code> Directive</h2>
+<p>A directive that marks a function as a <a href="#server-function">Server Function</a> that can be called from client-side code. It can be placed at the top of a file to indicate that all exports in the file are Server Functions, or inline at the top of a function to mark that specific function. Learn more in the <a href="/docs/app/api-reference/directives/use-server"><code>&quot;use server&quot;</code> reference</a>.</p>
+<h1>V</h1>
+<h2 id="version-skew">Version skew</h2>
+<p>After a new version of your application is deployed, clients that are still active may reference JavaScript, CSS, or data from an older build. This mismatch between client and server versions is called version skew, and it can cause missing assets, Server Action errors, and navigation failures. Next.js uses <a href="/docs/app/api-reference/config/next-config-js/deploymentId"><code>deploymentId</code></a> to detect and handle version skew. Learn more in <a href="/docs/app/guides/self-hosting#version-skew">Self-Hosting - Version Skew</a>.</p>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>public-static-pages — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-public-static-pages">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#example">Example</a></li><ul><li><a href="#step-1-add-a-simple-header">Step 1: Add a simple header</a></li><li><a href="#step-2-add-the-product-list">Step 2: Add the product list</a></li><li><a href="#cache-components">Cache components</a></li><li><a href="#step-3-add-a-dynamic-promotion-banner">Step 3: Add a dynamic promotion banner</a></li><li><a href="#partial-prerendering">Partial prerendering</a></li><li><a href="#next-steps">Next steps</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">public-static-pages</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Learn how to build public, &quot;static&quot; pages that share data across users, such as landing pages, list pages (products, blogs, etc.), marketing and news sites.</td></tr><tr><th>nav_title</th><td>Public pages</td></tr></table><p>Public pages show the same content to every user. Common examples include landing pages, marketing pages, and product pages.</p>
+<p>Since data is shared, these kind of pages can be <a href="/docs/app/glossary#prerendering">prerendered</a> ahead of time and reused. This leads to faster page loads and lower server costs.</p>
+<p>This guide will show you how to build public pages that share data across users.</p>
+<h2 id="example">Example</h2>
+<p>As an example, we’ll build a product list page.</p>
+<p>We’ll start with a static header, add a product list with async external data, and learn how to render it without blocking the response. Finally, we’ll add a user-specific promotion banner without switching the entire page to <a href="/docs/app/glossary#dynamic-rendering">dynamic rendering</a>.</p>
+<p>You can find the resources used in this example here:</p>
+<ul>
+<li><a href="https://youtu.be/F6romq71KtI" target="_blank" rel="noopener">Video</a></li>
+<li><a href="https://cache-components-public-pages.labs.vercel.dev/" target="_blank" rel="noopener">Demo</a></li>
+<li><a href="https://github.com/vercel-labs/cache-components-public-pages" target="_blank" rel="noopener">Code</a></li>
+</ul>
+<h3 id="step-1-add-a-simple-header">Step 1: Add a simple header</h3>
+<p>Let’s start with a simple header.</p>
+<pre><code class="language-tsx">// Static component
+function Header() {
+  return &lt;h1&gt;Shop&lt;/h1&gt;
+}
+
+export default async function Page() {
+  return (
+    &lt;&gt;
+      &lt;Header /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<h4>Static components</h4>
+<p>The <code>&lt;Header /&gt;</code> component doesn’t depend on any inputs that change between requests, such as: external data, request headers, route params, the current time, or random values.</p>
+<p>Since its output never changes and can be determined ahead of time, this kind of component is called a <strong>static</strong> component. With no reason to wait for a request, Next.js can safely <strong>prerender</strong> the page at <a href="/docs/app/glossary#build-time">build time</a>.</p>
+<p>We can confirm this by running <a href="/docs/app/api-reference/cli/next#next-build-options"><code>next build</code></a>.</p>
+<pre><code class="language-bash">Route (app)      Revalidate  Expire
+┌ ○ /products           15m      1y
+└ ○ /_not-found
+
+○  (Static)  prerendered as static content
+</code></pre>
+<p>Notice that the product route is marked as static, even though we didn’t add any explicit configuration.</p>
+<h3 id="step-2-add-the-product-list">Step 2: Add the product list</h3>
+<p>Now, let’s fetch and render our product list.</p>
+<pre><code class="language-tsx">import db from '@/db'
+import { List } from '@/app/products/ui'
+
+function Header() {}
+
+// Dynamic component
+async function ProductList() {
+  const products = await db.product.findMany()
+  return &lt;List items={products} /&gt;
+}
+
+export default async function Page() {
+  return (
+    &lt;&gt;
+      &lt;Header /&gt;
+      &lt;ProductList /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>Unlike the header, the product list depends on external data.</p>
+<h4>Dynamic components</h4>
+<p>Since this data <strong>can</strong> change over time, the rendered output is no longer guaranteed to be stable. This makes the product list a <strong>dynamic</strong> component.</p>
+<p>Without guidance, the framework assumes you want to fetch <strong>fresh</strong> data on every user request. This design choice reflects standard web behavior where a new server request renders the page.</p>
+<p>However, if this component is rendered at request time, fetching its data will delay the <strong>entire</strong> route from responding. If we refresh the page, we can see this happen.</p>
+<p>Even though the header is rendered instantly, it can’t be sent to the browser until the product list has finished fetching.</p>
+<p>To protect us from this performance cliff, Next.js will show us a <a href="/docs/messages/blocking-route">warning</a> the first time we <strong>await</strong> data: <code>Blocking data was accessed outside of Suspense</code></p>
+<p>At this point, we have to decide how to <strong>unblock</strong> the response. Either:</p>
+<ul>
+<li><a href="/docs/app/glossary#cache-components"><strong>Cache</strong></a> the component, so it becomes <strong>stable</strong> and can be prerendered with the rest of the page.</li>
+<li><a href="/docs/app/glossary#streaming"><strong>Stream</strong></a> the component, so it becomes <strong>non-blocking</strong> and the rest of the page doesn’t have to wait for it.</li>
+</ul>
+<p>In our case, the product catalog is shared across all users, so caching is the right choice.</p>
+<h3 id="cache-components">Cache components</h3>
+<p>We can mark a function as cacheable using the <a href="/docs/app/api-reference/directives/use-cache"><code>'use cache'</code></a> directive.</p>
+<pre><code class="language-tsx">import db from '@/db'
+import { List } from '@/app/products/ui'
+
+function Header() {}
+
+// Cache component
+async function ProductList() {
+  'use cache'
+  const products = await db.product.findMany()
+  return &lt;List items={products} /&gt;
+}
+
+export default async function Page() {
+  return (
+    &lt;&gt;
+      &lt;Header /&gt;
+      &lt;ProductList /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>This turns it into a <a href="/docs/app/glossary#cache-components">cache component</a>. The first time it runs, whatever we return will be cached and reused.</p>
+<p>If a cache component’s inputs are available <strong>before</strong> the request arrives, it can be prerendered just like a static component.</p>
+<p>If we refresh again, we can see the page loads instantly because the cache component doesn’t block the response. And, if we run <code>next build</code> again, we can confirm the page is still static:</p>
+<pre><code class="language-bash">Route (app)      Revalidate  Expire
+┌ ○ /products           15m      1y
+└ ○ /_not-found
+
+○  (Static)  prerendered as static content
+</code></pre>
+<p>But, pages rarely stay static forever.</p>
+<h3 id="step-3-add-a-dynamic-promotion-banner">Step 3: Add a dynamic promotion banner</h3>
+<p>Sooner or later, even simple pages need some dynamic content. To demonstrate this, let’s add a promotional banner:</p>
+<pre><code class="language-tsx">import db from '@/db'
+import { List, Promotion } from '@/app/products/ui'
+import { getPromotion } from '@/app/products/data'
+
+function Header() {}
+
+async function ProductList() {}
+
+// Dynamic component
+async function PromotionContent() {
+  const promotion = await getPromotion()
+  return &lt;Promotion data={promotion} /&gt;
+}
+
+export default async function Page() {
+  return (
+    &lt;&gt;
+      &lt;PromotionContent /&gt;
+      &lt;Header /&gt;
+      &lt;ProductList /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>Once again, this starts off as dynamic. And as before, introducing blocking behavior triggers a Next.js warning.</p>
+<p>Last time, the data was shared, so it could be cached. This time, the promotion depends on request specific inputs like the user’s location and A/B tests, so we can’t cache our way out of the blocking behavior.</p>
+<h3 id="partial-prerendering">Partial prerendering</h3>
+<p>Adding dynamic content doesn’t mean we have to go back to a fully blocking render. We can unblock the response with streaming.</p>
+<p>Next.js supports streaming by default. We can use a <a href="/docs/app/glossary#suspense-boundary">Suspense boundary</a> to tell the framework where to slice the streamed response into <em>chunks</em>, and what fallback UI to show while content loads.</p>
+<pre><code class="language-tsx">import { Suspense } from 'react'
+import db from '@/db'
+import { List, Promotion, PromotionSkeleton } from '@/app/products/ui'
+import { getPromotion } from '@/app/products/data'
+
+function Header() {}
+
+async function ProductList() {}
+
+// Dynamic component (streamed)
+async function PromotionContent() {
+  const promotion = await getPromotion()
+  return &lt;Promotion data={promotion} /&gt;
+}
+
+export default async function Page() {
+  return (
+    &lt;&gt;
+      &lt;Suspense fallback={&lt;PromotionSkeleton /&gt;}&gt;
+        &lt;PromotionContent /&gt;
+      &lt;/Suspense&gt;
+      &lt;Header /&gt;
+      &lt;ProductList /&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>The fallback is prerendered alongside the rest of our static and cached content. The inner component streams in later, once its async work completes.</p>
+<p>With this change, Next.js can separate prerenderable work from request-time work and the route becomes <a href="/docs/app/glossary#partial-prerendering-ppr">partially prerendered</a>.</p>
+<p>Again, we can confirm this by running <code>next build</code>:</p>
+<pre><code class="language-bash">Route (app)      Revalidate  Expire
+┌ ◐ /products    15m      1y
+└ ◐ /_not-found
+
+◐  (Partial Prerender)  Prerendered as static HTML with dynamic server-streamed content
+</code></pre>
+<p>At <a href="/docs/app/glossary#build-time"><strong>build time</strong></a>, most of the page, including the header, product list and promotion fallback, is rendered, cached and pushed to a content delivery network.</p>
+<p>At <a href="/docs/app/glossary#dynamic-rendering"><strong>request time</strong></a>, the prerendered part is served instantly from a CDN node close to the user.</p>
+<p>In parallel, the user specific promotion is rendered on the server, streamed to the client, and swapped into the fallback slot.</p>
+<p>If we refresh the page one last time, we can see most of the page loads instantly, while the dynamic parts stream in as they become available.</p>
+<h3 id="next-steps">Next steps</h3>
+<p>We’ve learned how to build mostly static pages that include pockets of dynamic content.</p>
+<p>We started with a static page, added async work, and resolved the blocking behavior by caching what could be prerendered, and streaming what couldn’t.</p>
+<p>In future guides, we’ll learn how to:</p>
+<ul>
+<li>Revalidate prerendered pages or cached data.</li>
+<li>Create variants of the same page with route params.</li>
+<li>Create private pages with personalized user data.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

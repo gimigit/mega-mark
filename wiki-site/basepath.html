@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>basepath — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-basepath">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><ul><li><a href="#links">Links</a></li><li><a href="#images">Images</a></li></ul></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">basepath</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>Use `basePath` to deploy a Next.js application under a sub-path of a domain.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>To deploy a Next.js application under a sub-path of a domain you can use the <code>basePath</code> config option.</p>
+<p><code>basePath</code> allows you to set a path prefix for the application. For example, to use <code>/docs</code> instead of <code>''</code> (an empty string, the default), open <code>next.config.js</code> and add the <code>basePath</code> config:</p>
+<pre><code class="language-js">module.exports = {
+  basePath: '/docs',
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong>: This value must be set at build time and cannot be changed without re-building as the value is inlined in the client-side bundles.</p>
+</blockquote>
+<h3 id="links">Links</h3>
+<p>When linking to other pages using <code>next/link</code> and <code>next/router</code> the <code>basePath</code> will be automatically applied.</p>
+<p>For example, using <code>/about</code> will automatically become <code>/docs/about</code> when <code>basePath</code> is set to <code>/docs</code>.</p>
+<pre><code class="language-js">export default function HomePage() {
+  return (
+    &lt;&gt;
+      &lt;Link href=&quot;/about&quot;&gt;About Page&lt;/Link&gt;
+    &lt;/&gt;
+  )
+}
+</code></pre>
+<p>Output html:</p>
+<pre><code class="language-html">&lt;a href=&quot;/docs/about&quot;&gt;About Page&lt;/a&gt;
+</code></pre>
+<p>This makes sure that you don’t have to change all links in your application when changing the <code>basePath</code> value.</p>
+<h3 id="images">Images</h3>
+<AppOnly>
+<p>When using the <a href="/docs/app/api-reference/components/image"><code>next/image</code></a> component, you will need to add the <code>basePath</code> in front of <code>src</code>.</p>
+</AppOnly>
+<PagesOnly>
+<p>When using the <a href="/docs/pages/api-reference/components/image"><code>next/image</code></a> component, you will need to add the <code>basePath</code> in front of <code>src</code>.</p>
+</PagesOnly>
+<p>For example, using <code>/docs/me.png</code> will properly serve your image when <code>basePath</code> is set to <code>/docs</code>.</p>
+<pre><code class="language-jsx">import Image from 'next/image'
+
+function Home() {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;My Homepage&lt;/h1&gt;
+      &lt;Image
+        src=&quot;/docs/me.png&quot;
+        alt=&quot;Picture of the author&quot;
+        width={500}
+        height={500}
+      /&gt;
+      &lt;p&gt;Welcome to my homepage!&lt;/p&gt;
+    &lt;/&gt;
+  )
+}
+
+export default Home
+</code></pre>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

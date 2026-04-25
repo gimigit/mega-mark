@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>page — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-page">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#good-to-know">Good to know</a></li><li><a href="#reference">Reference</a></li><ul><li><a href="#props">Props</a></li><li><a href="#page-props-helper">Page Props Helper</a></li></ul><li><a href="#examples">Examples</a></li><ul><li><a href="#displaying-content-based-on-params">Displaying content based on params</a></li><li><a href="#handling-filtering-with-searchparams">Handling filtering with searchParams</a></li><li><a href="#reading-searchparams-and-params-in-client-components">Reading searchParams and params in Client Components</a></li></ul><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">page</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>description</th><td>API reference for the page.js file.</td></tr></table><p>The <code>page</code> file allows you to define UI that is <strong>unique</strong> to a route. You can create a page by default exporting a component from the file:</p>
+<pre><code class="language-tsx">export default function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  return &lt;h1&gt;My Page&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default function Page({ params, searchParams }) {
+  return &lt;h1&gt;My Page&lt;/h1&gt;
+}
+</code></pre>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li>The <code>.js</code>, <code>.jsx</code>, or <code>.tsx</code> file extensions can be used for <code>page</code>.</li>
+<li>A <code>page</code> is always the <strong>leaf</strong> of the route subtree.</li>
+<li>A <code>page</code> file is required to make a route segment <strong>publicly accessible</strong>.</li>
+<li>Pages are <a href="https://react.dev/reference/rsc/server-components" target="_blank" rel="noopener">Server Components</a> by default, but can be set to a <a href="https://react.dev/reference/rsc/use-client" target="_blank" rel="noopener">Client Component</a>.</li>
+<li>In the <a href="/docs/app/getting-started/project-structure#component-hierarchy">component hierarchy</a>, <code>page.js</code> is the innermost file convention. It is wrapped by <code>loading.js</code> (Suspense boundary), <code>error.js</code> (error boundary), <code>template.js</code>, and <code>layout.js</code> in the same segment.</li>
+</ul>
+<h2 id="reference">Reference</h2>
+<h3 id="props">Props</h3>
+<h4><code>params</code> (optional)</h4>
+<p>A promise that resolves to an object containing the <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route parameters</a> from the root segment down to that page.</p>
+<pre><code class="language-tsx">export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ params }) {
+  const { slug } = await params
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Example Route</th>
+<th>URL</th>
+<th><code>params</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/shop/[slug]/page.js</code></td>
+<td><code>/shop/1</code></td>
+<td><code>Promise&lt;{ slug: '1' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[category]/[item]/page.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>Promise&lt;{ category: '1', item: '2' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>app/shop/[...slug]/page.js</code></td>
+<td><code>/shop/1/2</code></td>
+<td><code>Promise&lt;{ slug: ['1', '2'] }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Since the <code>params</code> prop is a promise, you must use <code>async/await</code> or React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function to access the values.
+<ul>
+<li>In version 14 and earlier, <code>params</code> was a synchronous prop. To help with backwards compatibility, you can still access it synchronously in Next.js 15, but this behavior will be deprecated in the future.</li>
+</ul>
+</li>
+</ul>
+<h4><code>searchParams</code> (optional)</h4>
+<p>A promise that resolves to an object containing the <a href="https://developer.mozilla.org/docs/Learn/Common_questions/What_is_a_URL#parameters" target="_blank" rel="noopener">search parameters</a> of the current URL. For example:</p>
+<pre><code class="language-tsx">export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const filters = (await searchParams).filters
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ searchParams }) {
+  const filters = (await searchParams).filters
+}
+</code></pre>
+<p>Client Component <strong>pages</strong> can also access <code>searchParams</code> using React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> hook:</p>
+<pre><code class="language-tsx">'use client'
+import { use } from 'react'
+
+export default function Page({
+  searchParams,
+}: {
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const filters = use(searchParams).filters
+}
+</code></pre>
+<pre><code class="language-jsx">'use client'
+import { use } from 'react'
+
+export default function Page({ searchParams }) {
+  const filters = use(searchParams).filters
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Example URL</th>
+<th><code>searchParams</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/shop?a=1</code></td>
+<td><code>Promise&lt;{ a: '1' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>/shop?a=1&amp;b=2</code></td>
+<td><code>Promise&lt;{ a: '1', b: '2' }&gt;</code></td>
+</tr>
+<tr>
+<td><code>/shop?a=1&amp;a=2</code></td>
+<td><code>Promise&lt;{ a: ['1', '2'] }&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Since the <code>searchParams</code> prop is a promise. You must use <code>async/await</code> or React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function to access the values.
+<ul>
+<li>In version 14 and earlier, <code>searchParams</code> was a synchronous prop. To help with backwards compatibility, you can still access it synchronously in Next.js 15, but this behavior will be deprecated in the future.</li>
+</ul>
+</li>
+<li><code>searchParams</code> is a <strong><a href="/docs/app/glossary#request-time-apis">Request-time API</a></strong> whose values cannot be known ahead of time. Using it will opt the page into <strong><a href="/docs/app/glossary#dynamic-rendering">dynamic rendering</a></strong> at request time.</li>
+<li><code>searchParams</code> is a plain JavaScript object, not a <code>URLSearchParams</code> instance.</li>
+</ul>
+<h3 id="page-props-helper">Page Props Helper</h3>
+<p>You can type pages with <code>PageProps</code> to get strongly typed <code>params</code> and <code>searchParams</code> from the route literal. <code>PageProps</code> is a globally available helper.</p>
+<pre><code class="language-tsx">export default async function Page(props: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await props.params
+  const query = await props.searchParams
+  return &lt;h1&gt;Blog Post: {slug}&lt;/h1&gt;
+}
+</code></pre>
+<blockquote>
+<p><strong>Good to know</strong></p>
+<ul>
+<li>Using a literal route (e.g. <code>'/blog/[slug]'</code>) enables autocomplete and strict keys for <code>params</code>.</li>
+<li>Static routes resolve <code>params</code> to <code>{}</code>.</li>
+<li>Types are generated during <code>next dev</code>, <code>next build</code>, or with <code>next typegen</code>.</li>
+<li>After type generation, the <code>PageProps</code> helper is globally available. It doesn’t need to be imported.</li>
+</ul>
+</blockquote>
+<h2 id="examples">Examples</h2>
+<h3 id="displaying-content-based-on-params">Displaying content based on <code>params</code></h3>
+<p>Using <a href="/docs/app/api-reference/file-conventions/dynamic-routes">dynamic route segments</a>, you can display or fetch specific content for the page based on the <code>params</code> prop.</p>
+<pre><code class="language-tsx">export default async function Page({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+}) {
+  const { slug } = await params
+  return &lt;h1&gt;Blog Post: {slug}&lt;/h1&gt;
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ params }) {
+  const { slug } = await params
+  return &lt;h1&gt;Blog Post: {slug}&lt;/h1&gt;
+}
+</code></pre>
+<h3 id="handling-filtering-with-searchparams">Handling filtering with <code>searchParams</code></h3>
+<p>You can use the <code>searchParams</code> prop to handle filtering, pagination, or sorting based on the query string of the URL.</p>
+<pre><code class="language-tsx">export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const { page = '1', sort = 'asc', query = '' } = await searchParams
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Product Listing&lt;/h1&gt;
+      &lt;p&gt;Search query: {query}&lt;/p&gt;
+      &lt;p&gt;Current page: {page}&lt;/p&gt;
+      &lt;p&gt;Sort order: {sort}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<pre><code class="language-jsx">export default async function Page({ searchParams }) {
+  const { page = '1', sort = 'asc', query = '' } = await searchParams
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Product Listing&lt;/h1&gt;
+      &lt;p&gt;Search query: {query}&lt;/p&gt;
+      &lt;p&gt;Current page: {page}&lt;/p&gt;
+      &lt;p&gt;Sort order: {sort}&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<h3 id="reading-searchparams-and-params-in-client-components">Reading <code>searchParams</code> and <code>params</code> in Client Components</h3>
+<p>To use <code>searchParams</code> and <code>params</code> in a Client Component (which cannot be <code>async</code>), you can use React’s <a href="https://react.dev/reference/react/use" target="_blank" rel="noopener"><code>use</code></a> function to read the promise:</p>
+<pre><code class="language-tsx">'use client'
+
+import { use } from 'react'
+
+export default function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise&lt;{ slug: string }&gt;
+  searchParams: Promise&lt;{ [key: string]: string | string[] | undefined }&gt;
+}) {
+  const { slug } = use(params)
+  const { query } = use(searchParams)
+}
+</code></pre>
+<pre><code class="language-js">'use client'
+
+import { use } from 'react'
+
+export default function Page({ params, searchParams }) {
+  const { slug } = use(params)
+  const { query } = use(searchParams)
+}
+</code></pre>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v15.0.0-RC</code></td>
+<td><code>params</code> and <code>searchParams</code> are now promises. A <a href="/docs/app/guides/upgrading/codemods#150">codemod</a> is available.</td>
+</tr>
+<tr>
+<td><code>v13.0.0</code></td>
+<td><code>page</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

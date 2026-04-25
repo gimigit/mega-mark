@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>environment-variables — CLAUDE.md — Mega-Mark Agricultural Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-environment-variables">
+<header class="masthead">
+  <a class="masthead-mark" href="home.html">
+    <span class="masthead-mark-letter">C</span>
+    <span class="masthead-mark-words">
+      <span class="masthead-mark-word-primary">CLAUDE.md</span>
+      <span class="masthead-mark-word-secondary">— Mega Mark Agricultural Marketplace</span>
+    </span>
+  </a>
+  <div class="masthead-search">
+    <input id="search-input" type="search" placeholder="Search CLAUDE.md — Mega-Mark Agricultural Marketplace…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</header>
+<div class="layout">
+<aside class="rail">
+<nav class="rail-nav"><h4>Navigate</h4><ul><li><a href="home.html">Home</a></li><li><a href="index.html">Catalog</a></li><li><a href="map-3d.html">Map</a></li><li><a href="log.html">Recent changes</a></li></ul></nav>
+<section class="toc-block"><h4>Contents</h4><div class="toc"><ul><li><a href="#loading-environment-variables">Loading Environment Variables</a></li><ul><li><a href="#loading-environment-variables-with-nextenv">Loading Environment Variables with @next/env</a></li><li><a href="#referencing-other-variables">Referencing Other Variables</a></li></ul><li><a href="#bundling-environment-variables-for-the-browser">Bundling Environment Variables for the Browser</a></li><ul><li><a href="#runtime-environment-variables">Runtime Environment Variables</a></li></ul><li><a href="#test-environment-variables">Test Environment Variables</a></li><li><a href="#environment-variable-load-order">Environment Variable Load Order</a></li><li><a href="#good-to-know">Good to know</a></li><li><a href="#version-history">Version History</a></li></ul></div></section>
+</aside>
+<div class="article">
+<div class="article-head">
+  <h1 class="article-title">environment-variables</h1>
+
+</div>
+<div class="article-body">
+<table class="infobox"><caption>Source</caption><tr><th>nav_title</th><td>Environment Variables</td></tr><tr><th>description</th><td>Learn to add and access environment variables in your Next.js application.</td></tr></table><p>{/* The content of this doc is shared between the app and pages router. You can use the <code>&lt;PagesOnly&gt;Content&lt;/PagesOnly&gt;</code> component to add content that is specific to the Pages Router. Any shared content should not be wrapped in a component. */}</p>
+<p>Next.js comes with built-in support for environment variables, which allows you to do the following:</p>
+<ul>
+<li><a href="#loading-environment-variables">Use <code>.env</code> to load environment variables</a></li>
+<li><a href="#bundling-environment-variables-for-the-browser">Bundle environment variables for the browser by prefixing with <code>NEXT_PUBLIC_</code></a></li>
+</ul>
+<blockquote>
+<p><strong>Warning:</strong> The default <code>create-next-app</code> template ensures all <code>.env</code> files are added to your <code>.gitignore</code>. You almost never want to commit these files to your repository.</p>
+</blockquote>
+<h2 id="loading-environment-variables">Loading Environment Variables</h2>
+<p>Next.js has built-in support for loading environment variables from <code>.env*</code> files into <code>process.env</code>.</p>
+<pre><code class="language-txt">DB_HOST=localhost
+DB_USER=myuser
+DB_PASS=mypassword
+</code></pre>
+<PagesOnly>
+<p>This loads <code>process.env.DB_HOST</code>, <code>process.env.DB_USER</code>, and <code>process.env.DB_PASS</code> into the Node.js environment automatically allowing you to use them in <a href="/docs/pages/building-your-application/data-fetching">Next.js data fetching methods</a> and <a href="/docs/pages/building-your-application/routing/api-routes">API routes</a>.</p>
+<p>For example, using <a href="/docs/pages/building-your-application/data-fetching/get-static-props"><code>getStaticProps</code></a>:</p>
+<pre><code class="language-js">export async function getStaticProps() {
+  const db = await myDB.connect({
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+  })
+  // ...
+}
+</code></pre>
+</PagesOnly>
+<AppOnly>
+<blockquote>
+<p><strong>Note</strong>: Next.js also supports multiline variables inside of your <code>.env*</code> files:</p>
+<pre><code class="language-bash"># .env
+
+# you can write with line breaks
+PRIVATE_KEY=&quot;-----BEGIN RSA PRIVATE KEY-----
+...
+Kh9NV...
+...
+-----END DSA PRIVATE KEY-----&quot;
+
+# or with `\n` inside double quotes
+PRIVATE_KEY=&quot;-----BEGIN RSA PRIVATE KEY-----\nKh9NV...\n-----END DSA PRIVATE KEY-----\n&quot;
+</code></pre>
+</blockquote>
+<blockquote>
+<p><strong>Note</strong>: If you are using a <code>/src</code> folder, please note that Next.js will load the .env files <strong>only</strong> from the parent folder and <strong>not</strong> from the <code>/src</code> folder.
+This loads <code>process.env.DB_HOST</code>, <code>process.env.DB_USER</code>, and <code>process.env.DB_PASS</code> into the Node.js environment automatically allowing you to use them in <a href="/docs/app/api-reference/file-conventions/route">Route Handlers</a>.</p>
+</blockquote>
+<p>For example:</p>
+<pre><code class="language-js">export async function GET() {
+  const db = await myDB.connect({
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+  })
+  // ...
+}
+</code></pre>
+</AppOnly>
+<h3 id="loading-environment-variables-with-nextenv">Loading Environment Variables with <code>@next/env</code></h3>
+<p>If you need to load environment variables outside of the Next.js runtime, such as in a root config file for an ORM or test runner, you can use the <code>@next/env</code> package.</p>
+<p>This package is used internally by Next.js to load environment variables from <code>.env*</code> files.</p>
+<p>To use it, install the package and use the <code>loadEnvConfig</code> function to load the environment variables:</p>
+<pre><code class="language-bash">pnpm add @next/env
+</code></pre>
+<pre><code class="language-bash">npm install @next/env
+</code></pre>
+<pre><code class="language-bash">yarn add @next/env
+</code></pre>
+<pre><code class="language-bash">bun add @next/env
+</code></pre>
+<pre><code class="language-tsx">import { loadEnvConfig } from '@next/env'
+
+const projectDir = process.cwd()
+loadEnvConfig(projectDir)
+</code></pre>
+<pre><code class="language-jsx">import { loadEnvConfig } from '@next/env'
+
+const projectDir = process.cwd()
+loadEnvConfig(projectDir)
+</code></pre>
+<p>Then, you can import the configuration where needed. For example:</p>
+<pre><code class="language-tsx">import './envConfig.ts'
+
+export default defineConfig({
+  dbCredentials: {
+    connectionString: process.env.DATABASE_URL!,
+  },
+})
+</code></pre>
+<pre><code class="language-jsx">import './envConfig.js'
+
+export default defineConfig({
+  dbCredentials: {
+    connectionString: process.env.DATABASE_URL,
+  },
+})
+</code></pre>
+<h3 id="referencing-other-variables">Referencing Other Variables</h3>
+<p>Next.js will automatically expand variables that use <code>$</code> to reference other variables e.g. <code>$VARIABLE</code> inside of your <code>.env*</code> files. This allows you to reference other secrets. For example:</p>
+<pre><code class="language-txt">TWITTER_USER=nextjs
+TWITTER_URL=https://x.com/$TWITTER_USER
+</code></pre>
+<p>In the above example, <code>process.env.TWITTER_URL</code> would be set to <code>https://x.com/nextjs</code>.</p>
+<blockquote>
+<p><strong>Good to know</strong>: If you need to use variable with a <code>$</code> in the actual value, it needs to be escaped e.g. <code>\$</code>.</p>
+</blockquote>
+<h2 id="bundling-environment-variables-for-the-browser">Bundling Environment Variables for the Browser</h2>
+<p>Non-<code>NEXT_PUBLIC_</code> environment variables are only available in the Node.js environment, meaning they aren’t accessible to the browser (the client runs in a different <em>environment</em>).</p>
+<p>In order to make the value of an environment variable accessible in the browser, Next.js can “inline” a value, at build time, into the js bundle that is delivered to the client, replacing all references to <code>process.env.[variable]</code> with a hard-coded value. To tell it to do this, you just have to prefix the variable with <code>NEXT_PUBLIC_</code>. For example:</p>
+<pre><code class="language-txt">NEXT_PUBLIC_ANALYTICS_ID=abcdefghijk
+</code></pre>
+<p>This will tell Next.js to replace all references to <code>process.env.NEXT_PUBLIC_ANALYTICS_ID</code> in the Node.js environment with the value from the environment in which you run <code>next build</code>, allowing you to use it anywhere in your code. It will be inlined into any JavaScript sent to the browser.</p>
+<blockquote>
+<p><strong>Note</strong>: After being built, your app will no longer respond to changes to these environment variables. For instance, if you use a Heroku pipeline to promote slugs built in one environment to another environment, or if you build and deploy a single Docker image to multiple environments, all <code>NEXT_PUBLIC_</code> variables will be frozen with the value evaluated at build time, so these values need to be set appropriately when the project is built. If you need access to runtime environment values, you’ll have to setup your own API to provide them to the client (either on demand or during initialization).</p>
+</blockquote>
+<pre><code class="language-js">import setupAnalyticsService from '../lib/my-analytics-service'
+
+// 'NEXT_PUBLIC_ANALYTICS_ID' can be used here as it's prefixed by 'NEXT_PUBLIC_'.
+// It will be transformed at build time to `setupAnalyticsService('abcdefghijk')`.
+setupAnalyticsService(process.env.NEXT_PUBLIC_ANALYTICS_ID)
+
+function HomePage() {
+  return &lt;h1&gt;Hello World&lt;/h1&gt;
+}
+
+export default HomePage
+</code></pre>
+<p>Note that dynamic lookups will <em>not</em> be inlined, such as:</p>
+<pre><code class="language-js">// This will NOT be inlined, because it uses a variable
+const varName = 'NEXT_PUBLIC_ANALYTICS_ID'
+setupAnalyticsService(process.env[varName])
+
+// This will NOT be inlined, because it uses a variable
+const env = process.env
+setupAnalyticsService(env.NEXT_PUBLIC_ANALYTICS_ID)
+</code></pre>
+<h3 id="runtime-environment-variables">Runtime Environment Variables</h3>
+<p>Next.js can support both build time and runtime environment variables.</p>
+<p><strong>By default, environment variables are only available on the server</strong>. To expose an environment variable to the browser, it must be prefixed with <code>NEXT_PUBLIC_</code>. However, these public environment variables will be inlined into the JavaScript bundle during <code>next build</code>.</p>
+<PagesOnly>
+<p>To read runtime environment variables, we recommend using <code>getServerSideProps</code> or <a href="/docs/app/guides/migrating/app-router-migration">incrementally adopting the App Router</a>.</p>
+</PagesOnly>
+<AppOnly>
+<p>You can safely read environment variables on the server during dynamic rendering:</p>
+<pre><code class="language-tsx">import { connection } from 'next/server'
+
+export default async function Component() {
+  await connection()
+  // cookies, headers, and other Request-time APIs
+  // will also opt into dynamic rendering, meaning
+  // this env variable is evaluated at runtime
+  const value = process.env.MY_VALUE
+  // ...
+}
+</code></pre>
+<pre><code class="language-jsx">import { connection } from 'next/server'
+
+export default async function Component() {
+  await connection()
+  // cookies, headers, and other Request-time APIs
+  // will also opt into dynamic rendering, meaning
+  // this env variable is evaluated at runtime
+  const value = process.env.MY_VALUE
+  // ...
+}
+</code></pre>
+</AppOnly>
+<p>This allows you to use a singular Docker image that can be promoted through multiple environments with different values.</p>
+<p><strong>Good to know:</strong></p>
+<ul>
+<li>You can run code on server startup using the <a href="/docs/app/guides/instrumentation"><code>register</code> function</a>.</li>
+</ul>
+<h2 id="test-environment-variables">Test Environment Variables</h2>
+<p>Apart from <code>development</code> and <code>production</code> environments, there is a 3rd option available: <code>test</code>. In the same way you can set defaults for development or production environments, you can do the same with a <code>.env.test</code> file for the <code>testing</code> environment (though this one is not as common as the previous two). Next.js will not load environment variables from <code>.env.development</code> or <code>.env.production</code> in the <code>testing</code> environment.</p>
+<p>This one is useful when running tests with tools like <code>jest</code> or <code>cypress</code> where you need to set specific environment vars only for testing purposes. Test default values will be loaded if <code>NODE_ENV</code> is set to <code>test</code>, though you usually don’t need to do this manually as testing tools will address it for you.</p>
+<p>There is a small difference between <code>test</code> environment, and both <code>development</code> and <code>production</code> that you need to bear in mind: <code>.env.local</code> won’t be loaded, as you expect tests to produce the same results for everyone. This way every test execution will use the same env defaults across different executions by ignoring your <code>.env.local</code> (which is intended to override the default set).</p>
+<blockquote>
+<p><strong>Good to know</strong>: similar to Default Environment Variables, <code>.env.test</code> file should be included in your repository, but <code>.env.test.local</code> shouldn’t, as <code>.env*.local</code> are intended to be ignored through <code>.gitignore</code>.</p>
+</blockquote>
+<p>While running unit tests you can make sure to load your environment variables the same way Next.js does by leveraging the <code>loadEnvConfig</code> function from the <code>@next/env</code> package.</p>
+<pre><code class="language-js">// The below can be used in a Jest global setup file or similar for your testing set-up
+import { loadEnvConfig } from '@next/env'
+
+export default async () =&gt; {
+  const projectDir = process.cwd()
+  loadEnvConfig(projectDir)
+}
+</code></pre>
+<h2 id="environment-variable-load-order">Environment Variable Load Order</h2>
+<p>Environment variables are looked up in the following places, in order, stopping once the variable is found.</p>
+<ol>
+<li><code>process.env</code></li>
+<li><code>.env.$(NODE_ENV).local</code></li>
+<li><code>.env.local</code> (Not checked when <code>NODE_ENV</code> is <code>test</code>.)</li>
+<li><code>.env.$(NODE_ENV)</code></li>
+<li><code>.env</code></li>
+</ol>
+<p>For example, if <code>NODE_ENV</code> is <code>development</code> and you define a variable in both <code>.env.development.local</code> and <code>.env</code>, the value in <code>.env.development.local</code> will be used.</p>
+<blockquote>
+<p><strong>Good to know</strong>: The allowed values for <code>NODE_ENV</code> are <code>production</code>, <code>development</code> and <code>test</code>.</p>
+</blockquote>
+<h2 id="good-to-know">Good to know</h2>
+<ul>
+<li>If you are using a <a href="/docs/app/api-reference/file-conventions/src-folder"><code>/src</code> directory</a>, <code>.env.*</code> files should remain in the root of your project.</li>
+<li>If the environment variable <code>NODE_ENV</code> is unassigned, Next.js automatically assigns <code>development</code> when running the <code>next dev</code> command, or <code>production</code> for all other commands.</li>
+</ul>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v9.4.0</code></td>
+<td>Support <code>.env</code> and <code>NEXT_PUBLIC_</code> introduced.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<script src="search.json.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
